@@ -156,6 +156,187 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
 .global-flag{width:23px;height:16px}
 }
 
+
+/* Lovena Studio creator */
+body.lovena-overlay-open{overflow:hidden}
+.studio-overlay,.reader-overlay{position:fixed;inset:0;z-index:1000;background:#f8f7f5;overflow:auto;color:#202023}
+.studio-overlay[aria-hidden="true"]{display:none}
+.reader-overlay[hidden]{display:none!important}
+.studio-topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px clamp(16px,3vw,42px);background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid #e4e2df}
+.studio-brand-lockup{display:flex;align-items:center;gap:14px;min-width:0}
+.studio-brand{font-family:'Playfair Display',serif;font-size:25px;font-weight:600;letter-spacing:-1px}
+.studio-brand-sub{height:24px;width:1px;background:#d8d6d3}
+.studio-eyebrow{font-size:9px;color:#77737a;letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
+.studio-top-actions{display:flex;align-items:center;gap:10px}
+.studio-quiet-btn,.studio-icon-btn{border:1px solid #e0ddda;background:#fff;color:#454248;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:700}
+.studio-icon-btn{width:38px;height:38px;padding:0;font-size:20px;display:inline-grid;place-items:center}
+.studio-quiet-btn:hover,.studio-icon-btn:hover{border-color:#a8898e;background:#fbf8f7}
+.studio-progress-wrap{max-width:1370px;margin:0 auto;padding:18px clamp(16px,3vw,42px) 0}
+.studio-progress-labels{display:flex;justify-content:space-between;gap:10px;color:#858188;font-size:10px;margin-bottom:8px}
+.studio-progress-track{height:3px;background:#e5e2df;border-radius:5px;overflow:hidden}
+.studio-progress-fill{height:100%;background:#8d646a;width:16.66%;transition:width .3s ease}
+.studio-layout{max-width:1370px;margin:0 auto;padding:28px clamp(16px,3vw,42px) 52px;display:grid;grid-template-columns:205px minmax(0,1fr) 280px;gap:30px;align-items:start}
+.studio-steps{position:sticky;top:100px;padding-top:6px}
+.studio-steps-heading{font-size:9px;color:#99959a;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;margin:0 0 15px 8px}
+.studio-step-nav{width:100%;display:flex;align-items:center;text-align:left;gap:12px;border:0;background:transparent;border-radius:10px;padding:12px 10px;color:#868188;margin-bottom:4px}
+.studio-step-nav:hover{background:#f0eeeb;color:#2d2b2f}
+.studio-step-nav.active{background:#fff;color:#262327;box-shadow:0 4px 16px rgba(43,37,39,.055)}
+.studio-step-nav.complete .studio-step-num{background:#eee6e5;color:#805b60}
+.studio-step-num{width:30px;height:30px;flex:0 0 30px;border-radius:50%;border:1px solid #e4dfdc;display:grid;place-items:center;font-size:10px;font-weight:800}
+.studio-step-nav.active .studio-step-num{background:#29262a;border-color:#29262a;color:#fff}
+.studio-step-text strong{display:block;font-size:11px;font-weight:800}
+.studio-step-text small{display:block;color:#9b969b;font-size:9px;margin-top:4px}
+.studio-main{min-width:0}
+.studio-step-kicker{color:#97747a;font-size:9px;letter-spacing:1.9px;text-transform:uppercase;font-weight:800}
+.studio-step-title{font-family:'Playfair Display',serif;font-size:clamp(32px,3vw,43px);line-height:1.1;letter-spacing:-1.5px;font-weight:500;margin:12px 0 12px;color:#242126}
+.studio-step-intro{font-size:13px;line-height:1.8;color:#777179;max-width:600px;margin:0 0 26px}
+.studio-form-card{background:#fff;border:1px solid #e6e1de;border-radius:15px;padding:clamp(18px,2.2vw,30px);box-shadow:0 14px 38px rgba(46,38,40,.035)}
+.studio-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.studio-field{display:flex;flex-direction:column;gap:8px;min-width:0;margin-bottom:18px}
+.studio-field:last-child{margin-bottom:0}
+.studio-field label,.studio-label{font-size:10px;color:#4f4a51;font-weight:800;letter-spacing:.2px}
+.studio-field input,.studio-field select,.studio-field textarea{width:100%;min-width:0;border:1px solid #ded9d7;border-radius:8px;background:#fff;color:#262327;padding:13px 14px;font-family:'Manrope',sans-serif;font-size:12px;outline:none;transition:border-color .15s,box-shadow .15s}
+.studio-field input:focus,.studio-field select:focus,.studio-field textarea:focus{border-color:#a98187;box-shadow:0 0 0 3px rgba(141,100,106,.10)}
+.studio-field textarea{min-height:220px;line-height:1.9;resize:vertical}
+.studio-hint{font-size:10px;color:#989199;line-height:1.7;margin-top:1px}
+.studio-inline-tip{display:flex;align-items:flex-start;gap:11px;border:1px solid #e9e1df;background:#fbf8f7;padding:14px 15px;border-radius:9px;color:#72686c;font-size:10px;line-height:1.7;margin-top:20px}
+.studio-inline-tip b{color:#60464c}
+.studio-memory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.studio-memory-card{min-width:0}
+.studio-photo-drop{height:190px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:9px;border:1px dashed #cfc6c4;background:#f8f6f4;cursor:pointer;text-align:center}
+.studio-photo-drop:hover{border-color:#9b7279;background:#f4efed}
+.studio-photo-drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.studio-photo-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.studio-photo-empty{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;align-items:center;padding:12px;color:#8e858a;font-size:10px}
+.studio-photo-empty .plus{font-size:24px;color:#997980}
+.studio-memory-caption{width:100%;margin-top:8px;border:1px solid #e2ddda;border-radius:7px;padding:10px;font-size:10px;background:#fff;outline:none}
+.studio-remove-photo{border:0;background:rgba(32,28,29,.78);color:#fff;border-radius:50%;width:25px;height:25px;position:absolute;z-index:2;top:7px;right:7px;display:grid;place-items:center}
+.studio-upload-count{font-size:10px;color:#8a848a;margin-top:-10px}
+.studio-writing-prompt{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:-7px 0 14px}
+.studio-pill-button{border:1px solid #ded4d4;border-radius:999px;padding:9px 13px;background:#fbf7f6;color:#855d64;font-size:10px;font-weight:800}
+.studio-pill-button:hover{background:#f2e8e7}
+.studio-theme-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.studio-theme-card{border:1px solid #dedad7;border-radius:10px;background:#fff;text-align:left;padding:8px;cursor:pointer;min-width:0}
+.studio-theme-card.selected{border:2px solid #8d646a;padding:7px;box-shadow:0 0 0 3px rgba(141,100,106,.08)}
+.studio-theme-card:hover{transform:translateY(-2px)}
+.studio-theme-art{height:108px;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;overflow:hidden}
+.studio-theme-art .mini-paper{height:74px;width:65px;padding:9px 7px;display:flex;flex-direction:column;gap:7px;box-shadow:0 9px 20px #00000018;transform:rotate(-4deg)}
+.studio-theme-art .mini-line{height:3px;border-radius:2px;width:100%}
+.studio-theme-card strong{font-size:11px;display:block;margin:2px 3px;color:#302b30}
+.studio-theme-card small{font-size:9px;line-height:1.5;color:#8a838a;display:block;margin:5px 3px 4px}
+.studio-review-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.studio-review-stat{padding:15px;border:1px solid #e7e2df;background:#fff;border-radius:9px}
+.studio-review-stat span{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#978e93;display:block;margin-bottom:7px}
+.studio-review-stat strong{font-size:12px;color:#3a343a}
+.studio-final-note{padding:16px;border-radius:9px;background:#f8f4f2;color:#74686e;font-size:10px;line-height:1.8;border:1px solid #ebe2df}
+.studio-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px}
+.studio-control-left,.studio-control-right{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.studio-back-btn,.studio-next-btn,.studio-export-btn{border-radius:999px;padding:13px 19px;font-size:11px;font-weight:800}
+.studio-back-btn{background:transparent;border:1px solid #ded9d7;color:#625a62}
+.studio-next-btn{background:#282529;border:1px solid #282529;color:#fff}
+.studio-next-btn:hover{background:#4a4147}
+.studio-export-btn{background:#fff;border:1px solid #d5c9c8;color:#815d63}
+.studio-next-btn:disabled{opacity:.45;cursor:not-allowed}
+.studio-aside{position:sticky;top:102px}
+.studio-aside-card{background:#fff;border:1px solid #e5dfdc;border-radius:14px;padding:18px;box-shadow:0 14px 35px rgba(46,38,40,.04)}
+.studio-aside-label{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#9a8b90}
+.studio-mini-cover{margin-top:14px;min-height:235px;border-radius:9px;padding:18px 16px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative;background:#f3e9e6;color:#3c3035}
+.studio-mini-cover:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.35);right:-62px;top:20px}
+.studio-mini-overline{font-size:8px;text-transform:uppercase;letter-spacing:1.5px;position:relative;z-index:1}
+.studio-mini-title{font-family:'Playfair Display',serif;font-size:25px;line-height:1.1;position:relative;z-index:1;overflow-wrap:anywhere}
+.studio-mini-from{font-size:9px;position:relative;z-index:1}
+.studio-mini-photo{width:100%;height:90px;border-radius:6px;object-fit:cover;margin:10px 0;position:relative;z-index:1}
+.studio-aside-small{font-size:10px;line-height:1.8;color:#8b8489;margin:13px 2px 0}
+.studio-aside-check{border-top:1px solid #eee9e6;margin-top:15px;padding-top:12px;font-size:10px;line-height:1.9;color:#777077}
+.studio-aside-check span{display:block}
+.studio-aside-check b{color:#816269}
+.studio-toast{position:fixed;z-index:1300;bottom:24px;left:50%;transform:translate(-50%,15px);background:#282529;color:#fff;border-radius:999px;padding:13px 18px;max-width:calc(100vw - 32px);font-size:11px;box-shadow:0 14px 35px #0002;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.studio-toast.show{opacity:1;transform:translate(-50%,0)}
+/* Recipient story experience */
+.reader-overlay{z-index:1100;display:flex;align-items:stretch;justify-content:center;background:#f5f1ee}
+.reader-shell{width:100%;min-height:100%;padding:24px clamp(16px,5vw,64px) 44px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.reader-topline{position:absolute;top:20px;left:clamp(16px,4vw,52px);right:clamp(16px,4vw,52px);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.reader-logo{font-family:'Playfair Display',serif;font-size:23px;letter-spacing:-1px}
+.reader-logo small{font-family:'Manrope',sans-serif;font-size:8px;color:#827b7a;letter-spacing:1.4px;text-transform:uppercase;display:block;margin-top:3px}
+.reader-close{border:1px solid #dcd5d1;border-radius:50%;width:38px;height:38px;background:#fff;color:#51494c;font-size:20px}
+.reader-progress{display:flex;gap:5px;position:absolute;top:83px;left:50%;transform:translateX(-50%)}
+.reader-progress span{display:block;width:28px;height:3px;border-radius:5px;background:#dfd7d3}
+.reader-progress span.active{background:#946e75}
+.reader-card{width:min(650px,100%);margin:68px auto 22px;padding:clamp(25px,5vw,58px);border:1px solid rgba(110,88,89,.14);border-radius:15px;background:#fff;box-shadow:0 28px 85px rgba(48,35,35,.10);animation:readerEnter .45s ease both}
+.reader-card[data-theme="rose"]{background:#fffaf8;color:#3b2c31}
+.reader-card[data-theme="classic"]{background:#fff;color:#29272a}
+.reader-card[data-theme="midnight"]{background:#242226;color:#f8f0ec;border-color:#41363b}
+.reader-overline{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#9b7b80;font-weight:800}
+.reader-card[data-theme="midnight"] .reader-overline{color:#d2a8ae}
+.reader-title{font-family:'Playfair Display',serif;font-size:clamp(35px,6vw,58px);line-height:1.08;font-weight:500;letter-spacing:-1.5px;margin:20px 0}
+.reader-copy{font-family:'Playfair Display',serif;font-size:17px;line-height:1.95;color:#676067;white-space:normal}
+.reader-card[data-theme="midnight"] .reader-copy{color:#d1c7cc}
+.reader-name{font-family:'Playfair Display',serif;font-size:20px;font-style:italic;color:#906b73}
+.reader-action{display:inline-flex;align-items:center;justify-content:center;gap:10px;margin-top:28px;background:#2b272b;color:#fff;border:0;border-radius:999px;padding:15px 23px;font-size:11px;font-weight:800}
+.reader-card[data-theme="midnight"] .reader-action{background:#f4e7e6;color:#292327}
+.reader-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:25px 0}
+.reader-photo-grid figure{margin:0;min-width:0}
+.reader-photo-grid img{width:100%;height:230px;object-fit:cover;border-radius:7px}
+.reader-photo-grid figcaption{font-size:10px;line-height:1.5;color:#897f83;margin-top:8px}
+.reader-empty-memory{border:1px dashed #d8ceca;background:rgba(255,255,255,.35);border-radius:8px;padding:25px;text-align:center;font-size:11px;color:#94878b;line-height:1.8}
+.reader-music{display:inline-flex;align-items:center;gap:9px;padding:12px 14px;border:1px solid #ded1d0;border-radius:8px;font-size:10px;color:#7b5d63;margin-top:12px}
+.reader-card[data-theme="midnight"] .reader-music{border-color:#615056;color:#f0ccd1}
+.reader-footer-note{text-align:center;color:#8a8183;font-size:10px;letter-spacing:.6px}
+@keyframes readerEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1050px){
+.studio-layout{grid-template-columns:170px minmax(0,1fr);gap:22px}
+.studio-aside{display:none}
+}
+@media(max-width:700px){
+.studio-topbar{padding:12px 14px}
+.studio-brand{font-size:23px}
+.studio-brand-sub,.studio-eyebrow{display:none}
+.studio-top-actions{gap:6px}
+.studio-quiet-btn{padding:10px 11px;font-size:10px}
+.studio-layout{display:block;padding:14px 15px 34px}
+.studio-progress-wrap{padding:14px 15px 0}
+.studio-steps{position:static;padding:0 0 17px;overflow-x:auto;display:flex;gap:6px}
+.studio-steps-heading{display:none}
+.studio-step-nav{width:auto;flex:1 0 auto;display:flex;justify-content:center;gap:7px;padding:8px 9px;border:1px solid #e6e0dd;border-radius:9px;margin:0;background:#fff}
+.studio-step-nav .studio-step-text{display:none}
+.studio-step-num{width:25px;height:25px;flex-basis:25px;font-size:9px}
+.studio-step-nav.active{background:#282529;color:#fff;border-color:#282529}
+.studio-step-nav.active .studio-step-num{background:#fff;color:#282529;border-color:#fff}
+.studio-step-nav.complete .studio-step-num{background:#efe4e4;color:#805b60}
+.studio-step-title{font-size:35px;margin:9px 0 9px}
+.studio-step-intro{font-size:12px;margin-bottom:20px}
+.studio-form-card{padding:17px;border-radius:12px}
+.studio-field-grid{grid-template-columns:1fr;gap:14px}
+.studio-memory-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.studio-memory-card:last-child{grid-column:1/-1;max-width:calc(50% - 5px)}
+.studio-photo-drop{height:150px}
+.studio-memory-caption{font-size:10px;padding:9px 8px}
+.studio-field textarea{min-height:210px}
+.studio-theme-grid{gap:8px}
+.studio-theme-art{height:84px}
+.studio-theme-card{padding:6px}
+.studio-theme-card.selected{padding:5px}
+.studio-theme-card strong{font-size:10px}
+.studio-theme-card small{font-size:8px}
+.studio-review-box{grid-template-columns:1fr 1fr}
+.studio-controls{align-items:stretch;flex-direction:column-reverse}
+.studio-control-left,.studio-control-right{width:100%;display:grid;grid-template-columns:1fr 1fr}
+.studio-control-left:empty{display:none}
+.studio-back-btn,.studio-next-btn,.studio-export-btn{padding:13px 10px;text-align:center}
+.studio-control-right .studio-next-btn:only-child{grid-column:1/-1}
+.reader-shell{padding:20px 15px 28px;justify-content:flex-start}
+.reader-topline{top:15px;left:16px;right:16px}
+.reader-progress{top:72px}
+.reader-card{margin:105px auto 18px;padding:25px 20px;border-radius:12px}
+.reader-title{font-size:39px}
+.reader-copy{font-size:16px;line-height:1.85}
+.reader-photo-grid{grid-template-columns:1fr 1fr;gap:9px}
+.reader-photo-grid img{height:155px}
+.reader-photo-grid figcaption{font-size:9px}
+.reader-footer-note{font-size:9px;line-height:1.7;max-width:320px}
+}
+@media(prefers-reduced-motion:reduce){.studio-theme-card,.studio-progress-fill,.reader-card,.studio-toast{animation:none;transition:none}}
+
 </style>
 </head>
 <body>
@@ -189,5 +370,225 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
 <section class="section center" id="create"><div class="section-inner"><div class="kicker">Your story, your way</div><h2>Make something they'll keep.</h2><p class="sub">A thoughtful digital surprise for anniversaries, birthdays, long-distance love, or simply because.</p><div class="pricing"><div class="oldprice">$19.99</div><div class="price">$9.99 <small>USD</small></div><div class="pricecaption">One-time purchase · Your personal digital keepsake</div><ul class="checklist"><li>A personal, shareable experience</li><li>Photos, notes, and your own words</li><li>A private link to send to your person</li><li>Designed to feel special on mobile</li></ul><button class="primary" id="createBtn">Start creating your story ↗</button><p class="micro">A preview of Lovena Studio — checkout and publishing are not connected yet.</p></div></div></section>
 </main>
 <footer class="foot"><a class="brand" href="#">Lovena</a><span>Made for the moments that matter <span class="heart">♥</span></span><span class="photo-credit">Photography: <a href="https://unsplash.com/@alexandermassph" target="_blank" rel="noopener noreferrer">Alexander Mass</a> &amp; <a href="https://unsplash.com/@cassiejolopez" target="_blank" rel="noopener noreferrer">Cassie Lopez</a> / Unsplash</span><span>© 2026 Lovena Studio</span></footer>
-<script>document.getElementById('createBtn').addEventListener('click',()=>alert('Thanks for your interest in Lovena Studio! This is a visual preview. The creator and secure checkout will be connected in a later step.'));</script>
+<script>
+
+(function(){
+"use strict";
+var steps=[
+ {title:"Your people",short:"The beginning",kicker:"Start with the feeling",intro:"Every meaningful story begins with two people. Tell us who this little world is for."},
+ {title:"Your memories",short:"The little moments",kicker:"A life in little moments",intro:"Choose a few photos that say more than words ever could. Three is plenty; one meaningful moment is enough to start."},
+ {title:"Your letter",short:"Say what matters",kicker:"Words from the heart",intro:"This is the heart of the experience. Write naturally, in your own voice. It does not have to be perfect to be meaningful."},
+ {title:"The soundtrack",short:"Set the mood",kicker:"A song that means something",intro:"Add the song you always sing together, the track from your first date, or a melody that reminds you of them. Music is always their choice to play."},
+ {title:"Make it yours",short:"Choose the feeling",kicker:"The look and feel",intro:"Choose a visual mood for your story. The memories and words stay yours; the atmosphere is your choice."},
+ {title:"Your first preview",short:"See it through their eyes",kicker:"Before you share it",intro:"Take a final look at the little world you made. You can go back and change anything until it feels right."}
+];
+var baseState={recipient:"",sender:"",occasion:"Just because",date:"",photos:["","",""],captions:["","",""],letterTitle:"In case I don't say it enough...",letter:"",songTitle:"",songUrl:"",theme:"rose"};
+var state=JSON.parse(JSON.stringify(baseState));
+try{var saved=localStorage.getItem("lovenaStudioDraftV1");if(saved){var loaded=JSON.parse(saved);state=Object.assign({},baseState,loaded);if(!Array.isArray(state.photos))state.photos=["","",""];if(!Array.isArray(state.captions))state.captions=["","",""];while(state.photos.length<3)state.photos.push("");while(state.captions.length<3)state.captions.push("");}}catch(e){}
+var currentStep=0,readerStage=0,toastTimer=null;
+var studio=document.getElementById("studioOverlay"),reader=document.getElementById("readerOverlay");
+function esc(value){return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function br(value){return esc(value).replace(/\r?\n/g,"<br>");}
+function safeUrl(value){try{var u=new URL(value);if(u.protocol==="https:"||u.protocol==="http:")return u.href;}catch(e){}return "";}
+function toast(message){var node=document.getElementById("studioToast");node.textContent=message;node.classList.add("show");if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){node.classList.remove("show");},2800);}
+function storeDraft(show){try{localStorage.setItem("lovenaStudioDraftV1",JSON.stringify(state));if(show)toast("Your draft is saved on this device ♡");return true;}catch(e){if(show)toast("Draft could not be saved. Try using fewer or smaller photos.");return false;}}
+function themeName(){return state.theme==="classic"?"Quiet classic":state.theme==="midnight"?"After hours":"Soft rose";}
+function coverBackground(){return state.theme==="classic"?"#eeece8":state.theme==="midnight"?"#39343a":"#f3e7e3";}
+function coverInk(){return state.theme==="midnight"?"#fff6f2":"#403239";}
+function miniMarkup(){
+ var name=state.recipient?esc(state.recipient):"Your favorite person";
+ var from=state.sender?("A little something from "+esc(state.sender)):"A little something from you";
+ var photo=state.photos.filter(Boolean)[0];
+ return '<div class="studio-mini-cover" style="background:'+coverBackground()+';color:'+coverInk()+'"><span class="studio-mini-overline">A little story, just for you</span><div class="studio-mini-title">For '+name+'</div>'+(photo?'<img class="studio-mini-photo" src="'+photo+'" alt="Story preview photo">':'')+'<span class="studio-mini-from">'+from+' ♡</span></div>';
+}
+function renderNav(){
+ var nav=document.getElementById("studioStepNav"),html="";
+ html+='<div class="studio-steps-heading">The little details</div>';
+ steps.forEach(function(s,i){html+='<button type="button" class="studio-step-nav '+(i===currentStep?"active ":"")+(i<currentStep?"complete":"")+'" data-action="goto-step" data-step="'+i+'"><span class="studio-step-num">'+(i<currentStep?"✓":"0"+(i+1))+'</span><span class="studio-step-text"><strong>'+esc(s.title)+'</strong><small>'+esc(s.short)+'</small></span></button>';});
+ nav.innerHTML=html;
+}
+function field(label,key,value,placeholder,type,help){
+ return '<div class="studio-field"><label for="field-'+key+'">'+label+'</label><input id="field-'+key+'" type="'+(type||"text")+'" data-field="'+key+'" value="'+esc(value)+'" placeholder="'+esc(placeholder||"")+'" maxlength="180">'+(help?'<div class="studio-hint">'+help+'</div>':"")+'</div>';
+}
+function renderBody(){
+ var item=steps[currentStep],html='<div class="studio-step-kicker">'+esc(item.kicker)+'</div><h1 class="studio-step-title">'+esc(item.title)+'</h1><p class="studio-step-intro">'+esc(item.intro)+'</p>';
+ if(currentStep===0){
+  html+='<div class="studio-form-card"><div class="studio-field-grid">'+field("Who is this story for?","recipient",state.recipient,"Their name","text","The name that will welcome them into the story.")+field("Made with love by","sender",state.sender,"Your name","text","They should know who created their surprise.")+'</div><div class="studio-field-grid" style="margin-top:22px"><div class="studio-field"><label for="field-occasion">What are you celebrating?</label><select id="field-occasion" data-field="occasion"><option '+(state.occasion==="Just because"?"selected":"")+' >Just because</option><option '+(state.occasion==="Anniversary"?"selected":"")+' >Anniversary</option><option '+(state.occasion==="Birthday"?"selected":"")+' >Birthday</option><option '+(state.occasion==="Long-distance love"?"selected":"")+' >Long-distance love</option><option '+(state.occasion==="A special day"?"selected":"")+' >A special day</option></select></div>'+field("A date to remember (optional)","date",state.date,"","date","Add a first date, anniversary, or another day that matters.")+'</div><div class="studio-inline-tip"><span>♡</span><div><b>A small reminder:</b> there is no perfect formula for love. The details only the two of you understand are what make this special.</div></div></div>';
+ }else if(currentStep===1){
+  html+='<div class="studio-form-card"><div class="studio-memory-grid">';
+  for(var i=0;i<3;i++){var photo=state.photos[i];html+='<div class="studio-memory-card"><label class="studio-photo-drop" aria-label="Add memory photo '+(i+1)+'">'+(photo?'<img src="'+photo+'" alt="Your memory '+(i+1)+'">':'<span class="studio-photo-empty"><span class="plus">＋</span><b>Add a photo</b><span>JPG, PNG or WebP</span></span>')+'<input type="file" accept="image/jpeg,image/png,image/webp,image/*" data-photo-index="'+i+'" aria-label="Choose photo '+(i+1)+'"></label>'+(photo?'<button class="studio-remove-photo" type="button" data-action="remove-photo" data-index="'+i+'" aria-label="Remove photo">×</button>':"")+'<input class="studio-memory-caption" type="text" data-caption-index="'+i+'" maxlength="100" value="'+esc(state.captions[i])+'" placeholder="'+(i===0?"A moment I'll keep forever":"Add a little caption")+'"></div>';}
+  html+='</div><div class="studio-upload-count">'+state.photos.filter(Boolean).length+' of 3 memories added. You can continue without photos and add them later.</div><div class="studio-inline-tip"><span>✦</span><div>Choose real moments over perfect pictures. A blurry laugh, a favorite place, or a quiet ordinary day can mean everything.</div></div></div>';
+ }else if(currentStep===2){
+  html+='<div class="studio-form-card"><div class="studio-field"><label for="field-letterTitle">Give your letter a title</label><input id="field-letterTitle" type="text" data-field="letterTitle" maxlength="100" value="'+esc(state.letterTitle)+'" placeholder="For you, always"></div><div class="studio-writing-prompt"><span class="studio-label">Write as if you were talking to them</span><button type="button" class="studio-pill-button" data-action="draft-letter">Help me find the words ✦</button></div><div class="studio-field"><label for="field-letter">Your letter</label><textarea id="field-letter" data-field="letter" maxlength="5000" placeholder="Start with one thing you wish you said more often...">'+esc(state.letter)+'</textarea><div class="studio-hint">Tip: mention a tiny detail you love about them, a memory you replay, or what you hope you'll experience together.</div></div><div class="studio-inline-tip"><span>♡</span><div>You don't need to sound poetic. <b>Sound like you.</b> Specific, honest words are more precious than a perfect paragraph.</div></div></div>';
+ }else if(currentStep===3){
+  html+='<div class="studio-form-card">'+field("Song title (optional)","songTitle",state.songTitle,"The song that reminds me of us")+'<div class="studio-field" style="margin-top:20px"><label for="field-songUrl">A YouTube, Spotify, or Apple Music link</label><input id="field-songUrl" type="url" data-field="songUrl" value="'+esc(state.songUrl)+'" placeholder="https://..."><div class="studio-hint">Add a public link to the song. For their comfort and browser privacy, it will never autoplay; they choose when to listen.</div></div><div class="studio-inline-tip"><span>♫</span><div>A familiar song can bring a whole memory back. A soundtrack is optional — the story should still feel complete without one.</div></div>'+(state.songUrl&&safeUrl(state.songUrl)?'<p style="margin-top:17px;font-size:11px"><a style="color:#89636a;text-decoration:underline" href="'+esc(safeUrl(state.songUrl))+'" target="_blank" rel="noopener noreferrer">Test this music link ↗</a></p>':"")+'</div>';
+ }else if(currentStep===4){
+  var themes=[{key:"rose",title:"Soft rose",copy:"Warm, tender and romantic",bg:"#f3e7e3",ink:"#403239"},{key:"classic",title:"Quiet classic",copy:"Timeless, calm and minimal",bg:"#eeece8",ink:"#302d2b"},{key:"midnight",title:"After hours",copy:"Intimate, rich and cinematic",bg:"#39343a",ink:"#fff6f2"}];
+  html+='<div class="studio-form-card"><div class="studio-theme-grid">';
+  themes.forEach(function(t){html+='<button type="button" class="studio-theme-card '+(state.theme===t.key?"selected":"")+'" data-action="choose-theme" data-theme="'+t.key+'" aria-pressed="'+(state.theme===t.key?'true':'false')+'"><div class="studio-theme-art" style="background:'+t.bg+'"><div class="mini-paper" style="background:'+(t.key==="midnight"?"#4c444d":"#fff")+'"><span style="font-family:Georgia,serif;font-size:10px;color:'+t.ink+'">for you</span><span class="mini-line" style="background:'+t.ink+';opacity:.65"></span><span class="mini-line" style="width:72%;background:'+t.ink+';opacity:.35"></span><span class="mini-line" style="width:50%;background:'+t.ink+';opacity:.25"></span><span style="font-size:13px;color:'+t.ink+'">♡</span></div></div><strong>'+t.title+'</strong><small>'+t.copy+'</small></button>';});
+  html+='</div><div class="studio-inline-tip"><span>✧</span><div>The design is the frame; your memories and words are the art. You can change this mood any time.</div></div></div>';
+ }else if(currentStep===5){
+  var memCount=state.photos.filter(Boolean).length;
+  html+='<div class="studio-form-card"><div class="studio-review-box"><div class="studio-review-stat"><span>Made for</span><strong>'+(state.recipient?esc(state.recipient):"Add their name")+'</strong></div><div class="studio-review-stat"><span>From</span><strong>'+(state.sender?esc(state.sender):"Add your name")+'</strong></div><div class="studio-review-stat"><span>The occasion</span><strong>'+esc(state.occasion)+'</strong></div><div class="studio-review-stat"><span>Memories</span><strong>'+memCount+' photo'+(memCount===1?"":"s")+'</strong></div><div class="studio-review-stat"><span>Letter</span><strong>'+(state.letter.trim()?"Your words are ready":"A letter can be added later")+'</strong></div><div class="studio-review-stat"><span>Atmosphere</span><strong>'+themeName()+'</strong></div></div><div class="studio-final-note"><b>One last look.</b> Preview the story as they would experience it. You can return to any step, change the words or replace a photo. Your draft is kept on this device when you save it.</div><div class="studio-inline-tip"><span>↗</span><div>The editor and recipient preview are working. Secure checkout and publishing to a unique online link are not connected yet, so this version can export a standalone HTML keepsake for sharing as a file.</div></div></div>';
+ }
+ document.getElementById("studioStepBody").innerHTML=html;
+ document.getElementById("studioMiniPreview").innerHTML=miniMarkup();
+ document.getElementById("studioProgressCaption").textContent="YOUR STORY, STEP "+(currentStep+1)+" OF "+steps.length;
+ document.getElementById("studioProgressFill").style.width=(((currentStep+1)/steps.length)*100)+"%";
+ renderNav();
+ var controls=document.getElementById("studioControls");
+ if(currentStep===0){controls.innerHTML='<div class="studio-control-left"><button type="button" class="studio-back-btn" data-action="close-studio">Cancel</button></div><div class="studio-control-right"><button type="button" class="studio-next-btn" data-action="next-step">Start with the memories →</button></div>';}
+ else if(currentStep===5){controls.innerHTML='<div class="studio-control-left"><button type="button" class="studio-back-btn" data-action="previous-step">← Edit details</button></div><div class="studio-control-right"><button type="button" class="studio-export-btn" data-action="download-story">Download keepsake ↓</button><button type="button" class="studio-next-btn" data-action="preview-story">Preview their experience ↗</button></div>';}
+ else{controls.innerHTML='<div class="studio-control-left"><button type="button" class="studio-back-btn" data-action="previous-step">← Back</button></div><div class="studio-control-right"><button type="button" class="studio-next-btn" data-action="next-step">'+(currentStep===4?"Review my story →":"Continue →")+'</button></div>';}
+}
+function renderStudio(){renderBody();}
+function openStudio(){studio.setAttribute("aria-hidden","false");document.body.classList.add("lovena-overlay-open");renderStudio();var close=document.querySelector('#studioOverlay [data-action="close-studio"]');if(close)close.focus();}
+function closeStudio(){studio.setAttribute("aria-hidden","true");document.body.classList.remove("lovena-overlay-open");}
+function validateNames(){if(!state.recipient.trim()||!state.sender.trim()){currentStep=0;renderStudio();toast("Add both names first, so this story feels personal.");return false;}return true;}
+function makeLetterTemplate(){
+ var name=state.recipient.trim()||"you",from=state.sender.trim()||"me";
+ state.letter="I wanted to make this little place just for you, "+name+".\n\nI keep thinking about the small moments that have become some of my favorite memories — the laughs that come out of nowhere, the conversations I wish could last a little longer, and the comfort of simply having you in my life.\n\nThank you for being the person you are. I hope this reminds you that you are seen, appreciated, and loved in ways I probably don't say often enough.\n\nWhatever the next chapter brings, I'm grateful that I get to share a little of this life with you.\n\nAlways,\n"+from;
+ currentStep=2;renderStudio();toast("A heartfelt starting point is ready. Make it sound like you ♡");
+}
+function openReader(){if(!validateNames())return;readerStage=0;reader.hidden=false;renderReader();document.body.classList.add("lovena-overlay-open");}
+function closeReader(){reader.hidden=true;if(studio.getAttribute("aria-hidden")==="true")document.body.classList.remove("lovena-overlay-open");}
+function musicMarkup(){var url=safeUrl(state.songUrl);if(!url)return "";return '<a class="reader-music" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">♫ &nbsp; '+esc(state.songTitle||"A song chosen for you")+' &nbsp; ↗</a>';}
+function photoMarkup(){
+ var html="",count=0;
+ state.photos.forEach(function(photo,i){if(photo){count++;html+='<figure><img src="'+photo+'" alt="'+esc(state.captions[i]||"A shared memory")+'"><figcaption>'+(esc(state.captions[i]||"A little moment, kept close"))+'</figcaption></figure>'; }});
+ return count?'<div class="reader-photo-grid">'+html+'</div>':'<div class="reader-empty-memory">Some moments deserve to be kept close.<br>Add your favorite photos in the Memories step to make this chapter yours.</div>';
+}
+function renderReader(){
+ var card=document.getElementById("readerCard"),progress=document.getElementById("readerProgress"),html="",theme=state.theme;
+ progress.innerHTML=[0,1,2,3].map(function(i){return '<span class="'+(i===readerStage?"active":"")+'"></span>';}).join("");
+ if(readerStage===0){
+  html='<div class="reader-overline">A little story, made just for you</div><div class="reader-title">For '+esc(state.recipient)+'<br><em>with all my heart.</em></div><p class="reader-copy">A few moments, some words, and a little reminder of how much you mean to someone.</p><p class="reader-name">From '+esc(state.sender)+' ♡</p>'+musicMarkup()+'<br><button class="reader-action" type="button" data-action="reader-next">Open your story <span>↗</span></button>';
+ }else if(readerStage===1){
+  html='<div class="reader-overline">Chapter one · The moments</div><div class="reader-title">Little things.<br>Big feelings.</div><p class="reader-copy">These are the moments someone wanted to keep close — and share with you.</p>'+photoMarkup()+musicMarkup()+'<button class="reader-action" type="button" data-action="reader-next">A little more <span>→</span></button>';
+ }else if(readerStage===2){
+  html='<div class="reader-overline">A letter, just for you</div><div class="reader-title" style="font-size:clamp(30px,5vw,46px)">'+esc(state.letterTitle||"In case I don't say it enough...")+'</div><div class="reader-copy">'+(state.letter.trim()?br(state.letter):'I made this little space to remind you that you matter to me. The everyday moments we share, the laughs, the talks, and the simple comfort of knowing you are there — those are the things I treasure most. ♡')+'</div><button class="reader-action" type="button" data-action="reader-next">One last thing <span>→</span></button>';
+ }else{
+  html='<div class="reader-overline">And one last thing...</div><div class="reader-title">Out of all the people in this world, <em>I'm glad I found you.</em></div><p class="reader-copy">Thank you for being part of my story. I hope life gives us many more little moments to turn into memories.</p><p class="reader-name">Always, '+esc(state.sender)+' ♡</p><button class="reader-action" type="button" data-action="download-story">Keep this story ↓</button><br><button type="button" class="studio-pill-button" data-action="close-reader" style="margin-top:12px">Close this little world</button>';
+ }
+ card.className="reader-card";card.setAttribute("data-theme",theme);card.innerHTML=html;
+}
+function downloadStory(){
+ if(!validateNames())return;
+ var images="";
+ state.photos.forEach(function(photo,i){if(photo){images+='<figure><img src="'+photo+'" alt="'+esc(state.captions[i]||"A shared memory")+'"><figcaption>'+(esc(state.captions[i]||"A little moment, kept close"))+'</figcaption></figure>'; }});
+ var link=safeUrl(state.songUrl),music=link?'<p class="music"><a href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">♫ '+esc(state.songTitle||"A song chosen for you")+' — listen here ↗</a></p>':"";
+ var title="For "+state.recipient+" — a Lovena story";
+ var doc='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title><style>*{box-sizing:border-box}body{margin:0;background:#f7f4f1;color:#312a2e;font-family:Arial,sans-serif;line-height:1.8;padding:28px 16px}.story{max-width:700px;margin:28px auto;background:#fffaf8;border:1px solid #e6dbd8;border-radius:16px;padding:clamp(22px,5vw,56px);box-shadow:0 24px 70px #392d3011}.top{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#9a777e}.title{font-family:Georgia,serif;font-size:clamp(38px,8vw,64px);line-height:1.08;font-weight:400;letter-spacing:-1.5px;margin:24px 0}.subtitle{color:#777077}.from{font-family:Georgia,serif;font-style:italic;font-size:20px;color:#8d646a;margin:18px 0 30px}.open{display:block;margin:0 0 25px;padding:14px 20px;border-radius:999px;background:#292529;color:white;font-weight:bold;font-size:12px}details summary{cursor:pointer;list-style:none}details summary::-webkit-details-marker{display:none}.chapter{border-top:1px solid #e9e1df;padding-top:26px;margin-top:26px}.chapter h2{font-family:Georgia,serif;font-size:31px;line-height:1.2;font-weight:400}.photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.photos figure{margin:0}.photos img{width:100%;height:240px;object-fit:cover;border-radius:7px}.photos figcaption{font-size:11px;color:#83777d;margin-top:8px}.letter{font-family:Georgia,serif;font-size:17px;line-height:2;white-space:normal}.music a{color:#8d646a}@media(max-width:520px){.photos{grid-template-columns:1fr}.photos img{height:260px}}</style></head><body><main class="story"><div class="top">A little story, made just for you</div><h1 class="title">For '+esc(state.recipient)+',<br>with all my heart.</h1><p class="subtitle">A few moments, some words, and a little reminder of how much you mean to someone.</p><p class="from">From '+esc(state.sender)+' ♡</p><details><summary class="open">Open your story ♡</summary><section class="chapter"><div class="top">Chapter one · The moments</div><h2>Little things. Big feelings.</h2>'+(images?'<div class="photos">'+images+'</div>':'<p>Some moments deserve to be kept close.</p>')+music+'</section><section class="chapter"><div class="top">A letter, just for you</div><h2>'+esc(state.letterTitle||"In case I don't say it enough...")+'</h2><div class="letter">'+(state.letter.trim()?br(state.letter):'I made this little space to remind you that you matter to me. The everyday moments we share are the things I treasure most. ♡')+'</div></section><section class="chapter"><div class="top">And one last thing...</div><h2>Out of all the people in this world, I am glad I found you.</h2><p>Thank you for being part of my story.</p><p class="from">Always, '+esc(state.sender)+' ♡</p></section></details><p class="subtitle" style="font-size:11px;text-align:center;margin-top:30px">Made with love using Lovena Studio</p></main>
+<div class="studio-overlay" id="studioOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Lovena story creator">
+  <header class="studio-topbar">
+    <div class="studio-brand-lockup">
+      <a class="studio-brand" href="#" data-action="studio-home">Lovena</a><span class="studio-brand-sub"></span>
+      <span class="studio-eyebrow">Your story studio<br>Made just for someone</span>
+    </div>
+    <div class="studio-top-actions">
+      <button type="button" class="studio-quiet-btn" data-action="save-draft">Save draft</button>
+      <button type="button" class="studio-icon-btn" data-action="close-studio" aria-label="Close creator">×</button>
+    </div>
+  </header>
+  <div class="studio-progress-wrap">
+    <div class="studio-progress-labels"><span id="studioProgressCaption">YOUR STORY, STEP 1 OF 6</span><span>Made with intention ♡</span></div>
+    <div class="studio-progress-track"><div class="studio-progress-fill" id="studioProgressFill"></div></div>
+  </div>
+  <div class="studio-layout">
+    <aside class="studio-steps"><div class="studio-steps-heading">The little details</div><nav id="studioStepNav" aria-label="Story steps"></nav></aside>
+    <main class="studio-main">
+      <div id="studioStepBody"></div>
+      <div class="studio-controls" id="studioControls"></div>
+    </main>
+    <aside class="studio-aside">
+      <div class="studio-aside-card">
+        <div class="studio-aside-label">A little preview</div>
+        <div id="studioMiniPreview"></div>
+        <div class="studio-aside-small">This is only the beginning. Your chosen moments and words will bring the full story to life.</div>
+        <div class="studio-aside-check"><span>♡ <b>Personal</b> — made by you</span><span>↗ <b>Shareable</b> — designed for phones</span><span>✦ <b>Memorable</b> — not just another card</span></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="reader-overlay" id="readerOverlay" hidden role="dialog" aria-modal="true" aria-label="Preview your Lovena story">
+  <div class="reader-shell">
+    <div class="reader-topline"><div class="reader-logo">Lovena<small>A story made just for you</small></div><button type="button" class="reader-close" data-action="close-reader" aria-label="Close story preview">×</button></div>
+    <div class="reader-progress" id="readerProgress"></div>
+    <div class="reader-card" id="readerCard"></div>
+    <div class="reader-footer-note">Take your time. The little things are often the biggest things. ♡</div>
+  </div>
+</div>
+<div class="studio-toast" id="studioToast" role="status" aria-live="polite"></div>
+
+</body></html>';
+ var blob=new Blob([doc],{type:"text/html;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ var slug=(state.recipient||"your-story").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
+ a.href=url;a.download="lovena-story-"+(slug||"keepsake")+".html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+ toast("Your keepsake is ready to download ♡");
+}
+function compressImage(file){
+ return new Promise(function(resolve,reject){
+  var reader=new FileReader();
+  reader.onerror=function(){reject(new Error("Could not read image"));};
+  reader.onload=function(){
+   var img=new Image();
+   img.onerror=function(){reject(new Error("Could not load image"));};
+   img.onload=function(){
+    var max=1200,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale)),canvas=document.createElement("canvas");
+    canvas.width=w;canvas.height=h;
+    var ctx=canvas.getContext("2d");if(!ctx){resolve(reader.result);return;}
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+    try{resolve(canvas.toDataURL("image/jpeg",.78));}catch(e){reject(e);}
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
+}
+document.addEventListener("input",function(e){
+ var el=e.target;
+ if(el.hasAttribute("data-field")){state[el.getAttribute("data-field")]=el.value;document.getElementById("studioMiniPreview").innerHTML=miniMarkup();}
+ if(el.hasAttribute("data-caption-index")){state.captions[Number(el.getAttribute("data-caption-index"))]=el.value;}
+});
+document.addEventListener("change",async function(e){
+ var el=e.target;
+ if(!el.matches('input[type="file"][data-photo-index]'))return;
+ var ix=Number(el.getAttribute("data-photo-index")),file=el.files&&el.files[0];if(!file)return;
+ if(!file.type.startsWith("image/")){toast("Please choose an image file.");return;}
+ if(file.size>15*1024*1024){toast("Choose a photo smaller than 15 MB.");return;}
+ toast("Preparing your photo…");
+ try{state.photos[ix]=await compressImage(file);if(currentStep===1)renderStudio();storeDraft(false);toast("Memory added. Looking lovely ♡");}
+ catch(err){toast("That photo could not be added. Try another image.");}
+});
+document.addEventListener("click",function(e){
+ var start=e.target.closest('a[href="#create"],#createBtn');
+ if(start){e.preventDefault();openStudio();return;}
+ var action=e.target.closest("[data-action]");if(!action)return;
+ var name=action.getAttribute("data-action");
+ if(name==="studio-home"){e.preventDefault();currentStep=0;renderStudio();return;}
+ if(name==="close-studio"){closeStudio();return;}
+ if(name==="save-draft"){storeDraft(true);return;}
+ if(name==="next-step"){
+  if(currentStep===0&&!validateNames())return;
+  if(currentStep<steps.length-1){currentStep++;renderStudio();window.scrollTo(0,0);}else{openReader();}
+  return;
+ }
+ if(name==="previous-step"){if(currentStep>0){currentStep--;renderStudio();}return;}
+ if(name==="goto-step"){var n=Number(action.getAttribute("data-step"));if(n===0||validateNames()){currentStep=n;renderStudio();}return;}
+ if(name==="remove-photo"){var index=Number(action.getAttribute("data-index"));state.photos[index]="";renderStudio();storeDraft(false);return;}
+ if(name==="draft-letter"){makeLetterTemplate();return;}
+ if(name==="choose-theme"){state.theme=action.getAttribute("data-theme");renderStudio();return;}
+ if(name==="preview-story"){openReader();return;}
+ if(name==="reader-next"){if(readerStage<3){readerStage++;renderReader();}return;}
+ if(name==="reader-back"){if(readerStage>0){readerStage--;renderReader();}return;}
+ if(name==="close-reader"){closeReader();return;}
+ if(name==="download-story"){downloadStory();return;}
+});
+document.addEventListener("keydown",function(e){
+ if(e.key==="Escape"){if(!reader.hidden)closeReader();else if(studio.getAttribute("aria-hidden")==="false")closeStudio();}
+});
+if(location.hash==="#creator"){openStudio();}
+})();
+
+</script>
 </body></html>
