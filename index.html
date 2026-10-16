@@ -132,9 +132,34 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
 .sticker{z-index:7}
 @media(max-width:800px){.hero-photo-main{width:62%;height:82%;right:5%;top:2%;border-radius:3px}.photo .photo-img{width:100%;height:100%}}
 
+
+/* International markets strip */
+.global-strip{min-height:42px;padding:8px 24px;display:flex;align-items:center;justify-content:center;gap:20px;background:rgba(255,255,255,.92);border-bottom:1px solid #e7e7e8;color:#74767b;font-family:'Manrope',sans-serif}
+.global-strip-label{font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap}
+.global-flags{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.global-flag{display:inline-flex;align-items:center;justify-content:center;width:30px;height:21px;overflow:hidden;border-radius:2px;border:1px solid rgba(20,20,24,.12);background:#f6f6f6;transition:transform .18s,box-shadow .18s}
+.global-flag:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(20,20,24,.12)}
+.global-flag img{width:100%;height:100%;max-width:none;object-fit:cover;display:block}
+@media(max-width:800px){.global-strip{justify-content:flex-start;padding:9px 20px;gap:13px;overflow:hidden}.global-strip-label{font-size:8px;letter-spacing:1.25px}.global-flags{justify-content:flex-start;flex-wrap:nowrap;gap:9px;min-width:max-content}.global-flag{width:27px;height:19px;flex:0 0 auto}}
+
 </style>
 </head>
 <body>
+<div class="global-strip" aria-label="International audience">
+  <span class="global-strip-label">Made for hearts worldwide</span>
+  <div class="global-flags" aria-label="Countries">
+    <span class="global-flag" title="United States"><img src="https://flagcdn.com/w40/us.png" alt="United States" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="United Kingdom"><img src="https://flagcdn.com/w40/gb.png" alt="United Kingdom" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="Canada"><img src="https://flagcdn.com/w40/ca.png" alt="Canada" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="Australia"><img src="https://flagcdn.com/w40/au.png" alt="Australia" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="Germany"><img src="https://flagcdn.com/w40/de.png" alt="Germany" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="France"><img src="https://flagcdn.com/w40/fr.png" alt="France" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="Spain"><img src="https://flagcdn.com/w40/es.png" alt="Spain" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="Italy"><img src="https://flagcdn.com/w40/it.png" alt="Italy" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="Portugal"><img src="https://flagcdn.com/w40/pt.png" alt="Portugal" width="40" height="21" loading="lazy"></span>
+    <span class="global-flag" title="Brazil"><img src="https://flagcdn.com/w40/br.png" alt="Brazil" width="40" height="21" loading="lazy"></span>
+  </div>
+</div>
 <header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#inside">What's inside</a><a class="navcta" href="#create">Create your story ↗</a></nav></header>
 <main>
 <section class="hero editorial-hero geo-grid">
