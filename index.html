@@ -370,6 +370,47 @@ body.lovena-overlay-open{overflow:hidden}
 <section class="section center" id="create"><div class="section-inner"><div class="kicker">Your story, your way</div><h2>Make something they'll keep.</h2><p class="sub">A thoughtful digital surprise for anniversaries, birthdays, long-distance love, or simply because.</p><div class="pricing"><div class="oldprice">$19.99</div><div class="price">$9.99 <small>USD</small></div><div class="pricecaption">One-time purchase · Your personal digital keepsake</div><ul class="checklist"><li>A personal, shareable experience</li><li>Photos, notes, and your own words</li><li>A private link to send to your person</li><li>Designed to feel special on mobile</li></ul><button class="primary" id="createBtn">Start creating your story ↗</button><p class="micro">A preview of Lovena Studio — checkout and publishing are not connected yet.</p></div></div></section>
 </main>
 <footer class="foot"><a class="brand" href="#">Lovena</a><span>Made for the moments that matter <span class="heart">♥</span></span><span class="photo-credit">Photography: <a href="https://unsplash.com/@alexandermassph" target="_blank" rel="noopener noreferrer">Alexander Mass</a> &amp; <a href="https://unsplash.com/@cassiejolopez" target="_blank" rel="noopener noreferrer">Cassie Lopez</a> / Unsplash</span><span>© 2026 Lovena Studio</span></footer>
+
+<div class="studio-overlay" id="studioOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Lovena story creator">
+  <header class="studio-topbar">
+    <div class="studio-brand-lockup">
+      <a class="studio-brand" href="#" data-action="studio-home">Lovena</a><span class="studio-brand-sub"></span>
+      <span class="studio-eyebrow">Your story studio<br>Made just for someone</span>
+    </div>
+    <div class="studio-top-actions">
+      <button type="button" class="studio-quiet-btn" data-action="save-draft">Save draft</button>
+      <button type="button" class="studio-icon-btn" data-action="close-studio" aria-label="Close creator">×</button>
+    </div>
+  </header>
+  <div class="studio-progress-wrap">
+    <div class="studio-progress-labels"><span id="studioProgressCaption">YOUR STORY, STEP 1 OF 6</span><span>Made with intention ♡</span></div>
+    <div class="studio-progress-track"><div class="studio-progress-fill" id="studioProgressFill"></div></div>
+  </div>
+  <div class="studio-layout">
+    <aside class="studio-steps"><div class="studio-steps-heading">The little details</div><nav id="studioStepNav" aria-label="Story steps"></nav></aside>
+    <main class="studio-main">
+      <div id="studioStepBody"></div>
+      <div class="studio-controls" id="studioControls"></div>
+    </main>
+    <aside class="studio-aside">
+      <div class="studio-aside-card">
+        <div class="studio-aside-label">A little preview</div>
+        <div id="studioMiniPreview"></div>
+        <div class="studio-aside-small">This is only the beginning. Your chosen moments and words will bring the full story to life.</div>
+        <div class="studio-aside-check"><span>♡ <b>Personal</b> — made by you</span><span>↗ <b>Shareable</b> — designed for phones</span><span>✦ <b>Memorable</b> — not just another card</span></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="reader-overlay" id="readerOverlay" hidden role="dialog" aria-modal="true" aria-label="Preview your Lovena story">
+  <div class="reader-shell">
+    <div class="reader-topline"><div class="reader-logo">Lovena<small>A story made just for you</small></div><button type="button" class="reader-close" data-action="close-reader" aria-label="Close story preview">×</button></div>
+    <div class="reader-progress" id="readerProgress"></div>
+    <div class="reader-card" id="readerCard"></div>
+    <div class="reader-footer-note">Take your time. The little things are often the biggest things. ♡</div>
+  </div>
+</div>
+<div class="studio-toast" id="studioToast" role="status" aria-live="polite"></div>
 <script>
 
 (function(){
@@ -403,7 +444,7 @@ function miniMarkup(){
 }
 function renderNav(){
  var nav=document.getElementById("studioStepNav"),html="";
- html+='<div class="studio-steps-heading">The little details</div>';
+ 
  steps.forEach(function(s,i){html+='<button type="button" class="studio-step-nav '+(i===currentStep?"active ":"")+(i<currentStep?"complete":"")+'" data-action="goto-step" data-step="'+i+'"><span class="studio-step-num">'+(i<currentStep?"✓":"0"+(i+1))+'</span><span class="studio-step-text"><strong>'+esc(s.title)+'</strong><small>'+esc(s.short)+'</small></span></button>';});
  nav.innerHTML=html;
 }
@@ -479,47 +520,6 @@ function downloadStory(){
  var link=safeUrl(state.songUrl),music=link?'<p class="music"><a href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">♫ '+esc(state.songTitle||"A song chosen for you")+' — listen here ↗</a></p>':"";
  var title="For "+state.recipient+" — a Lovena story";
  var doc='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title><style>*{box-sizing:border-box}body{margin:0;background:#f7f4f1;color:#312a2e;font-family:Arial,sans-serif;line-height:1.8;padding:28px 16px}.story{max-width:700px;margin:28px auto;background:#fffaf8;border:1px solid #e6dbd8;border-radius:16px;padding:clamp(22px,5vw,56px);box-shadow:0 24px 70px #392d3011}.top{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#9a777e}.title{font-family:Georgia,serif;font-size:clamp(38px,8vw,64px);line-height:1.08;font-weight:400;letter-spacing:-1.5px;margin:24px 0}.subtitle{color:#777077}.from{font-family:Georgia,serif;font-style:italic;font-size:20px;color:#8d646a;margin:18px 0 30px}.open{display:block;margin:0 0 25px;padding:14px 20px;border-radius:999px;background:#292529;color:white;font-weight:bold;font-size:12px}details summary{cursor:pointer;list-style:none}details summary::-webkit-details-marker{display:none}.chapter{border-top:1px solid #e9e1df;padding-top:26px;margin-top:26px}.chapter h2{font-family:Georgia,serif;font-size:31px;line-height:1.2;font-weight:400}.photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.photos figure{margin:0}.photos img{width:100%;height:240px;object-fit:cover;border-radius:7px}.photos figcaption{font-size:11px;color:#83777d;margin-top:8px}.letter{font-family:Georgia,serif;font-size:17px;line-height:2;white-space:normal}.music a{color:#8d646a}@media(max-width:520px){.photos{grid-template-columns:1fr}.photos img{height:260px}}</style></head><body><main class="story"><div class="top">A little story, made just for you</div><h1 class="title">For '+esc(state.recipient)+',<br>with all my heart.</h1><p class="subtitle">A few moments, some words, and a little reminder of how much you mean to someone.</p><p class="from">From '+esc(state.sender)+' ♡</p><details><summary class="open">Open your story ♡</summary><section class="chapter"><div class="top">Chapter one · The moments</div><h2>Little things. Big feelings.</h2>'+(images?'<div class="photos">'+images+'</div>':'<p>Some moments deserve to be kept close.</p>')+music+'</section><section class="chapter"><div class="top">A letter, just for you</div><h2>'+esc(state.letterTitle||"In case I don't say it enough...")+'</h2><div class="letter">'+(state.letter.trim()?br(state.letter):'I made this little space to remind you that you matter to me. The everyday moments we share are the things I treasure most. ♡')+'</div></section><section class="chapter"><div class="top">And one last thing...</div><h2>Out of all the people in this world, I am glad I found you.</h2><p>Thank you for being part of my story.</p><p class="from">Always, '+esc(state.sender)+' ♡</p></section></details><p class="subtitle" style="font-size:11px;text-align:center;margin-top:30px">Made with love using Lovena Studio</p></main>
-<div class="studio-overlay" id="studioOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Lovena story creator">
-  <header class="studio-topbar">
-    <div class="studio-brand-lockup">
-      <a class="studio-brand" href="#" data-action="studio-home">Lovena</a><span class="studio-brand-sub"></span>
-      <span class="studio-eyebrow">Your story studio<br>Made just for someone</span>
-    </div>
-    <div class="studio-top-actions">
-      <button type="button" class="studio-quiet-btn" data-action="save-draft">Save draft</button>
-      <button type="button" class="studio-icon-btn" data-action="close-studio" aria-label="Close creator">×</button>
-    </div>
-  </header>
-  <div class="studio-progress-wrap">
-    <div class="studio-progress-labels"><span id="studioProgressCaption">YOUR STORY, STEP 1 OF 6</span><span>Made with intention ♡</span></div>
-    <div class="studio-progress-track"><div class="studio-progress-fill" id="studioProgressFill"></div></div>
-  </div>
-  <div class="studio-layout">
-    <aside class="studio-steps"><div class="studio-steps-heading">The little details</div><nav id="studioStepNav" aria-label="Story steps"></nav></aside>
-    <main class="studio-main">
-      <div id="studioStepBody"></div>
-      <div class="studio-controls" id="studioControls"></div>
-    </main>
-    <aside class="studio-aside">
-      <div class="studio-aside-card">
-        <div class="studio-aside-label">A little preview</div>
-        <div id="studioMiniPreview"></div>
-        <div class="studio-aside-small">This is only the beginning. Your chosen moments and words will bring the full story to life.</div>
-        <div class="studio-aside-check"><span>♡ <b>Personal</b> — made by you</span><span>↗ <b>Shareable</b> — designed for phones</span><span>✦ <b>Memorable</b> — not just another card</span></div>
-      </div>
-    </aside>
-  </div>
-</div>
-<div class="reader-overlay" id="readerOverlay" hidden role="dialog" aria-modal="true" aria-label="Preview your Lovena story">
-  <div class="reader-shell">
-    <div class="reader-topline"><div class="reader-logo">Lovena<small>A story made just for you</small></div><button type="button" class="reader-close" data-action="close-reader" aria-label="Close story preview">×</button></div>
-    <div class="reader-progress" id="readerProgress"></div>
-    <div class="reader-card" id="readerCard"></div>
-    <div class="reader-footer-note">Take your time. The little things are often the biggest things. ♡</div>
-  </div>
-</div>
-<div class="studio-toast" id="studioToast" role="status" aria-live="polite"></div>
-
 </body></html>';
  var blob=new Blob([doc],{type:"text/html;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
  var slug=(state.recipient||"your-story").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
