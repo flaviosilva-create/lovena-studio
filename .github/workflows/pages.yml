@@ -23,6 +23,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate inline JavaScript
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          html = Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script>\\s*(.*?)\\s*</script>", html, re.S)
+          if len(scripts) != 1:
+              raise SystemExit(f"Expected one inline script, found {len(scripts)}")
+          Path("/tmp/lovena-inline.js").write_text(scripts[0], encoding="utf-8")
+          PY
+          node --check /tmp/lovena-inline.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
