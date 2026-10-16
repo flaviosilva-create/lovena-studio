@@ -136,6 +136,8 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
 /* International markets strip */
 .global-strip{min-height:42px;padding:8px 24px;display:flex;align-items:center;justify-content:center;gap:20px;background:rgba(255,255,255,.92);border-bottom:1px solid #e7e7e8;color:#74767b;font-family:'Manrope',sans-serif}
 .global-strip-label{font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap}
+.global-tagline{font-size:10px;color:#55575c;letter-spacing:.1px;white-space:nowrap}
+.global-tagline strong{font-weight:800;color:#222226}
 .global-flags{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
 .global-flag{display:inline-flex;align-items:center;justify-content:center;width:27px;height:18px;overflow:hidden;border-radius:2px;border:1px solid rgba(20,20,24,.12);background:#fff;transition:transform .18s,box-shadow .18s}
 .global-flag:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(20,20,24,.12)}
@@ -143,6 +145,7 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
 @media(max-width:800px){
 .global-strip{width:100%;min-height:0;flex-direction:column;align-items:stretch;justify-content:center;gap:9px;padding:11px 16px;overflow:visible}
 .global-strip-label{display:block;text-align:center;font-size:8px;line-height:1.4;letter-spacing:1.35px;white-space:normal}
+.global-tagline{white-space:normal;text-align:center;font-size:9px;line-height:1.5;max-width:310px;margin:0 auto}
 .global-flags{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;justify-items:center;justify-content:stretch;gap:7px;width:100%;min-width:0}
 .global-flag{width:25px;height:17px;min-width:0;flex:none}
 .global-flag img{width:100%;height:100%;object-fit:contain}
@@ -170,6 +173,7 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
     <span class="global-flag" title="Portugal"><img src="https://flagcdn.com/w160/pt.png" alt="Portugal" width="160" height="84" loading="lazy"></span>
     <span class="global-flag" title="Brazil"><img src="https://flagcdn.com/w160/br.png" alt="Brazil" width="160" height="84" loading="lazy"></span>
   </div>
+  <span class="global-tagline"><strong>More than a message.</strong> A love story made just for them.</span>
 </div>
 <header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#inside">What's inside</a><a class="navcta" href="#create">Create your story ↗</a></nav></header>
 <main>
