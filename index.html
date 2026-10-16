@@ -140,7 +140,18 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
 .global-flag{display:inline-flex;align-items:center;justify-content:center;width:30px;height:21px;overflow:hidden;border-radius:2px;border:1px solid rgba(20,20,24,.12);background:#f6f6f6;transition:transform .18s,box-shadow .18s}
 .global-flag:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(20,20,24,.12)}
 .global-flag img{width:100%;height:100%;max-width:none;object-fit:cover;display:block}
-@media(max-width:800px){.global-strip{justify-content:flex-start;padding:9px 20px;gap:13px;overflow:hidden}.global-strip-label{font-size:8px;letter-spacing:1.25px}.global-flags{justify-content:flex-start;flex-wrap:nowrap;gap:9px;min-width:max-content}.global-flag{width:27px;height:19px;flex:0 0 auto}}
+@media(max-width:800px){
+.global-strip{width:100%;min-height:0;flex-direction:column;align-items:stretch;justify-content:center;gap:9px;padding:11px 16px;overflow:visible}
+.global-strip-label{display:block;text-align:center;font-size:8px;line-height:1.4;letter-spacing:1.35px;white-space:normal}
+.global-flags{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;justify-items:stretch;justify-content:stretch;gap:8px;width:100%;min-width:0}
+.global-flag{width:100%;height:22px;min-width:0;flex:none}
+.global-flag img{width:100%;height:100%;object-fit:cover}
+}
+@media(max-width:360px){
+.global-strip{padding:10px 12px;gap:8px}
+.global-flags{gap:6px}
+.global-flag{height:20px}
+}
 
 </style>
 </head>
