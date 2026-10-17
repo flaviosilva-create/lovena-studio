@@ -338,6 +338,9 @@ body.lovena-overlay-open{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.studio-theme-card,.studio-progress-fill,.reader-card,.studio-toast{animation:none;transition:none}}
 
 
+/* The story preview must be a real full-screen layer and respect the hidden state. */
+.reader-overlay{position:fixed;inset:0;overflow:auto}
+.reader-overlay[hidden]{display:none!important}
 /* Immersive Lovena story experience */
 .reader-card{position:relative;overflow:hidden;min-height:430px}
 .reader-card[data-theme="rose"]{background:linear-gradient(145deg,#fffaf8,#f8efec)}
@@ -809,7 +812,7 @@ document.addEventListener("click",function(e){
  if(name==="choose-theme"){state.theme=action.getAttribute("data-theme");renderStudio();return;}
  if(name==="toggle-extra"){var option=action.getAttribute("data-option");if(option==="enableDoodle"||option==="enableGuestbook"){state[option]=!state[option];storeDraft(false);renderStudio();}return;}
  if(name==="preview-story"){openReader();return;}
- if(name==="reader-next"){if(readerStage<5){readerStage++;renderReader();document.querySelector(".reader-shell").scrollTop=0;}return;}
+ if(name==="reader-next"){if(readerStage<5){readerStage++;renderReader();reader.scrollTop=0;}return;}
  if(name==="reader-back"){if(readerStage>0){readerStage--;renderReader();}return;}
  if(name==="reader-restart"){readerStage=0;renderReader();return;}
  if(name==="show-photo"){showPhoto(Number(action.getAttribute("data-photo-index")));return;}
