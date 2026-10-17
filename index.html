@@ -498,6 +498,7 @@ body.lovena-overlay-open{overflow:hidden}
 @media(max-width:720px){.reader-overlay{padding:0!important}.reader-shell{padding:0 10px 18px!important}.reader-topline{margin:0 -10px;padding:11px 17px}.reader-logo{font-size:23px}.reader-logo small{font-size:7px}.lp-section{padding:55px 20px 35px}.lp-cover{padding-top:38px;min-height:0}.lp-cover-title{font-size:clamp(39px,11vw,58px);letter-spacing:-1.5px}.lp-cover-copy{font-size:12px}.lp-opening-polaroids{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 16px;max-width:430px;margin-top:25px}.lp-cover .lp-polaroid:nth-child(2){margin-top:15px}.lp-cover .lp-polaroid:nth-child(3){margin-top:0}.lp-cover .lp-polaroid:nth-child(4){margin-top:17px}.lp-polaroid{padding:6px 6px 25px}.lp-polaroid-caption{font-size:10px;margin-top:8px}.lp-polaroid-index{font-size:5px}.lp-scroll-cue{margin-top:19px}.lp-section-marker{top:17px;left:20px;font-size:7px}.lp-section-title{font-size:clamp(31px,8vw,43px)}.lp-gallery-heading{display:block}.lp-gallery-heading .lp-section-copy{margin-top:14px}.lp-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.lp-gallery-grid .lp-polaroid:nth-child(n){margin-top:0}.lp-gallery-grid .lp-polaroid:nth-child(even){margin-top:17px}.lp-letter-wrap,.lp-music-layout{grid-template-columns:1fr;gap:27px}.lp-letter-doodle{margin-top:13px}.lp-letter-paper{transform:rotate(.5deg);padding:21px 17px}.lp-letter-lines{font-size:14px;line-height:1.95}.lp-music-player{padding:16px}.lp-ending-section{min-height:0}.lp-ending-title{font-size:clamp(34px,8.5vw,48px)}.lp-ending-copy{font-size:11px}.lp-interaction-grid{grid-template-columns:1fr}.lp-scratch-card,.lp-scratch-message{min-height:250px}.lp-scratch-message p{font-size:12px}.lp-scratch-canvas{height:100%}}
 @media(prefers-reduced-motion:reduce){.lp-reveal{opacity:1;transform:none;transition:none}.lp-polaroid,.lp-scroll-cue,.lp-ending-heart{animation:none!important}.lp-polaroid{transform:rotate(var(--tilt))}}
 
+.lp-polaroid.lp-reveal{transform:translateY(18px) rotate(var(--tilt))}.lp-polaroid.lp-reveal.lp-visible{transform:rotate(var(--tilt))}.lp-polaroid.lp-reveal.lp-visible:hover{transform:rotate(0) translateY(-7px) scale(1.025)}.lp-cover .lp-polaroid.lp-reveal.lp-visible:nth-child(2),.lp-cover .lp-polaroid.lp-reveal.lp-visible:nth-child(4){transform:translateY(10px) rotate(var(--tilt))}
 </style>
 </head>
 <body>
@@ -964,7 +965,22 @@ document.addEventListener("submit",function(e){if(e.target&&e.target.id==="reade
 document.addEventListener("keydown",function(e){
  if(e.key==="Escape"){var photoOverlay=document.getElementById("readerPhotoOverlay");if(photoOverlay&&!photoOverlay.hidden){photoOverlay.hidden=true;return;}if(!reader.hidden)closeReader();else if(studio.getAttribute("aria-hidden")==="false")closeStudio();}
 });
-if(location.hash==="#creator"){openStudio();}else if(location.hash==="#sample"){openReader();}
+if(location.hash==="#creator"){openStudio();}else if(location.hash==="#sample"){
+ if(!state.photos.some(Boolean)){
+  state.recipient=state.recipient||"Jamie";state.sender=state.sender||"Alex";state.occasion=state.occasion||"Just because";
+  state.photos=[
+   "https://images.unsplash.com/photo-1545113431-d301296b14cc?auto=format&fit=crop&w=900&q=80",
+   "https://images.unsplash.com/photo-1782786661330-33cfd2d0e05d?auto=format&fit=crop&w=900&q=80",
+   "https://images.unsplash.com/photo-1755189551231-1b41631fd2b2?auto=format&fit=crop&w=900&q=80",
+   "https://images.unsplash.com/photo-1782786398021-c1094444c9d7?auto=format&fit=crop&w=900&q=80"
+  ];
+  state.captions=["Our little world","One more favorite day","Just being us","A moment to keep"];
+  state.letterTitle="I hope you know...";state.letter=state.letter||"You make the ordinary feel special. I love the little things: the laughs that last too long, the moments we do not plan, and the comfort of knowing you are there. I hope this little page reminds you how loved you are. ♡";
+  state.songTitle=state.songTitle||"Perfect — Ed Sheeran";state.songUrl=state.songUrl||"https://www.youtube.com/watch?v=2Vv-BfVoq4g";
+  state.scratchTitle=state.scratchTitle||"You make life sweeter";state.scratchMessage=state.scratchMessage||"My favorite part of any day is finding a little piece of you in it. ♡";
+ }
+ openReader();
+}
 })();
 
 </script>
