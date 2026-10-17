@@ -593,7 +593,9 @@ function miniMarkup(){
  var name=state.recipient?esc(state.recipient.trim()||"your favorite person"):"Your favorite person";
  var from=state.sender?("A little something from "+esc(state.sender.trim()||"someone who cares about you")):"A little something from you";
  var photo=state.photos.filter(Boolean)[0];
- return '<div class="studio-mini-cover" style="background:'+coverBackground()+';color:'+coverInk()+'"><span class="studio-mini-overline">A little story, just for you</span><div class="studio-mini-title">For '+name+'</div>'+(photo?'<img class="studio-mini-photo" src="'+photo+'" alt="Story preview photo">':'')+'<span class="studio-mini-from">'+from+' ♡</span></div>';
+ var bg=state.cardColor||coverBackground(),ink=state.textColor||coverInk(),accent=state.accentColor||"#986e78";
+ var font=state.headingFont==="modern"?"Manrope,Arial,sans-serif":state.headingFont==="handwritten"?"cursive":"'Playfair Display',Georgia,serif";
+ return '<div class="studio-mini-cover" style="background:'+bg+';color:'+ink+';text-align:'+(state.textAlignment||"left")+'"><span class="studio-mini-overline" style="color:'+accent+'">'+esc(state.coverEyebrow||"A little story, just for you")+'</span><div class="studio-mini-title" style="font-family:'+font+'">For '+name+'</div>'+(photo?'<img class="studio-mini-photo" src="'+photo+'" alt="Story preview photo">':'')+'<div style="font:italic 16px/1.3 '+font+';color:'+accent+';margin:12px 0">'+br(state.coverTitle||"with all my heart.")+'</div><p style="font-size:10px;line-height:1.6;color:'+ink+'">'+br(state.coverIntro||"A little world made just for you.")+'</p><span class="studio-mini-from">'+from+' ♡</span></div>';
 }
 function renderNav(){
  var nav=document.getElementById("studioStepNav"),html="";
