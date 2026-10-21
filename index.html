@@ -1094,6 +1094,75 @@ html,body{background:#17110f!important}
  .hero .camera-sticker{left:25%;top:42%;font-size:21px;padding:4px 8px}
  .hero .art:before{top:10%!important;font-size:32px!important}
 }
+
+/* Functional overlays for the scrapbook landing hero */
+.nav .navcta{display:none!important}
+.scrapbook-menu{position:relative;margin-left:2px;color:#fff}
+.scrapbook-menu summary{list-style:none;display:grid;gap:5px;place-content:center;width:42px;height:42px;border:1px solid #ffffff42;border-radius:50%;cursor:pointer;background:#20161355;backdrop-filter:blur(10px)}
+.scrapbook-menu summary::-webkit-details-marker{display:none}
+.scrapbook-menu summary span{display:block;width:17px;height:1.5px;background:#fff}
+.scrapbook-menu-panel{position:absolute;z-index:100;right:0;top:52px;width:210px;padding:10px;background:#241b19f5;border:1px solid #fff2;border-radius:12px;box-shadow:0 18px 55px #0007;backdrop-filter:blur(16px)}
+.navlinks .scrapbook-menu-panel a{display:block!important;padding:12px!important;color:#fff!important;font:500 12px Manrope,sans-serif!important;border-radius:7px;text-shadow:none!important}
+.scrapbook-menu-panel a:hover{background:#ffffff12}
+.hero .lead{display:none!important}
+.hero h1{font-size:clamp(24px,3vw,36px)!important;line-height:1.18!important;letter-spacing:-.35px!important;max-width:620px!important;font-weight:500!important}
+.hero h1 em{color:#fff!important;font-style:normal!important}
+.hero .heroactions{margin-top:20px!important}
+.hero .primary{font-family:Manrope,sans-serif!important;font-weight:600!important;letter-spacing:.1px!important}
+.hero .p1{left:0!important;top:16%!important;width:50%!important;height:48%!important;transform:rotate(-1.2deg)!important}
+.hero .p2{right:0!important;left:auto!important;top:6%!important;width:50%!important;height:31%!important;transform:rotate(.8deg)!important}
+.hero .p4{right:0!important;left:auto!important;top:37%!important;width:50%!important;height:30%!important;transform:rotate(.5deg)!important}
+.hero .p5{display:block!important;left:0!important;right:auto!important;top:48%!important;bottom:auto!important;width:50%!important;height:23%!important;transform:rotate(-.5deg)!important}
+.hero .p3{left:0!important;right:auto!important;top:auto!important;bottom:0!important;width:50%!important;height:30%!important;transform:rotate(-.5deg)!important}
+.hero .p6{right:0!important;left:auto!important;top:auto!important;bottom:0!important;width:50%!important;height:30%!important;transform:rotate(.5deg)!important}
+.hero .polaroid .photo{clip-path:polygon(0 2%,5% 0,10% 2%,16% 0,23% 1%,30% 0,38% 2%,45% 0,53% 1%,60% 0,68% 2%,75% 0,82% 1%,90% 0,100% 2%,98% 100%,91% 98%,82% 100%,73% 98%,64% 100%,55% 98%,46% 100%,37% 98%,28% 100%,19% 98%,10% 100%,2% 98%)!important}
+.hero .p5:after{content:"♡  ♡";position:absolute;z-index:3;top:12px;left:12px;color:#fff;font:24px cursive;text-shadow:0 2px 8px #0008}
+.hero .sticker{left:44%!important;top:59%!important;right:auto!important;bottom:auto!important;z-index:14!important;font-family:'Playfair Display',Georgia,serif!important}
+.hero .camera-sticker{display:grid;place-items:center;width:57px;height:36px;padding:4px!important;background:#fffaf0!important;color:#282220!important;border:3px solid #fff!important;border-radius:5px!important}
+.hero .camera-sticker svg{width:100%;height:100%;display:block}
+.hero .scribble{font-family:cursive!important}
+.hero .art .scribble:after{content:"ALWAYS"!important;display:block;margin-top:0!important;font:500 11px/1.3 Manrope,sans-serif!important;letter-spacing:2px!important;text-align:right!important}
+.scrapbook-track{position:absolute;z-index:20;left:clamp(18px,4vw,42px);bottom:26px;display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;text-align:left}
+.scrapbook-track-art{width:43px;height:43px;flex:0 0 43px;border-radius:50%;background:linear-gradient(145deg,#e7ae85,#63463e 48%,#201b1a);border:1px solid #fff9;display:grid;place-items:center;box-shadow:0 5px 18px #0005;font-size:18px}
+.scrapbook-track-copy strong{display:block;font-size:11px;font-weight:600;letter-spacing:.1px}
+.scrapbook-track-copy small{display:block;margin-top:3px;color:#ffffffad;font-size:10px}
+.scrapbook-track-wave{font-size:18px;margin-left:6px;letter-spacing:-3px}
+.scrapbook-signature{position:absolute;z-index:15;right:clamp(18px,4vw,48px);bottom:26px;color:#efc1b2;font:italic 18px/1.15 cursive;text-align:center;transform:rotate(-7deg)}
+.scrapbook-signature small{display:block;font:italic 16px/1.2 cursive}
+.scrapbook-signature:after{content:"";display:block;width:72px;border-bottom:1px solid #efc1b2;transform:rotate(-8deg);margin:7px auto 0}
+.scrapbook-dots{position:absolute;z-index:20;bottom:38px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:13px}
+.scrapbook-dots span{width:7px;height:7px;border:1px solid #ffffffa6;border-radius:50%}
+.scrapbook-dots span:first-child{width:9px;height:9px;background:#fff;border-color:#fff}
+@media(max-width:700px){
+ .hero.editorial-hero{height:100svh!important;min-height:760px!important}
+ .hero.editorial-hero>div:first-child{bottom:clamp(98px,13vh,125px)!important;width:91%!important}
+ .hero h1{font-size:clamp(23px,6.4vw,29px)!important;line-height:1.19!important;letter-spacing:-.2px!important}
+ .hero .heroactions{margin-top:15px!important}
+ .hero .primary{font-size:13px!important;width:min(290px,100%)!important;min-width:0!important;padding:15px 22px!important}
+ .hero .p1{left:0!important;top:14%!important;width:51%!important;height:38%!important}
+ .hero .p2{right:0!important;top:7%!important;width:49%!important;height:27%!important}
+ .hero .p4{right:0!important;top:34%!important;width:49%!important;height:25%!important}
+ .hero .p5{left:0!important;top:47%!important;width:51%!important;height:22%!important}
+ .hero .p3{left:0!important;bottom:0!important;width:51%!important;height:27%!important}
+ .hero .p6{right:0!important;bottom:0!important;width:49%!important;height:26%!important}
+ .hero .sticker{left:41%!important;top:56%!important;font-size:16px!important}
+ .hero .camera-sticker{left:25%!important;top:42%!important;width:43px;height:29px}
+ .hero .scribble{top:31%!important;right:2%!important;font-size:26px!important}
+ .scrapbook-track{left:14px;bottom:15px;gap:7px}
+ .scrapbook-track-art{width:34px;height:34px;flex-basis:34px;font-size:14px}
+ .scrapbook-track-copy strong{font-size:9px}.scrapbook-track-copy small{font-size:8px}
+ .scrapbook-track-wave{font-size:13px;margin-left:1px}
+ .scrapbook-signature{right:12px;bottom:17px;font-size:13px}
+ .scrapbook-signature small{font-size:12px}
+ .scrapbook-signature:after{width:48px;margin-top:5px}
+ .scrapbook-dots{bottom:24px;gap:9px}
+}
+@media(max-width:390px){
+ .scrapbook-track-wave{display:none}
+ .scrapbook-track-copy strong{font-size:8px}
+ .scrapbook-signature{font-size:12px;right:8px}
+}
+
 </style>
 </head>
 <body>
@@ -1113,14 +1182,14 @@ html,body{background:#17110f!important}
   </div>
   <span class="global-tagline">Connecting hearts, creating smiles.</span>
 </div>
-<header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#love-world">Love, everywhere</a><a href="#inside">What's inside</a><label class="language-picker" aria-label="Choose website language"><span class="language-picker-label">Language</span><span class="gtranslate_wrapper" aria-label="Select language"></span></label><a class="navcta" href="#create">Create your story ↗</a></nav></header>
+<header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#love-world">Love, everywhere</a><a href="#inside">What's inside</a><label class="language-picker" aria-label="Choose website language"><span class="language-picker-label">Language</span><span class="gtranslate_wrapper" aria-label="Select language"></span></label><details class="scrapbook-menu"><summary aria-label="Abrir menu"><span></span><span></span><span></span></summary><div class="scrapbook-menu-panel"><a href="#how">Como funciona</a><a href="#love-world">Love, everywhere</a><a href="#inside">O que inclui</a><a href="#create">Criar meu presente ↗</a></div></details><a class="navcta" href="#create">Create your story ↗</a></nav></header>
 <main>
 <section class="hero editorial-hero geo-grid">
-<div><div class="eyebrow"><span class="dot"></span> A little piece of your story</div><h1>Some feelings deserve <em>more than a text.</em></h1><p class="lead">Turn your memories, photos, and words into a personal digital experience they'll want to open again and again.</p><div class="heroactions"><a class="primary" href="#create">Create your love story <span>↗</span></a><a class="secondary" href="#how">See how it works ↓</a></div><div class="micro">Made with love, just for your person. ♡</div></div>
-<div class="art" aria-label="A collage of romantic keepsakes"><div class="wash"></div><img class="hero-photo-main" src="https://images.unsplash.com/photo-1782786398021-c1094444c9d7?auto=format&amp;fit=crop&amp;fm=jpg&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;ixlib=rb-4.1.0&amp;q=60&amp;w=1400" alt="A couple embracing outdoors in warm sunlight" width="1024" height="1280" fetchpriority="high"><div class="scribble">for you, always ♡</div>
-<div class="polaroid p1"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1545113431-d301296b14cc?auto=format&amp;fit=crop&amp;fm=jpg&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;ixlib=rb-4.1.0&amp;q=60&amp;w=900" alt="A couple sharing a kiss outdoors" loading="lazy" width="700" height="900"></div><small>that summer evening</small></div>
-<div class="polaroid p2"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1782786661330-33cfd2d0e05d?auto=format&amp;fit=crop&amp;fm=jpg&amp;ixid=NHwxMjA3fDA%3D&amp;ixlib=rb-4.1.0&amp;q=60&amp;w=900" alt="A couple holding hands during sunset" loading="lazy" width="700" height="900"></div><small>my favorite person</small></div>
-<div class="polaroid p3"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1755189551231-1b41631fd2b2?auto=format&amp;fit=crop&amp;fm=jpg&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;ixlib=rb-4.1.0&amp;q=60&amp;w=800" alt="A couple walking hand in hand outdoors" loading="lazy" width="700" height="600"></div><small>little moments, forever</small></div><div class="sticker">my favorite person<span>♡ always &amp; forever</span></div><div class="polaroid p4"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple embracing by the sea at sunset" loading="lazy" width="700" height="850"></div><small>golden hour</small></div><div class="polaroid p5"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1766202506947-afdda716a8c1?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple sharing a romantic kiss" loading="lazy" width="700" height="850"></div><small>love you ALWAYS</small></div><div class="polaroid p6"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1755810922274-7cd40d0fc8df?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple enjoying a quiet moment together" loading="lazy" width="700" height="850"></div><small>real moments ♡</small></div><div class="camera-sticker" aria-hidden="true">▣</div></div>
+<div><div class="eyebrow"><span class="dot"></span> A little piece of your story</div><h1>Transforme seus sentimentos<br><em>em um presente digital único.</em></h1><p class="lead">Uma lembrança feita com fotos, palavras e música — só de vocês.</p><div class="heroactions"><a class="primary" href="#create">Criar meu presente <span>→</span></a><a class="secondary" href="#how">Como funciona ↓</a></div><div class="micro">Feito com amor, só para a sua pessoa. ♡</div></div>
+<div class="art" aria-label="A collage of romantic keepsakes"><div class="wash"></div><img class="hero-photo-main" src="https://images.unsplash.com/photo-1782786398021-c1094444c9d7?auto=format&amp;fit=crop&amp;fm=jpg&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;ixlib=rb-4.1.0&amp;q=60&amp;w=1400" alt="A couple embracing outdoors in warm sunlight" width="1024" height="1280" fetchpriority="high"><div class="scribble">love you</div>
+<div class="polaroid p1"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple embracing by the sea at sunset" loading="lazy" width="700" height="900"></div><small>that summer evening</small></div>
+<div class="polaroid p2"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1545113431-d301296b14cc?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple sharing a romantic kiss outdoors" loading="lazy" width="700" height="900"></div><small>my favorite person</small></div>
+<div class="polaroid p3"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1466979939565-131c4b39a51b?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple laughing together outdoors" loading="lazy" width="700" height="600"></div><small>little moments, forever</small></div><div class="sticker">my favorite person<span>♡ always &amp; forever</span></div><div class="polaroid p4"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1782786661330-33cfd2d0e05d?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple holding hands at sunset" loading="lazy" width="700" height="850"></div><small>golden hour</small></div><div class="polaroid p5"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1679780195397-6755f7202fa6?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple close together outdoors surrounded by greenery" loading="lazy" width="700" height="850"></div><small>love you ALWAYS</small></div><div class="polaroid p6"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1754924585038-a21f34d1d1ad?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple sharing an intimate moment in warm evening light" loading="lazy" width="700" height="850"></div><small>real moments ♡</small></div><div class="camera-sticker" aria-hidden="true"><svg viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 11h11l4-6h18l4 6h13a3 3 0 0 1 3 3v19a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V14a3 3 0 0 1 3-3Z" fill="#282321" stroke="#fff" stroke-width="2"/><circle cx="33" cy="22" r="10" fill="#f7f0e6" stroke="#111" stroke-width="3"/><circle cx="33" cy="22" r="5" fill="#35302e"/><circle cx="50" cy="16" r="2" fill="#f7f0e6"/><path d="M9 14h9" stroke="#f7f0e6" stroke-width="2"/></svg></div></div><a class="scrapbook-track" href="https://open.spotify.com/search/Better%20Together%20Jack%20Johnson" target="_blank" rel="noopener noreferrer" aria-label="Buscar Better Together de Jack Johnson no Spotify"><span class="scrapbook-track-art">♫</span><span class="scrapbook-track-copy"><strong>Better Together</strong><small>Jack Johnson</small></span><span class="scrapbook-track-wave" aria-hidden="true">▮▯▮▮▯</span></a><div class="scrapbook-dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><div class="scrapbook-signature">Real moments<small>Real love</small><small>Lovena ♡</small></div>
 </section>
 <section class="section center" id="how"><div class="section-inner"><div class="kicker">Thoughtful by design</div><h2>More than a gift. A feeling.</h2><p class="sub">The best gifts aren't always things. Sometimes they're the moments, words, and tiny details that say, “I know you.”</p><div class="features"><article class="feature"><div class="num">01 / Collect</div><h3>Your favorite memories</h3><p>Add the photos, little stories, dates, and details that only the two of you understand.</p></article><article class="feature"><div class="num">02 / Personalize</div><h3>Make it feel like you</h3><p>Write a letter, leave little notes, and set the mood with a song that means something.</p></article><article class="feature"><div class="num">03 / Share</div><h3>Give them a moment</h3><p>Publish your private experience and send one personal link. Their surprise is just a tap away.</p></article></div></div></section>
 <section class="section love-everywhere" id="love-world" aria-labelledby="love-world-title">
