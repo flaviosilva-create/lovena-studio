@@ -536,6 +536,194 @@ body.lovena-overlay-open{overflow:hidden}
  .studio-advanced-content .studio-custom-grid{grid-template-columns:1fr;gap:12px}
 }
 
+
+/* Vintage scrapbook letter inspired by the user's reference description */
+.lp-letter-section{
+ background:#bfa27e!important;
+ border:0!important;
+ border-radius:0!important;
+ padding:clamp(18px,3.8vw,46px)!important;
+ box-shadow:0 20px 60px #35251e12!important;
+ overflow:hidden!important;
+}
+.lp-letter-section .lp-section-marker{z-index:15;color:#6e5144;left:clamp(18px,4vw,46px);top:15px}
+.lp-scrapbook-board{
+ --kraft:#c7ad88;
+ --ink:#554138;
+ position:relative;
+ isolation:isolate;
+ display:grid;
+ grid-template-columns:minmax(0,.88fr) minmax(0,1.08fr) minmax(0,.82fr);
+ grid-template-rows:auto auto auto auto;
+ gap:clamp(12px,2vw,22px);
+ align-items:start;
+ min-height:930px;
+ padding:clamp(44px,5.5vw,68px) clamp(24px,4vw,46px) 54px;
+ color:var(--ink);
+ background:
+  radial-gradient(ellipse at 12% 18%,#f4e7d0a1 0,transparent 34%),
+  radial-gradient(ellipse at 92% 72%,#8e634c20 0,transparent 38%),
+  repeating-linear-gradient(0deg,#7b57370a 0 1px,transparent 1px 5px),
+  linear-gradient(135deg,#d5bd98 0%,#c4a67f 43%,#d7c09a 100%);
+ border:1px solid #8f7155;
+ box-shadow:inset 0 0 50px #78543a21,0 16px 32px #543c2d19;
+}
+.lp-scrapbook-board:before{
+ content:"";position:absolute;inset:10px;pointer-events:none;z-index:-1;
+ border:1px solid #f5e8d079;
+ background:repeating-linear-gradient(0deg,transparent 0 22px,#fff4df0b 23px 24px);
+}
+.lp-scrap-lace-right{position:absolute;right:0;top:0;bottom:14px;width:19px;z-index:12;pointer-events:none;opacity:.88;background:radial-gradient(ellipse at 100% 7px,#f0e3cf 0 5px,transparent 5.7px) 0 0/19px 14px repeat-y}
+.lp-scrap-lace-bottom{position:absolute;left:0;right:14px;bottom:0;height:18px;z-index:12;pointer-events:none;opacity:.9;background:radial-gradient(ellipse at 7px 100%,#f0e3cf 0 5px,transparent 5.7px) 0 0/14px 18px repeat-x}
+.lp-scrap-note-top{
+ grid-column:1;grid-row:1;position:relative;z-index:3;align-self:start;
+ margin:7px 0 10px;padding:28px 18px 20px;
+ background:linear-gradient(145deg,#f5e9cf,#e6d5b5);
+ color:#5a4539;box-shadow:0 8px 15px #513a281b;
+ transform:rotate(-2.1deg);
+ clip-path:polygon(0 2%,9% 0,15% 2%,25% 0,40% 2%,53% 0,67% 2%,81% 0,100% 3%,99% 96%,86% 100%,71% 97%,57% 100%,40% 97%,25% 100%,10% 97%,0 100%);
+}
+.lp-scrap-note-top p{margin:0;font:italic 13px/1.7 'Playfair Display',Georgia,serif}
+.lp-scrap-note-heart{display:inline-block;color:#bb7f82;font-size:20px;margin-left:3px;transform:rotate(12deg)}
+.lp-scrap-note-tiny{display:block;margin-top:11px;font:700 7px/1.4 Manrope,Arial,sans-serif;letter-spacing:1.4px;color:#a2856e}
+.lp-scrap-paper-clip{position:absolute;top:-8px;left:48%;width:19px;height:34px;border:2px solid #8a8b83;border-radius:9px 9px 7px 7px;transform:rotate(7deg);background:transparent;box-shadow:1px 1px 0 #51483d22}
+.lp-scrap-you-me{
+ grid-column:3;grid-row:1;position:relative;display:flex;align-items:center;justify-content:center;gap:6px;
+ min-height:76px;padding:17px 12px 13px;margin:5px 0 0;background:#b99a72;
+ color:#553d30;box-shadow:2px 6px 10px #4c31241e;transform:rotate(2.8deg);
+ font:italic 23px 'Playfair Display',Georgia,serif;
+}
+.lp-scrap-you-me:before{content:"";position:absolute;inset:5px;border:1px dashed #785b4382;pointer-events:none}
+.lp-scrap-you-me b{font-size:19px;color:#a6585e;font-weight:500}
+.lp-scrap-postmark{position:absolute;right:-11px;top:-18px;width:48px;height:48px;border:1px solid #8d6b5d;border-radius:50%;background:#d4bc99cc;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(12deg);font-size:10px;color:#8f6e5e}
+.lp-scrap-postmark i{font:700 5px/1.15 Manrope,Arial,sans-serif;letter-spacing:.6px;text-align:center;font-style:normal}
+.lp-scrap-quote-pink{
+ grid-column:1;grid-row:2;position:relative;z-index:2;margin:8px 0 0;padding:24px 17px 18px;
+ background:linear-gradient(155deg,#e8bfc0,#dca8ab);color:#65434a;
+ box-shadow:0 8px 14px #59363c22;transform:rotate(2deg);
+ clip-path:polygon(2% 0,16% 2%,29% 0,42% 2%,57% 0,74% 2%,98% 0,100% 94%,85% 100%,71% 97%,54% 100%,40% 98%,23% 100%,0 96%);
+}
+.lp-scrap-quote-pink p{margin:0;font:italic 14px/1.75 'Playfair Display',Georgia,serif}
+.lp-scrap-hand-heart{display:block;font:31px/1 'Playfair Display',Georgia,serif;color:#a65f68;transform:rotate(-14deg);margin:0 0 8px 5px}
+.lp-scrap-quote-squiggle{display:block;text-align:right;color:#965d65;font:italic 12px 'Playfair Display',Georgia,serif;margin-top:8px}
+.lp-scrap-photo-main{
+ grid-column:2/4;grid-row:2/4;position:relative;z-index:2;align-self:start;
+ margin:10px 10px 0 5px;padding:11px 11px 35px;background:#efe4d0;
+ border:1px solid #a99173;box-shadow:0 15px 22px #523b2b2d;
+ transform:rotate(1.8deg);
+}
+.lp-scrap-main-image{appearance:none;display:block;width:100%;padding:0;margin:0;overflow:hidden;border:0;background:#cdb89b;cursor:pointer;text-align:center}
+.lp-scrap-main-image img{display:block;width:100%;height:clamp(235px,32vw,365px);max-width:none;object-fit:cover;filter:sepia(.12) saturate(.86) contrast(.98);transition:transform .55s ease}
+.lp-scrap-main-image:hover img{transform:scale(1.035)}
+.lp-scrap-main-image.lp-scrap-photo-empty{height:clamp(235px,32vw,365px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#896a53;background:linear-gradient(135deg,#e8d7b8,#b99b7d)}
+.lp-scrap-photo-empty span{font:56px 'Playfair Display',Georgia,serif}
+.lp-scrap-photo-empty small{font:700 8px Manrope,Arial,sans-serif;letter-spacing:1.8px}
+.lp-scrap-tape{position:absolute;z-index:6;top:-11px;width:87px;height:25px;background:#f0e4cbb5;border-left:1px solid #fff5de6e;border-right:1px solid #fff5de6e;box-shadow:0 2px 4px #4e39201a;backdrop-filter:blur(1px)}
+.lp-scrap-tape-left{left:13%;transform:rotate(-10deg)}
+.lp-scrap-tape-right{right:12%;transform:rotate(9deg)}
+.lp-scrap-photo-hearts{position:absolute;top:17px;right:21px;z-index:7;color:#8c5f5d;font:26px 'Playfair Display',serif;transform:rotate(10deg);text-shadow:0 1px #f4e8d3}
+.lp-scrap-photo-hearts i{font-style:normal;display:inline-block;font-size:19px;transform:translateY(9px) rotate(17deg)}
+.lp-scrap-photo-caption{position:absolute;left:14px;bottom:10px;color:#725747;font:italic 15px 'Playfair Display',Georgia,serif}
+.lp-scrap-center-quote{position:absolute;right:-11px;bottom:49px;z-index:8;width:min(205px,72%);padding:12px 13px;background:#f2e5cfed;color:#694f40;box-shadow:0 5px 11px #3f2b201f;font:italic 12px/1.6 'Playfair Display',Georgia,serif;transform:rotate(-3.5deg)}
+.lp-scrap-center-quote span{display:block;text-align:right;color:#b36c73;font-size:19px}
+.lp-scrap-letter-sheet{
+ grid-column:1/3;grid-row:3;position:relative;z-index:5;align-self:start;
+ min-width:0;margin:-24px -5px 0 4px;padding:clamp(27px,4vw,43px) clamp(20px,3.2vw,34px) 34px;
+ background:
+  linear-gradient(90deg,transparent 0 31px,#d98d8b68 32px,#d98d8b68 33px,transparent 34px),
+  repeating-linear-gradient(to bottom,#fff8e9 0,#fff8e9 28px,#d6c8b7 29px,#fff8e9 30px);
+ border:1px solid #e5d5be;box-shadow:0 14px 20px #59402d28;
+ transform:rotate(-1deg);
+ clip-path:polygon(0 1%,7% 0,15% 1%,26% 0,38% 1%,52% 0,66% 1%,78% 0,91% 1%,100% 0,99% 99%,86% 100%,73% 99%,59% 100%,44% 99%,29% 100%,14% 99%,0 100%);
+}
+.lp-scrap-sheet-tape{position:absolute;top:-8px;left:42%;width:95px;height:23px;background:#ead8b2c9;transform:rotate(-4deg);box-shadow:0 2px 4px #49322220}
+.lp-scrap-letter-eyebrow{font:700 7px Manrope,Arial,sans-serif;color:#9d7668;letter-spacing:1.7px;text-transform:uppercase;margin:0 0 10px;padding-left:15px}
+.lp-scrap-letter-title{position:relative;margin:0 0 16px;padding-left:15px;color:#634a40;font:italic 500 clamp(27px,3vw,39px)/1.13 'Playfair Display',Georgia,serif;letter-spacing:-.7px}
+.lp-scrap-letter-body{position:relative;z-index:2;padding:0 5px 0 15px;color:#5d5047;font:15px/1.95 'Playfair Display',Georgia,serif;white-space:normal;overflow-wrap:anywhere}
+.lp-scrap-letter-sign{position:relative;z-index:2;margin:20px 0 0 15px;color:#95666b;font:italic 21px 'Playfair Display',Georgia,serif;overflow-wrap:anywhere}
+.lp-scrap-letter-sign span{font-style:normal;color:#ad6e74}
+.lp-scrap-letter-doodle{position:absolute;right:17px;bottom:8px;color:#b7757a;font:30px 'Playfair Display',Georgia,serif;transform:rotate(14deg)}
+.lp-scrap-polaroid{
+ grid-column:1;grid-row:4;position:relative;z-index:6;align-self:start;
+ width:82%;margin:-8px 0 10px 13px;padding:7px 7px 26px;background:#f4ebdc;
+ box-shadow:0 10px 18px #4b362828;transform:rotate(-4deg);
+}
+.lp-scrap-polaroid-photo{display:block;appearance:none;width:100%;height:145px;padding:0;border:0;overflow:hidden;background:#d6c2a7;cursor:pointer}
+.lp-scrap-polaroid-photo img{display:block;width:100%;height:100%;object-fit:cover;filter:sepia(.17) saturate(.82)}
+.lp-scrap-polaroid-photo.lp-scrap-photo-empty{height:145px;display:grid;place-items:center;color:#9d7770;background:linear-gradient(145deg,#e4d2b8,#c4a889)}
+.lp-scrap-polaroid-caption{margin:8px 3px 0;color:#614e45;font:italic 17px 'Playfair Display',Georgia,serif}
+.lp-scrap-polaroid-caption span{color:#a65f65}
+.lp-scrap-polaroid-number{position:absolute;right:8px;bottom:7px;color:#a99a88;font:6px Manrope,Arial,sans-serif;letter-spacing:.7px}
+.lp-scrap-gold-pin{position:absolute;z-index:8;top:-9px;left:48%;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff0bd 0 8%,#d9ac50 33%,#93672c 72%,#745024 100%);box-shadow:1px 3px 5px #3928175c}
+.lp-scrap-note-bottom{
+ grid-column:3;grid-row:4;position:relative;z-index:3;align-self:start;
+ margin:5px 12px 0 0;padding:25px 14px 29px;background:
+ linear-gradient(90deg,transparent 0 22px,#d98d8b55 23px,#d98d8b55 24px,transparent 25px),
+ repeating-linear-gradient(to bottom,#f4e8d3 0,#f4e8d3 21px,#cdbca6 22px,#f4e8d3 23px);
+ box-shadow:0 8px 15px #4b34221f;transform:rotate(1.9deg);clip-path:polygon(0 0,100% 1%,99% 100%,0 98%);
+}
+.lp-scrap-bottom-quote{display:block;margin-left:12px;color:#6b554a;font:italic 12px/1.8 'Playfair Display',Georgia,serif}
+.lp-scrap-bottom-heart{display:block;text-align:right;color:#b26d71;font:27px 'Playfair Display',Georgia,serif;margin:4px 4px 0}
+.lp-scrap-bottom-lines{position:absolute;bottom:0;left:0;right:0;height:12px;background:repeating-linear-gradient(to bottom,transparent 0 5px,#bca99066 6px 7px)}
+.lp-scrap-note-hole{position:absolute;top:7px;left:13px;width:7px;height:7px;background:#ac8c69;border-radius:50%;box-shadow:inset 1px 1px 2px #60432866}
+.lp-scrap-flower-branch{position:absolute;z-index:7;pointer-events:none;display:flex;flex-direction:column;gap:2px;color:#f4e7d0;text-shadow:1px 2px 1px #765d4255}
+.lp-scrap-flower-branch i{font:24px/1 'Playfair Display',Georgia,serif;font-style:normal}
+.lp-scrap-flower-branch i:nth-child(2){margin-left:23px;font-size:18px}
+.lp-scrap-flower-branch i:nth-child(3){margin-left:7px;font-size:20px}
+.lp-scrap-flower-branch i:nth-child(4){margin-left:30px;font-size:14px}
+.lp-scrap-flower-branch b{position:absolute;top:18px;left:25px;width:2px;height:100px;background:#8c9270b8;transform:rotate(17deg);transform-origin:top}
+.lp-scrap-flower-left{left:2px;top:36%;transform:rotate(-17deg)}
+.lp-scrap-dried-rose{position:absolute;z-index:7;right:19px;bottom:95px;pointer-events:none;color:#b36c70;text-shadow:1px 2px 2px #573a3150;font:36px 'Playfair Display',Georgia,serif;transform:rotate(-20deg)}
+.lp-scrap-dried-rose i{position:absolute;top:26px;left:20px;color:#f0e0c9;font-size:21px;font-style:normal}
+.lp-scrap-dried-rose b{position:absolute;top:30px;left:20px;width:2px;height:75px;background:#7d8667;transform:rotate(25deg)}
+.lp-scrap-wax-seal{position:absolute;right:20px;bottom:20px;z-index:8;width:47px;height:47px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:radial-gradient(circle at 30% 25%,#c89c72,#875636 70%,#6a412f);box-shadow:0 4px 8px #46302150,inset 0 1px 4px #e2b98d88;color:#d9b994;font-size:18px;transform:rotate(12deg)}
+.lp-scrap-wax-seal small{position:absolute;bottom:5px;font:700 6px Manrope,Arial,sans-serif;letter-spacing:1px}
+.lp-scrap-newspaper{position:absolute;right:8px;top:32%;z-index:1;width:30px;max-height:190px;overflow:hidden;writing-mode:vertical-rl;color:#654d3c44;font:700 7px/1.5 Georgia,serif;letter-spacing:1px;pointer-events:none}
+@media(max-width:760px){
+ .lp-letter-section{padding:14px!important}
+ .lp-scrapbook-board{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto auto auto;gap:13px;padding:45px 21px 42px 15px;min-height:0}
+ .lp-scrap-note-top{grid-column:1;grid-row:1;margin-right:2px;padding:23px 12px 16px}
+ .lp-scrap-note-top p{font-size:11px;line-height:1.65}
+ .lp-scrap-you-me{grid-column:2;grid-row:1;min-height:66px;font-size:21px;margin-right:8px}
+ .lp-scrap-quote-pink{grid-column:1;grid-row:2;padding:18px 11px;margin-top:8px}
+ .lp-scrap-quote-pink p{font-size:12px;line-height:1.65}
+ .lp-scrap-photo-main{grid-column:2;grid-row:2/4;margin:9px 1px 0 0;padding:7px 7px 29px}
+ .lp-scrap-main-image img,.lp-scrap-main-image.lp-scrap-photo-empty{height:clamp(215px,63vw,320px)}
+ .lp-scrap-photo-caption{font-size:11px;left:8px}
+ .lp-scrap-photo-hearts{right:10px;top:11px;font-size:21px}
+ .lp-scrap-center-quote{right:-4px;bottom:41px;width:83%;font-size:10px;padding:8px}
+ .lp-scrap-tape{width:56px;height:19px;top:-8px}
+ .lp-scrap-letter-sheet{grid-column:1/3;grid-row:4;margin:0 0 0 1px;padding:28px 15px 31px;background:linear-gradient(90deg,transparent 0 22px,#d98d8b68 23px,#d98d8b68 24px,transparent 25px),repeating-linear-gradient(to bottom,#fff8e9 0,#fff8e9 27px,#d6c8b7 28px,#fff8e9 29px);transform:rotate(-.45deg)}
+ .lp-scrap-letter-eyebrow{font-size:6px;padding-left:9px}
+ .lp-scrap-letter-title{font-size:clamp(23px,6vw,31px);padding-left:9px;line-height:1.15}
+ .lp-scrap-letter-body{font-size:14px;line-height:1.9;padding-left:9px}
+ .lp-scrap-letter-sign{font-size:19px;margin-left:9px}
+ .lp-scrap-polaroid{grid-column:1;grid-row:5;width:90%;margin:0 0 6px 6px;padding:6px 6px 23px}
+ .lp-scrap-polaroid-photo,.lp-scrap-polaroid-photo.lp-scrap-photo-empty{height:clamp(110px,30vw,145px)}
+ .lp-scrap-polaroid-caption{font-size:14px}
+ .lp-scrap-note-bottom{grid-column:2;grid-row:5;margin:10px 5px 0 0;padding:23px 10px 24px}
+ .lp-scrap-bottom-quote{font-size:10px;line-height:1.7;margin-left:8px}
+ .lp-scrap-bottom-heart{font-size:22px}
+ .lp-scrap-flower-left{left:0;top:38%;transform:scale(.8) rotate(-17deg);transform-origin:left top}
+ .lp-scrap-flower-right{right:12px;bottom:81px;font-size:27px}
+ .lp-scrap-wax-seal{right:12px;bottom:13px;width:37px;height:37px;font-size:15px}
+ .lp-scrap-newspaper{display:none}
+ .lp-scrap-lace-right{width:13px;background-size:13px 13px}
+ .lp-scrap-lace-bottom{height:13px;background-size:13px 13px}
+}
+@media(max-width:390px){
+ .lp-scrapbook-board{padding-left:12px;padding-right:17px;gap:10px}
+ .lp-scrap-note-top{padding:21px 9px 14px}
+ .lp-scrap-note-top p{font-size:10px}
+ .lp-scrap-you-me{font-size:18px}
+ .lp-scrap-quote-pink{padding:16px 9px}
+ .lp-scrap-quote-pink p{font-size:11px}
+ .lp-scrap-photo-main{padding:6px 6px 27px}
+ .lp-scrap-letter-sheet{padding-left:12px;padding-right:10px}
+ .lp-scrap-letter-body{font-size:13px;line-height:1.85}
+ .lp-scrap-note-bottom{padding-left:8px;padding-right:8px}
+}
+
 </style>
 </head>
 <body>
@@ -851,7 +1039,11 @@ function longStoryContent(){
    state.photos.forEach(function(photo,index){if(photo){allPhotos+=recipientPolaroid(photo,index,false);photoCount++;}});
    html+='<section class="lp-section lp-gallery-section lp-reveal" id="lp-gallery"><div class="lp-section-marker">03 <span>·</span> Little pieces of us</div><div class="lp-gallery-heading"><div><div class="lp-eyebrow">'+esc(state.galleryEyebrow||"The moments")+'</div><h2 class="lp-section-title">'+esc(state.galleryTitle||"A pocketful of us.")+'</h2></div><p class="lp-section-copy">'+esc(state.galleryIntro||"Little moments, kept close.")+'</p></div><div class="lp-gallery-grid">'+(allPhotos||'<div class="lp-gallery-empty">A few more memories are waiting to be added. ♡</div>')+'</div><p class="lp-gallery-note">tap a photo to hold the memory a little closer <span>↗</span></p></section>';
   }else if(id===2&&state.showLetter){
-   html+='<section class="lp-section lp-letter-section lp-reveal" id="lp-letter"><div class="lp-section-marker">04 <span>·</span> Words from the heart</div><div class="lp-letter-wrap"><div class="lp-letter-side"><div class="lp-eyebrow">'+esc(state.letterEyebrow||"Something I want you to know")+'</div><h2 class="lp-section-title">'+esc(state.letterTitle||"In case I do not say it enough...")+'</h2><p class="lp-section-copy">'+esc(state.letterIntro||"A little note before the words.")+'</p><div class="lp-letter-doodle">♡</div></div><article class="lp-letter-paper"><div class="lp-letter-lines">'+(state.letter.trim()?br(state.letter):'Some people make the everyday feel a little more magical. You are one of those people. The laughs, the little check-ins, the ordinary moments that somehow become my favorites — I keep more of them than you know. I hope this little corner reminds you how much you mean to me. ♡')+'</div><div class="lp-letter-sign">Always, '+esc(state.sender.trim()||"someone who cares about you")+' <span>♡</span></div></article></div></section>';
+   var scrapMainPhoto=state.photos[0]?'<button type="button" class="lp-scrap-main-image" data-action="show-photo" data-photo-index="0" aria-label="Open the main memory"><img src="'+esc(state.photos[0])+'" alt="A favorite memory together" loading="lazy"></button>':'<div class="lp-scrap-main-image lp-scrap-photo-empty"><span>♡</span><small>YOUR FAVORITE MEMORY</small></div>';
+   var scrapPolaroidPhoto=state.photos[1]||state.photos[0]||"";
+   var scrapPolaroid=scrapPolaroidPhoto?'<button type="button" class="lp-scrap-polaroid-photo" data-action="show-photo" data-photo-index="'+(state.photos[1]?1:0)+'" aria-label="Open another memory"><img src="'+esc(scrapPolaroidPhoto)+'" alt="A little moment together" loading="lazy"></button>':'<div class="lp-scrap-polaroid-photo lp-scrap-photo-empty"><span>♡</span></div>';
+   var scrapLetter=state.letter.trim()?br(state.letter):'Some people make the everyday feel a little more magical. You are one of those people. The laughs, the little check-ins, the ordinary moments that somehow become my favorites — I keep more of them than you know. I hope this little corner reminds you how much you mean to me. ♡';
+   html+='<section class="lp-section lp-letter-section lp-reveal" id="lp-letter"><div class="lp-section-marker">03 <span>·</span> A letter, made by hand</div><div class="lp-scrapbook-board"><span class="lp-scrap-lace-right" aria-hidden="true"></span><span class="lp-scrap-lace-bottom" aria-hidden="true"></span><div class="lp-scrap-note-top"><span class="lp-scrap-paper-clip" aria-hidden="true"></span><p>True love works in mysterious and unexpected ways. Sometimes two hearts find the chapter they never knew they needed. <span class="lp-scrap-note-heart">♡</span></p><span class="lp-scrap-note-tiny">A NOTE TO KEEP</span></div><div class="lp-scrap-you-me"><span class="lp-scrap-postmark" aria-hidden="true">✳<i>LOVE<br>POST</i></span><span>You + Me</span><b>♡</b></div><div class="lp-scrap-quote-pink"><span class="lp-scrap-hand-heart">♡</span><p>We&rsquo;re a mess, you and I, but the truth is you captivate me in ways no soul ever will.</p><span class="lp-scrap-quote-squiggle">~ &nbsp; &nbsp; ~</span></div><div class="lp-scrap-photo-main"><span class="lp-scrap-tape lp-scrap-tape-left" aria-hidden="true"></span><span class="lp-scrap-tape lp-scrap-tape-right" aria-hidden="true"></span>'+scrapMainPhoto+'<span class="lp-scrap-photo-hearts" aria-hidden="true">♡ <i>♡</i></span><div class="lp-scrap-photo-caption">our little piece of forever</div><div class="lp-scrap-center-quote">“The universe conspired to help me find you.” <span>♡</span></div></div><article class="lp-scrap-letter-sheet"><span class="lp-scrap-sheet-tape" aria-hidden="true"></span><div class="lp-scrap-letter-eyebrow">'+esc(state.letterEyebrow||"Words I want you to keep")+'</div><h2 class="lp-scrap-letter-title">'+esc(state.letterTitle||"In case I do not say it enough...")+'</h2><div class="lp-scrap-letter-body">'+scrapLetter+'</div><div class="lp-scrap-letter-sign">Always, '+esc(state.sender.trim()||"someone who cares about you")+' <span>♡</span></div><span class="lp-scrap-letter-doodle" aria-hidden="true">♡</span></article><div class="lp-scrap-polaroid"><span class="lp-scrap-gold-pin" aria-hidden="true"></span>'+scrapPolaroid+'<div class="lp-scrap-polaroid-caption">this is us <span>♡</span></div><span class="lp-scrap-polaroid-number">MEMORY No. 01</span></div><div class="lp-scrap-note-bottom"><span class="lp-scrap-note-hole" aria-hidden="true"></span><span class="lp-scrap-bottom-quote">The first time I saw you, my heart whispered, “That&rsquo;s the one.” With every kiss, I fall deeper in love.</span><span class="lp-scrap-bottom-heart">♡</span><span class="lp-scrap-bottom-lines" aria-hidden="true"></span></div><div class="lp-scrap-flower-branch lp-scrap-flower-left" aria-hidden="true"><i>✿</i><i>❀</i><i>✿</i><i>✧</i><b></b></div><div class="lp-scrap-dried-rose lp-scrap-flower-right" aria-hidden="true"><span>✿</span><i>❀</i><b></b></div><div class="lp-scrap-wax-seal" aria-hidden="true">✿<small>L</small></div><div class="lp-scrap-newspaper" aria-hidden="true">LOVE · MEMORY · ALWAYS · LOVE · MEMORY · ALWAYS · LOVE · MEMORY · ALWAYS</div></div></section>';
   }else if(id===3&&state.showMusic){
    html+='<section class="lp-section lp-music-section lp-reveal" id="lp-music"><div class="lp-section-marker">05 <span>·</span> The soundtrack</div><div class="lp-music-layout"><div class="lp-music-copy"><div class="lp-eyebrow">'+esc(state.musicEyebrow||"Press play when you are ready")+'</div><h2 class="lp-section-title">'+esc(state.musicTitle||"Some feelings have a soundtrack.")+'</h2><p class="lp-section-copy">'+esc(state.musicIntro||"A song can bring an entire moment back.")+'</p><div class="lp-music-heart">♫</div></div><div class="lp-music-player">'+(musicMarkup()||'<div class="lp-no-song"><div class="lp-no-song-vinyl">♫</div><h3>A song, just for you.</h3><p>A favorite song can turn a memory into a place you can visit again.</p></div>')+'<div class="lp-music-services">YouTube <span>·</span> Spotify <span>·</span> Apple Music</div></div></div></section>';
   }else if(id===5&&state.showEnding){
