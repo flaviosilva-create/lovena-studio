@@ -752,6 +752,155 @@ body.lovena-overlay-open{overflow:hidden}
 @media(max-width:640px){.studio-letter-photo-picker{padding:13px}.studio-letter-photo-picker-head h3{font-size:19px}.studio-letter-photo-upload-grid{gap:8px}.studio-letter-photo-upload-card{padding:6px}.studio-letter-photo-upload-zone{min-height:145px}.studio-letter-photo-empty-icon{width:35px;height:35px;font-size:22px}.studio-letter-photo-upload-zone strong{font-size:10px}.studio-letter-photo-upload-types{font-size:7px}.studio-letter-photo-hint{font-size:9px}}
 
 
+
+/* Love, Everywhere — editorial photography mosaic */
+.love-everywhere{
+  overflow:hidden;
+  background:linear-gradient(180deg,#fbf8f5 0%,#f6f0ec 100%);
+  border-top:1px solid #e8dfda;
+  border-bottom:1px solid #e8dfda;
+}
+.love-world-heading{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 245px;
+  align-items:end;
+  gap:clamp(28px,6vw,82px);
+  margin-bottom:42px;
+}
+.love-world-heading-copy{max-width:730px;text-align:left}
+.love-world-heading .kicker{color:#956c74}
+.love-world-heading h2{
+  margin:15px 0 18px;
+  font:500 clamp(48px,7vw,82px)/.99 'Playfair Display',Georgia,serif;
+  letter-spacing:-3.2px;
+  color:#262124;
+}
+.love-world-heading h2 em{font-weight:500;color:#986e78}
+.love-world-sub{max-width:620px;margin:0;color:#71686b;font:14px/1.9 Manrope,Arial,sans-serif}
+.love-world-note{
+  position:relative;
+  padding:21px 22px 19px;
+  border:1px solid #dfd1ca;
+  background:#fffcf8;
+  text-align:left;
+  transform:rotate(2deg);
+  box-shadow:0 15px 35px #49312c0c;
+}
+.love-world-note:before{
+  content:"";position:absolute;inset:6px;border:1px dashed #d7c0bc;pointer-events:none
+}
+.love-world-note-mark{position:relative;display:block;margin-bottom:10px;color:#a56e78;font:32px/1 'Playfair Display',Georgia,serif}
+.love-world-note-label{position:relative;display:block;color:#a18b8d;font:800 8px/1.5 Manrope,Arial,sans-serif;letter-spacing:1.8px}
+.love-world-note p{position:relative;margin:10px 0 17px;color:#514348;font:italic 22px/1.25 'Playfair Display',Georgia,serif}
+.love-world-note p em{color:#986e78;font-weight:500}
+.love-world-note a{position:relative;display:inline-flex;gap:8px;align-items:center;color:#865e67;font:800 10px Manrope,Arial,sans-serif;text-decoration:none;border-bottom:1px solid #d8bfc2;padding-bottom:4px}
+.love-world-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-rows:clamp(145px,17vw,215px) clamp(145px,17vw,215px) clamp(135px,15vw,190px) clamp(145px,17vw,215px);
+  grid-template-areas:
+    "night outdoor outdoor beach"
+    "night museum kiss beach"
+    "laugh laugh reading reading"
+    "city city outdoors outdoors";
+  gap:12px;
+  position:relative;
+}
+.love-world-photo{
+  position:relative;
+  min-width:0;
+  min-height:0;
+  margin:0;
+  overflow:hidden;
+  isolation:isolate;
+  background:#e6d8d1;
+  border:1px solid #ffffffb3;
+  box-shadow:0 8px 23px #402d2c0d;
+}
+.love-world-photo:after{
+  content:"";position:absolute;inset:35% 0 0;z-index:1;
+  background:linear-gradient(180deg,transparent 0%,#1913130d 22%,#191313a6 100%);
+  pointer-events:none;
+}
+.love-world-photo img{
+  position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;
+  object-fit:cover;
+  filter:saturate(.83) contrast(.99);
+  transition:transform .65s cubic-bezier(.2,.7,.2,1),filter .5s ease;
+}
+.love-world-photo:hover img{transform:scale(1.045);filter:saturate(1) contrast(1.02)}
+.love-world-photo figcaption{
+  position:absolute;z-index:2;left:clamp(11px,1.5vw,21px);right:clamp(11px,1.5vw,21px);bottom:clamp(11px,1.5vw,20px);
+  display:flex;flex-direction:column;gap:6px;color:#fff;text-align:left;
+  text-shadow:0 1px 12px #24181865;
+}
+.love-world-photo figcaption span{font:800 7px/1.35 Manrope,Arial,sans-serif;letter-spacing:1.6px;color:#f7e9e5d9}
+.love-world-photo figcaption strong{max-width:300px;font:500 clamp(14px,1.6vw,21px)/1.18 'Playfair Display',Georgia,serif}
+.love-world-night{grid-area:night}
+.love-world-outdoor{grid-area:outdoor}
+.love-world-beach{grid-area:beach}
+.love-world-museum{grid-area:museum}
+.love-world-kiss{grid-area:kiss}
+.love-world-laugh{grid-area:laugh}
+.love-world-reading{grid-area:reading}
+.love-world-city{grid-area:city}
+.love-world-outdoors{grid-area:outdoors}
+.love-world-bottomline{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  margin-top:28px;padding-top:19px;border-top:1px solid #dfd4d0;
+}
+.love-world-bottomline>span{font:800 8px/1.8 Manrope,Arial,sans-serif;letter-spacing:1.6px;color:#9a8588}
+.love-world-bottomline i{font-style:normal;color:#bb8588;font-size:10px;margin:0 5px}
+.love-world-bottomline p{margin:0;color:#73676a;font:italic 14px 'Playfair Display',Georgia,serif}
+.love-world-bottomline a{color:#8b616b;text-decoration:none;font:800 10px Manrope,Arial,sans-serif;margin-left:7px;white-space:nowrap}
+.love-world-credit{margin:20px 0 0;text-align:right;color:#a09396;font:9px/1.6 Manrope,Arial,sans-serif}
+.love-world-credit a{color:#8c7379;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:850px){
+  .love-world-heading{grid-template-columns:minmax(0,1fr) 205px;gap:25px}
+  .love-world-heading h2{font-size:clamp(46px,8vw,66px);letter-spacing:-2.3px}
+  .love-world-grid{grid-template-rows:clamp(145px,25vw,195px) clamp(145px,25vw,195px) clamp(135px,22vw,175px) clamp(145px,25vw,195px);gap:9px}
+  .love-world-photo figcaption strong{font-size:clamp(13px,2.2vw,18px)}
+  .love-world-bottomline{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:600px){
+  .love-everywhere{padding:58px 15px}
+  .love-world-heading{grid-template-columns:1fr;gap:19px;margin-bottom:25px}
+  .love-world-heading h2{font-size:clamp(45px,13vw,64px);letter-spacing:-2.2px;margin:12px 0}
+  .love-world-sub{font-size:12px;line-height:1.85}
+  .love-world-note{width:min(245px,78%);justify-self:end;padding:16px 17px}
+  .love-world-note-mark{font-size:26px}
+  .love-world-note p{font-size:18px}
+  .love-world-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-rows:190px 125px 190px 155px 170px 160px;
+    grid-template-areas:
+      "night outdoor"
+      "night beach"
+      "museum beach"
+      "kiss laugh"
+      "reading reading"
+      "city outdoors";
+    gap:8px;
+  }
+  .love-world-photo figcaption{left:10px;right:9px;bottom:10px;gap:4px}
+  .love-world-photo figcaption span{font-size:6px;letter-spacing:1px}
+  .love-world-photo figcaption strong{font-size:14px;line-height:1.15}
+  .love-world-reading figcaption strong,.love-world-city figcaption strong{font-size:16px}
+  .love-world-bottomline{margin-top:21px;padding-top:15px;gap:9px}
+  .love-world-bottomline>span{font-size:7px;letter-spacing:1px}
+  .love-world-bottomline i{margin:0 2px}
+  .love-world-bottomline p{font-size:13px;line-height:1.6}
+  .love-world-credit{text-align:left}
+}
+@media(max-width:380px){
+  .love-world-grid{grid-template-rows:170px 112px 170px 145px 155px 145px}
+  .love-world-photo figcaption strong{font-size:12px}
+  .love-world-reading figcaption strong,.love-world-city figcaption strong{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .love-world-photo img{transition:none}
+}
+
 </style>
 </head>
 <body>
@@ -771,7 +920,7 @@ body.lovena-overlay-open{overflow:hidden}
   </div>
   <span class="global-tagline">Connecting hearts, creating smiles.</span>
 </div>
-<header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#inside">What's inside</a><a class="navcta" href="#create">Create your story ↗</a></nav></header>
+<header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#love-world">Love, everywhere</a><a href="#inside">What's inside</a><a class="navcta" href="#create">Create your story ↗</a></nav></header>
 <main>
 <section class="hero editorial-hero geo-grid">
 <div><div class="eyebrow"><span class="dot"></span> A little piece of your story</div><h1>Some feelings deserve <em>more than a text.</em></h1><p class="lead">Turn your memories, photos, and words into a personal digital experience they'll want to open again and again.</p><div class="heroactions"><a class="primary" href="#create">Create your love story <span>↗</span></a><a class="secondary" href="#how">See how it works ↓</a></div><div class="micro">Made with love, just for your person. ♡</div></div>
@@ -781,6 +930,65 @@ body.lovena-overlay-open{overflow:hidden}
 <div class="polaroid p3"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1755189551231-1b41631fd2b2?auto=format&amp;fit=crop&amp;fm=jpg&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;ixlib=rb-4.1.0&amp;q=60&amp;w=800" alt="A couple walking hand in hand outdoors" loading="lazy" width="700" height="600"></div><small>little moments, forever</small></div><div class="sticker">you feel like home<span>✦ a note from the heart</span></div></div>
 </section>
 <section class="section center" id="how"><div class="section-inner"><div class="kicker">Thoughtful by design</div><h2>More than a gift. A feeling.</h2><p class="sub">The best gifts aren't always things. Sometimes they're the moments, words, and tiny details that say, “I know you.”</p><div class="features"><article class="feature"><div class="num">01 / Collect</div><h3>Your favorite memories</h3><p>Add the photos, little stories, dates, and details that only the two of you understand.</p></article><article class="feature"><div class="num">02 / Personalize</div><h3>Make it feel like you</h3><p>Write a letter, leave little notes, and set the mood with a song that means something.</p></article><article class="feature"><div class="num">03 / Share</div><h3>Give them a moment</h3><p>Publish your private experience and send one personal link. Their surprise is just a tap away.</p></article></div></div></section>
+<section class="section love-everywhere" id="love-world" aria-labelledby="love-world-title">
+  <div class="section-inner">
+    <div class="love-world-heading">
+      <div class="love-world-heading-copy">
+        <div class="kicker">Different lives. Little moments. Big feelings.</div>
+        <h2 id="love-world-title">Love, <em>Everywhere.</em></h2>
+        <p class="love-world-sub">A late-night coffee, a slow morning, the last light on the beach. Love lives in little moments like these — and your story deserves a place to keep them.</p>
+      </div>
+      <aside class="love-world-note" aria-label="A note about love">
+        <span class="love-world-note-mark">♡</span>
+        <span class="love-world-note-label">A LITTLE REMINDER</span>
+        <p>The ordinary becomes extraordinary when it’s <em>yours.</em></p>
+        <a href="#create">Make your story <span aria-hidden="true">↗</span></a>
+      </aside>
+    </div>
+    <div class="love-world-grid" aria-label="Editorial collage of couples sharing everyday moments">
+      <figure class="love-world-photo love-world-night">
+        <img src="https://images.unsplash.com/photo-1754924585038-a21f34d1d1ad?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1100" alt="A couple sharing a quiet conversation at a café table at night" loading="lazy" width="1100" height="1400">
+        <figcaption><span>01 / AFTER HOURS</span><strong>One more coffee. No hurry.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-outdoor">
+        <img src="https://images.unsplash.com/photo-1755810922274-7cd40d0fc8df?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1100" alt="A couple enjoying coffee together at an outdoor café in daylight" loading="lazy" width="1100" height="760">
+        <figcaption><span>02 / SUNLIT TABLES</span><strong>Just us, catching up.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-beach">
+        <img src="https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1100" alt="A couple embracing at the edge of the sea as the sun sets" loading="lazy" width="1100" height="1400">
+        <figcaption><span>03 / GOLDEN HOUR</span><strong>Stay for one more sunset.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-museum">
+        <img src="https://images.unsplash.com/photo-1779275472664-cea61ebaa5c9?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1000" alt="A couple standing close together while looking at a painting in an art museum" loading="lazy" width="1000" height="1050">
+        <figcaption><span>04 / ART &amp; US</span><strong>Finding beauty together.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-kiss">
+        <img src="https://images.unsplash.com/photo-1766202506947-afdda716a8c1?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1100" alt="An intimate black-and-white photograph of a couple sharing a kiss" loading="lazy" width="1100" height="1050">
+        <figcaption><span>05 / NO FILTER NEEDED</span><strong>A moment that says it all.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-laugh">
+        <img src="https://images.unsplash.com/photo-1466979939565-131c4b39a51b?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1100" alt="A couple laughing together during a relaxed daytime date" loading="lazy" width="1100" height="800">
+        <figcaption><span>06 / THE INSIDE JOKE</span><strong>Laughing at nothing. Everything.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-reading">
+        <img src="https://images.unsplash.com/photo-1514480941181-059274803e24?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1100" alt="A couple sharing a book together in a quiet, cozy moment" loading="lazy" width="1100" height="800">
+        <figcaption><span>07 / SLOW MORNINGS</span><strong>Being close is enough.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-city">
+        <img src="https://images.unsplash.com/photo-1714355050838-e5055f8d623a?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1600" alt="A couple walking together through a city street in São Paulo, Brazil" loading="lazy" width="1600" height="750">
+        <figcaption><span>08 / OUT IN THE WORLD</span><strong>Every place feels different with you.</strong></figcaption>
+      </figure>
+      <figure class="love-world-photo love-world-outdoors">
+        <img src="https://images.unsplash.com/photo-1679780195397-6755f7202fa6?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=1100" alt="A couple sitting together outdoors on a relaxed day in nature" loading="lazy" width="1100" height="950">
+        <figcaption><span>09 / A QUIET KIND OF JOY</span><strong>Our own little world.</strong></figcaption>
+      </figure>
+    </div>
+    <div class="love-world-bottomline">
+      <span>CAFÉS <i>✳</i> COASTLINES <i>✳</i> CITY STROLLS <i>✳</i> QUIET MORNINGS</span>
+      <p>Different stories, each worth keeping. <a href="#create">Create yours <span aria-hidden="true">↗</span></a></p>
+    </div>
+    <p class="love-world-credit">Editorial inspiration · Photography via <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a></p>
+  </div>
 <section class="section showcase" id="inside"><div class="section-inner showgrid"><div class="note"><div class="tiny">A letter, just for you</div><h3>In case I don't say it enough...</h3><p>“Somehow, the ordinary days became my favorite ones. The silly jokes, the long talks, the little moments I wish I could pause. If I could keep one thing forever, it would be the feeling of being right there beside you.”</p><div class="signature">always yours ♡</div></div><div class="showcopy"><div class="kicker">The little details matter</div><h2>Made of memories. Finished with heart.</h2><p>Build a keepsake that feels warm, personal, and unmistakably yours. No templates that feel like everyone else's. Just the moments you choose to share.</p><div class="pillrow"><span class="pill">♡ Photo memories</span><span class="pill">✎ Personal letters</span><span class="pill">♫ Music mood</span><span class="pill">✳ Private link</span></div></div></div></section>
 <section class="section center" id="create"><div class="section-inner"><div class="kicker">Your story, your way</div><h2>Make something they'll keep.</h2><p class="sub">A thoughtful digital surprise for anniversaries, birthdays, long-distance love, or simply because.</p><div class="pricing"><div class="oldprice">$19.99</div><div class="price">$9.99 <small>USD</small></div><div class="pricecaption">One-time purchase · Your personal digital keepsake</div><ul class="checklist"><li>A personal, shareable experience</li><li>Photos, notes, and your own words</li><li>A private link to send to your person</li><li>Designed to feel special on mobile</li></ul><button class="primary" id="createBtn">Start creating your story ↗</button><p class="micro">A preview of Lovena Studio — checkout and publishing are not connected yet.</p></div></div></section>
 </main>
