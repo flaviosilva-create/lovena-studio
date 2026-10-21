@@ -1163,6 +1163,97 @@ html,body{background:#17110f!important}
  .scrapbook-signature{font-size:12px;right:8px}
 }
 
+
+/* Lovena design system — cohesive editorial warmth, legibility and conversion */
+:root{--paper:#fbf7f2;--ink:#29201e;--muted:#796d68;--pink:#b87979;--line:#e9ddd5;--white:#fffdfb;--green:#f3ebe5;--shadow:0 22px 65px rgba(55,31,25,.09);--lovena-rose:#d6a39a;--lovena-cream:#fbf4eb;--lovena-wine:#563631}
+html{scroll-behavior:smooth;scroll-padding-top:28px}
+body{background-color:var(--paper);background-image:linear-gradient(to right,rgba(110,76,64,.035) 1px,transparent 1px),linear-gradient(to bottom,rgba(110,76,64,.035) 1px,transparent 1px);background-size:84px 84px;color:var(--ink)}
+.nav{border-bottom-color:#d9c9bf;background:rgba(251,247,242,.9);backdrop-filter:blur(16px);position:relative;z-index:30}
+.nav .brand{color:#3a2825;font-size:30px;letter-spacing:-1.5px}
+.navlinks{gap:clamp(12px,2vw,28px);color:#6c5c57}
+.navcta,.primary{background:var(--lovena-wine);border-color:var(--lovena-wine);box-shadow:0 8px 22px #56363118;transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
+.navcta:hover,.primary:hover{background:#704943;border-color:#704943;box-shadow:0 12px 26px #56363126;transform:translateY(-2px)}
+.hero.editorial-hero{background:#302421!important;border-radius:0 0 28px 28px;overflow:hidden}
+.hero.editorial-hero:before{background:linear-gradient(180deg,#20171525 0%,transparent 34%,#1d1412a8 100%)!important}
+.hero .eyebrow{color:#fff0e8!important;letter-spacing:2px!important;font-size:10px!important;text-transform:uppercase}
+.hero h1{color:#fffaf6!important;text-wrap:balance}
+.hero h1 em{color:#e8b9ad!important}
+.hero .lead{display:block!important;color:#f6e9e2!important;max-width:430px;font-size:clamp(14px,1.2vw,17px);line-height:1.8}
+.hero .primary{background:#e4b4a8!important;border-color:#e4b4a8!important;color:#30211e!important;box-shadow:0 10px 26px #0002!important}
+.hero .primary:hover{background:#f0c9bf!important;border-color:#f0c9bf!important}
+.hero .secondary{color:#fff6f0!important}
+.hero .micro{color:#ffffffa8!important}
+.hero .art{background:#3a2a25!important}
+.hero .polaroid .photo-img{filter:saturate(.88) contrast(1.02) sepia(.06)!important}
+.hero .sticker{box-shadow:0 10px 24px #170d0b35!important}
+.section{position:relative}
+.section.center{padding:clamp(76px,9vw,120px) 24px}
+.section-inner{max-width:1120px}
+.kicker,.num,.tiny,.love-world-note-label{letter-spacing:1.7px!important}
+.kicker{color:#a56e69!important;font-size:10px!important}
+.section h2,.showcopy h2,.love-world-heading h2{color:#332522;letter-spacing:-1.3px;text-wrap:balance}
+.section .sub{color:#786963;max-width:620px;margin-left:auto;margin-right:auto;line-height:1.8}
+.features{gap:18px!important;margin-top:42px!important}
+.feature{background:#fffaf5!important;border:1px solid #e9d9ce!important;border-radius:18px!important;padding:28px!important;box-shadow:0 8px 28px #4c2d2010;transition:transform .25s ease,box-shadow .25s ease}
+.feature:hover{transform:translateY(-4px);box-shadow:0 18px 38px #4c2d2017}
+.feature .num{color:#b37a73!important}
+.feature h3{color:#3a2a26!important;line-height:1.35}
+.feature p{color:#786a64!important;line-height:1.8}
+.love-everywhere{background:#efe4da!important;color:#352622!important;padding:clamp(76px,9vw,116px) 24px!important}
+.love-world-heading{gap:40px!important;align-items:end!important}
+.love-world-heading h2{font-size:clamp(42px,6.3vw,76px)!important;line-height:1.03!important}
+.love-world-heading h2 em{color:#a56b67!important}
+.love-world-sub{color:#6e5a53!important;line-height:1.8!important}
+.love-world-note{background:#fbf5ee!important;border:1px solid #e0cfc3!important;border-radius:18px!important;box-shadow:0 15px 40px #57392b0c!important}
+.love-world-note-mark{color:#b77979!important}
+.love-world-note a{color:#8d5550!important}
+.love-world-photo{border-radius:12px!important;overflow:hidden!important;box-shadow:0 16px 36px #38231d1c!important}
+.love-world-photo:after{background:linear-gradient(180deg,transparent 45%,#1b100dbd 100%)!important}
+.love-world-photo figcaption{color:#fff9f4!important}
+.showcase{padding:clamp(76px,9vw,120px) 24px!important;background:#fbf7f2!important}
+.showgrid{gap:clamp(32px,7vw,88px)!important;align-items:center!important}
+.note{background:#efe1d5!important;color:#402d28!important;border:1px solid #e2cec0!important;border-radius:4px 22px 4px 22px!important;box-shadow:0 22px 50px #563a2c12!important}
+.note h3{font-family:'Playfair Display',serif!important;color:#3e2924!important;font-size:clamp(28px,3.5vw,42px)!important;line-height:1.14!important}
+.note p{color:#6b5249!important;line-height:1.9!important}
+.note .signature{color:#9c625e!important}
+.showcopy>p{color:#75665f!important;line-height:1.9!important}
+.pill{background:#fffaf5!important;border-color:#e8d8cd!important;color:#76564d!important;border-radius:999px!important}
+#create{background:#f0e5dc!important}
+#create .pricing{background:#fffaf5!important;border:1px solid #e4d2c6!important;border-radius:24px!important;box-shadow:0 24px 65px #50332712!important;padding:clamp(26px,4vw,42px)!important}
+#create .oldprice{color:#a6968f!important}
+#create .price{color:#57342f!important;font-family:'Playfair Display',serif!important;font-size:clamp(46px,6vw,64px)!important;letter-spacing:-2px!important}
+#create .price small{font:600 12px Manrope,sans-serif!important;color:#8a7169!important;letter-spacing:1px}
+#create .pricecaption{color:#78655e!important}
+#create .checklist{margin:24px auto!important;max-width:320px;text-align:left!important;line-height:2!important;color:#5d4b45!important}
+#create .checklist li::marker{color:#b77870}
+#create .primary{width:100%;min-height:52px;background:#68413b!important;border-color:#68413b!important;color:#fff!important}
+#create .primary:hover{background:#80534b!important}
+#create .micro{max-width:350px;margin:16px auto 0!important;color:#887870!important;line-height:1.6!important}
+.foot{background:#2d211e!important;color:#eadbd2!important;border-top:0!important;gap:18px!important;padding:30px 24px!important}
+.foot .brand{color:#fff5ed!important}
+.foot .photo-credit{color:#bfa9a0!important}
+.foot a{color:#f1c4b6!important}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #c88e83!important;outline-offset:4px!important}
+@media(max-width:760px){
+ body{background-size:48px 48px}
+ .nav{padding:0 18px!important}
+ .navlinks{gap:12px}
+ .hero.editorial-hero{border-radius:0 0 18px 18px!important}
+ .hero .lead{max-width:330px!important;font-size:14px!important;line-height:1.6!important}
+ .section.center{padding:76px 20px}
+ .features{grid-template-columns:1fr!important;gap:12px!important}
+ .feature{padding:23px!important}
+ .love-everywhere{padding:74px 20px!important}
+ .love-world-heading{display:grid!important;gap:22px!important}
+ .love-world-note{max-width:none!important}
+ .showcase{padding:72px 20px!important}
+ .showgrid{grid-template-columns:1fr!important;gap:28px!important}
+ .note{padding:28px!important}
+ #create .pricing{border-radius:20px!important}
+ .foot{flex-direction:column!important;align-items:flex-start!important;text-align:left!important}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
 </style>
 </head>
 <body>
@@ -1185,26 +1276,26 @@ html,body{background:#17110f!important}
 <header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#love-world">Love, everywhere</a><a href="#inside">What's inside</a><label class="language-picker" aria-label="Choose website language"><span class="language-picker-label">Language</span><span class="gtranslate_wrapper" aria-label="Select language"></span></label><details class="scrapbook-menu"><summary aria-label="Abrir menu"><span></span><span></span><span></span></summary><div class="scrapbook-menu-panel"><a href="#how">Como funciona</a><a href="#love-world">Love, everywhere</a><a href="#inside">O que inclui</a><a href="#create">Criar meu presente ↗</a></div></details><a class="navcta" href="#create">Create your story ↗</a></nav></header>
 <main>
 <section class="hero editorial-hero geo-grid">
-<div><div class="eyebrow"><span class="dot"></span> A little piece of your story</div><h1>Transforme seus sentimentos<br><em>em um presente digital único.</em></h1><p class="lead">Uma lembrança feita com fotos, palavras e música — só de vocês.</p><div class="heroactions"><a class="primary" href="#create">Criar meu presente <span>→</span></a><a class="secondary" href="#how">Como funciona ↓</a></div><div class="micro">Feito com amor, só para a sua pessoa. ♡</div></div>
+<div><div class="eyebrow"><span class="dot"></span> Um presente feito só para vocês</div><h1>Transforme seus sentimentos<br><em>em um presente digital único.</em></h1><p class="lead">Uma lembrança feita com fotos, palavras e música — só de vocês.</p><div class="heroactions"><a class="primary" href="#create">Criar meu presente <span>→</span></a><a class="secondary" href="#how">Como funciona ↓</a></div><div class="micro">Feito com amor, só para a sua pessoa. ♡</div></div>
 <div class="art" aria-label="A collage of romantic keepsakes"><div class="wash"></div><img class="hero-photo-main" src="https://images.unsplash.com/photo-1782786398021-c1094444c9d7?auto=format&amp;fit=crop&amp;fm=jpg&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;ixlib=rb-4.1.0&amp;q=60&amp;w=1400" alt="A couple embracing outdoors in warm sunlight" width="1024" height="1280" fetchpriority="high"><div class="scribble">love you</div>
 <div class="polaroid p1"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple embracing by the sea at sunset" loading="lazy" width="700" height="900"></div><small>that summer evening</small></div>
 <div class="polaroid p2"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1545113431-d301296b14cc?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple sharing a romantic kiss outdoors" loading="lazy" width="700" height="900"></div><small>my favorite person</small></div>
 <div class="polaroid p3"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1466979939565-131c4b39a51b?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple laughing together outdoors" loading="lazy" width="700" height="600"></div><small>little moments, forever</small></div><div class="sticker">my favorite person<span>♡ always &amp; forever</span></div><div class="polaroid p4"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1782786661330-33cfd2d0e05d?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple holding hands at sunset" loading="lazy" width="700" height="850"></div><small>golden hour</small></div><div class="polaroid p5"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1679780195397-6755f7202fa6?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple close together outdoors surrounded by greenery" loading="lazy" width="700" height="850"></div><small>love you ALWAYS</small></div><div class="polaroid p6"><div class="photo real-photo"><img class="photo-img" src="https://images.unsplash.com/photo-1754924585038-a21f34d1d1ad?auto=format&amp;fit=crop&amp;fm=jpg&amp;q=82&amp;w=900" alt="A couple sharing an intimate moment in warm evening light" loading="lazy" width="700" height="850"></div><small>real moments ♡</small></div><div class="camera-sticker" aria-hidden="true"><svg viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 11h11l4-6h18l4 6h13a3 3 0 0 1 3 3v19a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V14a3 3 0 0 1 3-3Z" fill="#282321" stroke="#fff" stroke-width="2"/><circle cx="33" cy="22" r="10" fill="#f7f0e6" stroke="#111" stroke-width="3"/><circle cx="33" cy="22" r="5" fill="#35302e"/><circle cx="50" cy="16" r="2" fill="#f7f0e6"/><path d="M9 14h9" stroke="#f7f0e6" stroke-width="2"/></svg></div></div><a class="scrapbook-track" href="https://open.spotify.com/search/Better%20Together%20Jack%20Johnson" target="_blank" rel="noopener noreferrer" aria-label="Buscar Better Together de Jack Johnson no Spotify"><span class="scrapbook-track-art">♫</span><span class="scrapbook-track-copy"><strong>Better Together</strong><small>Jack Johnson</small></span><span class="scrapbook-track-wave" aria-hidden="true">▮▯▮▮▯</span></a><div class="scrapbook-dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><div class="scrapbook-signature">Real moments<small>Real love</small><small>Lovena ♡</small></div>
 </section>
-<section class="section center" id="how"><div class="section-inner"><div class="kicker">Thoughtful by design</div><h2>More than a gift. A feeling.</h2><p class="sub">The best gifts aren't always things. Sometimes they're the moments, words, and tiny details that say, “I know you.”</p><div class="features"><article class="feature"><div class="num">01 / Collect</div><h3>Your favorite memories</h3><p>Add the photos, little stories, dates, and details that only the two of you understand.</p></article><article class="feature"><div class="num">02 / Personalize</div><h3>Make it feel like you</h3><p>Write a letter, leave little notes, and set the mood with a song that means something.</p></article><article class="feature"><div class="num">03 / Share</div><h3>Give them a moment</h3><p>Publish your private experience and send one personal link. Their surprise is just a tap away.</p></article></div></div></section>
+<section class="section center" id="how"><div class="section-inner"><div class="kicker">Pensado com carinho</div><h2>Mais que um presente. Um sentimento.</h2><p class="sub">Os melhores presentes nem sempre vêm em uma caixa. Às vezes, são as memórias, as palavras e os pequenos detalhes que dizem: “eu conheço você”.</p><div class="features"><article class="feature"><div class="num">01 / Reúna</div><h3>As memórias favoritas</h3><p>Escolha fotos, datas, histórias e aqueles detalhes que só vocês dois entendem.</p></article><article class="feature"><div class="num">02 / Personalize</div><h3>Deixe com a cara de vocês</h3><p>Escreva uma carta, deixe recadinhos e escolha uma música que tenha significado.</p></article><article class="feature"><div class="num">03 / Surpreenda</div><h3>Entregue uma emoção</h3><p>Prepare a experiência e compartilhe o link com a pessoa especial. A surpresa começa com um toque.</p></article></div></div></section>
 <section class="section love-everywhere" id="love-world" aria-labelledby="love-world-title">
   <div class="section-inner">
     <div class="love-world-heading">
       <div class="love-world-heading-copy">
-        <div class="kicker">Different lives. Little moments. Big feelings.</div>
-        <h2 id="love-world-title">Love, <em>Everywhere.</em></h2>
-        <p class="love-world-sub">A late-night coffee, a slow morning, the last light on the beach. Love lives in little moments like these — and your story deserves a place to keep them.</p>
+        <div class="kicker">Histórias diferentes. Pequenos momentos. Grandes sentimentos.</div>
+        <h2 id="love-world-title">O amor está <em>em todo lugar.</em></h2>
+        <p class="love-world-sub">Um café tarde da noite, uma manhã sem pressa, o último brilho do sol na praia. O amor mora nesses pequenos momentos — e a sua história merece um lugar para guardá-los.</p>
       </div>
       <aside class="love-world-note" aria-label="A note about love">
         <span class="love-world-note-mark">♡</span>
-        <span class="love-world-note-label">A LITTLE REMINDER</span>
-        <p>The ordinary becomes extraordinary when it’s <em>yours.</em></p>
-        <a href="#create">Make your story <span aria-hidden="true">↗</span></a>
+        <span class="love-world-note-label">UM LEMBRETE CARINHOSO</span>
+        <p>O comum se torna extraordinário quando é <em>de vocês.</em></p>
+        <a href="#create">Criar meu presente <span aria-hidden="true">↗</span></a>
       </aside>
     </div>
     <div class="love-world-grid" aria-label="Editorial collage of couples sharing everyday moments">
@@ -1251,10 +1342,10 @@ html,body{background:#17110f!important}
     </div>
     <p class="love-world-credit">Editorial inspiration · Photography via <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a></p>
   </div>
-<section class="section showcase" id="inside"><div class="section-inner showgrid"><div class="note"><div class="tiny">A letter, just for you</div><h3>In case I don't say it enough...</h3><p>“Somehow, the ordinary days became my favorite ones. The silly jokes, the long talks, the little moments I wish I could pause. If I could keep one thing forever, it would be the feeling of being right there beside you.”</p><div class="signature">always yours ♡</div></div><div class="showcopy"><div class="kicker">The little details matter</div><h2>Made of memories. Finished with heart.</h2><p>Build a keepsake that feels warm, personal, and unmistakably yours. No templates that feel like everyone else's. Just the moments you choose to share.</p><div class="pillrow"><span class="pill">♡ Photo memories</span><span class="pill">✎ Personal letters</span><span class="pill">♫ Music mood</span><span class="pill">✳ Private link</span></div></div></div></section>
-<section class="section center" id="create"><div class="section-inner"><div class="kicker">Your story, your way</div><h2>Make something they'll keep.</h2><p class="sub">A thoughtful digital surprise for anniversaries, birthdays, long-distance love, or simply because.</p><div class="pricing"><div class="oldprice">$19.99</div><div class="price">$9.99 <small>USD</small></div><div class="pricecaption">One-time purchase · Your personal digital keepsake</div><ul class="checklist"><li>A personal, shareable experience</li><li>Photos, notes, and your own words</li><li>A private link to send to your person</li><li>Designed to feel special on mobile</li></ul><button class="primary" id="createBtn">Start creating your story ↗</button><p class="micro">A preview of Lovena Studio — checkout and publishing are not connected yet.</p></div></div></section>
+<section class="section showcase" id="inside"><div class="section-inner showgrid"><div class="note"><div class="tiny">Uma carta, só para você</div><h3>Se eu não disser isso o bastante...</h3><p>“De algum jeito, os dias mais comuns se tornaram meus favoritos. As piadas bobas, as conversas longas, os pequenos instantes que eu queria poder pausar. Se eu pudesse guardar uma coisa para sempre, seria a sensação de estar bem aqui ao seu lado.”</p><div class="signature">sempre seu ♡</div></div><div class="showcopy"><div class="kicker">Os pequenos detalhes importam</div><h2>Feito de memórias. Finalizado com amor.</h2><p>Crie uma lembrança acolhedora, pessoal e com a identidade de vocês. Escolha os momentos, as palavras e a música que contam a sua história.</p><div class="pillrow"><span class="pill">♡ Fotos especiais</span><span class="pill">✎ Cartas pessoais</span><span class="pill">♫ Sua música</span><span class="pill">✳ Link para compartilhar</span></div></div></div></section>
+<section class="section center" id="create"><div class="section-inner"><div class="kicker">A sua história, do seu jeito</div><h2>Crie algo que vai ficar na memória.</h2><p class="sub">Uma surpresa digital para aniversários, datas especiais, amores à distância — ou simplesmente porque você ama essa pessoa.</p><div class="pricing"><div class="oldprice">$19.99</div><div class="price">$9.99 <small>USD</small></div><div class="pricecaption">Pagamento único · Sua lembrança digital personalizada</div><ul class="checklist"><li>Uma experiência pessoal para compartilhar</li><li>Fotos, recados e palavras suas</li><li>Um link para enviar à pessoa especial</li><li>Uma experiência pensada para celular</li></ul><button class="primary" id="createBtn">Criar meu presente ↗</button><p class="micro">Prévia do Lovena Studio: pagamento e publicação ainda não estão conectados.</p></div></div></section>
 </main>
-<footer class="foot"><a class="brand" href="#">Lovena</a><span>Made for the moments that matter <span class="heart">♥</span></span><span class="photo-credit">Photography: <a href="https://unsplash.com/@alexandermassph" target="_blank" rel="noopener noreferrer">Alexander Mass</a> &amp; <a href="https://unsplash.com/@cassiejolopez" target="_blank" rel="noopener noreferrer">Cassie Lopez</a> / Unsplash</span><span>© 2026 Lovena Studio</span></footer>
+<footer class="foot"><a class="brand" href="#">Lovena</a><span>Feito para os momentos que importam <span class="heart">♥</span></span><span class="photo-credit">Photography: <a href="https://unsplash.com/@alexandermassph" target="_blank" rel="noopener noreferrer">Alexander Mass</a> &amp; <a href="https://unsplash.com/@cassiejolopez" target="_blank" rel="noopener noreferrer">Cassie Lopez</a> / Unsplash</span><span>© 2026 Lovena Studio</span></footer>
 
 <div class="studio-overlay" id="studioOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Lovena story creator">
   <header class="studio-topbar">
