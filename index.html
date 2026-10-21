@@ -1124,6 +1124,7 @@ try{
  var saved=localStorage.getItem("lovenaStudioDraftV1");
  if(saved){
   var loaded=JSON.parse(saved);state=Object.assign({},baseState,loaded);
+  if(Number(loaded.photoStyleVersion||0)<2){if(loaded.photoStyle==="polaroid")state.photoStyle="scrapbook";state.photoStyleVersion=2;}
   if(!Array.isArray(state.photos))state.photos=["","",""];
   if(!Array.isArray(state.captions))state.captions=["","",""];
   while(state.photos.length<4)state.photos.push("");
