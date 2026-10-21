@@ -901,6 +901,44 @@ body.lovena-overlay-open{overflow:hidden}
   .love-world-photo img{transition:none}
 }
 
+
+/* Global language switcher */
+.language-picker{
+  display:inline-flex;align-items:center;gap:8px;min-height:40px;
+  padding:7px 11px;border:1px solid #dedfe1;border-radius:999px;
+  background:rgba(255,255,255,.92);color:#67676b;white-space:nowrap;
+}
+.language-picker-label{
+  font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:#88858a
+}
+.language-picker .gtranslate_wrapper{display:inline-flex;align-items:center;min-width:0}
+.language-picker .gtranslate_wrapper select,
+.language-picker .gt_selector{
+  max-width:142px;min-width:105px;padding:3px 19px 3px 2px;
+  border:0!important;outline:none;background-color:transparent!important;
+  color:#29282b!important;font:700 11px/1.4 Manrope,Arial,sans-serif!important;
+  cursor:pointer;box-shadow:none!important
+}
+.language-picker .gtranslate_wrapper select:focus-visible,
+.language-picker .gt_selector:focus-visible{outline:2px solid #9b727b!important;outline-offset:3px;border-radius:4px}
+@media(max-width:800px){
+  .nav{gap:8px}
+  .navlinks{gap:8px}
+  .language-picker{min-height:36px;padding:5px 8px;gap:3px}
+  .language-picker-label{display:none}
+  .language-picker .gtranslate_wrapper select,.language-picker .gt_selector{min-width:0;width:105px;max-width:105px;font-size:10px!important}
+  .navlinks .navcta{padding:11px 13px;font-size:11px}
+}
+@media(max-width:390px){
+  .nav{padding:0 12px}
+  .brand{font-size:24px}
+  .language-picker .gtranslate_wrapper select,.language-picker .gt_selector{width:94px;max-width:94px}
+  .navlinks .navcta{padding:10px 10px;font-size:10px}
+}
+@media(max-width:350px){
+  .navlinks .navcta{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -920,7 +958,7 @@ body.lovena-overlay-open{overflow:hidden}
   </div>
   <span class="global-tagline">Connecting hearts, creating smiles.</span>
 </div>
-<header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#love-world">Love, everywhere</a><a href="#inside">What's inside</a><a class="navcta" href="#create">Create your story ↗</a></nav></header>
+<header class="nav"><a class="brand" href="#" aria-label="Lovena Studio home">Lovena</a><nav class="navlinks"><a href="#how">How it works</a><a href="#love-world">Love, everywhere</a><a href="#inside">What's inside</a><label class="language-picker" aria-label="Choose website language"><span class="language-picker-label">Language</span><span class="gtranslate_wrapper" aria-label="Select language"></span></label><a class="navcta" href="#create">Create your story ↗</a></nav></header>
 <main>
 <section class="hero editorial-hero geo-grid">
 <div><div class="eyebrow"><span class="dot"></span> A little piece of your story</div><h1>Some feelings deserve <em>more than a text.</em></h1><p class="lead">Turn your memories, photos, and words into a personal digital experience they'll want to open again and again.</p><div class="heroactions"><a class="primary" href="#create">Create your love story <span>↗</span></a><a class="secondary" href="#how">See how it works ↓</a></div><div class="micro">Made with love, just for your person. ♡</div></div>
@@ -1483,4 +1521,17 @@ if(location.hash==="#creator"){openStudio();}else if(location.hash==="#sample"){
 })();
 
 </script>
+<!-- Multilingual site switcher. The original site language is English. -->
+<script>
+  window.gtranslateSettings = {
+    default_language: "en",
+    languages: [
+      "en","pt","es","fr","de","it","nl","sv","da","no","fi","is","pl","cs","sk","sl","hr","sr","bs","bg","ro","hu","el","ru","uk","tr","ar","he","fa","ur","hi","bn","ta","te","ml","mr","gu","pa","ne","si","th","vi","id","ms","tl","sw","am","ha","yo","ig","zu","xh","af","so","ps","ku","az","hy","ka","kk","uz","mn","my","km","lo","ja","ko","zh-CN","zh-TW","jv","su","ceb","mi","sm","haw","ht","la","eo","et","lv","lt","ga","cy","gd","eu","gl","ca","sq","mk","be","lb","mt","fy","yi","ny","sn","sd","tg","ky","tk","tt","ug","or","as","doi","sat","gom","mai","lus","nso","ts","wo","kok","sa","ckb","qu","pap","co","ilo","war","bho","ace","ban","bug","min","rom","sah","ti","oc","br","rn","rw","ak","bm","ee","kab","kri","st","tn","tiv","xmf"
+    ],
+    native_language_names: true,
+    detect_browser_language: false,
+    wrapper_selector: ".gtranslate_wrapper"
+  };
+</script>
+<script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
 </body></html>
