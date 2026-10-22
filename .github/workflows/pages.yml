@@ -44,8 +44,8 @@ jobs:
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
           if "translate.googleapis.com/translate_a/single" not in bridge:
               raise SystemExit("Dynamic UI translation engine is missing")
-          if 'var lang = (parts[0] || SOURCE_LANGUAGE).trim();' not in bridge:
-              raise SystemExit("GTranslate target-language parsing is incorrect")
+          if 'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];' not in bridge:
+              raise SystemExit("GTranslate source-target language parsing is missing")
           if '"studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"' not in bridge:
               raise SystemExit("Full creator/preview translation roots are missing")
           if "function renderStudio(){renderBody();if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}" not in html:
@@ -54,6 +54,19 @@ jobs:
           PY
           node --check /tmp/lovena-inline.js
           node --check translation-bridge.js
+          node <<'NODE'
+          const fs = require("fs");
+          const bridge = fs.readFileSync("translation-bridge.js", "utf8");
+          const match = bridge.match(/function canonicalLanguage\\(value\\) \\{([\\s\\S]*?)\\n  \\}\\n\\n  function readSavedLanguage/);
+          if (!match) throw new Error("Could not extract GTranslate language parser");
+          const parseLanguage = new Function("SOURCE_LANGUAGE", "return function(value) {" + match[1] + "};")("en");
+          const cases = [["en|pt","pt"],["en|es","es"],["en|en","en"],["pt|en","pt"],["fr","fr"]];
+          for (const [input, expected] of cases) {
+            const actual = parseLanguage(input);
+            if (actual !== expected) throw new Error(input + " parsed as " + actual + ", expected " + expected);
+          }
+          console.log("GTranslate language-value tests passed.");
+          NODE
           node <<'NODE'
           const fs = require("fs");
           const src = fs.readFileSync("/tmp/lovena-inline.js", "utf8");
