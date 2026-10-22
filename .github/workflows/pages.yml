@@ -42,7 +42,7 @@ jobs:
               if f'id="{element_id}"' not in html:
                   raise SystemExit(f"Missing dynamic translation root: {element_id}")
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
-          if "translate-pa.googleapis.com/v1/translateHtml" not in bridge:
+          if "translate.googleapis.com/translate_a/single" not in bridge:
               raise SystemExit("Dynamic UI translation engine is missing")
           if "function renderStudio(){renderBody();if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}" not in html:
               raise SystemExit("Creator render is not wired to the translation bridge")
