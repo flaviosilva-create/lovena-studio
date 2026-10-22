@@ -26,8 +26,10 @@
   var roots = [];
 
   function canonicalLanguage(value) {
+    // GTranslate selector values are commonly "target|source" (e.g. "pt|en").
+    // Read the target language, not the trailing source language.
     var parts = String(value || "").split("|");
-    var lang = (parts[parts.length - 1] || SOURCE_LANGUAGE).trim();
+    var lang = (parts[0] || SOURCE_LANGUAGE).trim();
     var low = lang.toLowerCase();
     if (low === "zh-cn" || low === "zh-hans") return "zh-CN";
     if (low === "zh-tw" || low === "zh-hant") return "zh-TW";
