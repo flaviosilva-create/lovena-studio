@@ -1277,6 +1277,140 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #c8
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
+
+/* LOVENA STUDIO — Option 1: layered, handmade scrapbook opening */
+.reader-card[data-photo-style="scrapbook"] .lp-cover{
+  min-height:0!important;padding:clamp(24px,4vw,46px) clamp(12px,3vw,28px) 46px!important;
+  background:
+    radial-gradient(ellipse at 13% 22%,#f5d8d0a6 0,transparent 31%),
+    radial-gradient(ellipse at 88% 73%,#dec9b5a1 0,transparent 32%),
+    repeating-linear-gradient(0deg,#59453708 0 1px,transparent 1px 5px),
+    #f2e5d4!important;
+  border:0!important;border-radius:2px!important;box-shadow:0 20px 55px #4b32201a!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-cover .lp-eyebrow{
+  display:inline-flex!important;color:#9d655f!important;font-size:9px!important;letter-spacing:2.5px!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-cover .lp-tiny-line{
+  display:block!important;margin:13px 0 0!important;color:#937d6f!important;font-size:8px!important;letter-spacing:1.8px!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-cover-title{
+  display:block!important;margin:13px auto 10px!important;max-width:720px!important;
+  color:#43312d!important;font:500 clamp(38px,6.7vw,70px)/.99 'Playfair Display',Georgia,serif!important;
+  letter-spacing:-1.8px!important;text-wrap:balance;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-cover-title em{color:#a15f61!important;font-style:italic!important}
+.reader-card[data-photo-style="scrapbook"] .lp-cover-title span{font-size:.64em!important;font-style:italic!important;color:#72544d!important}
+.reader-card[data-photo-style="scrapbook"] .lp-cover-copy{
+  display:block!important;max-width:470px!important;margin:0 auto 15px!important;color:#78635a!important;
+  font:italic 13px/1.8 'Playfair Display',Georgia,serif!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board{
+  position:relative;isolation:isolate;max-width:790px;margin:20px auto 17px;padding:28px clamp(14px,4vw,44px) 52px;
+  background:
+    radial-gradient(circle at 20% 15%,#ffffff67 0,transparent 25%),
+    repeating-linear-gradient(11deg,#81634708 0 1px,transparent 1px 7px),
+    linear-gradient(145deg,#e9d4b9 0%,#f8ecd9 48%,#e8d4ba 100%);
+  border:1px solid #d6bfa3;
+  clip-path:polygon(0 1%,4% 0,9% 1%,15% 0,21% 1%,28% 0,36% 1%,43% 0,51% 1%,59% 0,67% 1%,75% 0,83% 1%,91% 0,100% 1%,99.5% 97%,94% 98%,88% 97%,82% 99%,74% 98%,67% 100%,58% 98%,50% 100%,42% 98%,34% 99%,26% 97%,18% 99%,10% 97%,4% 99%,0 97%);
+  filter:drop-shadow(0 14px 15px #4c30201a);
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids{
+  position:relative;z-index:2;display:grid!important;grid-template-columns:1.03fr .97fr!important;
+  grid-template-rows:repeat(3,minmax(0,1fr))!important;grid-template-areas:"one two" "one three" "four three"!important;
+  gap:7px!important;width:100%!important;max-width:650px!important;height:clamp(350px,48vw,455px)!important;
+  margin:0 auto!important;padding:0 2px!important;align-items:stretch;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids:before,
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids:after{display:none!important;content:none!important}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-polaroid{
+  position:relative!important;align-self:stretch!important;min-width:0!important;width:100%!important;height:100%!important;
+  margin:0!important;padding:6px!important;border:0!important;border-radius:0!important;
+  background:#fcf6e9!important;box-shadow:0 5px 11px #51392832,0 1px 2px #51392826!important;
+  overflow:visible!important;clip-path:polygon(0 1%,7% 0,14% 1%,22% 0,30% 1%,38% 0,46% 1%,54% 0,62% 1%,70% 0,78% 1%,86% 0,94% 1%,100% 0,99% 99%,91% 100%,83% 99%,75% 100%,67% 99%,59% 100%,51% 99%,43% 100%,35% 99%,27% 100%,19% 99%,11% 100%,3% 99%)!important;
+  transform:rotate(var(--scrap-tilt,-1deg))!important;transition:transform .28s ease,filter .28s ease!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-polaroid:hover{transform:rotate(0deg) translateY(-3px)!important;z-index:4!important;filter:drop-shadow(0 6px 4px #51392820)}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-polaroid:nth-child(1){grid-area:one!important;--scrap-tilt:-1.3deg}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-polaroid:nth-child(2){grid-area:two!important;--scrap-tilt:1.6deg}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-polaroid:nth-child(3){grid-area:three!important;--scrap-tilt:.8deg}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-polaroid:nth-child(4){grid-area:four!important;--scrap-tilt:-.9deg}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-photo-frame{
+  display:block!important;width:100%!important;height:100%!important;min-height:0!important;aspect-ratio:auto!important;
+  padding:0!important;border:0!important;background:#decab1!important;overflow:hidden!important;
+  clip-path:polygon(0 1%,9% 0,18% 1%,27% 0,36% 1%,45% 0,54% 1%,63% 0,72% 1%,81% 0,90% 1%,100% 0,99% 100%,0 99%)!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids .lp-polaroid img{
+  display:block!important;width:100%!important;height:100%!important;max-height:none!important;min-height:0!important;
+  object-fit:cover!important;filter:saturate(.91) contrast(1.025) sepia(.04)!important;clip-path:none!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-polaroid-caption,
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-polaroid-index{display:none!important}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-washi{
+  position:absolute;z-index:5;display:block;width:94px;height:25px;opacity:.83;
+  background:repeating-linear-gradient(45deg,#d9a49a72 0 5px,#f2d5c975 5px 10px);
+  box-shadow:0 2px 4px #5b3e3020;clip-path:polygon(2% 0,100% 4%,97% 100%,0 94%);
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-washi-one{left:17%;top:15px;transform:rotate(-7deg)}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-washi-two{right:17%;bottom:30px;width:76px;background:repeating-linear-gradient(-35deg,#a9b0a071 0 5px,#d5d9c578 5px 10px);transform:rotate(8deg)}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note{
+  position:absolute;z-index:8;left:50%;top:51%;transform:translate(-50%,-50%) rotate(-5deg);
+  width:clamp(112px,20vw,158px);min-height:94px;padding:13px 8px 10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;
+  text-align:center;background:linear-gradient(150deg,#fff9e9,#f2e3c9);border:1px solid #e5d2ae;
+  box-shadow:0 7px 16px #3f291f38,0 1px 2px #3f291f22;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note:before{
+  content:"";position:absolute;inset:5px;border:1px dashed #c4a88d;pointer-events:none;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note small{
+  position:relative;color:#97776c;font:700 6px/1.5 Manrope,Arial,sans-serif;letter-spacing:1.2px;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note strong{
+  position:relative;color:#5a3b36;font:italic 21px/.98 'Playfair Display',Georgia,serif;font-weight:500;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note span{position:relative;color:#b46d76;font:21px/1 cursive}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-flower{
+  position:absolute;z-index:7;right:17px;top:17px;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;
+  color:#a85f69;font:34px/1 'Playfair Display',Georgia,serif;
+  background:radial-gradient(circle,#f4c8b8b8 0 19%,transparent 20%),radial-gradient(circle at 28% 35%,#d58b8e79 0 20%,transparent 21%),radial-gradient(circle at 72% 35%,#d58b8e79 0 20%,transparent 21%),radial-gradient(circle at 35% 70%,#d58b8e79 0 20%,transparent 21%),radial-gradient(circle at 70% 70%,#d58b8e79 0 20%,transparent 21%);
+  filter:drop-shadow(0 2px 2px #5a383522);transform:rotate(-13deg);
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-heart-doodle{
+  position:absolute;z-index:7;left:17px;top:21px;color:#a65d68;font:39px/1 cursive;transform:rotate(-15deg);
+}
+.reader-card[data-photo-style="scrapbook"] .lp-scrapbook-handwritten{
+  position:relative;z-index:3;margin:13px 0 -3px;text-align:center;color:#98665f;
+  font:italic clamp(14px,2vw,19px)/1.25 'Playfair Display',Georgia,serif;transform:rotate(-1.8deg);
+}
+.reader-card[data-photo-style="scrapbook"] .lp-cover-signature{
+  position:relative;z-index:3;margin-top:20px!important;color:#806b60!important;
+  font:italic 11px/1.7 'Playfair Display',Georgia,serif!important;text-align:center!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-cover-signature strong{color:#5c3c38!important}
+.reader-card[data-photo-style="scrapbook"] .lp-cover .lp-scroll-cue{
+  color:#866e65!important;font-size:8px!important;margin-top:18px!important;
+}
+.reader-card[data-photo-style="scrapbook"] .lp-cover .lp-scroll-cue b{color:#a66168!important}
+@media(max-width:600px){
+  .reader-card[data-photo-style="scrapbook"] .lp-cover{padding:23px 7px 34px!important}
+  .reader-card[data-photo-style="scrapbook"] .lp-cover-title{font-size:clamp(36px,10vw,48px)!important;letter-spacing:-1.2px!important}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board{padding:27px 10px 43px;margin:14px auto 12px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-opening-polaroids{height:clamp(315px,94vw,385px)!important;gap:4px!important}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-washi{width:62px;height:18px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-washi-one{left:17%;top:13px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-washi-two{right:15%;bottom:23px;width:54px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note{width:98px;min-height:73px;padding:9px 5px 7px;gap:4px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note small{font-size:5px;letter-spacing:.6px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note strong{font-size:16px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-center-note span{font-size:16px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-flower{right:7px;top:14px;width:28px;height:28px;font-size:24px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-heart-doodle{left:8px;top:17px;font-size:29px}
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-handwritten{font-size:14px!important;margin:10px 0 -2px}
+}
+@media(prefers-reduced-motion:reduce){
+  .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-polaroid{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -1662,7 +1796,7 @@ function longStoryContent(){
  sequence.forEach(function(id){
   if(id===0&&state.showCover){
    var coverCards='';for(var i=0;i<4;i++)coverCards+=recipientPolaroid(state.photos[i]||"",i,true);
-   html+='<section class="lp-section lp-cover lp-reveal" id="lp-cover"><div class="lp-cover-orbit lp-orbit-one"></div><div class="lp-cover-orbit lp-orbit-two"></div><div class="lp-eyebrow"><span class="lp-eyebrow-dot"></span>'+esc(state.coverEyebrow||"A story made just for you")+'</div><p class="lp-tiny-line">'+esc(state.occasion)+(state.date?" · "+esc(state.date):"")+'</p><h1 class="lp-cover-title">For <em>'+esc(state.recipient.trim()||"your favorite person")+'</em><br><span>'+br(state.coverTitle||"with all my heart.")+'</span></h1><p class="lp-cover-copy">'+br(state.coverIntro||"A little world of memories, just for you.")+'</p><div class="lp-opening-polaroids">'+coverCards+'</div><div class="lp-cover-signature">made with love, <strong>'+esc(state.sender.trim()||"someone who cares about you")+'</strong> <span>♡</span></div><a class="lp-scroll-cue" href="#lp-scroll-next"><span>Keep scrolling</span><b>↓</b></a></section><div id="lp-scroll-next" class="lp-scroll-anchor"></div>';
+   html+='<section class="lp-section lp-cover lp-reveal" id="lp-cover"><div class="lp-cover-orbit lp-orbit-one"></div><div class="lp-cover-orbit lp-orbit-two"></div><div class="lp-eyebrow"><span class="lp-eyebrow-dot"></span>'+esc(state.coverEyebrow||"A story made just for you")+'</div><p class="lp-tiny-line">'+esc(state.occasion)+(state.date?" · "+esc(state.date):"")+'</p><h1 class="lp-cover-title">For <em>'+esc(state.recipient.trim()||"your favorite person")+'</em><br><span>'+br(state.coverTitle||"with all my heart.")+'</span></h1><p class="lp-cover-copy">'+br(state.coverIntro||"A little world of memories, just for you.")+'</p><div class="lp-scrapbook-opening-board"><span class="lp-scrapbook-washi lp-scrapbook-washi-one" aria-hidden="true"></span><span class="lp-scrapbook-washi lp-scrapbook-washi-two" aria-hidden="true"></span><span class="lp-scrapbook-flower" aria-hidden="true">✿</span><span class="lp-scrapbook-heart-doodle" aria-hidden="true">♡</span><div class="lp-opening-polaroids">'+coverCards+'</div><div class="lp-scrapbook-center-note"><small>COLLECTED WITH LOVE</small><strong>Our little world</strong><span aria-hidden="true">♡</span></div><p class="lp-scrapbook-handwritten">The little things are everything.</p></div><div class="lp-cover-signature">made with love, <strong>'+esc(state.sender.trim()||"someone who cares about you")+'</strong> <span>♡</span></div><a class="lp-scroll-cue" href="#lp-scroll-next"><span>Keep scrolling</span><b>↓</b></a></section><div id="lp-scroll-next" class="lp-scroll-anchor"></div>';
   }else if(id===4){
    html+='<section class="lp-section lp-scratch-section lp-reveal" id="lp-scratch"><div class="lp-section-marker">01 <span>·</span> A little secret</div><div class="lp-centered-head"><div class="lp-eyebrow">just between us</div><h2 class="lp-section-title">There is something <em>for you.</em></h2><p class="lp-section-copy">'+esc(state.scratchHint||"Scratch gently to reveal a little note made just for you.")+'</p></div><div class="lp-scratch-card" id="lpScratchCard"><div class="lp-scratch-message"><span class="lp-scratch-heart">♡</span><h3>'+esc(state.scratchTitle||"A little secret, just for you")+'</h3><p>'+br(state.scratchMessage||"You make ordinary days feel like something worth remembering. ♡")+'</p><small>with love, '+esc(state.sender.trim()||"someone who cares")+'</small></div><canvas class="lp-scratch-canvas" id="lpScratchCanvas" width="900" height="340" aria-label="Scratch to reveal the hidden message"></canvas></div><div class="lp-scratch-caption"><span>✦</span> '+esc(state.scratchHint||"Scratch gently to reveal a little note made just for you.")+'</div></section>';
    if(state.enableDoodle||state.enableGuestbook){
