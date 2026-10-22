@@ -42,6 +42,18 @@ jobs:
               if f'id="{element_id}"' not in html:
                   raise SystemExit(f"Missing dynamic translation root: {element_id}")
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
+          if 'var CACHE_KEY = "lovenaDynamicTranslationCacheV3";' not in bridge:
+              raise SystemExit("Mobile-safe translation cache version is missing")
+          if "return selectors.find(isElementVisible) || selectors[0] || null;" not in bridge:
+              raise SystemExit("Responsive visible language-selector handling is missing")
+          if "allRoots.filter(isElementVisible)" not in bridge:
+              raise SystemExit("Translation must prioritize visible creator/recipient roots")
+          if "function isUserAuthoredElement(element)" not in bridge or 'data-lovena-user-content="true"' not in html:
+              raise SystemExit("Authored text must be excluded from automatic translation")
+          if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
+              raise SystemExit("User-authored field tracking is missing")
+          if 'translation-bridge.js?v=20261022-mobile-language-5' not in html:
+              raise SystemExit("Mobile browser cache-bust version is missing")
           if "translate.googleapis.com/translate_a/single" not in bridge:
               raise SystemExit("Dynamic UI translation engine is missing")
           if 'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];' not in bridge:
