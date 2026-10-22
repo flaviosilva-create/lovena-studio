@@ -1387,15 +1387,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #c8
     <div class="studio-progress-track"><div class="studio-progress-fill" id="studioProgressFill"></div></div>
   </div>
   <div class="studio-layout">
-    <aside class="studio-steps"><div class="studio-steps-heading">The little details</div><nav id="studioStepNav" aria-label="Story steps"></nav></aside>
+    <aside class="studio-steps"><div class="studio-steps-heading">The little details</div><nav id="studioStepNav" class="notranslate" translate="no" aria-label="Story steps"></nav></aside>
     <main class="studio-main">
-      <div id="studioStepBody"></div>
-      <div class="studio-controls" id="studioControls"></div>
+      <div id="studioStepBody" class="notranslate" translate="no"></div>
+      <div class="studio-controls notranslate" id="studioControls" translate="no"></div>
     </main>
     <aside class="studio-aside">
       <div class="studio-aside-card">
         <div class="studio-aside-label">A little preview</div>
-        <div id="studioMiniPreview"></div>
+        <div id="studioMiniPreview" class="notranslate" translate="no"></div>
         <div class="studio-aside-small">This is only the beginning. Your chosen moments and words will bring the full story to life.</div>
         <div class="studio-aside-check"><span>♡ <b>Personal</b> — made by you</span><span>↗ <b>Shareable</b> — designed for phones</span><span>✦ <b>Memorable</b> — not just another card</span></div>
       </div>
@@ -1405,16 +1405,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #c8
 <div class="reader-overlay" id="readerOverlay" hidden role="dialog" aria-modal="true" aria-label="Preview your Lovena story">
   <div class="reader-shell">
     <div class="reader-topline"><div class="reader-logo">Lovena<small>A story made just for you</small></div><button type="button" class="reader-close" data-action="close-reader" aria-label="Close story preview">×</button></div>
-    <div class="reader-progress" id="readerProgress"></div>
-    <div class="reader-card" id="readerCard"></div>
+    <div class="reader-progress notranslate" id="readerProgress" translate="no"></div>
+    <div class="reader-card notranslate" id="readerCard" translate="no"></div>
     <div class="reader-footer-note">Take your time. The little things are often the biggest things. ♡</div>
   </div>
 
   <div class="reader-photo-overlay" id="readerPhotoOverlay" hidden role="dialog" aria-modal="true" aria-label="Memory photo">
-    <figure class="reader-photo-lightbox"><button type="button" class="reader-lightbox-close" data-action="close-photo" aria-label="Close photo">×</button><img id="readerModalPhoto" alt="A favorite memory"><figcaption id="readerModalCaption"></figcaption></figure>
+    <figure class="reader-photo-lightbox"><button type="button" class="reader-lightbox-close" data-action="close-photo" aria-label="Close photo">×</button><img id="readerModalPhoto" alt="A favorite memory"><figcaption id="readerModalCaption" class="notranslate" translate="no"></figcaption></figure>
   </div>
 </div>
-<div class="studio-toast" id="studioToast" role="status" aria-live="polite"></div>
+<div class="studio-toast notranslate" id="studioToast" translate="no" role="status" aria-live="polite"></div>
 <script>
   window.gtranslateSettings = {
     default_language: "en",
@@ -1872,6 +1872,6 @@ if(location.hash==="#creator"){openStudio();}else if(location.hash==="#sample"){
 
 </script>
 <!-- One translation engine only: GTranslate, with English as the source language. -->
-<script src="./translation-bridge.js?v=20261022" defer></script>
+<script src="./translation-bridge.js?v=20261022-dynamic2" defer></script>
 <script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
 </body></html>
