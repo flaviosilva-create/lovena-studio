@@ -26,10 +26,20 @@
   var roots = [];
 
   function canonicalLanguage(value) {
-    // GTranslate selector values are commonly "target|source" (e.g. "pt|en").
-    // Read the target language, not the trailing source language.
-    var parts = String(value || "").split("|");
-    var lang = (parts[0] || SOURCE_LANGUAGE).trim();
+    // GTranslate dropdown values use "source|target" (e.g. "en|pt").
+    // Some variants can provide the reverse order, so detect the configured
+    // source language instead of blindly reading the first or last segment.
+    var parts = String(value || "").split("|").map(function (part) { return part.trim(); }).filter(Boolean);
+    var lang = SOURCE_LANGUAGE;
+    if (parts.length > 1) {
+      var first = parts[0].toLowerCase();
+      var last = parts[parts.length - 1].toLowerCase();
+      if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];
+      else if (last === SOURCE_LANGUAGE.toLowerCase()) lang = parts[0];
+      else lang = parts[parts.length - 1];
+    } else if (parts.length === 1) {
+      lang = parts[0];
+    }
     var low = lang.toLowerCase();
     if (low === "zh-cn" || low === "zh-hans") return "zh-CN";
     if (low === "zh-tw" || low === "zh-hant") return "zh-TW";
