@@ -1570,7 +1570,7 @@ function renderBody(){
  var previewButton=document.querySelector('#studioControls [data-action="preview-story"]');
  if(previewButton){previewButton.addEventListener("click",function(ev){ev.preventDefault();ev.stopPropagation();openReader();});}
 }
-function renderStudio(){renderBody();}
+function renderStudio(){renderBody();if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}
 function openStudio(){studio.setAttribute("aria-hidden","false");document.body.classList.add("lovena-overlay-open");renderStudio();var close=document.querySelector('#studioOverlay [data-action="close-studio"]');if(close)close.focus();}
 function closeStudio(){studio.setAttribute("aria-hidden","true");document.body.classList.remove("lovena-overlay-open");}
 function validateNames(){if(!state.recipient.trim()||!state.sender.trim()){currentStep=0;renderStudio();toast("Add both names first, so this story feels personal.");return false;}return true;}
@@ -1723,6 +1723,7 @@ function renderReader(){
  card.innerHTML=longStoryContent();
  initializeScrollReveals(card);initializeScratch();if(state.enableDoodle)initializeDoodle();
  var overlay=document.getElementById("readerOverlay");if(overlay)overlay.scrollTop=0;
+ if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();
 }
 function addWallNote(){
  var nameField=document.getElementById("readerWallName"),textField=document.getElementById("readerWallText");
@@ -1869,9 +1870,7 @@ if(location.hash==="#creator"){openStudio();}else if(location.hash==="#sample"){
 })();
 
 </script>
-<!-- Global translation bridge: translate the full page and re-translate dynamic Studio/preview content. -->
-<div id="google_translate_element" aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden"></div>
+<!-- One translation engine only: GTranslate, with English as the source language. -->
 <script src="./translation-bridge.js" defer></script>
-<!-- Fallback widget retained for language selector UI if its CDN is available. -->
 <script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
 </body></html>
