@@ -57,9 +57,11 @@ jobs:
           node <<'NODE'
           const fs = require("fs");
           const bridge = fs.readFileSync("translation-bridge.js", "utf8");
-          const match = bridge.match(/function canonicalLanguage\\(value\\) \\{([\\s\\S]*?)\\n  \\}\\n\\n  function readSavedLanguage/);
-          if (!match) throw new Error("Could not extract GTranslate language parser");
-          const parseLanguage = new Function("SOURCE_LANGUAGE", "return function(value) {" + match[1] + "};")("en");
+          const start = bridge.indexOf("  function canonicalLanguage(value) {");
+          const end = bridge.indexOf("\\n  function readSavedLanguage", start);
+          if (start < 0 || end < 0) throw new Error("Could not extract GTranslate language parser");
+          const parserSource = bridge.slice(start, end).replace("  function canonicalLanguage(value)", "return function canonicalLanguage(value)");
+          const parseLanguage = new Function("SOURCE_LANGUAGE", parserSource) ("en");
           const cases = [["en|pt","pt"],["en|es","es"],["en|en","en"],["pt|en","pt"],["fr","fr"]];
           for (const [input, expected] of cases) {
             const actual = parseLanguage(input);
