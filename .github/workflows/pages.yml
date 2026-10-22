@@ -56,7 +56,7 @@ jobs:
           const match = src.match(/var exportScript\s*=\s*([\s\S]*?);\s*\n\s*var doc=/);
           if (!match) throw new Error("Standalone story export was not found");
           const generated = Function("state", "return (" + match[1] + ");")({recipient:"Lovena Validation"});
-          const embedded = generated.match(/<script>([\s\S]*?)<\\/script>/);
+          const embedded = generated.match(/<script>([\s\S]*?)<\/script>/);
           if (!embedded) throw new Error("Standalone story script was not generated");
           fs.writeFileSync("/tmp/lovena-export.js", embedded[1]);
           NODE
