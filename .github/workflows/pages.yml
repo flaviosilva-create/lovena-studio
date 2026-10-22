@@ -61,39 +61,29 @@ jobs:
           fs.writeFileSync("/tmp/lovena-export.js", embedded[1]);
           NODE
           node --check /tmp/lovena-export.js
-      - name: Smoke test dynamic translation provider (non-blocking)
+      - name: Smoke test keyless dynamic translation endpoint (non-blocking)
         continue-on-error: true
         run: |
           node <<'NODE'
-          const fs = require("fs");
           (async () => {
-            const bridge = fs.readFileSync("translation-bridge.js", "utf8");
-            const keyMatch = bridge.match(/var TRANSLATE_KEY = "([^"]+)"/);
-            if (!keyMatch) { console.log("Translation service key is not configured."); return; }
-            for (const client of ["wt_lib", "te"]) {
-              try {
-                const response = await fetch("https://translate-pa.googleapis.com/v1/translateHtml", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json+protobuf", "X-Goog-API-Key": keyMatch[1] },
-                  body: JSON.stringify([[["How are you today?"], "en", "pt"], client])
-                });
-                const body = await response.text();
-                if (response.ok) {
-                  const parsed = JSON.parse(body);
-                  const result = Array.isArray(parsed?.[0]) ? parsed[0][0] : "";
-                  if (result && result !== "How are you today?") {
-                    console.log("Translation service smoke test passed (" + client + "): " + result);
-                    return;
-                  }
-                  console.log("Translation service responded but returned no translated text (" + client + ").");
-                } else {
-                  console.log("Translation service returned HTTP " + response.status + " (" + client + "): " + body.slice(0, 250));
-                }
-              } catch (error) {
-                console.log("Translation service probe failed (" + client + "): " + error.message);
-              }
+            const url = new URL("https://translate.googleapis.com/translate_a/single");
+            url.searchParams.set("client", "gtx");
+            url.searchParams.set("sl", "en");
+            url.searchParams.set("tl", "pt");
+            url.searchParams.set("dt", "t");
+            url.searchParams.set("q", "How are you today?");
+            try {
+              const response = await fetch(url, { headers: { "Accept": "application/json" } });
+              if (!response.ok) throw new Error("HTTP " + response.status);
+              const data = await response.json();
+              const translated = Array.isArray(data?.[0]) ? data[0].map(x => x?.[0] || "").join("") : "";
+              if (!translated || translated === "How are you today?") throw new Error("No translated text was returned");
+              console.log("Keyless dynamic translation endpoint passed: " + translated);
+            } catch (error) {
+              console.log("Keyless dynamic translation endpoint failed: " + error.message);
+              process.exitCode = 1;
             }
-          })().catch(error => console.log("Non-blocking translation probe error: " + error.message));
+          })();
           NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
