@@ -133,27 +133,50 @@ img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:blo
 @media(max-width:800px){.hero-photo-main{width:62%;height:82%;right:5%;top:2%;border-radius:3px}.photo .photo-img{width:100%;height:100%}}
 
 
-/* International markets strip */
-.global-strip{min-height:42px;padding:8px 24px;display:flex;align-items:center;justify-content:center;gap:20px;background:rgba(255,255,255,.92);border-bottom:1px solid #e7e7e8;color:#74767b;font-family:'Manrope',sans-serif}
-.global-strip-label{font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap}
-.global-tagline{font-size:10px;color:#55575c;letter-spacing:.1px;white-space:nowrap}
-.global-tagline strong{font-weight:800;color:#222226}
-.global-flags{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-.global-flag{display:inline-flex;align-items:center;justify-content:center;width:27px;height:18px;overflow:hidden;border-radius:2px;border:1px solid rgba(20,20,24,.12);background:#fff;transition:transform .18s,box-shadow .18s}
-.global-flag:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(20,20,24,.12)}
-.global-flag img{width:100%;height:100%;max-width:none;object-fit:contain;display:block}
+/* International markets strip — quiet, editorial and aligned with Lovena's paper palette */
+.global-strip{
+  min-height:44px;padding:8px clamp(16px,3vw,36px);
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  background:#faf7f3;border-bottom:1px solid #eee5df;color:#79716d;
+  font-family:'Manrope',sans-serif;
+}
+.global-strip-label{
+  font-size:9px;font-weight:800;letter-spacing:1.35px;text-transform:uppercase;
+  white-space:nowrap;color:#89766f;
+}
+.global-tagline{font-size:10px;color:#756d68;letter-spacing:.05px;white-space:nowrap}
+.global-tagline strong{font-weight:800;color:#403632}
+.global-flags{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  flex-wrap:wrap;padding:5px 9px;border:1px solid #eee4dd;
+  border-radius:999px;background:rgba(255,255,255,.76);
+}
+.global-flag{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:23px;height:16px;overflow:hidden;border-radius:4px;
+  border:1px solid rgba(89,66,57,.14);background:#fff;
+  box-shadow:0 1px 2px rgba(63,43,35,.05);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.global-flag:hover{transform:translateY(-1px);box-shadow:0 3px 7px rgba(63,43,35,.12)}
+.global-flag img{width:100%;height:100%;max-width:none;object-fit:cover;display:block}
 @media(max-width:800px){
-.global-strip{width:100%;min-height:0;flex-direction:column;align-items:stretch;justify-content:center;gap:9px;padding:11px 16px;overflow:visible}
-.global-strip-label{display:block;text-align:center;font-size:8px;line-height:1.4;letter-spacing:1.35px;white-space:normal}
-.global-tagline{white-space:normal;text-align:center;font-size:9px;line-height:1.5;max-width:310px;margin:0 auto}
-.global-flags{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;justify-items:center;justify-content:stretch;gap:7px;width:100%;min-width:0}
-.global-flag{width:25px;height:17px;min-width:0;flex:none}
-.global-flag img{width:100%;height:100%;object-fit:contain}
+  .global-strip{
+    width:100%;min-height:0;flex-direction:column;align-items:center;
+    justify-content:center;gap:7px;padding:10px 14px 11px;overflow:visible;
+  }
+  .global-strip-label{display:block;text-align:center;font-size:8px;line-height:1.4;letter-spacing:1.2px;white-space:normal}
+  .global-tagline{white-space:normal;text-align:center;font-size:9px;line-height:1.45;max-width:310px;margin:0 auto}
+  .global-flags{
+    display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;
+    gap:7px;padding:6px 10px;width:auto;max-width:100%;min-width:0;border-radius:16px;
+  }
+  .global-flag{width:24px;height:16px;min-width:24px;flex:0 0 24px}
 }
 @media(max-width:360px){
-.global-strip{padding:10px 12px;gap:8px}
-.global-flags{gap:5px}
-.global-flag{width:23px;height:16px}
+  .global-strip{padding:9px 10px 10px;gap:6px}
+  .global-flags{gap:6px;padding:6px 8px}
+  .global-flag{width:22px;height:15px;min-width:22px;flex-basis:22px}
 }
 
 
