@@ -8,9 +8,10 @@
   var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
   var CACHE_KEY = "lovenaDynamicTranslationCacheV2";
   var ROOT_IDS = [
-    "studioStepBody", "studioControls", "studioStepNav", "studioMiniPreview",
-    "studioProgressCaption", "readerCard", "readerProgress", "studioToast", "readerModalCaption",
-    "loveWorldHeadingCopy"
+    // Cover the complete creation and preview overlays, including all chrome
+    // outside the changing step body: top bar, progress, step navigation,
+    // helper copy, side panel, controls, preview modals and generated steps.
+    "studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"
   ];
   var textOriginals = new WeakMap();
   var attrOriginals = new WeakMap();
