@@ -9,7 +9,8 @@
   var CACHE_KEY = "lovenaDynamicTranslationCacheV2";
   var ROOT_IDS = [
     "studioStepBody", "studioControls", "studioStepNav", "studioMiniPreview",
-    "studioProgressCaption", "readerCard", "readerProgress", "studioToast", "readerModalCaption"
+    "studioProgressCaption", "readerCard", "readerProgress", "studioToast", "readerModalCaption",
+    "loveWorldHeadingCopy"
   ];
   var textOriginals = new WeakMap();
   var attrOriginals = new WeakMap();
