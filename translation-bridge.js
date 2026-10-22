@@ -428,6 +428,47 @@
         return translated;
       });
     },
+    translateMarkup: async function (markup, language) {
+      var target = canonicalLanguage(language || activeLanguage || selectedLanguage());
+      if (target === SOURCE_LANGUAGE) return String(markup || "");
+      var staging = document.createElement("div");
+      staging.className = "notranslate";
+      staging.setAttribute("translate", "no");
+      staging.setAttribute("aria-hidden", "true");
+      staging.style.cssText = "position:fixed;left:-100000px;top:0;width:min(980px,100vw);max-height:90vh;overflow:hidden;opacity:.01;pointer-events:none;z-index:-1;";
+      staging.innerHTML = String(markup || "");
+      document.body.appendChild(staging);
+      try {
+        var records = collectRecords([staging]);
+        var sources = Array.from(new Set(records.map(function (record) { return record.source; }).filter(meaningful)));
+        var translations = new Map();
+        var nextIndex = 0;
+        async function worker() {
+          while (nextIndex < sources.length) {
+            if (selectedLanguage() !== target) throw new Error("Language changed while preparing the exported story");
+            var source = sources[nextIndex++];
+            try {
+              var translated = await window.LovenaTranslationBridge.translateText(source, target);
+              translations.set(source, translated);
+            } catch (error) {}
+            await wait(90);
+          }
+        }
+        await Promise.all([worker(), worker()]);
+        records.forEach(function (record) {
+          if (!record.node || !record.node.isConnected) return;
+          var element = record.type === "text" ? record.node.parentElement : record.node;
+          if (isUserAuthoredElement(element)) return;
+          var translated = translations.get(record.source);
+          if (typeof translated !== "string") return;
+          if (record.type === "text") record.node.nodeValue = translated;
+          else record.node.setAttribute(record.attribute, translated);
+        });
+        return staging.innerHTML;
+      } finally {
+        if (staging.parentNode) staging.parentNode.removeChild(staging);
+      }
+    },
     isUserAuthored: isUserAuthoredElement
   };
 
