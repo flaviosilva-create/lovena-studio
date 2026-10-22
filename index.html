@@ -2221,6 +2221,81 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #c8
  #lp-ending .lp-ending-heart{animation:none!important}
 }
 
+
+/* MOBILE STABILITY FIX — vertical-only page gesture, no sideways drift */
+@media (max-width:760px){
+ html:has(#readerOverlay:not([hidden])),
+ body:has(#readerOverlay:not([hidden])),
+ body.lp-export-body{
+  max-width:100%!important;
+  overflow-x:clip!important;
+  overscroll-behavior-x:none!important;
+ }
+ .reader-overlay{
+  left:0!important;right:0!important;width:100%!important;max-width:100vw!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  overscroll-behavior-x:none!important;
+  touch-action:pan-y pinch-zoom!important;
+ }
+ .reader-shell{
+  box-sizing:border-box!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;margin:0!important;padding-left:7px!important;padding-right:7px!important;
+  overflow-x:clip!important;overscroll-behavior-x:none!important;
+ }
+ #readerCard.lovena-onepage,.lp-story,.lp-story .lp-section{
+  box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:100%!important;
+ }
+ #readerCard.lovena-onepage{margin-left:auto!important;margin-right:auto!important;overflow:clip!important}
+ .lp-story{overflow-x:clip!important}
+ .lp-story .lp-section{overflow-x:clip!important}
+ .lp-story img,.lp-story iframe,.lp-story video,.lp-story canvas,.lp-story svg{
+  max-width:100%!important;box-sizing:border-box!important;
+ }
+ #lp-cover .lp-scrapbook-opening-board{
+  box-sizing:border-box!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;margin-left:auto!important;margin-right:auto!important;
+ }
+ #lp-cover .lp-opening-polaroids{
+  box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;
+  grid-template-columns:minmax(0,1.03fr) minmax(0,.97fr)!important;
+ }
+ #lp-cover .lp-opening-polaroids .lp-polaroid{min-width:0!important;max-width:100%!important;transform:none!important}
+ #lp-cover .lp-opening-polaroids .lp-polaroid:hover{transform:none!important}
+ #lp-cover .lp-scrapbook-center-note{max-width:calc(100% - 20px)!important;box-sizing:border-box!important}
+ #lp-music,.lp-story .lp-music-compact,.lp-story .lp-music-compact-player{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+ #lp-music .reader-track-frame{width:100%!important;max-width:100%!important}
+ #lp-gallery .lp-gallery-heading,#lp-gallery .lp-gallery-grid{width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+ #lp-gallery .lp-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #lp-gallery .lp-gallery-grid .lp-polaroid{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+ #lp-letter .lp-scrapbook-board{
+  width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
+  grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)!important;
+  padding-left:11px!important;padding-right:11px!important;gap:9px!important;
+ }
+ #lp-letter .lp-scrapbook-board>*{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+ #lp-letter .lp-scrap-postmark{right:2px!important}
+ #lp-letter .lp-scrap-center-quote{right:2px!important;max-width:calc(100% - 8px)!important;width:78%!important;transform:none!important}
+ #lp-letter .lp-scrap-photo-main{min-width:0!important;max-width:100%!important}
+ #lp-letter .lp-scrap-letter-sheet{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important}
+ #lp-letter .lp-scrap-note-bottom{min-width:0!important;max-width:100%!important}
+ #lp-letter .lp-scrap-you-me,#lp-letter .lp-scrap-note-top,#lp-letter .lp-scrap-quote-pink,
+ #lp-letter .lp-scrap-photo-main,#lp-letter .lp-scrap-letter-sheet,#lp-letter .lp-scrap-polaroid,
+ #lp-letter .lp-scrap-note-bottom{transform:none!important}
+ #lp-interactions .lp-interaction-grid,#lp-interactions .lp-interaction-card{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+ #lp-ending,#lp-scratch,.lp-custom-section{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+ .lp-story .lp-section-marker{max-width:calc(100% - 28px)!important;box-sizing:border-box!important}
+ .lp-story .lp-section-title,.lp-story p,.lp-story h1,.lp-story h2,.lp-story h3,.lp-story a{
+  overflow-wrap:anywhere;
+ }
+ /* Keep the genuine scratch gesture working while the rest of the page only pans vertically. */
+ #lp-scratch .lp-scratch-canvas{touch-action:none!important}
+ #readerPhotoOverlay{max-width:100vw!important;overflow:hidden!important;box-sizing:border-box!important}
+ #readerPhotoOverlay .reader-photo-lightbox{width:min(100%,620px)!important;max-width:100%!important;box-sizing:border-box!important}
+ #readerPhotoOverlay img{max-width:100%!important}
+}
+/* Exported recipient pages must not gain a horizontal scroll track from rotated paper edges. */
+body.lp-export-body{max-width:100%;overflow-x:clip}
+
 </style>
 </head>
 <body>
