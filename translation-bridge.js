@@ -48,7 +48,8 @@
     refreshTimer = window.setTimeout(function() {
       refreshTimer = 0;
       var selector = getSelector();
-      if (!selector || refreshing) return;
+      if (!selector) return;
+      if (refreshing) { refreshDynamicContent(400); return; }
       var language = currentLanguage();
       if (!language || language === SOURCE_LANGUAGE) {
         saveLanguage(SOURCE_LANGUAGE);
