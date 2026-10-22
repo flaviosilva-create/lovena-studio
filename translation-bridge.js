@@ -1,14 +1,12 @@
 (function () {
   "use strict";
 
-  // Static landing-page content is handled by GTranslate. Lovena renders its
-  // creator and recipient experience with JavaScript, so those roots use this
-  // small batched translator and are excluded from the widget to avoid races.
+  // GTranslate translates the static landing page. The creator and recipient
+  // experience is rendered by JavaScript, so this bridge translates those
+  // specific DOM roots separately and leaves the rest of the page to GTranslate.
   var SOURCE_LANGUAGE = "en";
-  var TRANSLATE_ENDPOINT = "https://translate-pa.googleapis.com/v1/translateHtml";
-  // Public key used by Google's web translation widget (not a private project key).
-  var TRANSLATE_KEY = "AIzaSyBWDj0QJvVIx8XOhRegXX5_SrRWxhT5Hs4";
-  var CACHE_KEY = "lovenaDynamicTranslationCacheV1";
+  var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
+  var CACHE_KEY = "lovenaDynamicTranslationCacheV2";
   var ROOT_IDS = [
     "studioStepBody", "studioControls", "studioStepNav", "studioMiniPreview",
     "readerCard", "readerProgress", "studioToast", "readerModalCaption"
@@ -50,11 +48,13 @@
   function selectedLanguage() {
     var selector = selectorElement();
     if (selector && selector.value) return canonicalLanguage(selector.value);
-    var cookieMatch = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
-    if (cookieMatch) {
-      var parts = decodeURIComponent(cookieMatch[1]).split("/");
-      if (parts.length) return canonicalLanguage(parts[parts.length - 1]);
-    }
+    try {
+      var cookieMatch = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
+      if (cookieMatch) {
+        var parts = decodeURIComponent(cookieMatch[1]).split("/");
+        if (parts.length) return canonicalLanguage(parts[parts.length - 1]);
+      }
+    } catch (error) {}
     return readSavedLanguage();
   }
 
@@ -76,8 +76,7 @@
 
   function persistCache() {
     try {
-      var tail = Array.from(cache.entries()).slice(-500);
-      localStorage.setItem(CACHE_KEY, JSON.stringify(tail));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(Array.from(cache.entries()).slice(-500)));
     } catch (error) {}
   }
 
@@ -112,11 +111,9 @@
 
   function collectRecords(rootList) {
     var records = [];
-    var seen = new Set();
-    var walker;
     rootList.forEach(function (root) {
       if (!root || !root.isConnected) return;
-      walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
         acceptNode: function (node) {
           if (!node.parentElement) return NodeFilter.FILTER_REJECT;
           var tag = node.parentElement.tagName;
@@ -128,10 +125,7 @@
       });
       var node;
       while ((node = walker.nextNode())) {
-        var source = originalText(node);
-        var key = "text\u0000" + source;
-        if (!seen.has(key)) { seen.add(key); records.push({ type: "text", node: node, source: source }); }
-        else records.push({ type: "text", node: node, source: source });
+        records.push({ type: "text", node: node, source: originalText(node) });
       }
 
       var elements = [root].concat(Array.from(root.querySelectorAll("*")));
@@ -139,10 +133,8 @@
         if (!element.isConnected) return;
         ["placeholder", "title", "aria-label", "alt"].forEach(function (name) {
           if (!element.hasAttribute(name)) return;
-          if (element.matches("input,textarea") && name === "value") return;
           var source = rememberAttribute(element, name);
-          if (!meaningful(source)) return;
-          records.push({ type: "attr", node: element, attribute: name, source: source });
+          if (meaningful(source)) records.push({ type: "attr", node: element, attribute: name, source: source });
         });
       });
     });
@@ -151,43 +143,74 @@
 
   function restoreEnglish(records) {
     records.forEach(function (record) {
-      if (record.type === "text") {
-        if (record.node && record.node.isConnected) record.node.nodeValue = record.source;
-      } else if (record.node && record.node.isConnected) {
-        record.node.setAttribute(record.attribute, record.source);
-      }
+      if (!record.node || !record.node.isConnected) return;
+      if (record.type === "text") record.node.nodeValue = record.source;
+      else record.node.setAttribute(record.attribute, record.source);
     });
   }
 
-  async function requestBatch(texts, language) {
-    var clientModes = ["wt_lib", "te"];
-    var lastError = null;
-    for (var modeIndex = 0; modeIndex < clientModes.length; modeIndex++) {
+  function wait(ms) {
+    return new Promise(function (resolve) { window.setTimeout(resolve, ms); });
+  }
+
+  async function translateOne(text, language) {
+    var url = new URL(TRANSLATE_ENDPOINT);
+    url.searchParams.set("client", "gtx");
+    url.searchParams.set("sl", SOURCE_LANGUAGE);
+    url.searchParams.set("tl", language);
+    url.searchParams.set("dt", "t");
+    url.searchParams.set("q", text);
+
+    var lastError;
+    for (var attempt = 0; attempt < 2; attempt++) {
       try {
-        var response = await fetch(TRANSLATE_ENDPOINT, {
-          method: "POST",
+        var response = await fetch(url.toString(), {
+          method: "GET",
           mode: "cors",
           credentials: "omit",
-          headers: {
-            "Content-Type": "application/json+protobuf",
-            "X-Goog-API-Key": TRANSLATE_KEY
-          },
-          body: JSON.stringify([[texts, SOURCE_LANGUAGE, language], clientModes[modeIndex]])
+          headers: { "Accept": "application/json" }
         });
-        if (!response.ok) throw new Error("Translation service returned HTTP " + response.status);
-        var data = await response.json();
-        var translated = data && data[0];
-        if (!Array.isArray(translated) || translated.length !== texts.length) {
-          throw new Error("Unexpected translation response");
+        if (response.status === 429 && attempt === 0) {
+          await wait(900);
+          continue;
         }
-        return translated.map(function (value, index) {
-          return typeof value === "string" && value.trim() ? value : texts[index];
-        });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        var data = await response.json();
+        var segments = data && data[0];
+        var translated = Array.isArray(segments) ? segments.map(function (part) { return part && part[0] || ""; }).join("") : "";
+        if (!translated) throw new Error("No translated text returned");
+        return translated;
       } catch (error) {
         lastError = error;
+        if (attempt === 0) await wait(250);
       }
     }
-    throw lastError || new Error("Translation service unavailable");
+    throw lastError || new Error("Translation request failed");
+  }
+
+  async function requestBatch(texts, language, token) {
+    var results = new Array(texts.length);
+    var nextIndex = 0;
+    var failures = [];
+    async function worker() {
+      while (true) {
+        if (token !== generation || selectedLanguage() !== language) return;
+        var index = nextIndex++;
+        if (index >= texts.length) return;
+        try {
+          results[index] = await translateOne(texts[index], language);
+        } catch (error) {
+          results[index] = null;
+          failures.push({ source: texts[index], error: error });
+        }
+        await wait(85);
+      }
+    }
+    await Promise.all([worker(), worker(), worker()]);
+    if (failures.length === texts.length && texts.length) {
+      throw new Error("The free translation endpoint rejected every text request: " + failures[0].error.message);
+    }
+    return results;
   }
 
   async function translateSources(sources, language, token) {
@@ -196,76 +219,45 @@
     sources.forEach(function (source) {
       var key = cacheKey(language, source);
       if (cache.has(key)) results.set(source, cache.get(key));
-      else if (!results.has(source)) missing.push(source);
+      else if (missing.indexOf(source) === -1) missing.push(source);
     });
 
-    // Batch a small number of UI strings per request and cap payload size.
-    var batches = [];
-    var batch = [], batchChars = 0;
-    missing.forEach(function (source) {
-      var size = source.length;
-      if (batch.length >= 25 || (batch.length && batchChars + size > 4200)) {
-        batches.push(batch); batch = []; batchChars = 0;
-      }
-      batch.push(source); batchChars += size;
-    });
-    if (batch.length) batches.push(batch);
-
-    for (var i = 0; i < batches.length; i++) {
+    // Keep a low request rate to reduce the risk of temporary service limits.
+    for (var start = 0; start < missing.length; start += 18) {
       if (token !== generation || selectedLanguage() !== language) return results;
+      var batch = missing.slice(start, start + 18);
       try {
-        var translations = await requestBatch(batches[i], language);
-        batches[i].forEach(function (source, index) {
-          var translated = translations[index] || source;
-          cache.set(cacheKey(language, source), translated);
-          results.set(source, translated);
+        var translations = await requestBatch(batch, language, token);
+        batch.forEach(function (source, index) {
+          var translated = translations[index];
+          if (typeof translated === "string" && translated.trim()) {
+            results.set(source, translated);
+            if (translated !== source) cache.set(cacheKey(language, source), translated);
+          }
         });
         persistCache();
       } catch (error) {
-        // A second, keyless endpoint is only a best-effort fallback. The
-        // GTranslate widget still handles ordinary static page text.
-        var fallbackSuccesses = 0;
-        for (var j = 0; j < batches[i].length; j++) {
-          if (token !== generation || selectedLanguage() !== language) return results;
-          var fallbackSource = batches[i][j];
-          try {
-            var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=" +
-              encodeURIComponent(language) + "&dt=t&q=" + encodeURIComponent(fallbackSource);
-            var fallbackResponse = await fetch(url, { mode: "cors", credentials: "omit" });
-            if (!fallbackResponse.ok) continue;
-            var fallbackData = await fallbackResponse.json();
-            var segments = fallbackData && fallbackData[0];
-            var fallbackText = Array.isArray(segments) ? segments.map(function (item) { return item[0] || ""; }).join("") : "";
-            if (fallbackText) {
-              cache.set(cacheKey(language, fallbackSource), fallbackText);
-              results.set(fallbackSource, fallbackText);
-              fallbackSuccesses++;
-            }
-          } catch (fallbackError) {}
-        }
-        persistCache();
-        if (!fallbackSuccesses) console.warn("Lovena could not reach its dynamic translation service for language:", language, error);
+        console.warn("Lovena dynamic translation could not process a text batch:", language, error);
       }
-      if (i < batches.length - 1) await new Promise(function (resolve) { window.setTimeout(resolve, 180); });
+      if (start + 18 < missing.length) await wait(180);
     }
     return results;
   }
 
   async function applyLanguage(language, token) {
-    var rootList = getRoots();
-    var records = collectRecords(rootList);
+    var records = collectRecords(getRoots());
     if (language === SOURCE_LANGUAGE) {
       restoreEnglish(records);
       return;
     }
-    var sourceList = Array.from(new Set(records.map(function (record) { return record.source; }).filter(meaningful)));
-    if (!sourceList.length) return;
-    var translations = await translateSources(sourceList, language, token);
+    var sources = Array.from(new Set(records.map(function (record) { return record.source; }).filter(meaningful)));
+    if (!sources.length) return;
+    var translations = await translateSources(sources, language, token);
     if (token !== generation || selectedLanguage() !== language) return;
     records.forEach(function (record) {
       if (!record.node || !record.node.isConnected) return;
       var translated = translations.get(record.source);
-      if (!translated) return;
+      if (typeof translated !== "string") return;
       if (record.type === "text") record.node.nodeValue = translated;
       else record.node.setAttribute(record.attribute, translated);
     });
@@ -280,14 +272,13 @@
       activeLanguage = selectedLanguage();
       saveLanguage(activeLanguage);
       if (activeLanguage === SOURCE_LANGUAGE) {
-        var rootsNow = getRoots();
-        restoreEnglish(collectRecords(rootsNow));
+        restoreEnglish(collectRecords(getRoots()));
         return;
       }
       if (running) { pending = true; return; }
       running = true;
       applyLanguage(activeLanguage, token).catch(function (error) {
-        console.warn("Lovena dynamic translation could not be completed:", error);
+        console.warn("Lovena dynamic translation is currently unavailable:", error);
       }).finally(function () {
         running = false;
         if (pending) { pending = false; scheduleTranslation(100); }
@@ -299,7 +290,6 @@
     getRoots();
     if (!observer) {
       observer = new MutationObserver(function (mutations) {
-        // Ignore attribute and character-data changes made by this translator.
         var hasNewNodes = mutations.some(function (mutation) {
           return mutation.type === "childList" && (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0);
         });
@@ -328,7 +318,6 @@
       else if (readSavedLanguage() !== SOURCE_LANGUAGE) scheduleTranslation(200);
       return;
     }
-
     var saved = readSavedLanguage();
     var active = canonicalLanguage(selector.value || SOURCE_LANGUAGE);
     if (saved !== SOURCE_LANGUAGE && saved !== active) {
