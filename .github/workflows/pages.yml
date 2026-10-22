@@ -94,10 +94,12 @@ jobs:
           node <<'NODE'
           const fs = require("fs");
           const src = fs.readFileSync("/tmp/lovena-inline.js", "utf8");
-          const match = src.match(/var exportScript\s*=\s*([\s\S]*?);\s*\n\s*var doc=/);
-          if (!match) throw new Error("Standalone story export was not found");
+          const exportStart = src.indexOf("var exportScript=");
+          const exportEnd = src.indexOf(";\\n function localizeExportScript", exportStart);
+          if (exportStart < 0 || exportEnd < 0) throw new Error("Standalone story export was not found");
+          const exportExpression = src.slice(exportStart + "var exportScript=".length, exportEnd).trim();
           const exportLabels = {forWord:"For",someoneSpecial:"someone special",topbarSmall:"A story made just for you",topbarTagline:"A personal keepsake ♡",scratchPrompt:"scratch gently to open",scratchSubline:"little things are waiting underneath",wallEmpty:"The wall is waiting for its first little message.",friend:"A friend"};
-          const generated = Function("state", "exportLabels", "return (" + match[1] + ");")({recipient:"Lovena Validation"}, exportLabels);
+          const generated = Function("state", "exportLabels", "return (" + exportExpression + ");")({recipient:"Lovena Validation"}, exportLabels);
           const embedded = generated.match(/<script>([\s\S]*?)<\/script>/);
           if (!embedded) throw new Error("Standalone story script was not generated");
           fs.writeFileSync("/tmp/lovena-export.js", embedded[1]);
