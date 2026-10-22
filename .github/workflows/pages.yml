@@ -52,8 +52,14 @@ jobs:
               raise SystemExit("Authored text must be excluded from automatic translation")
           if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
               raise SystemExit("User-authored field tracking is missing")
-          if 'translation-bridge.js?v=20261022-mobile-language-5' not in html:
+          if 'translation-bridge.js?v=20261022-mobile-language-6' not in html:
               raise SystemExit("Mobile browser cache-bust version is missing")
+          if "translateMarkup: async function (markup, language)" not in bridge:
+              raise SystemExit("Standalone story localization is missing")
+          if "async function downloadStory()" not in html or "bridge.translateMarkup(storyMarkup,exportLanguage)" not in html:
+              raise SystemExit("The downloadable story is not using the selected language")
+          if 'bridge.translateText("scratch gently to open",language)' not in html:
+              raise SystemExit("Scratch-to-reveal labels are not localized")
           if "translate.googleapis.com/translate_a/single" not in bridge:
               raise SystemExit("Dynamic UI translation engine is missing")
           if 'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];' not in bridge:
