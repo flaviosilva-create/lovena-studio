@@ -416,7 +416,7 @@
   loadCache();
   window.LovenaTranslationBridge = {
     refresh: function () { observeRoots(); scheduleTranslation(180); },
-    language: function () { return activeLanguage || selectedLanguage(); },
+    language: function () { return selectedLanguage() || activeLanguage; },
     translateText: function (text, language) {
       var target = canonicalLanguage(language || activeLanguage || selectedLanguage());
       if (!meaningful(text) || target === SOURCE_LANGUAGE) return Promise.resolve(text);
