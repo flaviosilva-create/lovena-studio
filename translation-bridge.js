@@ -120,7 +120,7 @@
         acceptNode: function (node) {
           if (!node.parentElement) return NodeFilter.FILTER_REJECT;
           var tag = node.parentElement.tagName;
-          if (["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA", "OPTION"].includes(tag) === false &&
+          if (["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA"].includes(tag) ||
               node.parentElement.closest("textarea,[contenteditable='true']")) return NodeFilter.FILTER_REJECT;
           var original = originalText(node);
           return meaningful(original) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
