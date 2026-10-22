@@ -32,9 +32,16 @@ jobs:
           scripts = re.findall(r"<script>\s*(.*?)\s*</script>", html, re.S)
           if len(scripts) != 1:
               raise SystemExit(f"Expected one inline script, found {len(scripts)}")
+          if 'default_language: "en"' not in html:
+              raise SystemExit("Lovena source language must remain English")
+          if html.count("https://cdn.gtranslate.net/widgets/latest/dropdown.js") != 1:
+              raise SystemExit("Expected exactly one GTranslate widget")
+          if "google_translate_element" in html or "translate.google.com/translate_a/element.js" in html:
+              raise SystemExit("Legacy Google Translate widget must not be loaded alongside GTranslate")
           Path("/tmp/lovena-inline.js").write_text(scripts[0], encoding="utf-8")
           PY
           node --check /tmp/lovena-inline.js
+          node --check translation-bridge.js
           node <<'NODE'
           const fs = require("fs");
           const src = fs.readFileSync("/tmp/lovena-inline.js", "utf8");
