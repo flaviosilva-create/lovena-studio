@@ -44,6 +44,10 @@ jobs:
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
           if "translate.googleapis.com/translate_a/single" not in bridge:
               raise SystemExit("Dynamic UI translation engine is missing")
+          if 'var lang = (parts[0] || SOURCE_LANGUAGE).trim();' not in bridge:
+              raise SystemExit("GTranslate target-language parsing is incorrect")
+          if '"studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"' not in bridge:
+              raise SystemExit("Full creator/preview translation roots are missing")
           if "function renderStudio(){renderBody();if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}" not in html:
               raise SystemExit("Creator render is not wired to the translation bridge")
           Path("/tmp/lovena-inline.js").write_text(scripts[0], encoding="utf-8")
