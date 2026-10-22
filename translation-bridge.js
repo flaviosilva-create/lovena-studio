@@ -160,25 +160,34 @@
   }
 
   async function requestBatch(texts, language) {
-    var response = await fetch(TRANSLATE_ENDPOINT, {
-      method: "POST",
-      mode: "cors",
-      credentials: "omit",
-      headers: {
-        "Content-Type": "application/json+protobuf",
-        "X-Goog-API-Key": TRANSLATE_KEY
-      },
-      body: JSON.stringify([[texts, SOURCE_LANGUAGE, language], "wt_lib"])
-    });
-    if (!response.ok) throw new Error("Translation service returned HTTP " + response.status);
-    var data = await response.json();
-    var translated = data && data[0];
-    if (!Array.isArray(translated) || translated.length !== texts.length) {
-      throw new Error("Unexpected translation response");
+    var clientModes = ["wt_lib", "te"];
+    var lastError = null;
+    for (var modeIndex = 0; modeIndex < clientModes.length; modeIndex++) {
+      try {
+        var response = await fetch(TRANSLATE_ENDPOINT, {
+          method: "POST",
+          mode: "cors",
+          credentials: "omit",
+          headers: {
+            "Content-Type": "application/json+protobuf",
+            "X-Goog-API-Key": TRANSLATE_KEY
+          },
+          body: JSON.stringify([[texts, SOURCE_LANGUAGE, language], clientModes[modeIndex]])
+        });
+        if (!response.ok) throw new Error("Translation service returned HTTP " + response.status);
+        var data = await response.json();
+        var translated = data && data[0];
+        if (!Array.isArray(translated) || translated.length !== texts.length) {
+          throw new Error("Unexpected translation response");
+        }
+        return translated.map(function (value, index) {
+          return typeof value === "string" && value.trim() ? value : texts[index];
+        });
+      } catch (error) {
+        lastError = error;
+      }
     }
-    return translated.map(function (value, index) {
-      return typeof value === "string" && value.trim() ? value : texts[index];
-    });
+    throw lastError || new Error("Translation service unavailable");
   }
 
   async function translateSources(sources, language, token) {
@@ -215,6 +224,7 @@
       } catch (error) {
         // A second, keyless endpoint is only a best-effort fallback. The
         // GTranslate widget still handles ordinary static page text.
+        var fallbackSuccesses = 0;
         for (var j = 0; j < batches[i].length; j++) {
           if (token !== generation || selectedLanguage() !== language) return results;
           var fallbackSource = batches[i][j];
@@ -229,10 +239,12 @@
             if (fallbackText) {
               cache.set(cacheKey(language, fallbackSource), fallbackText);
               results.set(fallbackSource, fallbackText);
+              fallbackSuccesses++;
             }
           } catch (fallbackError) {}
         }
         persistCache();
+        if (!fallbackSuccesses) console.warn("Lovena could not reach its dynamic translation service for language:", language, error);
       }
       if (i < batches.length - 1) await new Promise(function (resolve) { window.setTimeout(resolve, 180); });
     }
