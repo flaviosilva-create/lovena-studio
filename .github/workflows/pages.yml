@@ -50,7 +50,17 @@ jobs:
           PY
           node --check /tmp/lovena-inline.js
           node --check translation-bridge.js
+          node <<'NODE'
+          const fs = require("fs");
+          const src = fs.readFileSync("/tmp/lovena-inline.js", "utf8");
+          const match = src.match(/var exportScript\s*=\s*([\s\S]*?);\s*\n\s*var doc=/);
+          if (!match) throw new Error("Standalone story export was not found");
+          const generated = Function("state", "return (" + match[1] + ");")({recipient:"Lovena Validation"});
+          const embedded = generated.match(/<script>([\s\S]*?)<\\/script>/);
+          if (!embedded) throw new Error("Standalone story script was not generated");
+          fs.writeFileSync("/tmp/lovena-export.js", embedded[1]);
           NODE
+          node --check /tmp/lovena-export.js
       - name: Smoke test dynamic translation provider (non-blocking)
         continue-on-error: true
         run: |
@@ -85,24 +95,6 @@ jobs:
             }
           })().catch(error => console.log("Non-blocking translation probe error: " + error.message));
           NODE
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-          const fs = require("fs");
-          const src = fs.readFileSync("/tmp/lovena-inline.js", "utf8");
-          const match = src.match(/var exportScript\s*=\s*([\s\S]*?);\s*\n\s*var doc=/);
-          if (!match) throw new Error("Standalone story export was not found");
-          const generated = Function("state", "return (" + match[1] + ");")({recipient:"Lovena Validation"});
-          const embedded = generated.match(/<script>([\s\S]*?)<\/script>/);
-          if (!embedded) throw new Error("Standalone story script was not generated");
-          fs.writeFileSync("/tmp/lovena-export.js", embedded[1]);
-          NODE
-          node --check /tmp/lovena-export.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
