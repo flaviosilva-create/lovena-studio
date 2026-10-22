@@ -100,7 +100,7 @@ button{font:inherit;cursor:pointer}
 .pricing .primary{width:100%;margin-top:5px}
 .photo-credit{font-size:10px;color:#929398}.photo-credit a{text-decoration:underline;text-underline-offset:3px}.foot{border-top:1px solid var(--line);padding:28px;display:flex;justify-content:space-between;gap:15px;max-width:1180px;margin:auto;color:#77797e;font-size:11px;background:rgba(255,255,255,.72)}
 .heart{color:var(--pink)}
-@media(max-width:800px){
+.studio-language-picker{min-height:32px;padding:4px 8px;gap:4px}.studio-language-picker .language-picker-label{display:inline;font-size:8px}.studio-language-picker .gtranslate_wrapper select,.studio-language-picker .gt_selector{min-width:96px;width:112px;max-width:112px;font-size:10px!important}@media(max-width:700px){.studio-language-picker .language-picker-label{display:none}.studio-language-picker{padding:4px 6px;min-height:30px}.studio-language-picker .gtranslate_wrapper select,.studio-language-picker .gt_selector{width:92px;max-width:92px;min-width:0}}@media(max-width:800px){
   .nav{height:68px;padding:0 20px}.navlinks{gap:10px}.navlinks a:not(.navcta){display:none}
   .hero{grid-template-columns:1fr;padding:5.5rem 22px 55px;gap:12px;min-height:0}
   .geo-grid{background-size:72px 72px}
@@ -2396,6 +2396,7 @@ body.lp-export-body{max-width:100%;overflow-x:clip}
       <span class="studio-eyebrow">Your story studio<br>Made just for someone</span>
     </div>
     <div class="studio-top-actions">
+      <label class="language-picker studio-language-picker" aria-label="Choose creation language"><span class="language-picker-label">Language</span><span class="gtranslate_wrapper studio-gtranslate-wrapper" aria-label="Choose creation language"></span></label>
       <button type="button" class="studio-quiet-btn" data-action="preview-story">Preview</button>
       <button type="button" class="studio-quiet-btn" data-action="save-draft">Save draft</button>
       <button type="button" class="studio-icon-btn" data-action="close-studio" aria-label="Close creator">×</button>
