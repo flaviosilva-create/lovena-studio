@@ -38,7 +38,7 @@ jobs:
               raise SystemExit("Expected exactly one GTranslate widget")
           if "google_translate_element" in html or "translate.google.com/translate_a/element.js" in html:
               raise SystemExit("Legacy Google Translate widget must not be loaded alongside GTranslate")
-          for element_id in ["studioStepBody", "studioControls", "studioStepNav", "studioMiniPreview", "studioProgressCaption", "readerCard", "readerProgress", "loveWorldHeadingCopy"]:
+          for element_id in ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"]:
               if f'id="{element_id}"' not in html:
                   raise SystemExit(f"Missing dynamic translation root: {element_id}")
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
