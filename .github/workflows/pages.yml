@@ -52,7 +52,7 @@ jobs:
               raise SystemExit("Authored text must be excluded from automatic translation")
           if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
               raise SystemExit("User-authored field tracking is missing")
-          if 'translation-bridge.js?v=20261022-mobile-language-7' not in html:
+          if 'translation-bridge.js?v=20261022-mobile-language-8' not in html:
               raise SystemExit("Mobile browser cache-bust version is missing")
           if 'language: function () { return selectedLanguage() || activeLanguage; }' not in bridge:
               raise SystemExit("Translation bridge must read the current language selector")
@@ -60,6 +60,8 @@ jobs:
               raise SystemExit("Standalone story localization is missing")
           if "async function downloadStory()" not in html or "bridge.translateMarkup(storyMarkup,exportLanguage)" not in html:
               raise SystemExit("The downloadable story is not using the selected language")
+          if "function localizeExportScript(script,labels)" not in html or "localizeExportScript(exportScript,exportLabels)" not in html:
+              raise SystemExit("Localized standalone interaction labels are missing")
           if 'bridge.translateText("scratch gently to open",language)' not in html:
               raise SystemExit("Scratch-to-reveal labels are not localized")
           if "translate.googleapis.com/translate_a/single" not in bridge:
