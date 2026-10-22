@@ -1476,7 +1476,7 @@ var studio=document.getElementById("studioOverlay"),reader=document.getElementBy
 function esc(value){return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
 function br(value){return esc(value).replace(/\r?\n/g,"<br>");}
 function safeUrl(value){try{var u=new URL(value);if(u.protocol==="https:"||u.protocol==="http:")return u.href;}catch(e){}return "";}
-function toast(message){var node=document.getElementById("studioToast");node.textContent=message;node.classList.add("show");if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){node.classList.remove("show");},2800);}
+function toast(message){var node=document.getElementById("studioToast");node.textContent=message;node.classList.add("show");if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){node.classList.remove("show");},2800);if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}
 function storeDraft(show){try{localStorage.setItem("lovenaStudioDraftV1",JSON.stringify(state));if(show)toast("Your draft is saved on this device ♡");return true;}catch(e){if(show)toast("Draft could not be saved. Try using fewer or smaller photos.");return false;}}
 function themeName(){return state.theme==="classic"?"Quiet classic":state.theme==="midnight"?"After hours":"Soft rose";}
 function coverBackground(){return state.theme==="classic"?"#eeece8":state.theme==="midnight"?"#39343a":"#f3e7e3";}
@@ -1741,7 +1741,7 @@ function downloadDoodle(){
 }
 function showPhoto(ix){
  var photo=state.photos[ix];if(!photo)return;
- document.getElementById("readerModalPhoto").src=photo;document.getElementById("readerModalCaption").textContent=state.captions[ix]||"A little moment, kept close";document.getElementById("readerPhotoOverlay").hidden=false;
+ document.getElementById("readerModalPhoto").src=photo;document.getElementById("readerModalCaption").textContent=state.captions[ix]||"A little moment, kept close";document.getElementById("readerPhotoOverlay").hidden=false;if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();
 }
 function showLetterPhoto(ix){
  var photo=Array.isArray(state.letterPhotos)?state.letterPhotos[ix]:"";
@@ -1749,6 +1749,7 @@ function showLetterPhoto(ix){
  document.getElementById("readerModalPhoto").src=photo;
  document.getElementById("readerModalCaption").textContent=ix===0?"A memory chosen for the letter":"A second memory chosen for the letter";
  document.getElementById("readerPhotoOverlay").hidden=false;
+ if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();
 }
 function spawnHearts(){
  var zone=document.getElementById("readerHeartBurst");if(!zone)return;
