@@ -1,52 +1,110 @@
-
 (function(){
   "use strict";
-  window.googleTranslateElementInit=function(){
-    if(!window.google||!google.translate||!google.translate.TranslateElement)return;
-    new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,pt,es,fr,de,it,nl,sv,da,no,fi,pl,cs,sk,sl,hr,sr,bs,bg,ro,hu,el,ru,uk,tr,ar,he,fa,ur,hi,bn,ta,te,ml,mr,gu,pa,ne,si,th,vi,id,ms,tl,sw,am,ha,yo,ig,zu,xh,af,so,ps,ku,az,hy,ka,kk,uz,mn,my,km,lo,ja,ko,zh-CN,zh-TW,et,lv,lt,ga,cy,eu,gl,ca,sq,mk,be,lb,mt,fy,yi,ny,sn,sd,tg,ky,tk,tt,ug,or,as,ckb,qu,pap,co,ilo,war,bho,ace,ban,min,rom,sah,ti,oc,br,rn,rw,ak,bm,ee,kab,kri,st,tn,tiv",autoDisplay:false,multilanguagePage:true}, "google_translate_element");
-    syncLanguageControl();
-  };
-  function normalizeLang(v){return String(v||"").split("|").pop().toLowerCase();}
-  function syncLanguageControl(){
-    var visible=document.querySelector(".gtranslate_wrapper select,.gt_selector");
-    var hidden=document.querySelector("#google_translate_element select");
-    if(!visible||!hidden)return;
-    var current=normalizeLang(visible.value);
-    if(current && hidden.value!==current)hidden.value=current;
+  /*
+   * Lovena Studio uses GTranslate as its single translation engine.
+   * The source language is English. Do not load the retired Google Website
+   * Translator in parallel; two engines were competing for the same page.
+   */
+  var SOURCE_LANGUAGE = "en";
+  var refreshTimer = 0;
+  var refreshing = false;
+  var initialized = false;
+  var startupAttempts = 0;
+
+  function normalizeLanguage(value) {
+    var parts = String(value || "").split("|");
+    return (parts[parts.length - 1] || SOURCE_LANGUAGE).trim().toLowerCase();
   }
-  function changeLanguage(lang){
-    lang=normalizeLang(lang);
-    if(!lang)return;
-    var hidden=document.querySelector("#google_translate_element select");
-    var visible=document.querySelector(".gtranslate_wrapper select,.gt_selector");
-    var target=hidden||visible;
-    if(!target)return;
-    var match=Array.from(target.options||[]).find(function(o){return normalizeLang(o.value)===lang;});
-    if(!match)return;
-    target.value=match.value;
-    target.dispatchEvent(new Event("change",{bubbles:true}));
-    try{localStorage.setItem("lovenaPreferredLanguage",lang)}catch(e){}
+  function getSelector() {
+    return document.querySelector(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector");
   }
-  document.addEventListener("change",function(e){
-    if(e.target.matches(".gtranslate_wrapper select,.gt_selector"))changeLanguage(e.target.value);
-  },true);
-  var observer=new MutationObserver(function(){
-    var select=document.querySelector(".gtranslate_wrapper select,.gt_selector");
-    if(select&&!select.dataset.lovenaBound){
-      select.dataset.lovenaBound="1";
-      var preferred="en";try{preferred=localStorage.getItem("lovenaPreferredLanguage")||"en"}catch(e){}
-      if(preferred!=="en")setTimeout(function(){changeLanguage(preferred)},250);
+  function findOption(selector, language) {
+    if (!selector || !selector.options) return null;
+    language = normalizeLanguage(language);
+    for (var i = 0; i < selector.options.length; i++) {
+      if (normalizeLanguage(selector.options[i].value) === language) return selector.options[i];
     }
-  });
-  function watchDynamicContent(){
-    ["studioStepBody","studioControls","studioStepNav","studioMiniPreview","readerCard","readerProgress"].forEach(function(id){
-      var el=document.getElementById(id);if(el)observer.observe(el,{childList:true,subtree:true,characterData:true});
-    });
+    return null;
   }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watchDynamicContent);else watchDynamicContent();
-  var script=document.createElement("script");
-  script.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-  script.async=true;script.onerror=function(){console.warn("Google Translate could not be loaded; check network/ad-blocking settings.")};
-  document.head.appendChild(script);
-  window.addEventListener("load",function(){setTimeout(syncLanguageControl,700)});
+  function readSavedLanguage() {
+    try { return normalizeLanguage(localStorage.getItem("lovenaPreferredLanguage") || SOURCE_LANGUAGE); }
+    catch (error) { return SOURCE_LANGUAGE; }
+  }
+  function saveLanguage(language) {
+    language = normalizeLanguage(language);
+    try { localStorage.setItem("lovenaPreferredLanguage", language); } catch (error) {}
+    document.documentElement.setAttribute("lang", language);
+    document.documentElement.setAttribute("data-lovena-language", language);
+  }
+  function currentLanguage() {
+    var selector = getSelector();
+    if (selector && selector.value) return normalizeLanguage(selector.value);
+    return readSavedLanguage();
+  }
+
+  /* Ask the existing GTranslate widget to translate newly-rendered app UI. */
+  function refreshDynamicContent(delay) {
+    if (refreshTimer) window.clearTimeout(refreshTimer);
+    refreshTimer = window.setTimeout(function() {
+      refreshTimer = 0;
+      var selector = getSelector();
+      if (!selector || refreshing) return;
+      var language = currentLanguage();
+      if (!language || language === SOURCE_LANGUAGE) {
+        saveLanguage(SOURCE_LANGUAGE);
+        return;
+      }
+      var option = findOption(selector, language);
+      if (!option) return;
+      refreshing = true;
+      selector.value = option.value;
+      selector.dispatchEvent(new Event("change", { bubbles: true }));
+      window.setTimeout(function() { refreshing = false; }, 1200);
+    }, typeof delay === "number" ? delay : 350);
+  }
+
+  document.addEventListener("change", function(event) {
+    var target = event.target;
+    if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector")) return;
+    if (refreshing) return;
+    saveLanguage(normalizeLanguage(target.value));
+  }, true);
+
+  function initializeWidget() {
+    if (initialized) return;
+    var selector = getSelector();
+    if (!selector) {
+      startupAttempts++;
+      if (startupAttempts < 48) window.setTimeout(initializeWidget, 250);
+      return;
+    }
+    initialized = true;
+    window.setTimeout(function() {
+      var latestSelector = getSelector();
+      if (!latestSelector) { initialized = false; initializeWidget(); return; }
+      var saved = readSavedLanguage();
+      var active = normalizeLanguage(latestSelector.value || SOURCE_LANGUAGE);
+      if (saved !== SOURCE_LANGUAGE && saved !== active) {
+        var option = findOption(latestSelector, saved);
+        if (option) {
+          latestSelector.value = option.value;
+          latestSelector.dispatchEvent(new Event("change", { bubbles: true }));
+          saveLanguage(saved);
+          return;
+        }
+      }
+      saveLanguage(active);
+      if (active !== SOURCE_LANGUAGE) refreshDynamicContent(250);
+    }, 500);
+  }
+
+  window.LovenaTranslationBridge = {
+    refresh: function() { refreshDynamicContent(450); },
+    language: currentLanguage
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeWidget, { once: true });
+  } else {
+    initializeWidget();
+  }
 })();
