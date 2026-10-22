@@ -73,8 +73,11 @@ jobs:
             url.searchParams.set("dt", "t");
             url.searchParams.set("q", "How are you today?");
             try {
-              const response = await fetch(url, { headers: { "Accept": "application/json" } });
+              const origin = "https://flaviosilva-create.github.io";
+              const response = await fetch(url, { headers: { "Accept": "application/json", "Origin": origin } });
               if (!response.ok) throw new Error("HTTP " + response.status);
+              const allowOrigin = response.headers.get("access-control-allow-origin");
+              if (allowOrigin !== "*" && allowOrigin !== origin) throw new Error("CORS does not allow the Lovena origin (header: " + allowOrigin + ")");
               const data = await response.json();
               const translated = Array.isArray(data?.[0]) ? data[0].map(x => x?.[0] || "").join("") : "";
               if (!translated || translated === "How are you today?") throw new Error("No translated text was returned");
