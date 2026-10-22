@@ -6,7 +6,7 @@
   // specific DOM roots separately and leaves the rest of the page to GTranslate.
   var SOURCE_LANGUAGE = "en";
   var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
-  var CACHE_KEY = "lovenaDynamicTranslationCacheV2";
+  var CACHE_KEY = "lovenaDynamicTranslationCacheV3";
   var ROOT_IDS = [
     // Cover the complete creation and preview overlays, including all chrome
     // outside the changing step body: top bar, progress, step navigation,
@@ -55,20 +55,42 @@
     catch (error) { return SOURCE_LANGUAGE; }
   }
 
+  function selectorElements() {
+    return Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector"));
+  }
+
+  function isElementVisible(element) {
+    if (!element || !element.isConnected) return false;
+    var current = element;
+    while (current && current !== document.documentElement) {
+      if (current.hidden || current.getAttribute("aria-hidden") === "true") return false;
+      try {
+        var style = window.getComputedStyle(current);
+        if (style.display === "none" || style.visibility === "hidden") return false;
+      } catch (error) {}
+      current = current.parentElement;
+    }
+    return true;
+  }
+
   function selectorElement() {
-    return document.querySelector(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector");
+    var selectors = selectorElements();
+    return selectors.find(isElementVisible) || selectors[0] || null;
   }
 
   function selectedLanguage() {
-    var selector = selectorElement();
+    var selectors = selectorElements();
+    var selector = selectors.find(isElementVisible) || selectors[0];
     if (selector && selector.value) return canonicalLanguage(selector.value);
     try {
-      var cookieMatch = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
+      var cookieMatch = document.cookie.match(/(?:^|;\\s*)googtrans=([^;]+)/);
       if (cookieMatch) {
         var parts = decodeURIComponent(cookieMatch[1]).split("/");
         if (parts.length) return canonicalLanguage(parts[parts.length - 1]);
       }
     } catch (error) {}
+    var htmlLanguage = document.documentElement.getAttribute("data-lovena-language");
+    if (htmlLanguage) return canonicalLanguage(htmlLanguage);
     return readSavedLanguage();
   }
 
@@ -123,6 +145,10 @@
     return textOriginals.get(node);
   }
 
+  function isUserAuthoredElement(element) {
+    return !!(element && element.closest && element.closest('[data-lovena-user-content="true"]'));
+  }
+
   function collectRecords(rootList) {
     var records = [];
     rootList.forEach(function (root) {
@@ -132,19 +158,18 @@
           if (!node.parentElement) return NodeFilter.FILTER_REJECT;
           var tag = node.parentElement.tagName;
           if (["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA"].includes(tag) ||
-              node.parentElement.closest("textarea,[contenteditable='true']")) return NodeFilter.FILTER_REJECT;
+              node.parentElement.closest("textarea,[contenteditable='true']") ||
+              isUserAuthoredElement(node.parentElement)) return NodeFilter.FILTER_REJECT;
           var original = originalText(node);
           return meaningful(original) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
         }
       });
       var node;
-      while ((node = walker.nextNode())) {
-        records.push({ type: "text", node: node, source: originalText(node) });
-      }
+      while ((node = walker.nextNode())) records.push({ type: "text", node: node, source: originalText(node) });
 
       var elements = [root].concat(Array.from(root.querySelectorAll("*")));
       elements.forEach(function (element) {
-        if (!element.isConnected) return;
+        if (!element.isConnected || isUserAuthoredElement(element)) return;
         ["placeholder", "title", "aria-label", "alt"].forEach(function (name) {
           if (!element.hasAttribute(name)) return;
           var source = rememberAttribute(element, name);
@@ -176,17 +201,20 @@
     url.searchParams.set("q", text);
 
     var lastError;
-    for (var attempt = 0; attempt < 2; attempt++) {
+    for (var attempt = 0; attempt < 4; attempt++) {
+      if (selectedLanguage() !== language) throw new Error("Language changed during translation");
       try {
         var response = await fetch(url.toString(), {
-          method: "GET",
-          mode: "cors",
-          credentials: "omit",
+          method: "GET", mode: "cors", credentials: "omit", cache: "no-store",
           headers: { "Accept": "application/json" }
         });
-        if (response.status === 429 && attempt === 0) {
-          await wait(900);
-          continue;
+        if (response.status === 429 || response.status >= 500) {
+          lastError = new Error("HTTP " + response.status);
+          if (attempt < 3) {
+            await wait(response.status === 429 ? 650 * (attempt + 1) : 350 * (attempt + 1));
+            continue;
+          }
+          throw lastError;
         }
         if (!response.ok) throw new Error("HTTP " + response.status);
         var data = await response.json();
@@ -196,7 +224,7 @@
         return translated;
       } catch (error) {
         lastError = error;
-        if (attempt === 0) await wait(250);
+        if (attempt < 3) await wait(300 * Math.pow(2, attempt));
       }
     }
     throw lastError || new Error("Translation request failed");
@@ -217,10 +245,10 @@
           results[index] = null;
           failures.push({ source: texts[index], error: error });
         }
-        await wait(85);
+        await wait(120);
       }
     }
-    await Promise.all([worker(), worker(), worker()]);
+    // Two concurrent requests lower bursts of HTTP 429s on mobile networks.\n    await Promise.all([worker(), worker()]);
     if (failures.length === texts.length && texts.length) {
       throw new Error("The free translation endpoint rejected every text request: " + failures[0].error.message);
     }
@@ -259,7 +287,11 @@
   }
 
   async function applyLanguage(language, token) {
-    var records = collectRecords(getRoots());
+    var allRoots = getRoots();
+    // Translate only what is actually open; a cold mobile visit should not
+    // request strings from hidden creator and reader overlays at the same time.
+    var rootList = language === SOURCE_LANGUAGE ? allRoots : allRoots.filter(isElementVisible);
+    var records = collectRecords(rootList);
     if (language === SOURCE_LANGUAGE) {
       restoreEnglish(records);
       return;
@@ -268,8 +300,19 @@
     if (!sources.length) return;
     var translations = await translateSources(sources, language, token);
     if (token !== generation || selectedLanguage() !== language) return;
+    var missed = sources.filter(function (source) { return !translations.has(source); }).slice(0, 36);
+    if (missed.length) {
+      await wait(500);
+      if (token === generation && selectedLanguage() === language) {
+        var retried = await translateSources(missed, language, token);
+        retried.forEach(function (value, key) { translations.set(key, value); });
+      }
+    }
+    if (token !== generation || selectedLanguage() !== language) return;
     records.forEach(function (record) {
       if (!record.node || !record.node.isConnected) return;
+      var element = record.type === "text" ? record.node.parentElement : record.node;
+      if (isUserAuthoredElement(element)) return;
       var translated = translations.get(record.source);
       if (typeof translated !== "string") return;
       if (record.type === "text") record.node.nodeValue = translated;
@@ -315,21 +358,41 @@
     });
   }
 
-  document.addEventListener("change", function (event) {
-    var target = event.target;
+  function handleLanguageSelection(event) {
+    var target = event && event.target;
     if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector")) return;
     var language = canonicalLanguage(target.value);
     saveLanguage(language);
-    scheduleTranslation(100);
-  }, true);
+    scheduleTranslation(80);
+  }
+  document.addEventListener("change", handleLanguageSelection, true);
+  document.addEventListener("input", handleLanguageSelection, true);
+
+  function syncLanguageFromWidget() {
+    var language = selectedLanguage();
+    if (language !== activeLanguage) {
+      saveLanguage(language);
+      scheduleTranslation(120);
+    } else if (language !== SOURCE_LANGUAGE) {
+      scheduleTranslation(450);
+    }
+  }
+  window.addEventListener("pageshow", syncLanguageFromWidget);
+  window.addEventListener("focus", syncLanguageFromWidget);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) syncLanguageFromWidget();
+  });
 
   function initializeWidget() {
     observeRoots();
     var selector = selectorElement();
     if (!selector) {
       attempts++;
-      if (attempts < 60) window.setTimeout(initializeWidget, 250);
-      else if (readSavedLanguage() !== SOURCE_LANGUAGE) scheduleTranslation(200);
+      if (attempts < 80) window.setTimeout(initializeWidget, 250);
+      else if (readSavedLanguage() !== SOURCE_LANGUAGE) {
+        saveLanguage(readSavedLanguage());
+        scheduleTranslation(200);
+      }
       return;
     }
     var saved = readSavedLanguage();
@@ -353,7 +416,19 @@
   loadCache();
   window.LovenaTranslationBridge = {
     refresh: function () { observeRoots(); scheduleTranslation(180); },
-    language: function () { return activeLanguage || selectedLanguage(); }
+    language: function () { return activeLanguage || selectedLanguage(); },
+    translateText: function (text, language) {
+      var target = canonicalLanguage(language || activeLanguage || selectedLanguage());
+      if (!meaningful(text) || target === SOURCE_LANGUAGE) return Promise.resolve(text);
+      var key = cacheKey(target, text);
+      if (cache.has(key)) return Promise.resolve(cache.get(key));
+      return translateOne(text, target).then(function (translated) {
+        cache.set(key, translated);
+        persistCache();
+        return translated;
+      });
+    },
+    isUserAuthored: isUserAuthoredElement
   };
 
   if (document.readyState === "loading") {
