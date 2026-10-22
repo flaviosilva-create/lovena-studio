@@ -1411,6 +1411,60 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #c8
   .reader-card[data-photo-style="scrapbook"] .lp-scrapbook-opening-board .lp-polaroid{transition:none!important}
 }
 
+
+/* Compact soundtrack directly beneath the scrapbook cover */
+#readerCard.lovena-onepage .lp-music-compact{
+  display:grid!important;grid-template-columns:42px minmax(150px,.85fr) minmax(220px,1.15fr);
+  align-items:center;gap:15px;padding:15px 20px!important;margin:0!important;
+  min-height:0!important;background:#fbf4e8!important;color:#4e3933!important;
+  border:1px solid #dfcdbb!important;border-top:0!important;border-radius:0 0 8px 8px!important;
+  box-shadow:0 10px 22px #5035280a!important;overflow:visible!important;
+}
+#readerCard.lovena-onepage .lp-music-compact:before{display:none!important;content:none!important}
+#readerCard.lovena-onepage .lp-music-compact .lp-music-compact-disc{
+  width:38px;height:38px;display:grid;place-items:center;border-radius:50%;
+  background:repeating-radial-gradient(circle,#3c3335 0 2px,#55464a 3px 4px,#30292d 5px 7px);
+  color:#f4d9cb;box-shadow:0 3px 8px #3b2a2423;position:relative;
+}
+#readerCard.lovena-onepage .lp-music-compact .lp-music-compact-disc:after{
+  content:"";position:absolute;width:10px;height:10px;background:#e4beb1;border:2px solid #faf0e5;border-radius:50%;
+}
+#readerCard.lovena-onepage .lp-music-compact .lp-music-compact-disc span{font-size:0}
+#readerCard.lovena-onepage .lp-music-compact-meta{min-width:0}
+#readerCard.lovena-onepage .lp-music-compact-eyebrow{
+  display:block;margin-bottom:4px;color:#a0786d;font:700 7px/1.3 Manrope,Arial,sans-serif;letter-spacing:1.8px;
+}
+#readerCard.lovena-onepage .lp-music-compact-meta h2{
+  margin:0;color:#4c3732;font:italic 17px/1.2 'Playfair Display',Georgia,serif;
+  overflow-wrap:anywhere;
+}
+#readerCard.lovena-onepage .lp-music-compact-meta a,
+#readerCard.lovena-onepage .lp-music-compact-meta small{
+  display:inline-block;margin-top:5px;color:#9b6d63;font:600 9px/1.4 Manrope,Arial,sans-serif;text-decoration:none;
+}
+#readerCard.lovena-onepage .lp-music-compact-meta a:hover{text-decoration:underline}
+#readerCard.lovena-onepage .lp-music-compact-player{min-width:0;width:100%;max-width:370px;justify-self:end}
+#readerCard.lovena-onepage .lp-music-compact-player .reader-track-frame{
+  display:block;width:100%;max-width:100%!important;margin:0!important;border:1px solid #e6d7ca!important;
+  border-radius:9px!important;box-shadow:none!important;background:#fffdfb;
+}
+#readerCard.lovena-onepage .lp-music-compact-player .reader-track-spotify{height:84px!important}
+#readerCard.lovena-onepage .lp-music-compact-player .reader-track-youtube{height:145px!important}
+#readerCard.lovena-onepage .lp-music-compact-player .reader-track-apple{height:110px!important}
+#readerCard.lovena-onepage .lp-music-compact-prompt{
+  margin:0;padding:10px 13px;border:1px dashed #d9c5b5;border-radius:7px;
+  color:#987e73;font:italic 11px/1.5 'Playfair Display',Georgia,serif;text-align:center;
+}
+@media(max-width:650px){
+ #readerCard.lovena-onepage .lp-music-compact{grid-template-columns:34px minmax(0,1fr);gap:10px;padding:12px!important}
+ #readerCard.lovena-onepage .lp-music-compact .lp-music-compact-disc{width:32px;height:32px}
+ #readerCard.lovena-onepage .lp-music-compact-meta h2{font-size:15px}
+ #readerCard.lovena-onepage .lp-music-compact-player{grid-column:1/-1;max-width:none;width:100%;justify-self:stretch}
+ #readerCard.lovena-onepage .lp-music-compact-player .reader-track-youtube{height:155px!important}
+ #readerCard.lovena-onepage .lp-music-compact-player .reader-track-apple{height:112px!important}
+ #readerCard.lovena-onepage .lp-music-compact-prompt{padding:8px 10px}
+}
+
 </style>
 </head>
 <body>
@@ -1572,7 +1626,7 @@ var steps=[
  {title:"Little surprises",short:"Make it interactive",kicker:"More than a page",intro:"Add the details that make this feel less like a website and more like a small world made for someone."},
  {title:"Your first preview",short:"See it through their eyes",kicker:"Before you share it",intro:"Walk through the complete experience before you save or send your keepsake."}
 ];
-var baseState={recipient:"",sender:"",occasion:"Just because",date:"",photos:["","","",""],captions:["","","",""],letterPhotos:["",""],letterTitle:"In case I don't say it enough...",letter:"",songTitle:"",songUrl:"",theme:"rose",enableDoodle:true,enableGuestbook:true,doodle:"",notes:[],coverTitle:"with all my heart.",coverIntro:"made a little world of memories and words, just for you.",coverEyebrow:"A Lovena story, created with love",galleryEyebrow:"Chapter one · The moments",galleryTitle:"A pocketful of us.",galleryIntro:"These are not just photos. They are tiny places you can visit again whenever you miss a moment.",letterEyebrow:"Chapter two · Words from the heart",letterIntro:"A few things I want you to know.",musicEyebrow:"Chapter three · Listen with your heart",musicTitle:"Some feelings have a soundtrack.",musicIntro:"A song can hold a whole memory in a few notes. Press play only when you are ready.",extrasEyebrow:"A little moment to leave behind",extrasTitle:"Not just something to read. Something to leave your mark on.",extrasIntro:"Make a tiny drawing or leave a few words. Little things are how memories keep growing.",doodleTitle:"Draw a little something",doodleIntro:"Sign your name, draw a heart, or leave a tiny sketch.",guestbookTitle:"Leave a little note",guestbookIntro:"Add a line that you would like to remember from this moment.",endingEyebrow:"And one last thing...",endingTitle:"Out of all the people in this world, I am glad I found you.",endingText:"Thank you for being part of my story. I hope life gives us many more little moments to turn into memories.",showScratch:true,scratchTitle:"A little secret, just for you",scratchMessage:"You make ordinary days feel like something worth remembering. ♡",scratchHint:"Scratch gently to reveal a little note made just for you.",backgroundColor:"#f3e7e3",accentColor:"#986e78",textColor:"#403239",cardColor:"#fffaf8",headingFont:"editorial",bodyFont:"modern",photoStyle:"scrapbook",textAlignment:"left",showCover:true,showGallery:true,showLetter:true,showMusic:true,showEnding:true,sectionOrder:[0,4,1,2,3,5],customSections:[]};
+var baseState={recipient:"",sender:"",occasion:"Just because",date:"",photos:["","","",""],captions:["","","",""],letterPhotos:["",""],letterTitle:"In case I don't say it enough...",letter:"",songTitle:"",songUrl:"",theme:"rose",enableDoodle:true,enableGuestbook:true,doodle:"",notes:[],coverTitle:"with all my heart.",coverIntro:"made a little world of memories and words, just for you.",coverEyebrow:"A Lovena story, created with love",galleryEyebrow:"Chapter one · The moments",galleryTitle:"A pocketful of us.",galleryIntro:"These are not just photos. They are tiny places you can visit again whenever you miss a moment.",letterEyebrow:"Chapter two · Words from the heart",letterIntro:"A few things I want you to know.",musicEyebrow:"Chapter three · Listen with your heart",musicTitle:"Some feelings have a soundtrack.",musicIntro:"A song can hold a whole memory in a few notes. Press play only when you are ready.",extrasEyebrow:"A little moment to leave behind",extrasTitle:"Not just something to read. Something to leave your mark on.",extrasIntro:"Make a tiny drawing or leave a few words. Little things are how memories keep growing.",doodleTitle:"Draw a little something",doodleIntro:"Sign your name, draw a heart, or leave a tiny sketch.",guestbookTitle:"Leave a little note",guestbookIntro:"Add a line that you would like to remember from this moment.",endingEyebrow:"And one last thing...",endingTitle:"Out of all the people in this world, I am glad I found you.",endingText:"Thank you for being part of my story. I hope life gives us many more little moments to turn into memories.",showScratch:true,scratchTitle:"A little secret, just for you",scratchMessage:"You make ordinary days feel like something worth remembering. ♡",scratchHint:"Scratch gently to reveal a little note made just for you.",backgroundColor:"#f3e7e3",accentColor:"#986e78",textColor:"#403239",cardColor:"#fffaf8",headingFont:"editorial",bodyFont:"modern",photoStyle:"scrapbook",textAlignment:"left",showCover:true,showGallery:true,showLetter:true,showMusic:true,showEnding:true,sectionOrder:[0,3,4,1,2,5],customSections:[]};
 var state=JSON.parse(JSON.stringify(baseState));
 try{
  var saved=localStorage.getItem("lovenaStudioDraftV1");
@@ -1586,7 +1640,7 @@ try{
   if(!Array.isArray(state.letterPhotos)||state.letterPhotos.some(function(photo){return typeof photo!=="string";}))state.letterPhotos=["",""];
   state.letterPhotos=state.letterPhotos.filter(function(photo){return typeof photo==="string";}).slice(0,2);
   while(state.letterPhotos.length<2)state.letterPhotos.push("");
-  if(state.sectionOrder.slice(0,6).join(",")==="0,1,2,3,4,5")state.sectionOrder=[0,4,1,2,3,5].concat(state.sectionOrder.slice(6));
+  if(state.sectionOrder.slice(0,6).join(",")==="0,1,2,3,4,5"||state.sectionOrder.slice(0,6).join(",")==="0,4,1,2,3,5")state.sectionOrder=[0,3,4,1,2,5].concat(state.sectionOrder.slice(6));
   if(typeof state.showScratch!=="boolean")state.showScratch=true;
   if(typeof state.scratchTitle!=="string")state.scratchTitle=baseState.scratchTitle;
   if(typeof state.scratchMessage!=="string")state.scratchMessage=baseState.scratchMessage;
@@ -1742,16 +1796,16 @@ function musicMarkup(){
  var embed="";
  if(parsed.hostname==="open.spotify.com"){
   var parts=parsed.pathname.split("/").filter(Boolean);
-  if(parts.length>=2&&["track","album","playlist","episode"].indexOf(parts[0])>=0)embed='<iframe class="reader-track-frame" title="Listen to the chosen song on Spotify" src="https://open.spotify.com/embed/'+esc(parts[0])+'/'+esc(parts[1])+'?utm_source=generator" height="152" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+  if(parts.length>=2&&["track","album","playlist","episode"].indexOf(parts[0])>=0)embed='<iframe class="reader-track-frame reader-track-spotify" title="Listen to the chosen song on Spotify" src="https://open.spotify.com/embed/'+esc(parts[0])+'/'+esc(parts[1])+'?utm_source=generator" height="84" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>';
  }else if(parsed.hostname==="youtu.be"||parsed.hostname==="www.youtube.com"||parsed.hostname==="youtube.com"||parsed.hostname==="m.youtube.com"||parsed.hostname==="music.youtube.com"){
   var videoId=parsed.hostname==="youtu.be"?parsed.pathname.slice(1):parsed.searchParams.get("v");
   if(parsed.pathname.indexOf("/embed/")===0)videoId=parsed.pathname.split("/")[2];
-  if(videoId&&/^[a-zA-Z0-9_-]{6,20}$/.test(videoId))embed='<iframe class="reader-track-frame" title="Listen to the chosen song on YouTube" src="https://www.youtube-nocookie.com/embed/'+esc(videoId)+'" height="220" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  if(videoId&&/^[a-zA-Z0-9_-]{6,20}$/.test(videoId))embed='<iframe class="reader-track-frame reader-track-youtube" title="Listen to the chosen song on YouTube" src="https://www.youtube-nocookie.com/embed/'+esc(videoId)+'" height="145" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
  }else if(parsed.hostname==="music.apple.com"||parsed.hostname==="embed.music.apple.com"){
   var appleSrc="https://embed.music.apple.com"+parsed.pathname+parsed.search;
-  embed='<iframe class="reader-track-frame" title="Listen to the chosen song on Apple Music" src="'+esc(appleSrc)+'" height="175" loading="lazy" allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" allowfullscreen></iframe>';
+  embed='<iframe class="reader-track-frame reader-track-apple" title="Listen to the chosen song on Apple Music" src="'+esc(appleSrc)+'" height="110" loading="lazy" allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" allowfullscreen></iframe>';
  }
- return '<div class="reader-music-stage"><div class="reader-vinyl" aria-hidden="true"><div class="reader-vinyl-label">♡</div></div><h3 class="reader-activity-heading">'+esc(state.songTitle||"A song that reminds me of you")+'</h3>'+embed+'<a class="reader-music" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">♫ &nbsp; Open the song on its music app ↗</a></div>';
+ return embed||'<p class="lp-music-compact-prompt">Open the track in your music app using the link beside it.</p>';
 }
 function photoMarkup(){
  var html="",count=0,tilts=[-6,4,-3,6,-2,3];
@@ -1816,7 +1870,8 @@ function longStoryContent(){
    var scrapLetter=state.letter.trim()?br(state.letter):'Some people make the everyday feel a little more magical. You are one of those people. The laughs, the little check-ins, the ordinary moments that somehow become my favorites — I keep more of them than you know. I hope this little corner reminds you how much you mean to me. ♡';
    html+='<section class="lp-section lp-letter-section lp-reveal" id="lp-letter"><div class="lp-section-marker">03 <span>·</span> A letter, made by hand</div><div class="lp-scrapbook-board'+(chosenLetterPhotos.length===1?' has-one-photo':'')+'"><span class="lp-scrap-lace-right" aria-hidden="true"></span><span class="lp-scrap-lace-bottom" aria-hidden="true"></span><div class="lp-scrap-note-top"><span class="lp-scrap-paper-clip" aria-hidden="true"></span><p>True love works in mysterious and unexpected ways. Sometimes two hearts find the chapter they never knew they needed. <span class="lp-scrap-note-heart">♡</span></p><span class="lp-scrap-note-tiny">A NOTE TO KEEP</span></div><div class="lp-scrap-you-me"><span class="lp-scrap-postmark" aria-hidden="true">✳<i>LOVE<br>POST</i></span><span>You + Me</span><b>♡</b></div><div class="lp-scrap-quote-pink"><span class="lp-scrap-hand-heart">♡</span><p>We&rsquo;re a mess, you and I, but the truth is you captivate me in ways no soul ever will.</p><span class="lp-scrap-quote-squiggle">~ &nbsp; &nbsp; ~</span></div><div class="lp-scrap-photo-main"><span class="lp-scrap-tape lp-scrap-tape-left" aria-hidden="true"></span><span class="lp-scrap-tape lp-scrap-tape-right" aria-hidden="true"></span>'+scrapMainPhoto+'<span class="lp-scrap-photo-hearts" aria-hidden="true">♡ <i>♡</i></span><div class="lp-scrap-photo-caption">our little piece of forever</div><div class="lp-scrap-center-quote">“The universe conspired to help me find you.” <span>♡</span></div></div><article class="lp-scrap-letter-sheet"><span class="lp-scrap-sheet-tape" aria-hidden="true"></span><div class="lp-scrap-letter-eyebrow">'+esc(state.letterEyebrow||"Words I want you to keep")+'</div><h2 class="lp-scrap-letter-title">'+esc(state.letterTitle||"In case I do not say it enough...")+'</h2><div class="lp-scrap-letter-body">'+scrapLetter+'</div><div class="lp-scrap-letter-sign">Always, '+esc(state.sender.trim()||"someone who cares about you")+' <span>♡</span></div><span class="lp-scrap-letter-doodle" aria-hidden="true">♡</span></article>'+scrapPolaroid+'<div class="lp-scrap-note-bottom"><span class="lp-scrap-note-hole" aria-hidden="true"></span><span class="lp-scrap-bottom-quote">The first time I saw you, my heart whispered, “That&rsquo;s the one.” With every kiss, I fall deeper in love.</span><span class="lp-scrap-bottom-heart">♡</span><span class="lp-scrap-bottom-lines" aria-hidden="true"></span></div><div class="lp-scrap-flower-branch lp-scrap-flower-left" aria-hidden="true"><i>✿</i><i>❀</i><i>✿</i><i>✧</i><b></b></div><div class="lp-scrap-dried-rose lp-scrap-flower-right" aria-hidden="true"><span>✿</span><i>❀</i><b></b></div><div class="lp-scrap-wax-seal" aria-hidden="true">✿<small>L</small></div><div class="lp-scrap-newspaper" aria-hidden="true">LOVE · MEMORY · ALWAYS · LOVE · MEMORY · ALWAYS · LOVE · MEMORY · ALWAYS</div></div></section>';
   }else if(id===3&&state.showMusic){
-   html+='<section class="lp-section lp-music-section lp-reveal" id="lp-music"><div class="lp-section-marker">05 <span>·</span> The soundtrack</div><div class="lp-music-layout"><div class="lp-music-copy"><div class="lp-eyebrow">'+esc(state.musicEyebrow||"Press play when you are ready")+'</div><h2 class="lp-section-title">'+esc(state.musicTitle||"Some feelings have a soundtrack.")+'</h2><p class="lp-section-copy">'+esc(state.musicIntro||"A song can bring an entire moment back.")+'</p><div class="lp-music-heart">♫</div></div><div class="lp-music-player">'+(musicMarkup()||'<div class="lp-no-song"><div class="lp-no-song-vinyl">♫</div><h3>A song, just for you.</h3><p>A favorite song can turn a memory into a place you can visit again.</p></div>')+'<div class="lp-music-services">YouTube <span>·</span> Spotify <span>·</span> Apple Music</div></div></div></section>';
+   var compactMusicUrl=safeUrl(state.songUrl);
+   html+='<section class="lp-section lp-music-compact lp-reveal" id="lp-music" aria-label="The soundtrack"><div class="lp-music-compact-disc" aria-hidden="true"><span>♫</span></div><div class="lp-music-compact-meta"><span class="lp-music-compact-eyebrow">THE SOUNDTRACK</span><h2>'+esc(state.songTitle||"A song for this story")+'</h2>'+(compactMusicUrl?'<a href="'+esc(compactMusicUrl)+'" target="_blank" rel="noopener noreferrer">Open music app ↗</a>':'<small>Add a music link in the creator</small>')+'</div><div class="lp-music-compact-player">'+(musicMarkup()||'<div class="lp-music-compact-prompt">Your chosen song will live here.</div>')+'</div></section>';
   }else if(id===5&&state.showEnding){
    html+='<section class="lp-section lp-ending-section lp-reveal" id="lp-ending"><div class="lp-ending-spark lp-spark-a">✳</div><div class="lp-ending-spark lp-spark-b">✧</div><div class="lp-section-marker">06 <span>·</span> One last thing</div><div class="lp-ending-heart">♡</div><div class="lp-eyebrow">'+esc(state.endingEyebrow||"And one last thing...")+'</div><h2 class="lp-ending-title">'+br(state.endingTitle||"Out of all the people in this world, I am glad I found you.")+'</h2><p class="lp-ending-copy">'+br(state.endingText||"Thank you for being part of my story. I hope life gives us many more little moments to turn into memories.")+'</p><div class="lp-ending-signature">Always, <strong>'+esc(state.sender.trim()||"someone who cares about you")+'</strong></div><div class="lp-heart-burst" id="readerHeartBurst"></div><button type="button" class="lp-send-heart" data-action="send-heart">Send a little love <span>♥</span> <b id="readerHeartCount">0</b></button><a class="lp-back-to-top" href="#lp-cover">Back to the beginning ↑</a><div class="lp-footer-mark">LOVENA <span>♡</span> MADE WITH LOVE</div></section>';
   }else if(id>=6){
