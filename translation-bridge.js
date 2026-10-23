@@ -1,18 +1,13 @@
 (function () {
   "use strict";
 
-  // GTranslate translates the static landing page. The creator and recipient
-  // experience is rendered by JavaScript, so this bridge translates those
-  // specific DOM roots separately and leaves the rest of the page to GTranslate.
+  // One bridge owns all visible Lovena interface text so a language choice
+  // applies consistently to the landing page, creator, reader and new UI.
+  // User-authored content stays in the language its creator wrote it in.
   var SOURCE_LANGUAGE = "en";
   var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
   var CACHE_KEY = "lovenaDynamicTranslationCacheV3";
-  var ROOT_IDS = [
-    // Cover the complete creation and preview overlays, including all chrome
-    // outside the changing step body: top bar, progress, step navigation,
-    // helper copy, side panel, controls, preview modals and generated steps.
-    "studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"
-  ];
+  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "top", "lr-main", "lr-footer"];
   var textOriginals = new WeakMap();
   var attrOriginals = new WeakMap();
   var cache = new Map();
@@ -286,29 +281,7 @@
     return results;
   }
 
-  async function applyLanguage(language, token) {
-    var allRoots = getRoots();
-    // Translate only what is actually open; a cold mobile visit should not
-    // request strings from hidden creator and reader overlays at the same time.
-    var rootList = language === SOURCE_LANGUAGE ? allRoots : allRoots.filter(isElementVisible);
-    var records = collectRecords(rootList);
-    if (language === SOURCE_LANGUAGE) {
-      restoreEnglish(records);
-      return;
-    }
-    var sources = Array.from(new Set(records.map(function (record) { return record.source; }).filter(meaningful)));
-    if (!sources.length) return;
-    var translations = await translateSources(sources, language, token);
-    if (token !== generation || selectedLanguage() !== language) return;
-    var missed = sources.filter(function (source) { return !translations.has(source); }).slice(0, 36);
-    if (missed.length) {
-      await wait(500);
-      if (token === generation && selectedLanguage() === language) {
-        var retried = await translateSources(missed, language, token);
-        retried.forEach(function (value, key) { translations.set(key, value); });
-      }
-    }
-    if (token !== generation || selectedLanguage() !== language) return;
+  function applyTranslatedRecords(records, translations) {
     records.forEach(function (record) {
       if (!record.node || !record.node.isConnected) return;
       var element = record.type === "text" ? record.node.parentElement : record.node;
@@ -320,6 +293,45 @@
     });
   }
 
+  async function applyLanguage(language, token) {
+    var allRoots = getRoots();
+    // Closed creator/reader overlays are skipped. If an overlay is open, its
+    // text is deliberately collected first so the most relevant UI translates
+    // before the rest of the landing page.
+    var rootList = language === SOURCE_LANGUAGE ? allRoots : allRoots.filter(isElementVisible);
+    var records = collectRecords(rootList);
+    if (language === SOURCE_LANGUAGE) {
+      restoreEnglish(records);
+      return;
+    }
+    var sources = Array.from(new Set(records.map(function (record) {
+      return record.source;
+    }).filter(meaningful)));
+    if (!sources.length) return;
+
+    // Apply each small batch immediately instead of waiting for every string
+    // on the whole page. The language change begins at once and the page
+    // progressively settles into the chosen language while later text loads.
+    var batchSize = 18;
+    for (var start = 0; start < sources.length; start += batchSize) {
+      if (token !== generation || selectedLanguage() !== language) return;
+      var batchSources = sources.slice(start, start + batchSize);
+      var translations = await translateSources(batchSources, language, token);
+      if (token !== generation || selectedLanguage() !== language) return;
+
+      var missed = batchSources.filter(function (source) {
+        return !translations.has(source);
+      });
+      if (missed.length) {
+        await wait(350);
+        if (token !== generation || selectedLanguage() !== language) return;
+        var retried = await translateSources(missed, language, token);
+        retried.forEach(function (value, key) { translations.set(key, value); });
+      }
+      if (token !== generation || selectedLanguage() !== language) return;
+      applyTranslatedRecords(records, translations);
+    }
+  }
   function scheduleTranslation(delay) {
     if (scheduledTimer) window.clearTimeout(scheduledTimer);
     scheduledTimer = window.setTimeout(function () {
