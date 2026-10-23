@@ -362,6 +362,14 @@
     var target = event && event.target;
     if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector")) return;
     var language = canonicalLanguage(target.value);
+    // Multiple responsive language pickers share one preference. Keep their
+    // selected options in sync so the creator, world section, and footer agree.
+    selectorElements().forEach(function (selector) {
+      var match = Array.from(selector.options || []).find(function (option) {
+        return canonicalLanguage(option.value) === language;
+      });
+      if (match && selector.value !== match.value) selector.value = match.value;
+    });
     saveLanguage(language);
     scheduleTranslation(80);
   }
