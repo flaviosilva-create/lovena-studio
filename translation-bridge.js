@@ -13,6 +13,8 @@
   var attrOriginals = new WeakMap();
   var cache = new Map();
   var observer = null;
+  var selectorObserver = null;
+  var englishResetPending = false;
   var scheduledTimer = 0;
   var generation = 0;
   var running = false;
@@ -22,19 +24,16 @@
   var roots = [];
 
   function canonicalLanguage(value) {
-    // GTranslate dropdown values use "source|target" (e.g. "en|pt").
-    // Some variants can provide the reverse order, so detect the configured
-    // source language instead of blindly reading the first or last segment.
+    // Empty widget values are placeholders, not English.
     var parts = String(value || "").split("|").map(function (part) { return part.trim(); }).filter(Boolean);
-    var lang = SOURCE_LANGUAGE;
+    if (!parts.length) return "";
+    var lang = parts[0];
     if (parts.length > 1) {
       var first = parts[0].toLowerCase();
       var last = parts[parts.length - 1].toLowerCase();
       if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];
       else if (last === SOURCE_LANGUAGE.toLowerCase()) lang = parts[0];
       else lang = parts[parts.length - 1];
-    } else if (parts.length === 1) {
-      lang = parts[0];
     }
     var low = lang.toLowerCase();
     if (low === "zh-cn" || low === "zh-hans") return "zh-CN";
@@ -51,8 +50,35 @@
     catch (error) { return SOURCE_LANGUAGE; }
   }
 
+  function optionLanguage(option) {
+    if (!option) return "";
+    var value = String(option.value || "").trim();
+    // Empty values are placeholders like "Select language", never a language code.
+    if (!value) return "";
+    return canonicalLanguage(value);
+  }
+
+  function ensureEnglishOption(selector) {
+    if (!selector || selector.tagName !== "SELECT" || !selector.options) return;
+    var hasEnglish = Array.from(selector.options).some(function (option) {
+      return String(option.value || "").trim() && optionLanguage(option) === SOURCE_LANGUAGE;
+    });
+    if (hasEnglish) return;
+    var previousValue = selector.value;
+    var english = document.createElement("option");
+    english.value = SOURCE_LANGUAGE + "|" + SOURCE_LANGUAGE;
+    english.textContent = "English";
+    english.setAttribute("data-lovena-source-language", "true");
+    var placeholder = Array.from(selector.options).find(function (option) { return !String(option.value || "").trim(); });
+    if (placeholder) selector.insertBefore(english, placeholder.nextSibling);
+    else selector.insertBefore(english, selector.firstChild);
+    if (previousValue) selector.value = previousValue;
+  }
+
   function selectorElements() {
-    return Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector"));
+    var selectors = Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector"));
+    selectors.forEach(ensureEnglishOption);
+    return selectors;
   }
 
   function isElementVisible(element) {
@@ -77,21 +103,26 @@
   function selectedLanguage() {
     var selectors = selectorElements();
     var selector = selectors.find(isElementVisible) || selectors[0];
-    if (selector && selector.value) return canonicalLanguage(selector.value);
+    if (selector && String(selector.value || "").trim()) {
+      var selected = canonicalLanguage(selector.value);
+      if (selected) return selected;
+    }
     try {
-      var cookieMatch = document.cookie.match(/(?:^|;\\s*)googtrans=([^;]+)/);
-      if (cookieMatch) {
-        var parts = decodeURIComponent(cookieMatch[1]).split("/");
-        if (parts.length) return canonicalLanguage(parts[parts.length - 1]);
+      var cookie = document.cookie.split(";").map(function (item) { return item.trim(); })
+        .find(function (item) { return item.indexOf("googtrans=") === 0; });
+      if (cookie) {
+        var cookieValue = decodeURIComponent(cookie.slice("googtrans=".length));
+        var parts = cookieValue.split("/").filter(Boolean);
+        if (parts.length > 1) return canonicalLanguage(parts[parts.length - 1]);
       }
     } catch (error) {}
     var htmlLanguage = document.documentElement.getAttribute("data-lovena-language");
-    if (htmlLanguage) return canonicalLanguage(htmlLanguage);
-    return readSavedLanguage();
+    if (htmlLanguage) { var htmlLang = canonicalLanguage(htmlLanguage); if (htmlLang) return htmlLang; }
+    return readSavedLanguage() || SOURCE_LANGUAGE;
   }
 
   function saveLanguage(language) {
-    activeLanguage = canonicalLanguage(language);
+    activeLanguage = canonicalLanguage(language) || SOURCE_LANGUAGE;
     try { localStorage.setItem("lovenaPreferredLanguage", activeLanguage); } catch (error) {}
     document.documentElement.setAttribute("lang", activeLanguage);
     document.documentElement.setAttribute("data-lovena-language", activeLanguage);
@@ -372,11 +403,9 @@
   }
 
   function clearGoogleTranslateCookies() {
-    // GTranslate can leave the page translated even when English is selected.
-    // Clear the cookie at the possible path/domain combinations before reload.
     var paths = ["/", "/lovena-studio", "/lovena-studio/"];
     var host = window.location.hostname;
-    var domains = ["", host, "." + host, "github.io", ".github.io"];
+    var domains = ["", host, "." + host];
     paths.forEach(function (path) {
       domains.forEach(function (domain) {
         var cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; path=" + path;
@@ -384,9 +413,17 @@
         document.cookie = cookie;
       });
     });
+    try {
+      ["googtrans", "gtranslate", "gtranslate_language"].forEach(function (key) {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      });
+    } catch (error) {}
   }
 
   function returnToEnglish() {
+    if (englishResetPending) return;
+    englishResetPending = true;
     saveLanguage(SOURCE_LANGUAGE);
     // If the picker is inside the creator, save its current edits before
     // reloading. The source-language reset must never discard an in-progress gift.
@@ -408,21 +445,17 @@
     var target = event && event.target;
     if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector")) return;
     var language = canonicalLanguage(target.value);
-    // Multiple responsive language pickers share one preference. Keep their
-    // selected options in sync so the creator, world section, and footer agree.
+    if (!language && target.options) language = optionLanguage(target.options[target.selectedIndex]);
+    if (!language) return;
     selectorElements().forEach(function (selector) {
-      var match = Array.from(selector.options || []).find(function (option) {
-        return canonicalLanguage(option.value) === language;
-      });
+      var match = Array.from(selector.options || []).find(function (option) { return optionLanguage(option) === language; });
       if (match && selector.value !== match.value) selector.value = match.value;
     });
     saveLanguage(language);
-    if (language === SOURCE_LANGUAGE) {
-      returnToEnglish();
-      return;
-    }
+    if (language === SOURCE_LANGUAGE) { returnToEnglish(); return; }
     scheduleTranslation(80);
   }
+
   document.addEventListener("change", handleLanguageSelection, true);
   document.addEventListener("input", handleLanguageSelection, true);
 
@@ -441,33 +474,37 @@
     if (!document.hidden) syncLanguageFromWidget();
   });
 
+  function observeSelectorWidgets() {
+    if (selectorObserver || !document.documentElement) return;
+    selectorObserver = new MutationObserver(function () { selectorElements(); });
+    selectorObserver.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
   function initializeWidget() {
     observeRoots();
+    observeSelectorWidgets();
     var selector = selectorElement();
     if (!selector) {
       attempts++;
       if (attempts < 80) window.setTimeout(initializeWidget, 250);
-      else if (readSavedLanguage() !== SOURCE_LANGUAGE) {
-        saveLanguage(readSavedLanguage());
-        scheduleTranslation(200);
-      }
+      else if (readSavedLanguage() !== SOURCE_LANGUAGE) { saveLanguage(readSavedLanguage()); scheduleTranslation(200); }
       return;
     }
     var saved = readSavedLanguage();
-    var active = canonicalLanguage(selector.value || SOURCE_LANGUAGE);
+    var active = selectedLanguage() || canonicalLanguage(selector.value) || saved || SOURCE_LANGUAGE;
     if (saved !== SOURCE_LANGUAGE && saved !== active) {
-      var match = Array.from(selector.options || []).find(function (option) {
-        return canonicalLanguage(option.value) === saved;
-      });
-      if (match) {
-        selector.value = match.value;
+      var savedMatch = Array.from(selector.options || []).find(function (option) { return optionLanguage(option) === saved; });
+      if (savedMatch) {
+        selector.value = savedMatch.value;
         selector.dispatchEvent(new Event("change", { bubbles: true }));
-        saveLanguage(saved);
-        scheduleTranslation(300);
-        return;
+        saveLanguage(saved); scheduleTranslation(300); return;
       }
     }
     saveLanguage(active);
+    selectorElements().forEach(function (item) {
+      var match = Array.from(item.options || []).find(function (option) { return optionLanguage(option) === active; });
+      if (match && item.value !== match.value) item.value = match.value;
+    });
     scheduleTranslation(400);
   }
 
