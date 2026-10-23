@@ -29,8 +29,12 @@ jobs:
           import re
           from pathlib import Path
           html = Path("index.html").read_text(encoding="utf-8")
-          if re.findall(r"<script>\s*(.*?)\s*</script>", html, re.S):
-              raise SystemExit("The standalone experience runtime should remain removed until rebuilt")
+          inline_scripts = re.findall(r"<script>\s*(.*?)\s*</script>", html, re.S)
+          if len(inline_scripts) != 1:
+              raise SystemExit(f"Expected one small GTranslate configuration script, found {len(inline_scripts)}")
+          if "window.gtranslateSettings" not in inline_scripts[0] or "function openStudio()" in html:
+              raise SystemExit("Only the landing page language configuration may remain inline")
+          Path("/tmp/lovena-gtranslate-config.js").write_text(inline_scripts[0], encoding="utf-8")
           for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
               if marker not in html:
                   raise SystemExit(f"Landing page is missing required structure: {marker}")
@@ -61,6 +65,7 @@ jobs:
               if required not in bridge:
                   raise SystemExit(f"Language-selector validation failed: missing {required}")
           PY
+          node --check /tmp/lovena-gtranslate-config.js
           node --check translation-bridge.js
           node <<'NODE'
           const fs = require("fs");
