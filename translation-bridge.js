@@ -371,6 +371,32 @@
     });
   }
 
+  function clearGoogleTranslateCookies() {
+    // GTranslate can leave the page translated even when English is selected.
+    // Clear the cookie at the possible path/domain combinations before reload.
+    var paths = ["/", "/lovena-studio", "/lovena-studio/"];
+    var host = window.location.hostname;
+    var domains = ["", host, "." + host, "github.io", ".github.io"];
+    paths.forEach(function (path) {
+      domains.forEach(function (domain) {
+        var cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; path=" + path;
+        if (domain) cookie += "; domain=" + domain;
+        document.cookie = cookie;
+      });
+    });
+  }
+
+  function returnToEnglish() {
+    saveLanguage(SOURCE_LANGUAGE);
+    // Let GTranslate's own change handler finish first, then remove its state
+    // and reload the original source HTML. This reliably reverses translated
+    // static text as well as the creator/reader UI.
+    window.setTimeout(function () {
+      clearGoogleTranslateCookies();
+      window.location.reload();
+    }, 80);
+  }
+
   function handleLanguageSelection(event) {
     var target = event && event.target;
     if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector")) return;
@@ -384,6 +410,10 @@
       if (match && selector.value !== match.value) selector.value = match.value;
     });
     saveLanguage(language);
+    if (language === SOURCE_LANGUAGE) {
+      returnToEnglish();
+      return;
+    }
     scheduleTranslation(80);
   }
   document.addEventListener("change", handleLanguageSelection, true);
