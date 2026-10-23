@@ -54,9 +54,13 @@ jobs:
               raise SystemExit("Progressive translation application is missing")
           if "function isUserAuthoredElement(element)" not in bridge or 'data-lovena-user-content="true"' not in html:
               raise SystemExit("Authored text must be excluded from automatic translation")
+          if "function clearGoogleTranslateCookies()" not in bridge or "window.location.reload();" not in bridge:
+              raise SystemExit("English selection must clear translation cookies and restore source HTML")
+          if "if (language === SOURCE_LANGUAGE)" not in bridge:
+              raise SystemExit("English selection must use the dedicated source-language reset")
           if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
               raise SystemExit("User-authored field tracking is missing")
-          if 'translation-bridge.js?v=20261023-hybrid-translation-fix-1' not in html:
+          if 'translation-bridge.js?v=20261023-english-reset-1' not in html:
               raise SystemExit("Mobile browser cache-bust version is missing")
           if 'language: function () { return selectedLanguage() || activeLanguage; }' not in bridge:
               raise SystemExit("Translation bridge must read the current language selector")
