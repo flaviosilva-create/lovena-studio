@@ -38,7 +38,7 @@ jobs:
               raise SystemExit("Expected exactly one GTranslate widget")
           if "google_translate_element" in html or "translate.google.com/translate_a/element.js" in html:
               raise SystemExit("Legacy Google Translate widget must not be loaded alongside GTranslate")
-          for element_id in ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"]:
+          for element_id in ["studioOverlay", "readerOverlay", "studioToast", "top", "lr-main", "lr-footer", "loveWorldHeadingCopy"]:
               if f'id="{element_id}"' not in html:
                   raise SystemExit(f"Missing dynamic translation root: {element_id}")
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
@@ -48,11 +48,15 @@ jobs:
               raise SystemExit("Responsive visible language-selector handling is missing")
           if "allRoots.filter(isElementVisible)" not in bridge:
               raise SystemExit("Translation must prioritize visible creator/recipient roots")
+          if "for (var start = 0; start < sources.length; start += batchSize)" not in bridge:
+              raise SystemExit("Site-wide translations must be applied progressively in small batches")
+          if "function applyTranslatedRecords(records, translations)" not in bridge:
+              raise SystemExit("Progressive translation application is missing")
           if "function isUserAuthoredElement(element)" not in bridge or 'data-lovena-user-content="true"' not in html:
               raise SystemExit("Authored text must be excluded from automatic translation")
           if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
               raise SystemExit("User-authored field tracking is missing")
-          if 'translation-bridge.js?v=20261023-final-1' not in html:
+          if 'translation-bridge.js?v=20261023-sitewide-progressive-1' not in html:
               raise SystemExit("Mobile browser cache-bust version is missing")
           if 'language: function () { return selectedLanguage() || activeLanguage; }' not in bridge:
               raise SystemExit("Translation bridge must read the current language selector")
@@ -68,7 +72,7 @@ jobs:
               raise SystemExit("Dynamic UI translation engine is missing")
           if 'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];' not in bridge:
               raise SystemExit("GTranslate source-target language parsing is missing")
-          if '"studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"' not in bridge:
+          if '"studioOverlay", "readerOverlay", "studioToast", "top", "lr-main", "lr-footer"' not in bridge:
               raise SystemExit("Full creator/preview translation roots are missing")
           if "function renderStudio(){renderBody();if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}" not in html:
               raise SystemExit("Creator render is not wired to the translation bridge")
