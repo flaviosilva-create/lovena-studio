@@ -2313,7 +2313,13 @@ body{background-color:var(--lr-paper);background-image:radial-gradient(ellipse a
 .lr-nav-actions{display:flex;align-items:center;gap:13px}
 .lr-language-picker{display:inline-flex;align-items:center;gap:8px;min-height:33px;padding:4px 10px;border:1px solid rgba(43,36,29,.13);border-radius:999px;background:rgba(255,255,255,.58);font-size:11px;color:#27262a;white-space:nowrap;max-width:148px}
 .lr-language-picker>span:first-child{font-size:15px;line-height:1}
-.lr-language-pi</style>
+.lr-language-pi
+/* FINAL LANDING PAGE SWITCH: render the reference design, not the legacy duplicate */
+.global-strip, body > header.nav, body > main:not(.lr-main), body > footer.foot { display:none !important; }
+body > .lr-nav, body > .lr-main, body > .lr-footer { display:flex; }
+body > .lr-main { display:block; }
+body > .lr-footer { display:flex; }
+</style>
 </head>
 <body>
 <header class="lr-nav" id="top">
@@ -3191,6 +3197,17 @@ if(location.hash==="#creator"){openStudio();}else if(location.hash==="#sample"){
 
 </script>
 <!-- One translation engine only: GTranslate, with English as the source language. -->
+<script>
+/* Route every landing-page create CTA into the existing experience creator. */
+document.addEventListener("click", function (event) {
+  var link = event.target && event.target.closest ? event.target.closest('a[href="#create"]') : null;
+  if (!link) return;
+  event.preventDefault();
+  var createButton = document.getElementById("createBtn");
+  if (createButton) createButton.click();
+  else location.hash = "creator";
+});
+</script>
 <script src="./translation-bridge.js?v=20261023-synced-selectors-1" defer></script>
 <script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
 </body></html>
