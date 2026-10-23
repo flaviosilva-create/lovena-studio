@@ -56,11 +56,15 @@ jobs:
               raise SystemExit("Authored text must be excluded from automatic translation")
           if "function clearGoogleTranslateCookies()" not in bridge or "window.location.reload();" not in bridge:
               raise SystemExit("English selection must clear translation cookies and restore source HTML")
+          if "function ensureEnglishOption(selector)" not in bridge or 'english.value = SOURCE_LANGUAGE + "|" + SOURCE_LANGUAGE;' not in bridge:
+              raise SystemExit("An explicit English option must exist in each language selector")
+          if 'if (!parts.length) return "";' not in bridge:
+              raise SystemExit("Empty selector placeholders must not resolve to English")
           if "if (language === SOURCE_LANGUAGE)" not in bridge:
               raise SystemExit("English selection must use the dedicated source-language reset")
           if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
               raise SystemExit("User-authored field tracking is missing")
-          if 'translation-bridge.js?v=20261023-english-reset-safe-1' not in html:
+          if 'translation-bridge.js?v=20261023-en-option-fix-1' not in html:
               raise SystemExit("Mobile browser cache-bust version is missing")
           if 'language: function () { return selectedLanguage() || activeLanguage; }' not in bridge:
               raise SystemExit("Translation bridge must read the current language selector")
@@ -94,7 +98,7 @@ jobs:
           if (start < 0 || end < 0) throw new Error("Could not extract GTranslate language parser");
           const parserSource = bridge.slice(start, end).replace("  function canonicalLanguage(value)", "return function canonicalLanguage(value)");
           const parseLanguage = new Function("SOURCE_LANGUAGE", parserSource) ("en");
-          const cases = [["en|pt","pt"],["en|es","es"],["en|en","en"],["pt|en","pt"],["fr","fr"]];
+          const cases = [["en|pt","pt"],["en|es","es"],["en|en","en"],["pt|en","pt"],["fr","fr"],["",""]];
           for (const [input, expected] of cases) {
             const actual = parseLanguage(input);
             if (actual !== expected) throw new Error(input + " parsed as " + actual + ", expected " + expected);
