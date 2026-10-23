@@ -2937,7 +2937,7 @@ function miniMarkup(){
  var intro=state.coverIntro||"Uma experiência feita especialmente para você.";
  return '<div class="studio-mini-cover lv-mini-reference"><div class="studio-mini-hero" '+(photo?'style="background-image:linear-gradient(90deg,rgba(19,8,7,.87),rgba(19,8,7,.12)),url(\''+esc(photo)+'\')"':'')+'><span class="studio-mini-overline">'+textFieldMarkup("coverEyebrow",eyebrow,"PARA O AMOR DA MINHA VIDA")+'</span><strong class="studio-mini-title">'+textFieldMarkup("coverTitle",title,"Você torna tudo mais bonito")+'</strong><span class="studio-mini-recipient">Para '+name+'</span></div><div class="studio-mini-details"><p>'+multilineFieldMarkup("coverIntro",intro,"Uma experiência feita especialmente para você.")+'</p><div class="studio-mini-chapters"><span>♡ Carta</span><span>♫ Música</span><span>▧ Fotos</span></div><small>Com amor, '+personMarkup(state.sender,"Você")+'</small></div></div>';
 }
-function renderNav(){function renderNav(){
+function renderNav(){
  var nav=document.getElementById("studioStepNav"),html="";
  
  steps.forEach(function(s,i){html+='<button type="button" class="studio-step-nav '+(i===currentStep?"active ":"")+(i<currentStep?"complete":"")+'" data-action="goto-step" data-step="'+i+'"><span class="studio-step-num">'+(i<currentStep?"✓":"0"+(i+1))+'</span><span class="studio-step-text"><strong>'+esc(s.title)+'</strong><small>'+esc(s.short)+'</small></span></button>';});
