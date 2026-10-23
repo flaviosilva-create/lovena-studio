@@ -182,3 +182,34 @@ body>.lr-footer{display:flex!important}
 .lr-plan-wrap .lr-plan .lr-button{min-height:38px;font-size:10px}
 @media(max-width:800px){.lr-plan-wrap{grid-template-columns:minmax(0,1fr)!important;padding:24px 22px 30px!important}.lr-plan-wrap .lr-plan{max-width:430px;margin-inline:auto;padding:24px 20px 19px}}
 @media(max-width:420px){.lr-plan-wrap{padding-inline:16px!important}.lr-plan-wrap .lr-plan{padding-inline:17px}}
+
+
+/* Keep the Love Around the World country flags in one horizontal row on desktop. */
+.lr-world-copy .lr-flags{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:clamp(4px,.65vw,9px)!important;
+  width:max-content!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+}
+.lr-world-copy .lr-flags>span{
+  display:inline-flex!important;
+  flex:0 0 auto!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:auto!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  white-space:nowrap!important;
+  line-height:1.15!important;
+  font-size:clamp(16px,1.5vw,20px)!important;
+}
+@media(min-width:801px){
+  .lr-world-copy{min-width:0}
+  .lr-world-copy .lr-flags{overflow:visible}
+}
