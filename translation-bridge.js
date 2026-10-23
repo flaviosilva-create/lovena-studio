@@ -388,13 +388,20 @@
 
   function returnToEnglish() {
     saveLanguage(SOURCE_LANGUAGE);
+    // If the picker is inside the creator, save its current edits before
+    // reloading. The source-language reset must never discard an in-progress gift.
+    var studio = document.getElementById("studioOverlay");
+    if (isElementVisible(studio)) {
+      var saveButton = studio.querySelector('[data-action="save-draft"]');
+      if (saveButton) saveButton.click();
+    }
     // Let GTranslate's own change handler finish first, then remove its state
     // and reload the original source HTML. This reliably reverses translated
     // static text as well as the creator/reader UI.
     window.setTimeout(function () {
       clearGoogleTranslateCookies();
       window.location.reload();
-    }, 80);
+    }, 100);
   }
 
   function handleLanguageSelection(event) {
