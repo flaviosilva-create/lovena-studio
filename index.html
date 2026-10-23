@@ -3193,12 +3193,7 @@ if(location.hash==="#creator"){openStudio();}else if(location.hash==="#sample"){
  if(!state.letterPhotos.some(Boolean)&&!localStorage.getItem("lovenaStudioDraftV1"))state.letterPhotos=[state.photos[0]||"",state.photos[2]||""];
  openReader();
 }
-})();
 
-</script>
-<!-- One translation engine only: GTranslate, with English as the source language. -->
-<script>
-/* Route every landing-page create CTA into the existing experience creator. */
 document.addEventListener("click", function (event) {
   var link = event.target && event.target.closest ? event.target.closest('a[href="#create"]') : null;
   if (!link) return;
@@ -3207,7 +3202,10 @@ document.addEventListener("click", function (event) {
   if (createButton) createButton.click();
   else location.hash = "creator";
 });
+})();
+
 </script>
+<!-- One translation engine only: GTranslate, with English as the source language. -->
 <script src="./translation-bridge.js?v=20261023-synced-selectors-1" defer></script>
 <script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
 </body></html>
