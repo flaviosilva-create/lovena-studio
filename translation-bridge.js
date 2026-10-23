@@ -1,13 +1,14 @@
 (function () {
   "use strict";
 
-  // One bridge owns all visible Lovena interface text so a language choice
-  // applies consistently to the landing page, creator, reader and new UI.
+  // GTranslate translates the static landing page. This bridge handles UI
+  // rendered dynamically by the creator and recipient experience. Keeping
+  // these roots separate prevents the bridge from blocking static translation.
   // User-authored content stays in the language its creator wrote it in.
   var SOURCE_LANGUAGE = "en";
   var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
   var CACHE_KEY = "lovenaDynamicTranslationCacheV3";
-  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "top", "lr-main", "lr-footer"];
+  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"];
   var textOriginals = new WeakMap();
   var attrOriginals = new WeakMap();
   var cache = new Map();
