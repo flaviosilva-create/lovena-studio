@@ -23,78 +23,50 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Validate inline JavaScript
+      - name: Validate landing page and language selector
         run: |
           python - <<'PY'
           import re
           from pathlib import Path
           html = Path("index.html").read_text(encoding="utf-8")
-          scripts = re.findall(r"<script>\s*(.*?)\s*</script>", html, re.S)
-          if len(scripts) != 1:
-              raise SystemExit(f"Expected one inline script, found {len(scripts)}")
+          if re.findall(r"<script>\\s*(.*?)\\s*</script>", html, re.S):
+              raise SystemExit("The standalone experience runtime should remain removed until rebuilt")
+          for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
+              if marker not in html:
+                  raise SystemExit(f"Landing page is missing required structure: {marker}")
+          if 'href="./landing.css?v=20261023-real-flag-images-1"' not in html:
+              raise SystemExit("The existing landing page stylesheet must remain linked")
           if 'default_language: "en"' not in html:
               raise SystemExit("Lovena source language must remain English")
           if html.count("https://cdn.gtranslate.net/widgets/latest/dropdown.js") != 1:
               raise SystemExit("Expected exactly one GTranslate widget")
           if "google_translate_element" in html or "translate.google.com/translate_a/element.js" in html:
               raise SystemExit("Legacy Google Translate widget must not be loaded alongside GTranslate")
-          for element_id in ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"]:
-              if f'id="{element_id}"' not in html:
-                  raise SystemExit(f"Missing dynamic translation root: {element_id}")
-          bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
-          if 'var CACHE_KEY = "lovenaDynamicTranslationCacheV3";' not in bridge:
-              raise SystemExit("Mobile-safe translation cache version is missing")
-          if "return selectors.find(isElementVisible) || selectors[0] || null;" not in bridge:
-              raise SystemExit("Responsive visible language-selector handling is missing")
-          if "allRoots.filter(isElementVisible)" not in bridge:
-              raise SystemExit("Translation must prioritize visible creator/recipient roots")
-          if "for (var start = 0; start < sources.length; start += batchSize)" not in bridge:
-              raise SystemExit("Site-wide translations must be applied progressively in small batches")
-          if "function applyTranslatedRecords(records, translations)" not in bridge:
-              raise SystemExit("Progressive translation application is missing")
-          if "function isUserAuthoredElement(element)" not in bridge or 'data-lovena-user-content="true"' not in html:
-              raise SystemExit("Authored text must be excluded from automatic translation")
-          if "function clearGoogleTranslateCookies()" not in bridge or "window.location.reload();" not in bridge:
-              raise SystemExit("English selection must clear translation cookies and restore source HTML")
-          if "function ensureEnglishOption(selector)" not in bridge or 'english.value = SOURCE_LANGUAGE + "|" + SOURCE_LANGUAGE;' not in bridge:
-              raise SystemExit("An explicit English option must exist in each language selector")
-          if 'if (!parts.length) return "";' not in bridge:
-              raise SystemExit("Empty selector placeholders must not resolve to English")
-          if "if (language === SOURCE_LANGUAGE)" not in bridge:
-              raise SystemExit("English selection must use the dedicated source-language reset")
-          if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
-              raise SystemExit("User-authored field tracking is missing")
           if 'translation-bridge.js?v=20261023-en-option-fix-1' not in html:
-              raise SystemExit("Mobile browser cache-bust version is missing")
-          if 'language: function () { return selectedLanguage() || activeLanguage; }' not in bridge:
-              raise SystemExit("Translation bridge must read the current language selector")
-          if "translateMarkup: async function (markup, language)" not in bridge:
-              raise SystemExit("Standalone story localization is missing")
-          if "async function downloadStory()" not in html or "bridge.translateMarkup(storyMarkup,exportLanguage)" not in html:
-              raise SystemExit("The downloadable story is not using the selected language")
-          if "function localizeExportScript(script,labels)" not in html or "localizeExportScript(exportScript,exportLabels)" not in html:
-              raise SystemExit("Localized standalone interaction labels are missing")
-          if 'bridge.translateText("scratch gently to open",language)' not in html:
-              raise SystemExit("Scratch-to-reveal labels are not localized")
-          if "translate.googleapis.com/translate_a/single" not in bridge:
-              raise SystemExit("Dynamic UI translation engine is missing")
-          if 'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];' not in bridge:
-              raise SystemExit("GTranslate source-target language parsing is missing")
-          if 'var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"];' not in bridge:
-              raise SystemExit("Dynamic creator/reader translation roots are missing")
-          if '"top", "lr-main", "lr-footer"' in bridge:
-              raise SystemExit("Static landing roots must not be marked notranslate by the dynamic bridge")
-          if "function renderStudio(){renderBody();if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}" not in html:
-              raise SystemExit("Creator render is not wired to the translation bridge")
-          Path("/tmp/lovena-inline.js").write_text(scripts[0], encoding="utf-8")
+              raise SystemExit("The existing language-selector support must remain loaded")
+          if 'id="studioOverlay"' in html or 'id="readerOverlay"' in html or "function openStudio()" in html:
+              raise SystemExit("The removed creator/recipient experience must not be reintroduced")
+          bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
+          for required in [
+              'var CACHE_KEY = "lovenaDynamicTranslationCacheV3";',
+              'return selectors.find(isElementVisible) || selectors[0] || null;',
+              "function clearGoogleTranslateCookies()",
+              "function ensureEnglishOption(selector)",
+              'english.value = SOURCE_LANGUAGE + "|" + SOURCE_LANGUAGE;',
+              'if (!parts.length) return "";',
+              "if (language === SOURCE_LANGUAGE)",
+              "translate.googleapis.com/translate_a/single",
+              'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];'
+          ]:
+              if required not in bridge:
+                  raise SystemExit(f"Language-selector validation failed: missing {required}")
           PY
-          node --check /tmp/lovena-inline.js
           node --check translation-bridge.js
           node <<'NODE'
           const fs = require("fs");
           const bridge = fs.readFileSync("translation-bridge.js", "utf8");
           const start = bridge.indexOf("  function canonicalLanguage(value) {");
-          const end = bridge.indexOf("\n  function readSavedLanguage", start);
+          const end = bridge.indexOf("\\n  function readSavedLanguage", start);
           if (start < 0 || end < 0) throw new Error("Could not extract GTranslate language parser");
           const parserSource = bridge.slice(start, end).replace("  function canonicalLanguage(value)", "return function canonicalLanguage(value)");
           const parseLanguage = new Function("SOURCE_LANGUAGE", parserSource) ("en");
@@ -105,21 +77,6 @@ jobs:
           }
           console.log("GTranslate language-value tests passed.");
           NODE
-          node <<'NODE'
-          const fs = require("fs");
-          const src = fs.readFileSync("/tmp/lovena-inline.js", "utf8");
-          const exportStart = src.indexOf("var exportScript=");
-          const helperStart = src.indexOf("function localizeExportScript", exportStart);
-          const exportEnd = helperStart < 0 ? -1 : src.lastIndexOf(";", helperStart);
-          if (exportStart < 0 || exportEnd < 0) throw new Error("Standalone story export was not found");
-          const exportExpression = src.slice(exportStart + "var exportScript=".length, exportEnd).trim();
-          const exportLabels = {forWord:"For",someoneSpecial:"someone special",topbarSmall:"A story made just for you",topbarTagline:"A personal keepsake ♡",scratchPrompt:"scratch gently to open",scratchSubline:"little things are waiting underneath",wallEmpty:"The wall is waiting for its first little message.",friend:"A friend"};
-          const generated = Function("state", "exportLabels", "return (" + exportExpression + ");")({recipient:"Lovena Validation"}, exportLabels);
-          const embedded = generated.match(/<script>([\s\S]*?)<\/script>/);
-          if (!embedded) throw new Error("Standalone story script was not generated");
-          fs.writeFileSync("/tmp/lovena-export.js", embedded[1]);
-          NODE
-          node --check /tmp/lovena-export.js
       - name: Smoke test keyless dynamic translation endpoint (non-blocking)
         continue-on-error: true
         run: |
