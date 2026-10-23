@@ -38,7 +38,7 @@ jobs:
               raise SystemExit("Expected exactly one GTranslate widget")
           if "google_translate_element" in html or "translate.google.com/translate_a/element.js" in html:
               raise SystemExit("Legacy Google Translate widget must not be loaded alongside GTranslate")
-          for element_id in ["studioOverlay", "readerOverlay", "studioToast", "top", "lr-main", "lr-footer", "loveWorldHeadingCopy"]:
+          for element_id in ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"]:
               if f'id="{element_id}"' not in html:
                   raise SystemExit(f"Missing dynamic translation root: {element_id}")
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
@@ -56,7 +56,7 @@ jobs:
               raise SystemExit("Authored text must be excluded from automatic translation")
           if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
               raise SystemExit("User-authored field tracking is missing")
-          if 'translation-bridge.js?v=20261023-sitewide-progressive-1' not in html:
+          if 'translation-bridge.js?v=20261023-hybrid-translation-fix-1' not in html:
               raise SystemExit("Mobile browser cache-bust version is missing")
           if 'language: function () { return selectedLanguage() || activeLanguage; }' not in bridge:
               raise SystemExit("Translation bridge must read the current language selector")
@@ -72,8 +72,10 @@ jobs:
               raise SystemExit("Dynamic UI translation engine is missing")
           if 'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];' not in bridge:
               raise SystemExit("GTranslate source-target language parsing is missing")
-          if '"studioOverlay", "readerOverlay", "studioToast", "top", "lr-main", "lr-footer"' not in bridge:
-              raise SystemExit("Full creator/preview translation roots are missing")
+          if 'var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"];' not in bridge:
+              raise SystemExit("Dynamic creator/reader translation roots are missing")
+          if '"top", "lr-main", "lr-footer"' in bridge:
+              raise SystemExit("Static landing roots must not be marked notranslate by the dynamic bridge")
           if "function renderStudio(){renderBody();if(window.LovenaTranslationBridge)window.LovenaTranslationBridge.refresh();}" not in html:
               raise SystemExit("Creator render is not wired to the translation bridge")
           Path("/tmp/lovena-inline.js").write_text(scripts[0], encoding="utf-8")
