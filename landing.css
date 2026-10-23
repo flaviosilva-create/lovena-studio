@@ -213,3 +213,28 @@ body>.lr-footer{display:flex!important}
   .lr-world-copy{min-width:0}
   .lr-world-copy .lr-flags{overflow:visible}
 }
+
+
+/* Use real flag image assets so desktop systems never fall back to two-letter emoji glyphs. */
+.lr-world-copy .lr-flags>span{
+  display:inline-flex!important;
+  flex:0 0 auto!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.lr-world-copy .lr-flags>span>img{
+  display:block!important;
+  width:24px!important;
+  height:16px!important;
+  min-width:24px!important;
+  max-width:none!important;
+  flex:0 0 24px!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:2px!important;
+  box-shadow:0 0 0 1px rgba(52,43,36,.16)!important;
+}
+@media(max-width:800px){
+  .lr-world-copy .lr-flags{gap:clamp(4px,1.2vw,8px)!important}
+  .lr-world-copy .lr-flags>span>img{width:22px!important;height:15px!important;min-width:22px!important;flex-basis:22px!important}
+}
