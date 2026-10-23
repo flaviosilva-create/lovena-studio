@@ -29,7 +29,7 @@ jobs:
           import re
           from pathlib import Path
           html = Path("index.html").read_text(encoding="utf-8")
-          if re.findall(r"<script>\\s*(.*?)\\s*</script>", html, re.S):
+          if re.findall(r"<script>\s*(.*?)\s*</script>", html, re.S):
               raise SystemExit("The standalone experience runtime should remain removed until rebuilt")
           for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
               if marker not in html:
@@ -66,7 +66,7 @@ jobs:
           const fs = require("fs");
           const bridge = fs.readFileSync("translation-bridge.js", "utf8");
           const start = bridge.indexOf("  function canonicalLanguage(value) {");
-          const end = bridge.indexOf("\\n  function readSavedLanguage", start);
+          const end = bridge.indexOf("\n  function readSavedLanguage", start);
           if (start < 0 || end < 0) throw new Error("Could not extract GTranslate language parser");
           const parserSource = bridge.slice(start, end).replace("  function canonicalLanguage(value)", "return function canonicalLanguage(value)");
           const parseLanguage = new Function("SOURCE_LANGUAGE", parserSource) ("en");
