@@ -52,7 +52,7 @@ jobs:
               raise SystemExit("Authored text must be excluded from automatic translation")
           if 'userAuthoredFields:[]' not in html or "markUserAuthoredField(key)" not in html:
               raise SystemExit("User-authored field tracking is missing")
-          if 'translation-bridge.js?v=20261023-synced-selectors-1' not in html:
+          if 'translation-bridge.js?v=20261023-final-1' not in html:
               raise SystemExit("Mobile browser cache-bust version is missing")
           if 'language: function () { return selectedLanguage() || activeLanguage; }' not in bridge:
               raise SystemExit("Translation bridge must read the current language selector")
