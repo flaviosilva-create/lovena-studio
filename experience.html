@@ -706,6 +706,7 @@ body.editor-mode .experience{padding-bottom:28px}
  state.texts=state.texts||{};
  state.images=Object.assign({hero:null,album:null,gallery:[]},state.images||{});
  state.colors=Object.assign({},colorDefaults,state.colors||{});
+ while(state.images.gallery.length<(data.photos||[]).length)state.images.gallery.push(null);
  state.data=data;
  data.images=state.images;
  var panel=document.getElementById("lovenaEditor");
@@ -813,7 +814,7 @@ body.editor-mode .experience{padding-bottom:28px}
  }
  function getSongUrl(song){return song.url||("https://music.youtube.com/search?q="+encodeURIComponent(song.query||song.title||"romantic songs"));}
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
- function getSnapshot(){return {version:1,texts:state.texts,images:state.images,colors:state.colors,data:data};}
+ function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;return {version:1,texts:state.texts,images:state.images,colors:state.colors,data:savedData};}
  function saveDraft(show){
   try{
    data.images=state.images;
