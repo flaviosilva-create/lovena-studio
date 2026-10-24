@@ -64,9 +64,34 @@ jobs:
           ]:
               if required not in bridge:
                   raise SystemExit(f"Language-selector validation failed: missing {required}")
+          experience = Path("experience.html").read_text(encoding="utf-8")
+          experience_scripts = re.findall(r'<script\b[^>]*>\s*(.*?)\s*</script>', experience, re.S)
+          if len(experience_scripts) != 3:
+              raise SystemExit(f"Expected 3 experience scripts, found {len(experience_scripts)}")
+          for marker in [
+              'id="lovenaEditBootstrap"',
+              'id="lovenaEditorRuntime"',
+              'id="lovenaEditorStyles"',
+              'data-editor-action="export"',
+              'localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()))',
+              'canvas.toDataURL("image/jpeg",.86)',
+              'data-editor-action="add-photo"',
+              'data-editor-action="add-milestone"',
+              'id="detailModal"',
+              'id="fotos"',
+              'id="historia"',
+              'id="surpresas"'
+          ]:
+              if marker not in experience:
+                  raise SystemExit(f"Editable experience is missing required feature: {marker}")
+          for index, script in enumerate(experience_scripts):
+              Path(f"/tmp/lovena-experience-{index}.js").write_text(script, encoding="utf-8")
           PY
           node --check /tmp/lovena-gtranslate-config.js
           node --check translation-bridge.js
+          node --check /tmp/lovena-experience-0.js
+          node --check /tmp/lovena-experience-1.js
+          node --check /tmp/lovena-experience-2.js
           node <<'NODE'
           const fs = require("fs");
           const bridge = fs.readFileSync("translation-bridge.js", "utf8");
