@@ -843,8 +843,8 @@ body.editor-mode .experience{padding-bottom:28px}
  }
  function applyImages(){
   data.images=state.images;
-  var heroValue=state.images.hero?'url("'+state.images.hero+'")':defaultHeroImage;
-  document.documentElement.style.setProperty("--hero-photo",heroValue);
+  // Keep uploaded data URLs off the root CSS variable. Direct per-element backgrounds
+  // avoid forcing a large user image through every CSS rule that references --hero-photo.
   var p=document.querySelector(".hero-photo");if(p)p.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";
   var pinned=document.querySelector(".pinned-photo-photo");if(pinned)pinned.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";
   var a=document.querySelector(".album-cover");if(a)a.src=state.images.album||defaultAlbumSrc;
@@ -919,41 +919,62 @@ body.editor-mode .experience{padding-bottom:28px}
   if(!file)return;
   if(file.type && !(new RegExp("^image/","i")).test(file.type)){setStatus("Escolha um arquivo de imagem.");return;}
   if(file.size>40*1024*1024){setStatus("Esta foto tem mais de 40 MB. Escolha uma versão menor da imagem.");return;}
-  setStatus("Preparando a foto…");
-  var objectUrl;
-  try{objectUrl=URL.createObjectURL(file);}catch(error){setStatus("Não foi possível abrir este arquivo. Tente outra foto.");return;}
-  var img=new Image();
-  var finished=false;
-  function cleanup(){if(finished)return;finished=true;try{URL.revokeObjectURL(objectUrl);}catch(error){}}
-  img.onload=function(){
+  if(typeof window.createImageBitmap!=="function"){setStatus("Este navegador não consegue preparar fotos com segurança. Atualize o navegador e tente novamente.");return;}
+  setStatus("Preparando a foto em tamanho otimizado…");
+  var maxDimension=key==="hero"?1400:1000;
+  var maxPixels=750000;
+  window.createImageBitmap(file,{resizeWidth:maxDimension,resizeQuality:"high"}).then(function(bitmap){
+   var canvas=null;
    try{
-    if(!img.naturalWidth||!img.naturalHeight)throw new Error("Imagem sem dimensões válidas.");
-    var max=key==="hero"?1800:1100;
-    var maxPixels=1800000;
-    var ratio=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight),Math.sqrt(maxPixels/(img.naturalWidth*img.naturalHeight)));
-    var width=Math.max(1,Math.round(img.naturalWidth*ratio));
-    var height=Math.max(1,Math.round(img.naturalHeight*ratio));
-    var canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
+    if(!bitmap.width||!bitmap.height)throw new Error("Imagem sem dimensões válidas.");
+    var ratio=Math.min(1,Math.sqrt(maxPixels/(bitmap.width*bitmap.height)));
+    var width=Math.max(1,Math.round(bitmap.width*ratio));
+    var height=Math.max(1,Math.round(bitmap.height*ratio));
+    canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
     var ctx=canvas.getContext("2d");
     if(!ctx)throw new Error("O navegador não conseguiu preparar a imagem.");
-    ctx.drawImage(img,0,0,width,height);
-    var uri=canvas.toDataURL("image/jpeg",.86);
-    if(!uri||uri==="data:,")throw new Error("A imagem não pôde ser convertida.");
-    if(key==="hero")state.images.hero=uri;
-    else if(key==="album")state.images.album=uri;
-    else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=uri;
-    data.images=state.images;
-    applyImages();
-    imageControls();
-    scheduleSave();
-    setStatus("Imagem atualizada.");
+    ctx.drawImage(bitmap,0,0,width,height);
+    if(typeof bitmap.close==="function")bitmap.close();
+    canvas.toBlob(function(blob){
+     try{
+      if(!blob)throw new Error("A imagem não pôde ser convertida.");
+      var reader=new FileReader();
+      reader.onload=function(){
+       try{
+        var uri=reader.result;
+        if(typeof uri!=="string"||uri.indexOf("data:image/jpeg;base64,")!==0)throw new Error("Formato de imagem convertido inválido.");
+        if(key==="hero")state.images.hero=uri;
+        else if(key==="album")state.images.album=uri;
+        else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=uri;
+        data.images=state.images;
+        applyImages();
+        imageControls();
+        scheduleSave();
+        setStatus("Imagem atualizada.");
+       }catch(error){
+        console.error("Lovena: não foi possível aplicar a imagem",error);
+        setStatus("Não foi possível aplicar esta foto. Tente JPG ou PNG.");
+       }
+      };
+      reader.onerror=function(){setStatus("Não foi possível ler a foto preparada.");};
+      reader.readAsDataURL(blob);
+     }catch(error){
+      console.error("Lovena: erro ao converter a imagem",error);
+      setStatus("Não foi possível preparar esta foto. Tente outra imagem.");
+     }finally{
+      if(canvas){canvas.width=1;canvas.height=1;}
+     }
+    },"image/jpeg",.78);
    }catch(error){
-    console.error("Lovena: erro ao processar a imagem",error);
-    setStatus("Não foi possível preparar esta foto. Tente uma imagem JPG ou PNG menor.");
-   }finally{cleanup();}
-  };
-  img.onerror=function(){cleanup();setStatus("Não foi possível abrir esta foto. Tente JPG ou PNG.");};
-  img.src=objectUrl;
+    if(typeof bitmap.close==="function"){try{bitmap.close();}catch(closeError){}}
+    if(canvas){canvas.width=1;canvas.height=1;}
+    console.error("Lovena: erro no redimensionamento",error);
+    setStatus("Não foi possível preparar esta foto. Tente JPG ou PNG.");
+   }
+  }).catch(function(error){
+   console.error("Lovena: o navegador não conseguiu abrir a imagem",error);
+   setStatus("Não foi possível abrir esta imagem. Use JPG ou PNG e tente novamente.");
+  });
  }
  function openEditor(){backdrop.hidden=false;panel.hidden=false;requestAnimationFrame(function(){backdrop.classList.add("is-open");panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");});}
  function closeEditor(){panel.classList.remove("is-open");backdrop.classList.remove("is-open");panel.setAttribute("aria-hidden","true");setTimeout(function(){if(!panel.classList.contains("is-open")){panel.hidden=true;backdrop.hidden=true;}},260);}
