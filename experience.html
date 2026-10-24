@@ -247,6 +247,64 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.gallery-item,.surprise-card,.toast{transition:none}}
 </style>
+<style id="lovenaEditorStyles">
+#lovenaEditorTrigger[hidden],#lovenaEditorBackdrop[hidden],#lovenaEditor[hidden]{display:none!important}
+#lovenaEditorTrigger{position:fixed;z-index:10001;right:18px;bottom:18px;display:none;align-items:center;gap:9px;border:1px solid rgba(248,227,212,.22);border-radius:999px;padding:12px 17px;background:#49211c;color:#fff5eb;box-shadow:0 12px 35px rgba(0,0,0,.35);font:700 12px Manrope,Arial,sans-serif;cursor:pointer}
+body.editor-mode #lovenaEditorTrigger{display:flex}
+#lovenaEditorTrigger svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+#lovenaEditorBackdrop{position:fixed;z-index:10002;inset:0;background:rgba(13,5,4,.63);backdrop-filter:blur(3px);opacity:0;transition:opacity .22s}
+#lovenaEditorBackdrop.is-open{opacity:1}
+#lovenaEditor{position:fixed;z-index:10003;top:0;right:0;width:min(460px,96vw);height:100dvh;overflow:hidden;display:flex;flex-direction:column;background:#f7eee5;color:#382820;box-shadow:-20px 0 55px rgba(0,0,0,.28);font-family:Manrope,Arial,sans-serif;transform:translateX(102%);transition:transform .25s ease}
+#lovenaEditor.is-open{transform:translateX(0)}
+#lovenaEditor *{box-sizing:border-box}
+#lovenaEditor .ed-head{display:flex;align-items:flex-start;gap:14px;justify-content:space-between;padding:23px 22px 18px;background:#2b100d;color:#f9eee5;border-bottom:1px solid rgba(255,255,255,.12)}
+#lovenaEditor .ed-kicker{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#c79a89;margin:0 0 7px}
+#lovenaEditor .ed-head h2{font:400 24px/1.15 'Playfair Display',Georgia,serif;margin:0;color:#fff3e8}
+#lovenaEditor .ed-head p{font-size:10px;line-height:1.6;color:#d8c3b5;margin:7px 0 0;max-width:330px}
+#lovenaEditor .ed-close{flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:transparent;color:#fff0e6;font-size:23px;line-height:1;cursor:pointer}
+#lovenaEditor .ed-scroll{padding:14px 17px 25px;overflow:auto;overscroll-behavior:contain;flex:1}
+#lovenaEditor .ed-notice{border:1px solid #e1c6b4;border-radius:9px;background:#f0dfd1;padding:11px 12px;font-size:10px;line-height:1.6;color:#6c4a3a;margin:0 0 13px}
+#lovenaEditor details{border:1px solid #e2cfc0;border-radius:10px;background:#fbf5ee;margin:0 0 10px;overflow:hidden}
+#lovenaEditor details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;padding:14px 14px;font-size:12px;font-weight:800;color:#4b2d25}
+#lovenaEditor details>summary::-webkit-details-marker{display:none}
+#lovenaEditor details>summary:after{content:"＋";font-size:16px;font-weight:400;color:#92675a}
+#lovenaEditor details[open]>summary:after{content:"−"}
+#lovenaEditor .ed-fields{padding:0 13px 14px;display:grid;gap:11px}
+#lovenaEditor .ed-field{display:grid;gap:5px;min-width:0}
+#lovenaEditor .ed-field label{font-size:10px;font-weight:700;line-height:1.4;color:#694a3c}
+#lovenaEditor .ed-field input:not([type=color]):not([type=file]),#lovenaEditor .ed-field textarea,#lovenaEditor .ed-field select{width:100%;min-height:38px;border:1px solid #dfc8b7;border-radius:7px;padding:9px 10px;background:#fffaf5;color:#3b2922;font:11px/1.5 Manrope,Arial,sans-serif;outline:none}
+#lovenaEditor .ed-field textarea{resize:vertical;min-height:74px}
+#lovenaEditor .ed-field input:focus,#lovenaEditor .ed-field textarea:focus{border-color:#a97769;box-shadow:0 0 0 2px #a9776924}
+#lovenaEditor .ed-help{font-size:9px;line-height:1.5;color:#8a6c5e}
+#lovenaEditor .ed-color-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 13px 14px}
+#lovenaEditor .ed-color{display:flex;align-items:center;gap:9px;border:1px solid #e4d0c0;border-radius:8px;padding:8px;background:#fffaf5;font-size:10px;font-weight:700}
+#lovenaEditor .ed-color input{width:32px;height:32px;padding:0;border:0;background:transparent;cursor:pointer}
+#lovenaEditor .ed-image-grid{display:grid;gap:8px;padding:0 13px 14px}
+#lovenaEditor .ed-image-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;border:1px solid #e6d4c6;border-radius:8px;padding:10px;background:#fffaf5}
+#lovenaEditor .ed-image-row strong{display:block;font-size:10px;line-height:1.5;color:#58382d}
+#lovenaEditor .ed-image-row small{display:block;font-size:8.5px;color:#927466;margin-top:2px}
+#lovenaEditor .ed-image-row input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+#lovenaEditor .ed-mini-button{border:1px solid #d9beac;border-radius:999px;background:#f3e5d9;color:#654437;padding:8px 11px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}
+#lovenaEditor .ed-mini-button:hover{background:#ead2c0}
+#lovenaEditor .ed-danger{border-color:#ddbbb3;color:#8a4036;background:#fff5f1}
+#lovenaEditor .ed-add-row{display:flex;flex-wrap:wrap;gap:7px;padding:0 13px 14px}
+#lovenaEditor .ed-actions{display:grid;gap:8px;border-top:1px solid #e2cabb;padding:14px 17px calc(15px + env(safe-area-inset-bottom));background:#f9f0e7}
+#lovenaEditor .ed-primary,#lovenaEditor .ed-secondary{display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;border-radius:999px;padding:10px 14px;font:800 11px Manrope,Arial,sans-serif;cursor:pointer;text-decoration:none}
+#lovenaEditor .ed-primary{border:1px solid #54241d;background:#54241d;color:#fff5eb}
+#lovenaEditor .ed-secondary{border:1px solid #d8bfad;background:#fffaf5;color:#563b30}
+#lovenaEditor .ed-action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#lovenaEditor .ed-status{min-height:14px;text-align:center;color:#7e695d;font-size:9px}
+body.editor-mode .experience{padding-bottom:28px}
+@media(max-width:480px){
+ #lovenaEditor{width:100vw}
+ #lovenaEditor .ed-head{padding:18px 17px 15px}
+ #lovenaEditor .ed-head h2{font-size:22px}
+ #lovenaEditor .ed-scroll{padding:12px 12px 20px}
+ #lovenaEditor .ed-actions{padding-inline:12px}
+ #lovenaEditorTrigger{right:12px;bottom:12px;padding:11px 14px}
+}
+@media(prefers-reduced-motion:reduce){#lovenaEditor,#lovenaEditorBackdrop{transition:none}}
+</style>
 </head>
 <body>
 <main class="experience" id="experiencia">
@@ -366,6 +424,51 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
  </section>
 </main>
 
+<button id="lovenaEditorTrigger" data-editor-only type="button" aria-label="Abrir editor da experiência"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/></svg>Editar experiência</button>
+<div id="lovenaEditorBackdrop" data-editor-only hidden></div>
+<aside id="lovenaEditor" data-editor-only hidden aria-label="Editor da experiência Lovena" aria-hidden="true">
+ <header class="ed-head">
+  <div><p class="ed-kicker">LOVENA STUDIO</p><h2>Personalize cada detalhe</h2><p>Edite textos, datas, fotos, música e cores. As alterações ficam salvas neste navegador até você exportar a página pronta.</p></div>
+  <button type="button" class="ed-close" data-editor-action="close" aria-label="Fechar editor">×</button>
+ </header>
+ <div class="ed-scroll">
+  <p class="ed-notice">As edições são aplicadas à prévia imediatamente. Para enviar a página final para outra pessoa, use <b>Baixar experiência pronta</b> no fim do editor.</p>
+  <div id="lovenaEditorFields"></div>
+  <details open>
+   <summary>Fotografias e imagens</summary>
+   <div class="ed-image-grid" id="lovenaEditorImages"></div>
+   <div class="ed-add-row"><button class="ed-mini-button" type="button" data-editor-action="add-photo">+ Adicionar foto à galeria</button><span class="ed-help">Você pode remover fotos ou trocar qualquer imagem por um arquivo seu.</span></div>
+  </details>
+  <details>
+   <summary>Marcos da linha do tempo</summary>
+   <div class="ed-fields" id="lovenaEditorMilestones"></div>
+   <div class="ed-add-row"><button class="ed-mini-button" type="button" data-editor-action="add-milestone">+ Adicionar marco</button><span class="ed-help">Até 10 marcos. Remova ou edite título, data e história de cada um.</span></div>
+  </details>
+  <details>
+   <summary>Paleta de cores</summary>
+   <div class="ed-color-grid">
+    <label class="ed-color"><input type="color" data-editor-color="night" value="#1b0908"><span>Vinho / fundo</span></label>
+    <label class="ed-color"><input type="color" data-editor-color="paper" value="#f3e4d3"><span>Papel</span></label>
+    <label class="ed-color"><input type="color" data-editor-color="accent" value="#b7837f"><span>Detalhes</span></label>
+    <label class="ed-color"><input type="color" data-editor-color="ink" value="#39271f"><span>Texto escuro</span></label>
+   </div>
+  </details>
+  <details>
+   <summary>Backup e restauração</summary>
+   <div class="ed-fields">
+    <p class="ed-help">Baixe um backup JSON para guardar suas edições ou importá-las em outro navegador. As fotos do backup ficam incorporadas no arquivo.</p>
+    <div class="ed-action-row"><button type="button" class="ed-secondary" data-editor-action="backup">Baixar backup</button><button type="button" class="ed-secondary" data-editor-action="import">Importar backup</button></div>
+    <input type="file" id="lovenaEditorImport" accept="application/json,.json" hidden>
+    <button type="button" class="ed-secondary" data-editor-action="reset">Restaurar versão original</button>
+   </div>
+  </details>
+ </div>
+ <footer class="ed-actions">
+  <div class="ed-status" id="lovenaEditorStatus" role="status" aria-live="polite">Rascunho local</div>
+  <button type="button" class="ed-primary" data-editor-action="export">Baixar experiência pronta (.html)</button>
+  <div class="ed-action-row"><button type="button" class="ed-secondary" data-editor-action="save">Salvar alterações</button><button type="button" class="ed-secondary" data-editor-action="view">Ver sem editor</button></div>
+ </footer>
+</aside>
 <dialog class="modal" id="detailModal" aria-labelledby="modalTitle">
  <div class="modal-content">
   <button class="modal-close" type="button" data-action="close-modal" aria-label="Fechar">×</button>
@@ -379,6 +482,23 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script id="lovenaEditBootstrap">
+(function(){
+ "use strict";
+ var defaults={"songs":[{"title":"Melhor Ainda","artist":"Melim","query":"Melim Melhor Ainda","url":"https://music.youtube.com/search?q=Melim%20Melhor%20Ainda"},{"title":"Meu Abrigo","artist":"Melim","query":"Melim Meu Abrigo","url":"https://music.youtube.com/search?q=Melim%20Meu%20Abrigo"},{"title":"Dois Corações","artist":"Melim","query":"Melim Dois Corações","url":"https://music.youtube.com/search?q=Melim%20Dois%20Cora%C3%A7%C3%B5es"}],"musicLinkLabel":"Ouvir no YouTube Music ↗","milestones":[["Nos conhecemos","Foi quando nossos caminhos se cruzaram. Sem perceber, a vida estava abrindo espaço para uma das histórias mais bonitas.","12 de março de 2021"],["Nosso primeiro encontro","O nervosismo, os sorrisos e aquela sensação boa de que a conversa podia durar para sempre. Um dia simples que virou lembrança importante.","24 de abril de 2021"],["Nossa primeira viagem","Um lugar novo, novas histórias e a certeza de que qualquer destino fica melhor quando estamos juntos.","15 de janeiro de 2022"],["1 ano juntos","Um ano de carinho, parceria e pequenos momentos que se tornaram gigantes. E era só o começo.","12 de março de 2022"],["E tudo continua...","Que venham muitos outros capítulos, lugares para conhecer, músicas para cantar e motivos para escolher um ao outro.","Hoje e sempre"]],"photos":[["Nosso pôr do sol","Tem momentos que parecem feitos para ficarem guardados para sempre."],["Meu lugar favorito","No meio de tantos lugares lindos, é ao seu lado que eu sempre quero estar."],["Para onde formos","O melhor da viagem nunca é só o destino. É dividir o caminho com você."],["Nossa casinha","A paz de estar junto e fazer do cotidiano o nosso lugar preferido."],["Só mais cinco minutos","Os dias simples são os que mais acabam virando saudade boa."],["O mundo é nosso","Ainda há tantos lugares, histórias e pôr do sol esperando por nós."]],"surprises":{"playlist":{"title":"Uma trilha que lembra nós","copy":"Algumas músicas parecem guardar um pedacinho da nossa história. Escolha uma delas e deixe a lembrança tocar de novo.","kicker":"NOSSA TRILHA SONORA"},"card":{"title":"Um cartão só seu","copy":"Guarde isso para os dias corridos: você é uma das coisas mais bonitas que já me aconteceram. Que a vida continue encontrando jeitos de colocar a gente lado a lado.","kicker":"ABRA QUANDO QUISER SORRIR"},"message":{"title":"Uma coisa que eu nunca quero que você esqueça","copy":"Você não precisa fazer nada extraordinário para ser especial. O jeito como você existe, como cuida, como ri e como torna os dias comuns mais leves já é mais do que suficiente. Se eu pudesse escolher de novo, em todas as versões da vida, eu ainda procuraria você.","kicker":"SÓ MAIS UMA COISA","signature":"Você torna tudo mais bonito. ♡"}},"images":{"hero":null,"album":null,"gallery":[]}};
+ var draft=null;
+ try{draft=JSON.parse(localStorage.getItem("lovenaExperienceDraftV1")||"null");}catch(error){}
+ var data=defaults;
+ if(draft&&draft.data){
+  data=Object.assign({},defaults,draft.data);
+  ["songs","milestones","photos","surprises"].forEach(function(key){if(draft.data[key])data[key]=draft.data[key];});
+  if(draft.data.images)data.images=draft.data.images;
+ }
+ if(draft&&draft.images)data.images=draft.images;
+ window.LOVENA_EDIT_DRAFT=draft||{};
+ window.LOVENA_EDIT_DATA=data;
+})();
+</script>
 <script>
 (function(){
  "use strict";
@@ -392,27 +512,12 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
  var toastNode=document.getElementById("toast");
  var toastTimer=0;
  var activePhoto=0;
- var songs=[
-  {title:"Melhor Ainda",artist:"Melim",query:"Melim Melhor Ainda"},
-  {title:"Meu Abrigo",artist:"Melim",query:"Melim Meu Abrigo"},
-  {title:"Dois Corações",artist:"Melim",query:"Melim Dois Corações"}
- ];
+ var editData=window.LOVENA_EDIT_DATA||{};
+ var songs=editData.songs||[];
  var songIndex=0;
- var milestones=[
-  ["O começo de tudo","Foi quando nossos caminhos se cruzaram. Sem perceber, a vida estava abrindo espaço para uma das histórias mais bonitas."],
-  ["O primeiro encontro","O nervosismo, os sorrisos e aquela sensação boa de que a conversa podia durar para sempre. Um dia simples que virou lembrança importante."],
-  ["A primeira viagem","Um lugar novo, novas histórias e a certeza de que qualquer destino fica melhor quando estamos juntos."],
-  ["Um ano de nós","Um ano de carinho, parceria e pequenos momentos que se tornaram gigantes. E era só o começo."],
-  ["Ainda é só o começo","Que venham muitos outros capítulos, lugares para conhecer, músicas para cantar e motivos para escolher um ao outro."]
- ];
- var photos=[
-  ["Nosso pôr do sol","Tem momentos que parecem feitos para ficarem guardados para sempre."],
-  ["Meu lugar favorito","No meio de tantos lugares lindos, é ao seu lado que eu sempre quero estar."],
-  ["Para onde formos","O melhor da viagem nunca é só o destino. É dividir o caminho com você."],
-  ["Nossa casinha","A paz de estar junto e fazer do cotidiano o nosso lugar preferido."],
-  ["Só mais cinco minutos","Os dias simples são os que mais acabam virando saudade boa."],
-  ["O mundo é nosso","Ainda há tantos lugares, histórias e pôr do sol esperando por nós."]
- ];
+ var milestones=editData.milestones||[];
+ var photos=editData.photos||[];
+ var surprises=editData.surprises||{};
  function showToast(message){
   toastNode.textContent=message;
   toastNode.classList.add("show");
@@ -436,7 +541,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
   if(!modal.open)modal.showModal();
  }
  function getMusicUrl(){
-  return "https://music.youtube.com/search?q="+encodeURIComponent(songs[songIndex].query);
+  var song=songs[songIndex]||{};
+  return song.url||("https://music.youtube.com/search?q="+encodeURIComponent(song.query||song.title||"romantic songs"));
  }
  function setSong(next){
   songIndex=(next+songs.length)%songs.length;
@@ -445,27 +551,36 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
   document.getElementById("trackArtist").textContent=song.artist;
   document.getElementById("trackProgress").value=43;
   document.getElementById("musicOpen").href=getMusicUrl();
-  document.getElementById("musicOpen").textContent="Ouvir no YouTube Music ↗";
+  document.getElementById("musicOpen").textContent=editData.musicLinkLabel||"Ouvir no YouTube Music ↗";
   showToast("Trilha selecionada: "+song.title);
  }
  function openPhoto(index){
   activePhoto=(index+photos.length)%photos.length;
   var row=document.getElementById("galleryRow");
   var item=row.querySelector('[data-photo="'+activePhoto+'"]');
-  var pos=item.querySelector(".gallery-photo").style.backgroundPosition||"0 0";
+  var visual=item.querySelector(".gallery-photo");
+  var pos=visual.style.backgroundPosition||"0 0";
   openModal(photos[activePhoto][0],photos[activePhoto][1],"NOSSOS MOMENTOS",{photo:true,position:pos,alt:photos[activePhoto][0],type:"photo"});
+  var uploadedPhoto=editData.images&&editData.images.gallery&&editData.images.gallery[activePhoto];
+  if(uploadedPhoto){modalVisual.style.backgroundImage='url("'+uploadedPhoto+'")';modalVisual.style.backgroundSize="cover";modalVisual.style.backgroundPosition="center";}
+  else{modalVisual.style.backgroundImage="var(--gallery-sprite)";modalVisual.style.backgroundSize="300% 200%";}
   modalCopy.style.marginBottom="0";
   modalExtra.innerHTML='<div style="display:flex;justify-content:space-between;gap:12px;margin-top:16px"><button type="button" class="modal-action" data-action="modal-prev">← Anterior</button><button type="button" class="modal-action" data-action="modal-next">Próxima →</button></div>';
  }
+ function htmlEscape(value){
+  return String(value==null?"":value).replace(/[&<>"']/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];});
+ }
  function openSurprise(kind){
+  var item=surprises[kind]||{};
   if(kind==="playlist"){
-   openModal("Uma trilha que lembra nós","Algumas músicas parecem guardar um pedacinho da nossa história. Escolha uma delas e deixe a lembrança tocar de novo.","NOSSA TRILHA SONORA",{extra:'<div style="display:grid;gap:8px"><a class="modal-action" target="_blank" rel="noopener" href="https://music.youtube.com/search?q=Melim%20Melhor%20Ainda">Melhor Ainda — Melim ↗</a><a class="modal-action" target="_blank" rel="noopener" href="https://music.youtube.com/search?q=Melim%20Meu%20Abrigo">Meu Abrigo — Melim ↗</a><a class="modal-action" target="_blank" rel="noopener" href="https://music.youtube.com/search?q=Melim%20Dois%20Cora%C3%A7%C3%B5es">Dois Corações — Melim ↗</a></div>'});
+   var links=songs.map(function(song){return '<a class="modal-action" target="_blank" rel="noopener" href="'+htmlEscape(song.url||("https://music.youtube.com/search?q="+encodeURIComponent(song.query||song.title||"romantic songs")))+'">'+htmlEscape((song.title||"Música")+" — "+(song.artist||"Artista")+" ↗")+'</a>';}).join("");
+   openModal(item.title||"Uma trilha que lembra nós",item.copy||"",item.kicker||"NOSSA TRILHA SONORA",{extra:'<div style="display:grid;gap:8px">'+links+'</div>'});
   }else if(kind==="gallery"){
    openPhoto(0);
   }else if(kind==="card"){
-   openModal("Um cartão só seu","Guarde isso para os dias corridos: você é uma das coisas mais bonitas que já me aconteceram. Que a vida continue encontrando jeitos de colocar a gente lado a lado.", "ABRA QUANDO QUISER SORRIR",{envelope:true,type:"card"});
+   openModal(item.title||"Um cartão só seu",item.copy||"",item.kicker||"ABRA QUANDO QUISER SORRIR",{envelope:true,type:"card"});
   }else if(kind==="message"){
-   openModal("Uma coisa que eu nunca quero que você esqueça","Você não precisa fazer nada extraordinário para ser especial. O jeito como você existe, como cuida, como ri e como torna os dias comuns mais leves já é mais do que suficiente. Se eu pudesse escolher de novo, em todas as versões da vida, eu ainda procuraria você.", "SÓ MAIS UMA COISA",{extra:'<div style="font:22px Caveat,cursive;color:#936357;margin-top:6px">Você torna tudo mais bonito. ♡</div>'});
+   openModal(item.title||"Uma mensagem para você",item.copy||"",item.kicker||"SÓ MAIS UMA COISA",{extra:'<div style="font:22px Caveat,cursive;color:#936357;margin-top:6px">'+htmlEscape(item.signature||"Você torna tudo mais bonito. ♡")+'</div>'});
   }
  }
  document.addEventListener("click",function(event){
@@ -519,5 +634,354 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 .reveal-ready.is-visible{opacity:1;transform:translateY(0)}
 @media(prefers-reduced-motion:reduce){.reveal-ready{opacity:1;transform:none;transition:none}}
 </style>
+<script id="lovenaEditorRuntime">
+(function(){
+ "use strict";
+ var EDIT_KEY="lovenaExperienceDraftV1";
+ var editMode=new URLSearchParams(location.search).get("edit")==="1";
+ var data=window.LOVENA_EDIT_DATA||{};
+ var textFields=[
+  {key:"brand",label:"Nome da marca",group:"Cabeçalho e abertura",selector:".logo-word"},
+  {key:"headerMessage",label:"Mensagem ao lado do coração",group:"Cabeçalho e abertura",selector:".nav-love span"},
+  {key:"nav0",label:"Navegação: início",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:0},
+  {key:"nav1",label:"Navegação: história",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:1},
+  {key:"nav2",label:"Navegação: fotos",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:2},
+  {key:"nav3",label:"Navegação: carta",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:3},
+  {key:"nav4",label:"Navegação: música",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:4},
+  {key:"nav5",label:"Navegação: surpresas",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:5},
+  {key:"heroEyebrow",label:"Frase pequena acima do título",group:"Cabeçalho e abertura",selector:".hero-eyebrow"},
+  {key:"heroTitle",label:"Título principal (use uma linha por quebra)",group:"Cabeçalho e abertura",selector:".hero h1",multiline:true},
+  {key:"heroIntro",label:"Texto de abertura",group:"Cabeçalho e abertura",selector:".hero-intro",multiline:true},
+  {key:"signLabel",label:"Texto antes da assinatura",group:"Cabeçalho e abertura",selector:".hero-signature small"},
+  {key:"signature",label:"Assinatura",group:"Cabeçalho e abertura",selector:".hero-signature strong"},
+  {key:"scrollCue",label:"Indicação para rolar a página",group:"Cabeçalho e abertura",selector:".scroll-cue span",multiline:true},
+  {key:"letterTitle",label:"Título da carta",group:"Carta de amor",selector:".letter-title"},
+  {key:"letterCopy0",label:"Parágrafo 1",group:"Carta de amor",selector:".letter-copy",index:0,multiline:true},
+  {key:"letterCopy1",label:"Parágrafo 2",group:"Carta de amor",selector:".letter-copy",index:1,multiline:true},
+  {key:"letterCopy2",label:"Parágrafo 3",group:"Carta de amor",selector:".letter-copy",index:2,multiline:true},
+  {key:"letterCopy3",label:"Parágrafo 4",group:"Carta de amor",selector:".letter-copy",index:3,multiline:true},
+  {key:"letterEnding",label:"Frase final da carta",group:"Carta de amor",selector:".letter-ending"},
+  {key:"letterTo",label="Assinatura no papel",group:"Carta de amor",selector:".letter-to"},
+  {key:"musicHeading",label:"Título do player",group:"Música",selector:".music-heading h2"},
+  {key:"musicSub",label:"Descrição do player",group:"Música",selector:".music-heading p"},
+  {key:"trackTitle",label:"Nome da primeira música",group:"Música",selector:"#trackTitle",path:["songs",0,"title"]},
+  {key:"trackArtist",label:"Artista da primeira música",group:"Música",selector:"#trackArtist",path:["songs",0,"artist"]},
+  {key:"musicLinkLabel",label:"Texto do link para ouvir",group:"Música",selector:"#musicOpen",path:["musicLinkLabel"]},
+  {key:"galleryTitle",label:"Título da galeria",group:"Galeria",selector:"#gallery-title"},
+  {key:"gallerySub",label:"Descrição da galeria",group:"Galeria",selector:".gallery-heading p",multiline:true},
+  {key:"historyTitle",label:"Título da linha do tempo",group:"Nossa história",selector:"#history-title"},
+  {key:"historySub",label:"Descrição da linha do tempo",group:"Nossa história",selector:".history-heading p"},
+  {key:"surprisesTitle",label:"Título da seção de surpresas",group:"Surpresas",selector:"#surprises-title"},
+  {key:"surprisesSub",label:"Descrição da seção de surpresas",group:"Surpresas",selector:".surprises-panel>p"},
+  {key:"playlistCardTitle",label:"Cartão: título da playlist",group:"Surpresas",selector:".surprise-card strong",index:0},
+  {key:"playlistCardSub",label:"Cartão: subtítulo da playlist",group:"Surpresas",selector:".surprise-card small",index:0},
+  {key:"galleryCardTitle",label:"Cartão: título da galeria",group:"Surpresas",selector:".surprise-card strong",index:1},
+  {key:"galleryCardSub",label:"Cartão: subtítulo da galeria",group:"Surpresas",selector:".surprise-card small",index:1},
+  {key:"cardCardTitle",label:"Cartão: título do cartão virtual",group:"Surpresas",selector:".surprise-card strong",index:2},
+  {key:"cardCardSub",label:"Cartão: subtítulo do cartão virtual",group:"Surpresas",selector:".surprise-card small",index:2},
+  {key:"messageCardTitle",label:"Cartão: título da mensagem",group:"Surpresas",selector:".surprise-card strong",index:3},
+  {key:"messageCardSub",label:"Cartão: subtítulo da mensagem",group:"Surpresas",selector:".surprise-card small",index:3},
+  {key:"surprisePlaylistTitle",label:"Título que abre a playlist",group:"Surpresas",path:["surprises","playlist","title"]},
+  {key:"surprisePlaylistCopy",label:"Mensagem da playlist",group:"Surpresas",path:["surprises","playlist","copy"],multiline:true},
+  {key:"surprisePlaylistKicker",label:"Etiqueta pequena da playlist",group:"Surpresas",path:["surprises","playlist","kicker"]},
+  {key:"surpriseCardTitle",label:"Título do cartão virtual ao abrir",group:"Surpresas",path:["surprises","card","title"]},
+  {key:"surpriseCardCopy",label:"Texto do cartão virtual",group:"Surpresas",path:["surprises","card","copy"],multiline:true},
+  {key:"surpriseCardKicker",label:"Etiqueta pequena do cartão",group:"Surpresas",path:["surprises","card","kicker"]},
+  {key:"surpriseMessageTitle",label:"Título da mensagem ao abrir",group:"Surpresas",path:["surprises","message","title"]},
+  {key:"surpriseMessageCopy",label:"Texto da mensagem especial",group:"Surpresas",path:["surprises","message","copy"],multiline:true},
+  {key:"surpriseMessageKicker",label:"Etiqueta pequena da mensagem",group:"Surpresas",path:["surprises","message","kicker"]},
+  {key:"surpriseMessageSignature",label:"Frase final da mensagem",group:"Surpresas",path:["surprises","message","signature"]}
+ ];
+ for(var i=0;i<12;i++){
+  textFields.push({key:"photoTitle"+i,label:"Foto "+(i+1)+": legenda",group:"Legendas da galeria",path:["photos",i,0],selector:".gallery-caption",index:i});
+  textFields.push({key:"photoStory"+i,label:"Foto "+(i+1)+": descrição ao abrir",group:"Legendas da galeria",path:["photos",i,1],multiline:true});
+ }
+ for(var j=0;j<10;j++){
+  textFields.push({key:"milestoneTitle"+j,label:"Marco "+(j+1)+": título",group:"Detalhes da linha do tempo",path:["milestones",j,0],selector:".timeline-item strong",index:j});
+  textFields.push({key:"milestoneStory"+j,label:"Marco "+(j+1)+": história ao abrir",group:"Detalhes da linha do tempo",path:["milestones",j,1],multiline:true});
+  textFields.push({key:"milestoneDate"+j,label:"Marco "+(j+1)+": data ou legenda",group:"Detalhes da linha do tempo",path:["milestones",j,2],selector:".timeline-item span",index:j});
+ }
+ var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
+ var state=Object.assign({version:1,texts:{},images:{hero:null,album:null,gallery:[]},colors:colorDefaults},window.LOVENA_EDIT_DRAFT||{});
+ state.texts=state.texts||{};
+ state.images=Object.assign({hero:null,album:null,gallery:[]},state.images||{});
+ state.colors=Object.assign({},colorDefaults,state.colors||{});
+ state.data=data;
+ data.images=state.images;
+ var panel=document.getElementById("lovenaEditor");
+ var backdrop=document.getElementById("lovenaEditorBackdrop");
+ var trigger=document.getElementById("lovenaEditorTrigger");
+ var fieldsHost=document.getElementById("lovenaEditorFields");
+ var imagesHost=document.getElementById("lovenaEditorImages");
+ var milestoneHost=document.getElementById("lovenaEditorMilestones");
+ var statusNode=document.getElementById("lovenaEditorStatus");
+ var pendingTimer=0;
+ var customPalette=document.getElementById("lovenaEditorPalette");
+ function q(sel,idx){var nodes=document.querySelectorAll(sel);return idx==null?nodes[0]||null:nodes[idx]||null;}
+ function getPath(obj,path){return path.reduce(function(acc,key){return acc==null?undefined:acc[key];},obj);}
+ function setPath(obj,path,value){var cur=obj;for(var i=0;i<path.length-1;i++){if(cur[path[i]]==null)cur[path[i]]=typeof path[i+1]==="number"?[]:{};cur=cur[path[i]];}cur[path[path.length-1]]=value;}
+ function targetFor(def){return def.selector?q(def.selector,def.index):null;}
+ function readElement(el,multiline){
+  if(!el)return "";
+  if(multiline)return el.innerHTML.replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]*>/g,"").replace(/&nbsp;/g," ");
+  return el.textContent||"";
+ }
+ function setElement(el,value,multiline){
+  if(!el)return;
+  value=String(value==null?"":value);
+  if(multiline){
+   while(el.firstChild)el.removeChild(el.firstChild);
+   value.split("\n").forEach(function(line,index){if(index)el.appendChild(document.createElement("br"));el.appendChild(document.createTextNode(line));});
+  }else el.textContent=value;
+ }
+ function fieldValue(def){
+  if(def.path){var val=getPath(data,def.path);return val==null?"":String(val);}
+  if(Object.prototype.hasOwnProperty.call(state.texts,def.key))return String(state.texts[def.key]);
+  return readElement(targetFor(def),def.multiline);
+ }
+ function applyField(def,value){
+  if(def.path)setPath(data,def.path,value);
+  else state.texts[def.key]=String(value);
+  if(def.selector)setElement(targetFor(def),value,def.multiline);
+  if(def.key==="musicLinkLabel"){
+   var link=document.getElementById("musicOpen");if(link)link.textContent=value;
+  }
+  if(def.key.indexOf("photoTitle")===0||def.key.indexOf("photoStory")===0)syncGallery();
+  if(def.key.indexOf("milestone")===0)syncTimeline();
+ }
+ function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"']/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];});}
+ function buildTextFields(){
+  fieldsHost.innerHTML="";
+  var groups={};
+  textFields.forEach(function(def){
+   if(!groups[def.group])groups[def.group]=[];
+   groups[def.group].push(def);
+  });
+  Object.keys(groups).forEach(function(group,index){
+   var details=document.createElement("details");details.open=index===0||group==="Música";
+   var summary=document.createElement("summary");summary.textContent=group;details.appendChild(summary);
+   var body=document.createElement("div");body.className="ed-fields";
+   groups[group].forEach(function(def){
+    var row=document.createElement("div");row.className="ed-field";
+    var id="ed_"+def.key;
+    var label=document.createElement("label");label.htmlFor=id;label.textContent=def.label;row.appendChild(label);
+    var ctl;
+    if(def.multiline){ctl=document.createElement("textarea");ctl.rows=3;}
+    else{ctl=document.createElement("input");ctl.type="text";}
+    ctl.id=id;ctl.dataset.editorField=def.key;ctl.value=fieldValue(def);ctl.autocomplete="off";
+    ctl.addEventListener("input",function(){
+     applyField(def,ctl.value);
+     if(def.path&&def.path[0]==="songs"&&def.path[1]===0){
+      var song=data.songs[0]||{};document.getElementById("trackTitle").textContent=song.title||"";document.getElementById("trackArtist").textContent=song.artist||"";
+     }
+     scheduleSave();
+    });
+    row.appendChild(ctl);body.appendChild(row);
+   });
+   details.appendChild(body);fieldsHost.appendChild(details);
+  });
+  var songsDetails=document.createElement("details");songsDetails.open=false;
+  var songsSummary=document.createElement("summary");songsSummary.textContent="Playlist: músicas e links";songsDetails.appendChild(songsSummary);
+  var songsBody=document.createElement("div");songsBody.className="ed-fields";
+  (data.songs||[]).forEach(function(song,index){
+   var box=document.createElement("div");box.style.cssText="border:1px solid #e5d1c2;border-radius:8px;padding:10px;display:grid;gap:8px";
+   var heading=document.createElement("strong");heading.style.cssText="font-size:10px;color:#654536";heading.textContent="Música "+(index+1);box.appendChild(heading);
+   [["title","Nome da música"],["artist","Artista"],["url","Link para ouvir"]].forEach(function(spec){
+    var wrap=document.createElement("div");wrap.className="ed-field";
+    var label=document.createElement("label");label.textContent=spec[1];wrap.appendChild(label);
+    var input=document.createElement("input");input.type=spec[0]==="url"?"url":"text";input.value=song[spec[0]]||"";input.dataset.songIndex=index;input.dataset.songProp=spec[0];
+    input.addEventListener("input",function(){
+     data.songs[index][spec[0]]=input.value;
+     data.songs[index].query=input.value;
+     if(index===0){document.getElementById("trackTitle").textContent=data.songs[0].title||"";document.getElementById("trackArtist").textContent=data.songs[0].artist||"";document.getElementById("musicOpen").href=getSongUrl(data.songs[0]);}
+     scheduleSave();
+    });
+    wrap.appendChild(input);box.appendChild(wrap);
+   });
+   songsBody.appendChild(box);
+  });
+  var addSong=document.createElement("button");addSong.type="button";addSong.className="ed-mini-button";addSong.textContent="+ Adicionar música";
+  addSong.addEventListener("click",function(){if(data.songs.length>=12){setStatus("Limite de 12 músicas atingido.");return;}data.songs.push({title:"Nova música",artist:"Artista",query:"",url:"https://music.youtube.com"});buildTextFields();scheduleSave();});
+  songsBody.appendChild(addSong);songsDetails.appendChild(songsBody);fieldsHost.appendChild(songsDetails);
+ }
+ function getSongUrl(song){return song.url||("https://music.youtube.com/search?q="+encodeURIComponent(song.query||song.title||"romantic songs"));}
+ function setStatus(value){if(statusNode)statusNode.textContent=value;}
+ function getSnapshot(){return {version:1,texts:state.texts,images:state.images,colors:state.colors,data:data};}
+ function saveDraft(show){
+  try{
+   data.images=state.images;
+   localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));
+   state.data=data;
+   setStatus(show?"Alterações salvas neste navegador.":"Salvo automaticamente · "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
+  }catch(error){setStatus("Não foi possível salvar: libere espaço no armazenamento do navegador.");}
+ }
+ function scheduleSave(){clearTimeout(pendingTimer);setStatus("Salvando…");pendingTimer=setTimeout(function(){saveDraft(false);},300);}
+ function applyColors(){
+  var root=document.documentElement;
+  root.style.setProperty("--night",state.colors.night);
+  root.style.setProperty("--paper",state.colors.paper);
+  root.style.setProperty("--rose",state.colors.accent);
+  root.style.setProperty("--ink",state.colors.ink);
+  var dark=state.colors.night,paper=state.colors.paper,accent=state.colors.accent,ink=state.colors.ink;
+  var hist=document.querySelector(".history-surprises"),lm=document.querySelector(".letter-music"),music=document.querySelector(".music-card"),letter=document.querySelector(".letter-paper"),surprise=document.querySelector(".surprises-panel");
+  if(hist)hist.style.backgroundImage="linear-gradient(110deg,"+dark+","+dark+")";
+  if(lm)lm.style.backgroundImage="linear-gradient(100deg,"+dark+","+dark+")";
+  if(music)music.style.backgroundImage="linear-gradient(155deg,"+dark+","+dark+")";
+  if(letter)letter.style.backgroundImage="linear-gradient(120deg,"+paper+","+paper+")";
+  if(surprise)surprise.style.backgroundImage="linear-gradient(120deg,"+paper+","+paper+")";
+  document.querySelectorAll(".hero-eyebrow,.history-heading h2,.hero-signature strong,.letter-ending").forEach(function(el){el.style.color=accent;});
+  document.querySelectorAll(".letter-title,.surprises-panel h2").forEach(function(el){el.style.color=ink;});
+  document.querySelectorAll("[data-editor-color]").forEach(function(input){if(input.value!==state.colors[input.dataset.editorColor])input.value=state.colors[input.dataset.editorColor];});
+ }
+ function applyImages(){
+  data.images=state.images;
+  if(state.images.hero){document.documentElement.style.setProperty("--hero-photo",'url("'+state.images.hero+'")');var p=document.querySelector(".hero-photo");if(p)p.style.backgroundImage='url("'+state.images.hero+'")';var pinned=document.querySelector(".pinned-photo-photo");if(pinned)pinned.style.backgroundImage='url("'+state.images.hero+'")';}
+  if(state.images.album){var a=document.querySelector(".album-cover");if(a)a.src=state.images.album;}
+  syncGallery();
+ }
+ function syncGallery(){
+  var photos=data.photos||[],row=document.getElementById("galleryRow");
+  if(!row)return;
+  while(row.children.length>photos.length)row.lastElementChild.remove();
+  while(row.children.length<photos.length){
+   var i=row.children.length;
+   var btn=document.createElement("button");btn.type="button";btn.className="gallery-item";
+   btn.innerHTML='<span class="gallery-photo"></span><span class="gallery-caption"></span>';
+   row.appendChild(btn);
+  }
+  Array.from(row.children).forEach(function(btn,index){
+   btn.dataset.photo=index;btn.setAttribute("aria-label","Ver foto: "+(photos[index][0]||"Memória"));
+   var visual=btn.querySelector(".gallery-photo"),caption=btn.querySelector(".gallery-caption");
+   if(caption)caption.textContent=photos[index][0]||"";
+   if(state.images.gallery[index]){visual.style.backgroundImage='url("'+state.images.gallery[index]+'")';visual.style.backgroundSize="cover";visual.style.backgroundPosition="center";}
+   else if(index<6&&!visual.dataset.editorImageSet){visual.style.backgroundImage="var(--gallery-sprite)";visual.style.backgroundSize="300% 200%";visual.style.backgroundPosition=["0 0","50% 0","100% 0","0 100%","50% 100%","100% 100%"][index];}
+   else if(index>=6&&!state.images.gallery[index]){visual.style.backgroundImage="linear-gradient(135deg,#e7d1bf,#f6e9dc)";visual.style.backgroundSize="cover";visual.style.backgroundPosition="center";}
+  });
+  row.style.gridTemplateColumns=photos.length>6?"repeat("+photos.length+",112px)":"";
+  row.style.overflowX=photos.length>6?"auto":"";
+ }
+ function makeTimelineIcon(){return '<span class="timeline-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11S3.2 13.9 3.2 8.8a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"/></svg></span>';}
+ function syncTimeline(){
+  var milestones=data.milestones||[],row=document.querySelector(".timeline");if(!row)return;
+  while(row.children.length>milestones.length)row.lastElementChild.remove();
+  while(row.children.length<milestones.length){var btn=document.createElement("button");btn.type="button";btn.className="timeline-item";btn.innerHTML=makeTimelineIcon()+"<strong></strong><span></span>";row.appendChild(btn);}
+  Array.from(row.children).forEach(function(btn,index){btn.dataset.milestone=index;var m=milestones[index]||[];btn.querySelector("strong").textContent=m[0]||"";btn.querySelector("span").textContent=m[2]||"";});
+  row.style.gridTemplateColumns="repeat("+Math.max(1,milestones.length)+",minmax(0,1fr))";
+ }
+ function setFromPath(def,value){if(def.path)setPath(data,def.path,value);else state.texts[def.key]=value;if(def.selector)setElement(targetFor(def),value,def.multiline);}
+ function applySavedSnapshot(){
+  textFields.forEach(function(def){if(def.path){var value=getPath(data,def.path);if(value!==undefined&&value!==null&&def.selector)setElement(targetFor(def),String(value),def.multiline);}else if(Object.prototype.hasOwnProperty.call(state.texts,def.key)){setElement(targetFor(def),state.texts[def.key],def.multiline);}});
+  var song=data.songs&&data.songs[0];if(song){document.getElementById("trackTitle").textContent=song.title||"";document.getElementById("trackArtist").textContent=song.artist||"";document.getElementById("musicOpen").href=getSongUrl(song);}
+  document.getElementById("musicOpen").textContent=data.musicLinkLabel||"Ouvir no YouTube Music ↗";
+  syncGallery();syncTimeline();applyImages();applyColors();
+ }
+ function imageControls(){
+  var rows=[
+   {key:"hero",label:"Foto grande da abertura",help:"Use uma foto horizontal com boa resolução."},
+   {key:"album",label:"Capa do player musical",help:"Ideal: imagem quadrada."}
+  ];
+  (data.photos||[]).forEach(function(photo,index){rows.push({key:"gallery:"+index,label:"Foto da galeria "+(index+1)+" · "+(photo[0]||"Sem legenda"),help:"Troque a imagem deste quadro ou mantenha a foto original."});});
+  imagesHost.innerHTML="";
+  rows.forEach(function(item){
+   var row=document.createElement("div");row.className="ed-image-row";
+   var title=document.createElement("div");var strong=document.createElement("strong");strong.textContent=item.label;title.appendChild(strong);var small=document.createElement("small");small.textContent=item.help;title.appendChild(small);row.appendChild(title);
+   var actions=document.createElement("div");actions.style.cssText="display:flex;gap:5px;align-items:center";
+   var input=document.createElement("input");input.type="file";input.accept="image/*";input.dataset.editorImage=item.key;
+   var label=document.createElement("label");label.className="ed-mini-button";label.textContent="Trocar foto";label.appendChild(input);
+   input.addEventListener("change",function(){var file=input.files&&input.files[0];if(file)readImage(file,item.key);input.value="";});
+   actions.appendChild(label);
+   if((item.key==="hero"&&state.images.hero)||(item.key==="album"&&state.images.album)||(item.key.indexOf("gallery:")===0&&state.images.gallery[Number(item.key.split(":")[1])])){
+    var clear=document.createElement("button");clear.type="button";clear.className="ed-mini-button ed-danger";clear.textContent="Original";clear.dataset.clearImage=item.key;actions.appendChild(clear);
+   }
+   row.appendChild(actions);imagesHost.appendChild(row);
+   if(item.key.indexOf("gallery:")===0){var index=Number(item.key.split(":")[1]);var remove=document.createElement("button");remove.type="button";remove.className="ed-mini-button ed-danger";remove.style.marginTop="6px";remove.textContent="Excluir esta foto da galeria";remove.dataset.removePhoto=index;imagesHost.appendChild(remove);}
+  });
+ }
+ function readImage(file,key){
+  if(!file.type.match(/^image\//)){setStatus("Escolha um arquivo de imagem.");return;}
+  var reader=new FileReader();
+  reader.onload=function(){var img=new Image();img.onload=function(){
+   var max=key==="hero"?1800:1100;var ratio=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+   var canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(img.naturalWidth*ratio));canvas.height=Math.max(1,Math.round(img.naturalHeight*ratio));
+   var ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,canvas.width,canvas.height);
+   var uri=canvas.toDataURL("image/jpeg",.86);
+   if(key==="hero")state.images.hero=uri;
+   else if(key==="album")state.images.album=uri;
+   else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=uri;
+   data.images=state.images;applyImages();imageControls();scheduleSave();setStatus("Imagem atualizada.");
+  };img.onerror=function(){setStatus("Não foi possível abrir esta imagem.");};img.src=reader.result;};
+  reader.onerror=function(){setStatus("Não foi possível ler este arquivo.");};reader.readAsDataURL(file);
+ }
+ function openEditor(){backdrop.hidden=false;panel.hidden=false;requestAnimationFrame(function(){backdrop.classList.add("is-open");panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");});}
+ function closeEditor(){panel.classList.remove("is-open");backdrop.classList.remove("is-open");panel.setAttribute("aria-hidden","true");setTimeout(function(){if(!panel.classList.contains("is-open")){panel.hidden=true;backdrop.hidden=true;}},260);}
+ function downloadBlob(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);}
+ function safeJson(value){return JSON.stringify(value).replace(/</g,"\\u003c").replace(/<\/script/gi,"<\\/script");}
+ function exportPage(){
+  saveDraft(true);
+  var clone=document.documentElement.cloneNode(true);
+  clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaEditorRuntime,#lovenaEditBootstrap").forEach(function(el){el.remove();});
+  var bootstrap=document.createElement("script");bootstrap.id="lovenaExperienceData";bootstrap.textContent="window.LOVENA_EDIT_DATA="+safeJson(data)+";";
+  var scripts=Array.from(clone.querySelectorAll("script"));
+  var main=scripts.find(function(script){return script.textContent.indexOf('var editData=window.LOVENA_EDIT_DATA')>=0;});
+  if(main)main.parentNode.insertBefore(bootstrap,main);else clone.querySelector("body").insertBefore(bootstrap,clone.querySelector("body").firstChild);
+  clone.querySelector("body").classList.remove("editor-mode");
+  var output="<!doctype html>\n"+clone.outerHTML;
+  downloadBlob(new Blob([output],{type:"text/html;charset=utf-8"}),"lovena-experiencia-personalizada.html");
+  setStatus("Experiência personalizada exportada.");
+ }
+ function backup(){saveDraft(true);downloadBlob(new Blob([JSON.stringify(getSnapshot(),null,2)],{type:"application/json"}),"lovena-rascunho.json");}
+ function renderMilestones(){
+  milestoneHost.innerHTML="";
+  (data.milestones||[]).forEach(function(m,index){
+   var row=document.createElement("div");row.style.cssText="border:1px solid #e5d1c2;border-radius:8px;padding:10px;display:grid;gap:8px";
+   var title=document.createElement("strong");title.style.cssText="font-size:10px;color:#654536";title.textContent="Marco "+(index+1);row.appendChild(title);
+   [["0","Título"],["2","Data ou legenda"],["1","História ao abrir"]].forEach(function(spec){
+    var wrap=document.createElement("div");wrap.className="ed-field";var label=document.createElement("label");label.textContent=spec[1];wrap.appendChild(label);
+    var ctl=spec[0]==="1"?document.createElement("textarea"):document.createElement("input");if(spec[0]!=="1")ctl.type="text";ctl.value=m[Number(spec[0])]||"";
+    ctl.addEventListener("input",function(){m[Number(spec[0])]=ctl.value;syncTimeline();scheduleSave();});wrap.appendChild(ctl);row.appendChild(wrap);
+   });
+   var remove=document.createElement("button");remove.type="button";remove.className="ed-mini-button ed-danger";remove.textContent="Excluir marco";remove.addEventListener("click",function(){if(data.milestones.length<=1){setStatus("Mantenha pelo menos um marco.");return;}data.milestones.splice(index,1);syncTimeline();renderMilestones();buildTextFields();scheduleSave();});row.appendChild(remove);milestoneHost.appendChild(row);
+  });
+ }
+ function resetDraft(){
+  if(!confirm("Restaurar a experiência original? Isso apagará o rascunho salvo neste navegador."))return;
+  localStorage.removeItem(EDIT_KEY);location.href=location.pathname+"?edit=1&reset="+Date.now();
+ }
+ trigger.addEventListener("click",openEditor);backdrop.addEventListener("click",closeEditor);
+ document.addEventListener("click",function(event){
+  var action=event.target.closest("[data-editor-action]");
+  if(action){
+   var name=action.dataset.editorAction;
+   if(name==="close"){closeEditor();return;}
+   if(name==="save"){saveDraft(true);return;}
+   if(name==="export"){exportPage();return;}
+   if(name==="backup"){backup();return;}
+   if(name==="import"){document.getElementById("lovenaEditorImport").click();return;}
+   if(name==="reset"){resetDraft();return;}
+   if(name==="view"){saveDraft(true);location.href=location.pathname;return;}
+   if(name==="add-photo"){
+    if(data.photos.length>=12){setStatus("Limite de 12 fotos atingido.");return;}
+    data.photos.push(["Nova memória","Escreva a história desta foto."]);state.images.gallery.push(null);syncGallery();imageControls();buildTextFields();scheduleSave();return;
+   }
+   if(name==="add-milestone"){
+    if(data.milestones.length>=10){setStatus("Limite de 10 marcos atingido.");return;}
+    data.milestones.push(["Novo capítulo","Conte a história deste momento.","Adicione uma data"]);syncTimeline();renderMilestones();buildTextFields();scheduleSave();return;
+   }
+  }
+  var removePhoto=event.target.closest("[data-remove-photo]");
+  if(removePhoto){var ix=Number(removePhoto.dataset.removePhoto);if(data.photos.length<=1){setStatus("Mantenha pelo menos uma foto.");return;}data.photos.splice(ix,1);state.images.gallery.splice(ix,1);syncGallery();imageControls();buildTextFields();scheduleSave();return;}
+  var clearImage=event.target.closest("[data-clear-image]");
+  if(clearImage){var key=clearImage.dataset.clearImage;if(key==="hero")state.images.hero=null;else if(key==="album")state.images.album=null;else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=null;applyImages();imageControls();scheduleSave();return;}
+ });
+ document.querySelectorAll("[data-editor-color]").forEach(function(input){input.addEventListener("input",function(){state.colors[input.dataset.editorColor]=input.value;applyColors();scheduleSave();});});
+ document.getElementById("lovenaEditorImport").addEventListener("change",function(event){
+  var file=event.target.files&&event.target.files[0];if(!file)return;
+  var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(!obj||!obj.data||!Array.isArray(obj.data.photos)||!Array.isArray(obj.data.milestones))throw new Error("Arquivo não parece ser um backup Lovena.");localStorage.setItem(EDIT_KEY,JSON.stringify(obj));location.reload();}catch(err){setStatus("Não foi possível importar: "+err.message);}};reader.readAsText(file);event.target.value="";
+ });
+ window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
+ applySavedSnapshot();buildTextFields();imageControls();renderMilestones();
+ if(editMode){document.body.classList.add("editor-mode");trigger.hidden=false;openEditor();}
+})();
+</script>
 </body>
 </html>
