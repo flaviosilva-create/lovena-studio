@@ -937,7 +937,7 @@ body.editor-mode .experience{padding-bottom:28px}
     var ctx=canvas.getContext("2d");
     if(!ctx)throw new Error("O navegador não conseguiu preparar a imagem.");
     ctx.drawImage(img,0,0,width,height);
-    var uri=canvas.toDataURL("image/jpeg",.84);
+    var uri=canvas.toDataURL("image/jpeg",.86);
     if(!uri||uri==="data:,")throw new Error("A imagem não pôde ser convertida.");
     if(key==="hero")state.images.hero=uri;
     else if(key==="album")state.images.album=uri;
