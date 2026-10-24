@@ -420,7 +420,7 @@ body.editor-mode .experience{padding-bottom:28px}
     <button class="surprise-card" type="button" data-surprise="message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11S3.2 13.9 3.2 8.8a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"/></svg><strong>Mensagem especial</strong><small>Descubra</small></button>
    </div>
   </div>
-  <div class="experience-end"><span>♡</span> feito com amor, só para você <span>♡</span></div>
+  <div class="experience-end"><span>♡</span> <span class="end-copy">feito com amor, só para você</span> <span>♡</span></div>
  </section>
 </main>
 
@@ -654,6 +654,7 @@ body.editor-mode .experience{padding-bottom:28px}
   {key:"heroIntro",label:"Texto de abertura",group:"Cabeçalho e abertura",selector:".hero-intro",multiline:true},
   {key:"signLabel",label:"Texto antes da assinatura",group:"Cabeçalho e abertura",selector:".hero-signature small"},
   {key:"signature",label:"Assinatura",group:"Cabeçalho e abertura",selector:".hero-signature strong"},
+  {key:"pinnedCaption",label:"Legenda da fotografia inclinada",group:"Cabeçalho e abertura",selector:".pinned-photo figcaption"},
   {key:"scrollCue",label:"Indicação para rolar a página",group:"Cabeçalho e abertura",selector:".scroll-cue span",multiline:true},
   {key:"letterTitle",label:"Título da carta",group:"Carta de amor",selector:".letter-title"},
   {key:"letterCopy0",label:"Parágrafo 1",group:"Carta de amor",selector:".letter-copy",index:0,multiline:true},
@@ -667,12 +668,15 @@ body.editor-mode .experience{padding-bottom:28px}
   {key:"trackTitle",label:"Nome da primeira música",group:"Música",selector:"#trackTitle",path:["songs",0,"title"]},
   {key:"trackArtist",label:"Artista da primeira música",group:"Música",selector:"#trackArtist",path:["songs",0,"artist"]},
   {key:"musicLinkLabel",label:"Texto do link para ouvir",group:"Música",selector:"#musicOpen",path:["musicLinkLabel"]},
+  {key:"trackElapsed",label:"Tempo exibido no início",group:"Música",selector:"#trackElapsed"},
+  {key:"trackDuration",label:"Duração exibida",group:"Música",selector:"#trackDuration"},
   {key:"galleryTitle",label:"Título da galeria",group:"Galeria",selector:"#gallery-title"},
   {key:"gallerySub",label:"Descrição da galeria",group:"Galeria",selector:".gallery-heading p",multiline:true},
   {key:"historyTitle",label:"Título da linha do tempo",group:"Nossa história",selector:"#history-title"},
   {key:"historySub",label:"Descrição da linha do tempo",group:"Nossa história",selector:".history-heading p"},
   {key:"surprisesTitle",label:"Título da seção de surpresas",group:"Surpresas",selector:"#surprises-title"},
   {key:"surprisesSub",label:"Descrição da seção de surpresas",group:"Surpresas",selector:".surprises-panel>p"},
+  {key:"footerPhrase",label:"Frase final da página",group:"Surpresas",selector:".experience-end .end-copy"},
   {key:"playlistCardTitle",label:"Cartão: título da playlist",group:"Surpresas",selector:".surprise-card strong",index:0},
   {key:"playlistCardSub",label:"Cartão: subtítulo da playlist",group:"Surpresas",selector:".surprise-card small",index:0},
   {key:"galleryCardTitle",label:"Cartão: título da galeria",group:"Surpresas",selector:".surprise-card strong",index:1},
@@ -696,11 +700,7 @@ body.editor-mode .experience{padding-bottom:28px}
   textFields.push({key:"photoTitle"+i,label:"Foto "+(i+1)+": legenda",group:"Legendas da galeria",path:["photos",i,0],selector:".gallery-caption",index:i});
   textFields.push({key:"photoStory"+i,label:"Foto "+(i+1)+": descrição ao abrir",group:"Legendas da galeria",path:["photos",i,1],multiline:true});
  }
- for(var j=0;j<10;j++){
-  textFields.push({key:"milestoneTitle"+j,label:"Marco "+(j+1)+": título",group:"Detalhes da linha do tempo",path:["milestones",j,0],selector:".timeline-item strong",index:j});
-  textFields.push({key:"milestoneStory"+j,label:"Marco "+(j+1)+": história ao abrir",group:"Detalhes da linha do tempo",path:["milestones",j,1],multiline:true});
-  textFields.push({key:"milestoneDate"+j,label:"Marco "+(j+1)+": data ou legenda",group:"Detalhes da linha do tempo",path:["milestones",j,2],selector:".timeline-item span",index:j});
- }
+
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
  var state=Object.assign({version:1,texts:{},images:{hero:null,album:null,gallery:[]},colors:colorDefaults},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
@@ -717,6 +717,8 @@ body.editor-mode .experience{padding-bottom:28px}
  var statusNode=document.getElementById("lovenaEditorStatus");
  var pendingTimer=0;
  var customPalette=document.getElementById("lovenaEditorPalette");
+ var defaultHeroImage=getComputedStyle(document.documentElement).getPropertyValue("--hero-photo").trim();
+ var defaultAlbumSrc=(document.querySelector(".album-cover")||{}).src||"";
  function q(sel,idx){var nodes=document.querySelectorAll(sel);return idx==null?nodes[0]||null:nodes[idx]||null;}
  function getPath(obj,path){return path.reduce(function(acc,key){return acc==null?undefined:acc[key];},obj);}
  function setPath(obj,path,value){var cur=obj;for(var i=0;i<path.length-1;i++){if(cur[path[i]]==null)cur[path[i]]=typeof path[i+1]==="number"?[]:{};cur=cur[path[i]];}cur[path[path.length-1]]=value;}
@@ -802,6 +804,7 @@ body.editor-mode .experience{padding-bottom:28px}
     });
     wrap.appendChild(input);box.appendChild(wrap);
    });
+   var removeSong=document.createElement("button");removeSong.type="button";removeSong.className="ed-mini-button ed-danger";removeSong.textContent="Remover música";removeSong.addEventListener("click",function(){if(data.songs.length<=1){setStatus("Mantenha pelo menos uma música.");return;}data.songs.splice(index,1);document.getElementById("trackTitle").textContent=data.songs[0].title||"";document.getElementById("trackArtist").textContent=data.songs[0].artist||"";document.getElementById("musicOpen").href=getSongUrl(data.songs[0]);buildTextFields();scheduleSave();});box.appendChild(removeSong);
    songsBody.appendChild(box);
   });
   var addSong=document.createElement("button");addSong.type="button";addSong.className="ed-mini-button";addSong.textContent="+ Adicionar música";
@@ -839,8 +842,11 @@ body.editor-mode .experience{padding-bottom:28px}
  }
  function applyImages(){
   data.images=state.images;
-  if(state.images.hero){document.documentElement.style.setProperty("--hero-photo",'url("'+state.images.hero+'")');var p=document.querySelector(".hero-photo");if(p)p.style.backgroundImage='url("'+state.images.hero+'")';var pinned=document.querySelector(".pinned-photo-photo");if(pinned)pinned.style.backgroundImage='url("'+state.images.hero+'")';}
-  if(state.images.album){var a=document.querySelector(".album-cover");if(a)a.src=state.images.album;}
+  var heroValue=state.images.hero?'url("'+state.images.hero+'")':defaultHeroImage;
+  document.documentElement.style.setProperty("--hero-photo",heroValue);
+  var p=document.querySelector(".hero-photo");if(p)p.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";
+  var pinned=document.querySelector(".pinned-photo-photo");if(pinned)pinned.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";
+  var a=document.querySelector(".album-cover");if(a)a.src=state.images.album||defaultAlbumSrc;
   syncGallery();
  }
  function syncGallery(){
