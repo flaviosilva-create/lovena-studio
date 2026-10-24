@@ -661,7 +661,7 @@ body.editor-mode .experience{padding-bottom:28px}
   {key:"letterCopy2",label:"Parágrafo 3",group:"Carta de amor",selector:".letter-copy",index:2,multiline:true},
   {key:"letterCopy3",label:"Parágrafo 4",group:"Carta de amor",selector:".letter-copy",index:3,multiline:true},
   {key:"letterEnding",label:"Frase final da carta",group:"Carta de amor",selector:".letter-ending"},
-  {key:"letterTo",label="Assinatura no papel",group:"Carta de amor",selector:".letter-to"},
+  {key:"letterTo",label:"Assinatura no papel",group:"Carta de amor",selector:".letter-to"},
   {key:"musicHeading",label:"Título do player",group:"Música",selector:".music-heading h2"},
   {key:"musicSub",label:"Descrição do player",group:"Música",selector:".music-heading p"},
   {key:"trackTitle",label:"Nome da primeira música",group:"Música",selector:"#trackTitle",path:["songs",0,"title"]},
@@ -754,6 +754,10 @@ body.editor-mode .experience{padding-bottom:28px}
   fieldsHost.innerHTML="";
   var groups={};
   textFields.forEach(function(def){
+   var pm=def.key.match(/^photo(?:Title|Story)(\\d+)$/);
+   var mm=def.key.match(/^milestone(?:Title|Story|Date)(\\d+)$/);
+   if(pm&&Number(pm[1])>=(data.photos||[]).length)return;
+   if(mm&&Number(mm[1])>=(data.milestones||[]).length)return;
    if(!groups[def.group])groups[def.group]=[];
    groups[def.group].push(def);
   });
@@ -870,7 +874,14 @@ body.editor-mode .experience{padding-bottom:28px}
  }
  function setFromPath(def,value){if(def.path)setPath(data,def.path,value);else state.texts[def.key]=value;if(def.selector)setElement(targetFor(def),value,def.multiline);}
  function applySavedSnapshot(){
-  textFields.forEach(function(def){if(def.path){var value=getPath(data,def.path);if(value!==undefined&&value!==null&&def.selector)setElement(targetFor(def),String(value),def.multiline);}else if(Object.prototype.hasOwnProperty.call(state.texts,def.key)){setElement(targetFor(def),state.texts[def.key],def.multiline);}});
+  textFields.forEach(function(def){
+   var pm=def.key.match(/^photo(?:Title|Story)(\\d+)$/);
+   var mm=def.key.match(/^milestone(?:Title|Story|Date)(\\d+)$/);
+   if(pm&&Number(pm[1])>=(data.photos||[]).length)return;
+   if(mm&&Number(mm[1])>=(data.milestones||[]).length)return;
+   if(def.path){var value=getPath(data,def.path);if(value!==undefined&&value!==null&&def.selector)setElement(targetFor(def),String(value),def.multiline);}
+   else if(Object.prototype.hasOwnProperty.call(state.texts,def.key)){setElement(targetFor(def),state.texts[def.key],def.multiline);}
+  });
   var song=data.songs&&data.songs[0];if(song){document.getElementById("trackTitle").textContent=song.title||"";document.getElementById("trackArtist").textContent=song.artist||"";document.getElementById("musicOpen").href=getSongUrl(song);}
   document.getElementById("musicOpen").textContent=data.musicLinkLabel||"Ouvir no YouTube Music ↗";
   syncGallery();syncTimeline();applyImages();applyColors();
