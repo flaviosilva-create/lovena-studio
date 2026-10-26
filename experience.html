@@ -1058,9 +1058,25 @@ body.editor-mode .experience{padding-bottom:28px}
    </div>
   </details>
   <details>
+   <summary>Link online e QR Code</summary>
+   <div class="ed-fields">
+    <p class="ed-help">Gere um QR Code para a página online pública da Lovena. Atenção: o link público não contém as personalizações guardadas apenas neste navegador. Para enviar seu presente personalizado agora, baixe o HTML acima e compartilhe o arquivo. Links exclusivos por compra exigem hospedagem individual.</p>
+    <button type="button" class="ed-secondary" data-editor-action="share-online">Mostrar link e QR Code</button>
+    <div id="lovenaSharePanel" hidden style="margin-top:12px;padding:12px;border:1px solid #e5d1c2;border-radius:10px;background:#fffaf6">
+     <label for="lovenaShareUrl" class="ed-help" style="display:block;margin-bottom:6px">Link da versão online pública</label>
+     <input id="lovenaShareUrl" type="url" readonly style="width:100%;min-width:0;padding:10px;border:1px solid #e5d1c2;border-radius:8px;background:#fff;color:#51392f">
+     <div class="ed-action-row" style="margin-top:8px"><button type="button" class="ed-secondary" data-editor-action="copy-online-link">Copiar link</button><button type="button" class="ed-secondary" data-editor-action="download-online-qr">Baixar QR Code</button></div>
+     <a id="lovenaShareQrLink" href="#" target="_blank" rel="noopener noreferrer" style="display:block;width:max-content;max-width:100%;margin:12px auto 4px">
+      <img id="lovenaShareQr" alt="QR Code do link online público da Lovena" width="220" height="220" hidden style="display:block;width:220px;max-width:100%;height:auto;background:#fff;padding:8px;border-radius:8px">
+     </a>
+     <p class="ed-help" style="text-align:center;margin-top:8px">O QR Code abre a página hospedada. Para compartilhar suas edições e fotos personalizadas, envie o arquivo HTML baixado.</p>
+    </div>
+   </div>
+  </details>
+  <details>
    <summary>Backup e restauração</summary>
    <div class="ed-fields">
-    <p class="ed-help">Baixe um backup JSON para guardar suas edições ou importá-las em outro navegador. As fotos do backup ficam incorporadas no arquivo.</p>
+    <p class="ed-help">O backup JSON preserva as edições e as fotos. Para entregar um presente independente da Lovena e da internet, baixe a experiência completa em HTML e envie esse arquivo como anexo.</p>
     <div class="ed-action-row"><button type="button" class="ed-secondary" data-editor-action="backup">Baixar backup</button><button type="button" class="ed-secondary" data-editor-action="import">Importar backup</button></div>
     <input type="file" id="lovenaEditorImport" accept="application/json,.json" hidden>
     <button type="button" class="ed-secondary" data-editor-action="reset">Restaurar versão original</button>
@@ -1069,7 +1085,7 @@ body.editor-mode .experience{padding-bottom:28px}
  </div>
  <footer class="ed-actions">
   <div class="ed-status" id="lovenaEditorStatus" role="status" aria-live="polite">Rascunho local</div>
-  <button type="button" class="ed-primary" data-editor-action="export">Baixar experiência pronta (.html)</button>
+  <div class="ed-export-heading"><strong>Presente digital para guardar para sempre</strong><p class="ed-help">Baixa um único arquivo HTML com fotos, carta, histórias e animações incorporadas. Abra-o no computador ou celular sem depender da hospedagem da Lovena.</p></div><button type="button" class="ed-primary" data-editor-action="export">Baixar presente completo (.html)</button>
   <div class="ed-action-row"><button type="button" class="ed-secondary" data-editor-action="save">Salvar alterações</button><button type="button" class="ed-secondary" data-editor-action="view">Visualizar experiência ↗</button></div>
  </footer>
 </aside>
