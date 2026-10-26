@@ -614,7 +614,7 @@ body.editor-mode .experience{padding-bottom:28px}
    var kind=pathParts[kindIndex].toLowerCase();
    var id=pathParts[kindIndex+1].split("?")[0];
    if(!/^[A-Za-z0-9]+$/.test(id))return null;
-   return {url:"https://open.spotify.com/embed/"+kind+"/"+id+"?utm_source=generator&theme=0",platform:platform,height:(kind==="track"||kind==="episode")?152:352};
+   return {url:"https://open.spotify.com/embed/"+kind+"/"+id+"?utm_source=generator&theme=0",platform:platform,height:352};
   }
   if(platform==="apple"){
    if(!/(^|\.)apple\.com$/i.test(u.hostname))return null;
@@ -641,6 +641,7 @@ body.editor-mode .experience{padding-bottom:28px}
   if(playlistId)return {url:"https://www.youtube.com/embed/videoseries?list="+encodeURIComponent(playlistId),platform:platform,height:220};
   return null;
  }
+ var currentMusicEmbed="";
  function renderMusicPlayer(){
   var song=songs[songIndex]||{};
   var card=document.querySelector(".music-card");
@@ -657,30 +658,47 @@ body.editor-mode .experience{padding-bottom:28px}
   link.rel="noopener noreferrer";
   link.textContent=customLabel&&defaultLabels.indexOf(customLabel)<0?customLabel:((mode==="embed"?"Abrir no ":"Ouvir no ")+musicPlatformLabel(platform)+" ↗");
   if(playButton)playButton.setAttribute("aria-label",mode==="embed"?"Abrir música na plataforma escolhida":"Ouvir no "+musicPlatformLabel(platform));
-  card.classList.remove("is-embedded");
-  container.hidden=true;
-  container.textContent="";
-  if(mode!=="embed")return;
+  if(mode!=="embed"){
+   card.classList.remove("is-embedded");
+   container.hidden=true;
+   if(container.firstChild)container.textContent="";
+   currentMusicEmbed="";
+   return;
+  }
   var embed=getMusicEmbed(song);
   container.hidden=false;
   if(!embed){
-   var note=document.createElement("p");
-   note.className="music-embed-note";
-   note.textContent="Não conseguimos incorporar este link. Use um link direto de música, álbum ou playlist da plataforma selecionada. Você também pode abrir a música pelo link abaixo.";
-   container.appendChild(note);
+   card.classList.remove("is-embedded");
+   var unsupportedKey="unsupported:"+String(song.url||"");
+   if(currentMusicEmbed!==unsupportedKey){
+    container.textContent="";
+    var note=document.createElement("p");
+    note.className="music-embed-note";
+    note.textContent="Não conseguimos incorporar este link. Use um link direto de música, álbum ou playlist da plataforma selecionada. Você também pode abrir a música pelo link abaixo.";
+    container.appendChild(note);
+    currentMusicEmbed=unsupportedKey;
+   }
    return;
   }
   card.classList.add("is-embedded");
+  var title="Player de "+musicPlatformLabel(platform)+": "+(song.title||"trilha sonora");
+  var existingFrame=container.querySelector("iframe");
+  if(currentMusicEmbed===embed.url&&existingFrame){
+   existingFrame.title=title;
+   return;
+  }
+  container.textContent="";
   var frame=document.createElement("iframe");
   frame.className="music-embed-frame music-embed-"+platform;
   frame.src=embed.url;
-  frame.title="Player de "+musicPlatformLabel(platform)+": "+(song.title||"trilha sonora");
+  frame.title=title;
   frame.loading="lazy";
   frame.referrerPolicy="strict-origin-when-cross-origin";
   frame.allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
   frame.allowFullscreen=true;
   frame.style.height=embed.height+"px";
   container.appendChild(frame);
+  currentMusicEmbed=embed.url;
  }
  function setSong(next){
   if(!songs.length)return;
