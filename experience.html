@@ -1128,6 +1128,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
        data.images=state.images;
        applyImages();
        var row=imagesHost.querySelector('[data-image-key="'+key+'"]');
+       var thumb=row&&row.querySelector(".ed-image-thumb");if(thumb)thumb.style.backgroundImage='url("'+uri+'")';
        var actions=row&&row.querySelector(".ed-image-actions");
        if(actions&&!actions.querySelector("[data-clear-image]")){
         var clear=document.createElement("button");clear.type="button";clear.className="ed-mini-button ed-danger";clear.textContent="Original";clear.dataset.clearImage=key;actions.appendChild(clear);
