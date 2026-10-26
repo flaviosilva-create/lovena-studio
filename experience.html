@@ -24,6 +24,12 @@ body{margin:0;background:var(--night);color:var(--cream);font-family:Manrope,Ari
 button,a{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
 button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4px}
 .experience{width:100%;overflow:hidden;background:var(--night)}
+.ed-live-guide{display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;padding:12px;border:1px solid #e4cfc0;border-radius:12px;background:#fffaf5;color:#654536}
+.ed-live-guide .ed-live-dot{width:9px;height:9px;flex:0 0 9px;margin-top:4px;border-radius:50%;background:#7c9b78;box-shadow:0 0 0 4px #7c9b7820}
+.ed-live-guide strong,.ed-live-guide small{display:block}
+.ed-live-guide strong{font-size:12px;line-height:1.4}
+.ed-live-guide small{font-size:10px;line-height:1.5;color:#8b7162;margin-top:3px}
+.lovena-edit-target{outline:2px solid #d49c79!important;outline-offset:4px!important;border-radius:3px;cursor:pointer!important}
 .hero{height:100vh;height:100svh;min-height:600px;max-height:none;position:relative;isolation:isolate;background:#130807;overflow:hidden}
 .hero-photo{position:absolute;z-index:-3;inset:0;width:100%;height:100%;background-image:var(--hero-photo);background-size:cover;background-position:center 47%;background-repeat:no-repeat;filter:saturate(.92)}
 .hero-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,#160807 0%,rgba(22,8,7,.95) 14%,rgba(22,8,7,.73) 29%,rgba(22,8,7,.12) 57%,rgba(22,8,7,.12) 100%),linear-gradient(0deg,rgba(17,7,6,.23),transparent 35%,rgba(18,7,6,.1))}
@@ -432,7 +438,8 @@ body.editor-mode .experience{padding-bottom:28px}
   <button type="button" class="ed-close" data-editor-action="close" aria-label="Fechar editor">×</button>
  </header>
  <div class="ed-scroll">
-  <p class="ed-notice">As edições são aplicadas à prévia imediatamente. Para enviar a página final para outra pessoa, use <b>Baixar experiência pronta</b> no fim do editor.</p>
+  <p class="ed-notice">Modo de edição ao vivo: altere um campo e veja o resultado na página imediatamente. Você também pode tocar em uma parte da prévia para localizar o campo correspondente. Para enviar a página final, use <b>Baixar experiência pronta</b>.</p>
+  <div class="ed-live-guide"><span class="ed-live-dot"></span><div><strong id="lovenaEditorFocusTitle">Pronto para personalizar</strong><small id="lovenaEditorFocusHelp">Escolha uma seção abaixo ou toque em um texto da página para editar.</small></div></div>
   <div id="lovenaEditorFields"></div>
   <details open>
    <summary>Fotografias e imagens</summary>
@@ -757,6 +764,19 @@ body.editor-mode .experience{padding-bottom:28px}
   if(def.key.indexOf("milestone")===0)syncTimeline();
  }
  function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"']/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];});}
+ function focusEditorField(def){
+  if(!def)return;
+  var row=fieldsHost.querySelector('[data-editor-field-row="'+def.key+'"]');
+  if(row){var details=Array.from(fieldsHost.querySelectorAll("details"));details.forEach(function(d){if(d.contains(row))d.open=true;});row.scrollIntoView({behavior:"smooth",block:"center"});var ctl=row.querySelector("input,textarea");if(ctl)ctl.focus({preventScroll:true});}
+  var title=document.getElementById("lovenaEditorFocusTitle"),help=document.getElementById("lovenaEditorFocusHelp");
+  if(title)title.textContent="Editando: "+def.label;
+  if(help)help.textContent="As mudanças aparecem na prévia em tempo real. Seção: "+def.group+".";
+ }
+ function findFieldForElement(el){
+  if(!el)return null;
+  for(var i=0;i<textFields.length;i++){var def=textFields[i];if(!def.selector)continue;var target=targetFor(def);if(target&&(target===el||target.contains(el)||el.contains(target)))return def;}
+  return null;
+ }
  function buildTextFields(){
   fieldsHost.innerHTML="";
   var groups={};
@@ -773,7 +793,7 @@ body.editor-mode .experience{padding-bottom:28px}
    var summary=document.createElement("summary");summary.textContent=group;details.appendChild(summary);
    var body=document.createElement("div");body.className="ed-fields";
    groups[group].forEach(function(def){
-    var row=document.createElement("div");row.className="ed-field";
+    var row=document.createElement("div");row.className="ed-field";row.dataset.editorFieldRow=def.key;
     var id="ed_"+def.key;
     var label=document.createElement("label");label.htmlFor=id;label.textContent=def.label;row.appendChild(label);
     var ctl;
@@ -820,6 +840,12 @@ body.editor-mode .experience{padding-bottom:28px}
   addSong.addEventListener("click",function(){if(data.songs.length>=12){setStatus("Limite de 12 músicas atingido.");return;}data.songs.push({title:"Nova música",artist:"Artista",query:"",url:"https://music.youtube.com"});buildTextFields();scheduleSave();});
   songsBody.appendChild(addSong);songsDetails.appendChild(songsBody);fieldsHost.appendChild(songsDetails);
  }
+ // In edit mode, tapping a text area on the page opens its matching field.
+ document.addEventListener("click",function(event){
+  if(!panel||panel.hidden||panel.contains(event.target)||event.target.closest("#lovenaEditorTrigger"))return;
+  var def=findFieldForElement(event.target);if(!def)return;
+  event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusEditorField(def);
+ },true);
  function getSongUrl(song){return song.url||("https://music.youtube.com/search?q="+encodeURIComponent(song.query||song.title||"romantic songs"));}
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
  function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;return {version:1,texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,data:savedData};}
