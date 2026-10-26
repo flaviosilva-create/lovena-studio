@@ -857,6 +857,59 @@ body.editor-mode .experience{padding-bottom:28px}
   }
 }
 </style>
+
+<style id="lovena-gallery-autoscroll">
+/* Vertical scrapbook photos glide continuously on desktop and mobile. */
+.gallery-row-wrap {
+  padding-right: 0 !important;
+  overflow: hidden;
+}
+.gallery-row {
+  display: flex !important;
+  grid-template-columns: none !important;
+  width: 100%;
+  gap: clamp(11px, 1.5vw, 17px) !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch;
+  padding: 5px 3px 14px !important;
+}
+.gallery-row::-webkit-scrollbar { display: none; }
+.gallery-item {
+  box-sizing: border-box;
+  flex: 0 0 clamp(132px, 15.5vw, 168px) !important;
+  width: clamp(132px, 15.5vw, 168px) !important;
+  min-width: 0 !important;
+  scroll-snap-align: none !important;
+}
+.gallery-photo { aspect-ratio: .76 !important; }
+.gallery-caption {
+  min-height: 25px;
+  white-space: normal !important;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.2 !important;
+  padding-top: 6px !important;
+}
+@media (max-width: 580px) {
+  .gallery-item {
+    flex-basis: clamp(108px, 30vw, 132px) !important;
+    width: clamp(108px, 30vw, 132px) !important;
+  }
+  .gallery-photo { aspect-ratio: .74 !important; }
+  .gallery-row { gap: 10px !important; padding-bottom: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-row { scrollbar-width: thin !important; }
+}
+</style>
+
 </head>
 <body>
 <main class="experience" id="experiencia">
@@ -1835,14 +1888,14 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  function syncGallery(){
   var photos=data.photos||[],row=document.getElementById("galleryRow");
   if(!row)return;
-  while(row.children.length>photos.length)row.lastElementChild.remove();
-  while(row.children.length<photos.length){
-   var i=row.children.length;
+  var galleryItems=Array.from(row.children).filter(function(el){return el.dataset.galleryClone!=="true";});
+  while(galleryItems.length>photos.length){galleryItems.pop().remove();}
+  while(galleryItems.length<photos.length){
    var btn=document.createElement("button");btn.type="button";btn.className="gallery-item";
    btn.innerHTML='<span class="gallery-photo"></span><span class="gallery-caption"></span>';
-   row.appendChild(btn);
+   row.appendChild(btn);galleryItems.push(btn);
   }
-  Array.from(row.children).forEach(function(btn,index){
+  Array.from(galleryItems).forEach(function(btn,index){
    btn.dataset.photo=index;btn.setAttribute("aria-label","Ver foto: "+(photos[index][0]||"Memória"));
    var visual=btn.querySelector(".gallery-photo"),caption=btn.querySelector(".gallery-caption");
    if(caption)caption.textContent=photos[index][0]||"";
@@ -2062,5 +2115,169 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  if(editMode){document.body.classList.add("editor-mode");markEditableTargets();trigger.hidden=false;openEditor();}
 })();
 </script>
+
+<script id="lovena-gallery-autoscroll-runtime">
+(function () {
+  "use strict";
+  var row = document.getElementById("galleryRow");
+  if (!row) return;
+
+  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+  var clones = [];
+  var loopWidth = 0;
+  var paused = false;
+  var lastFrame = 0;
+  var resumeTimer = 0;
+  var rebuildTimer = 0;
+  var observer = null;
+  var speed = 22; // pixels per second: subtle, continuous movement
+
+  function isCloneElement(el) {
+    return !!(el && el.closest && el.closest('[data-gallery-clone="true"]'));
+  }
+
+  function originals() {
+    return Array.from(row.children).filter(function (el) {
+      return el.dataset.galleryClone !== "true";
+    });
+  }
+
+  function removeClones() {
+    row.querySelectorAll('[data-gallery-clone="true"]').forEach(function (el) {
+      el.remove();
+    });
+    clones = [];
+    loopWidth = 0;
+  }
+
+  function rebuildLoop() {
+    if (!row.isConnected) return;
+    var oldWidth = loopWidth;
+    var oldScroll = row.scrollLeft;
+    if (oldWidth > 0) oldScroll = oldScroll % oldWidth;
+
+    if (observer) observer.disconnect();
+    removeClones();
+    var items = originals();
+
+    if (reducedMotion && reducedMotion.matches) {
+      row.scrollLeft = Math.min(oldScroll, row.scrollWidth);
+      if (observer) observeGallery();
+      return;
+    }
+
+    if (items.length < 2) {
+      row.scrollLeft = 0;
+      if (observer) observeGallery();
+      return;
+    }
+
+    items.forEach(function (item) {
+      var clone = item.cloneNode(true);
+      clone.dataset.galleryClone = "true";
+      clone.setAttribute("aria-hidden", "true");
+      clone.tabIndex = -1;
+      clone.querySelectorAll("a, button, input, select, textarea, [tabindex]").forEach(function (control) {
+        control.tabIndex = -1;
+        control.setAttribute("aria-hidden", "true");
+      });
+      row.appendChild(clone);
+      clones.push(clone);
+    });
+
+    requestAnimationFrame(function () {
+      if (!row.isConnected || !clones.length) return;
+      var first = items[0].getBoundingClientRect();
+      var cloneFirst = clones[0].getBoundingClientRect();
+      loopWidth = cloneFirst.left - first.left;
+      if (!Number.isFinite(loopWidth) || loopWidth <= 0) loopWidth = 0;
+      row.scrollLeft = loopWidth > 0 ? oldScroll % loopWidth : 0;
+      if (observer) observeGallery();
+    });
+  }
+
+  function observeGallery() {
+    if (!observer) return;
+    observer.observe(row, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["style", "aria-label"]
+    });
+  }
+
+  function queueRebuild() {
+    if (rebuildTimer) window.clearTimeout(rebuildTimer);
+    rebuildTimer = window.setTimeout(function () {
+      rebuildTimer = 0;
+      rebuildLoop();
+    }, 70);
+  }
+
+  function isRelevantMutation(mutation) {
+    if (isCloneElement(mutation.target)) return false;
+    if (mutation.type === "childList" && mutation.target === row) {
+      var changed = Array.from(mutation.addedNodes).concat(Array.from(mutation.removedNodes));
+      if (changed.length && changed.every(function (node) {
+        return node.nodeType === 1 && node.dataset.galleryClone === "true";
+      })) return false;
+    }
+    return true;
+  }
+
+  observer = new MutationObserver(function (mutations) {
+    if (mutations.some(isRelevantMutation)) queueRebuild();
+  });
+
+  function pauseBriefly() {
+    paused = true;
+    if (resumeTimer) window.clearTimeout(resumeTimer);
+    resumeTimer = window.setTimeout(function () {
+      paused = false;
+      lastFrame = 0;
+    }, 1800);
+  }
+
+  row.addEventListener("pointerenter", function (event) {
+    if (event.pointerType === "mouse") paused = true;
+  });
+  row.addEventListener("pointerleave", function () {
+    paused = false;
+    lastFrame = 0;
+  });
+  row.addEventListener("touchstart", pauseBriefly, { passive: true });
+  row.addEventListener("touchend", pauseBriefly, { passive: true });
+  row.addEventListener("wheel", pauseBriefly, { passive: true });
+  row.addEventListener("focusin", function () { paused = true; });
+  row.addEventListener("focusout", function (event) {
+    if (!row.contains(event.relatedTarget)) {
+      paused = false;
+      lastFrame = 0;
+    }
+  });
+  row.addEventListener("click", pauseBriefly);
+
+  if (reducedMotion && typeof reducedMotion.addEventListener === "function") {
+    reducedMotion.addEventListener("change", rebuildLoop);
+  }
+
+  function animate(timestamp) {
+    if (!lastFrame) lastFrame = timestamp;
+    var elapsed = Math.min(50, timestamp - lastFrame);
+    lastFrame = timestamp;
+    if (!paused && !(reducedMotion && reducedMotion.matches) &&
+        document.visibilityState !== "hidden" && loopWidth > 0) {
+      row.scrollLeft += speed * elapsed / 1000;
+      if (row.scrollLeft >= loopWidth) row.scrollLeft = row.scrollLeft % loopWidth;
+    }
+    requestAnimationFrame(animate);
+  }
+
+  rebuildLoop();
+  requestAnimationFrame(animate);
+})();
+</script>
+
 </body>
 </html>
