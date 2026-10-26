@@ -438,7 +438,7 @@ body.editor-mode .experience{padding-bottom:28px}
   <button type="button" class="ed-close" data-editor-action="close" aria-label="Fechar editor">×</button>
  </header>
  <div class="ed-scroll">
-  <p class="ed-notice">Edite pelo painel ou clique diretamente em um texto, foto ou marco na página. O elemento selecionado ficará destacado e o controle correspondente será localizado automaticamente. As mudanças aparecem na prévia na hora. Para enviar a página final, use <b>Baixar experiência pronta</b>.</p>
+  <p class="ed-notice">Edite pelo painel ou clique diretamente em um texto, foto ou marco na página. O elemento selecionado ficará destacado e o controle correspondente será localizado automaticamente. As mudanças aparecem na prévia na hora. No celular, feche o painel e toque no item desejado para abrir a edição exata. Para enviar a página final, use <b>Baixar experiência pronta</b>.</p>
   <div class="ed-live-guide"><span class="ed-live-dot"></span><div><strong id="lovenaEditorFocusTitle">Pronto para personalizar</strong><small id="lovenaEditorFocusHelp">Escolha uma seção abaixo ou toque em um texto da página para editar.</small></div></div>
   <div id="lovenaEditorFields"></div>
   <details open>
@@ -644,6 +644,8 @@ body.editor-mode .experience{padding-bottom:28px}
 <style id="lovenaDynamicEditingStyles">
 body.editor-mode .lovena-edit-target{outline:1px dashed transparent!important;outline-offset:4px!important;cursor:pointer!important;transition:outline-color .16s ease,box-shadow .16s ease}
 body.editor-mode.editor-panel-open .lovena-edit-target:hover{outline:2px dashed #c98f72!important;outline-offset:4px!important;box-shadow:0 0 0 5px rgba(201,143,114,.14)}
+body.editor-mode:not(.editor-panel-open) .lovena-edit-target:hover{outline:2px dashed #c98f72!important;outline-offset:4px!important;box-shadow:0 0 0 5px rgba(201,143,114,.14)}
+body.editor-mode #lovenaEditorBackdrop{pointer-events:none;background:rgba(13,5,4,.05);backdrop-filter:none}
 body.editor-mode.editor-panel-open .lovena-edit-selected{outline:2px solid #c98f72!important;outline-offset:4px!important;box-shadow:0 0 0 6px rgba(201,143,114,.2)!important}
 body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outline-offset:4px!important;box-shadow:0 0 0 6px rgba(201,143,114,.2)!important}
 #lovenaEditor .ed-field.is-editor-active{position:relative;padding:8px;margin:-8px;border:1px solid #dfb49c;border-radius:9px;background:#fff8f2;box-shadow:0 3px 12px rgba(124,73,49,.06)}
@@ -936,21 +938,25 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   addSong.addEventListener("click",function(){if(data.songs.length>=12){setStatus("Limite de 12 músicas atingido.");return;}data.songs.push({title:"Nova música",artist:"Artista",query:"",url:"https://music.youtube.com"});buildTextFields();scheduleSave();});
   songsBody.appendChild(addSong);songsDetails.appendChild(songsBody);fieldsHost.appendChild(songsDetails);
  }
- // Clicking the preview opens the exact control linked to that element.
+ // Clicking the preview opens the exact control linked to that element, even when the panel is closed.
+ function focusSelectionWhenReady(callback){
+  if(panel.hidden){openEditor();requestAnimationFrame(callback);}
+  else callback();
+ }
  document.addEventListener("click",function(event){
-  if(!panel||panel.hidden||panel.contains(event.target)||event.target.closest("#lovenaEditorTrigger"))return;
+  if(!panel||panel.contains(event.target)||event.target.closest("#lovenaEditorTrigger"))return;
   var def=findFieldForElement(event.target);
-  if(def){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusEditorField(def);return;}
+  if(def){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusSelectionWhenReady(function(){focusEditorField(def);});return;}
   var milestone=event.target.closest&&event.target.closest(".timeline-item");
-  if(milestone){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusEditorMilestone(Number(milestone.getAttribute("data-milestone"))||0);return;}
+  if(milestone){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusSelectionWhenReady(function(){focusEditorMilestone(Number(milestone.getAttribute("data-milestone"))||0);});return;}
   var card=event.target.closest&&event.target.closest(".surprise-card");
   if(card){
    var surpriseKey={"playlist":"playlistCardTitle","gallery":"galleryCardTitle","card":"cardCardTitle","message":"messageCardTitle"}[card.getAttribute("data-surprise")];
    var cardField=textFields.find(function(item){return item.key===surpriseKey;});
-   if(cardField){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusEditorField(cardField);return;}
+   if(cardField){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusSelectionWhenReady(function(){focusEditorField(cardField);});return;}
   }
   var imageKey=findImageKeyForElement(event.target);
-  if(imageKey){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusEditorImage(imageKey);}
+  if(imageKey){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusSelectionWhenReady(function(){focusEditorImage(imageKey);});}
  },true);
  function getSongUrl(song){return song.url||("https://music.youtube.com/search?q="+encodeURIComponent(song.query||song.title||"romantic songs"));}
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
