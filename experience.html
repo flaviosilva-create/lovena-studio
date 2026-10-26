@@ -986,21 +986,8 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 .memory-collage-main-photo{left:var(--collage-main-x,2%);bottom:var(--collage-main-y,-2%);width:min(var(--collage-main-width,56%),620px);height:var(--collage-main-height,55%)}
 .memory-collage-strip{width:var(--collage-strip-width,40%)}
 
-/* Desktop framing restored to the second version. */
+/* Keep the separately requested greeting position adjustment on desktop. */
 @media(min-width:851px){
- .lovena-memory-collage{
-  width:min(100%,1180px);
-  margin-inline:auto;
-  height:clamp(1080px,105vw,1480px);
-  min-height:1080px;
- }
- .lovena-memory-collage .memory-collage-strip{
-  width:min(var(--collage-strip-width,40%),clamp(220px,19vw,280px));
- }
- .lovena-memory-collage .memory-collage-main-photo{
-  height:min(78%,calc(var(--collage-main-height,55%) + 12%));
- }
- /* Keep the greeting clear of the enlarged main photo on desktop. */
  .lovena-memory-collage .memory-collage-copy{
   top:clamp(8%,calc(var(--collage-title-y,35%) - 18%),30%) !important;
  }
