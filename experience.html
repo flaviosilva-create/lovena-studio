@@ -1013,6 +1013,52 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   min-height:0;
  }
 }
+
+/* Smooth, seamless vertical auto-scroll for the side photo collage. */
+#colagem-memorias .memory-collage-strip{
+ display:block;
+ --collage-roll-gap:8px;
+}
+#colagem-memorias .memory-collage-track{
+ display:flex;
+ flex-direction:column;
+ gap:0;
+ width:100%;
+ will-change:transform;
+ animation:lovenaCollageVerticalRoll 42s linear infinite;
+}
+#colagem-memorias .memory-collage-cycle{
+ display:flex;
+ flex:0 0 auto;
+ flex-direction:column;
+ align-items:stretch;
+ gap:var(--collage-roll-gap,8px);
+ width:100%;
+}
+#colagem-memorias .memory-collage-cycle>figure{
+ width:100%;
+ height:auto;
+ aspect-ratio:1/1;
+ flex:0 0 auto;
+ min-height:0;
+}
+#colagem-memorias .memory-collage-strip:hover .memory-collage-track,
+#colagem-memorias .memory-collage-strip:focus-within .memory-collage-track{
+ animation-play-state:paused;
+}
+@keyframes lovenaCollageVerticalRoll{
+ from{transform:translate3d(0,0,0)}
+ to{transform:translate3d(0,-50%,0)}
+}
+@media(max-width:850px){
+ #colagem-memorias .memory-collage-strip{--collage-roll-gap:10px}
+}
+@media(max-width:650px){
+ #colagem-memorias .memory-collage-strip{--collage-roll-gap:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ #colagem-memorias .memory-collage-track{animation:none!important;transform:none!important}
+}
 </style>
 
 </head>
@@ -2106,9 +2152,24 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   document.querySelectorAll("img[data-memory-collage-photo]").forEach(function(image){var photoIndex=Number(image.getAttribute("data-memory-collage-photo"));var source=state.images.gallery[photoIndex];var fallback=image.getAttribute("data-memory-collage-default");image.src=source||fallback||image.src;});
   applyCollage();
  }
+ function setupCollageAutoScroll(section){
+  var strip=section&&section.querySelector(".memory-collage-strip");
+  if(!strip||strip.dataset.collageAutoScrollReady==="true")return;
+  var figures=Array.from(strip.querySelectorAll(":scope > figure"));
+  if(figures.length<2)return;
+  var firstCycle=document.createElement("div");firstCycle.className="memory-collage-cycle";
+  figures.forEach(function(figure){firstCycle.appendChild(figure);});
+  var secondCycle=firstCycle.cloneNode(true);
+  secondCycle.classList.add("memory-collage-cycle-copy");
+  secondCycle.setAttribute("aria-hidden","true");
+  var track=document.createElement("div");track.className="memory-collage-track";
+  track.appendChild(firstCycle);track.appendChild(secondCycle);strip.appendChild(track);
+  strip.dataset.collageAutoScrollReady="true";
+ }
  function applyCollage(){
   var cfg=state.collage||{},section=document.getElementById("colagem-memorias");
   if(!section)return;
+  setupCollageAutoScroll(section);
   var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),floatingWords=section.querySelectorAll(".memory-collage-floating-words span:not(.memory-collage-word-hidden)"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),strip=section.querySelector(".memory-collage-strip");
   if(eyebrow)eyebrow.textContent=cfg.eyebrow==null?"Feliz":cfg.eyebrow;
   if(title)title.textContent=cfg.title==null?"ANIVERSÁRIO":cfg.title;
