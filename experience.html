@@ -1072,6 +1072,50 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 }
 </style>
 
+<style id="lovena-gallery-navigation-fix">
+/* Galeria de Nossos Momentos: navegação horizontal consistente em computador e celular. */
+#fotos .gallery-row{
+ display:flex!important;
+ grid-template-columns:none!important;
+ overflow-x:auto!important;
+ overflow-y:hidden!important;
+ scroll-snap-type:x mandatory;
+ scroll-behavior:smooth;
+ -webkit-overflow-scrolling:touch;
+ scrollbar-width:thin;
+}
+#fotos .gallery-row>.gallery-item{
+ flex:0 0 calc((100% - 75px)/6);
+ width:auto;
+ min-width:0;
+ flex-shrink:0;
+ scroll-snap-align:start;
+}
+#fotos .gallery-arrows{
+ display:flex!important;
+ visibility:visible!important;
+ opacity:1!important;
+ z-index:7;
+ pointer-events:auto;
+}
+#fotos .gallery-arrows button{
+ position:relative;
+ z-index:8;
+ cursor:pointer;
+ touch-action:manipulation;
+}
+@media(max-width:850px){
+ #fotos .gallery-row-wrap{padding-right:40px!important}
+ #fotos .gallery-row{gap:12px!important;padding:3px 3px 12px}
+ #fotos .gallery-row>.gallery-item{flex:0 0 124px!important;width:124px!important}
+ #fotos .gallery-arrows{top:37%!important;right:0!important}
+ #fotos .gallery-arrows button{width:32px;height:32px;font-size:19px}
+}
+@media(max-width:420px){
+ #fotos .gallery-row-wrap{padding-right:38px!important}
+ #fotos .gallery-row>.gallery-item{flex-basis:105px!important;width:105px!important}
+}
+</style>
 </head>
 <body>
 <main class="experience" id="experiencia">
@@ -1649,7 +1693,16 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   if(name==="open-gallery"){document.getElementById("galleryRow").scrollTo({left:0,behavior:"smooth"});openPhoto(0);return;}
   if(name==="gallery-left"||name==="gallery-right"){
    var row=document.getElementById("galleryRow");
-   row.scrollBy({left:(name==="gallery-right"?1:-1)*Math.max(160,row.clientWidth*.7),behavior:"smooth"});return;
+   var firstItem=row.querySelector('.gallery-item:not([data-gallery-clone="true"])');
+   var computedGap=window.getComputedStyle(row).gap||window.getComputedStyle(row).columnGap||"0";
+   var gap=parseFloat(computedGap)||0;
+   var itemWidth=firstItem?firstItem.getBoundingClientRect().width:0;
+   var step=itemWidth?Math.max(160,(itemWidth+gap)*Math.max(1,Math.floor(row.clientWidth/(itemWidth+gap))-1)):Math.max(160,row.clientWidth*.7);
+   var maxScroll=Math.max(0,row.scrollWidth-row.clientWidth);
+   if(name==="gallery-left"&&row.scrollLeft<=3&&maxScroll>3)row.scrollTo({left:Math.max(0,maxScroll-step),behavior:"smooth"});
+   else if(name==="gallery-right"&&row.scrollLeft>=maxScroll-3&&maxScroll>3)row.scrollTo({left:0,behavior:"smooth"});
+   else row.scrollBy({left:(name==="gallery-right"?1:-1)*step,behavior:"smooth"});
+   return;
   }
   if(name==="song-play"){
    var activeSong=songs[songIndex]||{};
