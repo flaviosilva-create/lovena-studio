@@ -1080,8 +1080,8 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    });
    details.appendChild(body);fieldsHost.appendChild(details);
   });
-  var songsDetails=document.createElement("details");songsDetails.open=false;
-  var songsSummary=document.createElement("summary");songsSummary.textContent="Playlist: músicas e links";songsDetails.appendChild(songsSummary);
+  var songsDetails=document.createElement("details");songsDetails.open=true;
+  var songsSummary=document.createElement("summary");songsSummary.textContent="Músicas: links, plataforma e reprodução";songsDetails.appendChild(songsSummary);
   var songsBody=document.createElement("div");songsBody.className="ed-fields";
   (data.songs||[]).forEach(function(song,index){
    var box=document.createElement("div");box.style.cssText="border:1px solid #e5d1c2;border-radius:8px;padding:10px;display:grid;gap:8px";
@@ -1134,7 +1134,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    });
    modeWrap.appendChild(modeSelect);box.appendChild(modeWrap);
    var musicHelp=document.createElement("small");musicHelp.className="ed-help";
-   musicHelp.textContent="No modo incorporado, o serviço exibe seus próprios controles. No modo redirecionado, a pessoa será levada diretamente à música na plataforma escolhida.";
+   musicHelp.textContent="No modo incorporado, o serviço exibe seus próprios controles. Use o link direto da faixa, vídeo ou álbum — links de pesquisa não podem ser incorporados. No modo redirecionado, a pessoa será levada à música na plataforma escolhida.";
    box.appendChild(musicHelp);
    var removeSong=document.createElement("button");removeSong.type="button";removeSong.className="ed-mini-button ed-danger";removeSong.textContent="Remover música";removeSong.addEventListener("click",function(){if(data.songs.length<=1){setStatus("Mantenha pelo menos uma música.");return;}data.songs.splice(index,1);syncMusicPreviewFromEditor(0);buildTextFields();scheduleSave();});box.appendChild(removeSong);
    songsBody.appendChild(box);
