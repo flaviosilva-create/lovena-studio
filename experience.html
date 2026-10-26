@@ -913,6 +913,27 @@ body.editor-mode .experience{padding-bottom:28px}
 
 
 
+
+<style id="lovena-memory-collage-css">
+.lovena-memory-collage{position:relative;isolation:isolate;min-height:clamp(640px,90vh,1000px);height:90vh;max-height:1000px;overflow:hidden;background:#050506;color:#fff;padding:0;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.88fr);gap:clamp(12px,1.5vw,22px)}
+.memory-collage-backdrop{position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 25% 20%,#7d7765 0%,#3d3b32 33%,#0d0d0e 70%);opacity:.72}
+.memory-collage-main-photo{position:absolute;z-index:2;left:2%;bottom:-3%;width:min(54%,600px);height:75%;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55));transform:rotate(-1.2deg)}
+.memory-collage-main-photo:before{content:"";position:absolute;inset:-9px;background:#fff;clip-path:polygon(18% 1%,72% 0%,87% 5%,95% 16%,94% 31%,100% 45%,95% 61%,98% 78%,86% 94%,68% 100%,48% 96%,31% 100%,16% 91%,8% 77%,0 62%,4% 45%,0 29%,7% 12%)}
+.memory-collage-main-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;clip-path:polygon(18% 1%,72% 0%,87% 5%,95% 16%,94% 31%,100% 45%,95% 61%,98% 78%,86% 94%,68% 100%,48% 96%,31% 100%,16% 91%,8% 77%,0 62%,4% 45%,0 29%,7% 12%);border:0}
+.memory-collage-strip{position:absolute;top:0;right:2.5%;width:40%;height:100%;padding:12px 0 12px 15px;display:grid;grid-template-rows:repeat(6,minmax(0,1fr));gap:12px;overflow:hidden}
+.memory-collage-strip figure{position:relative;min-height:0;margin:0;overflow:hidden;border-radius:20px;border:1px solid rgba(245,226,204,.24);box-shadow:0 7px 20px #0006}
+.memory-collage-strip figure:before{content:"MEMORY PORTRAIT";position:absolute;z-index:2;left:-12px;top:12px;writing-mode:vertical-rl;transform:rotate(180deg);font:700 6px/1 Manrope,Arial,sans-serif;letter-spacing:1px;color:#c28a57}
+.memory-collage-strip img{display:block;width:100%;height:100%;object-fit:cover;filter:brightness(.87) saturate(.85)}
+.memory-collage-copy{position:absolute;z-index:4;top:14%;left:6%;width:44%;display:flex;align-items:center;flex-direction:column;text-align:center;text-shadow:0 3px 12px #0009;pointer-events:none}
+.memory-collage-copy span{font:italic 400 clamp(25px,4vw,54px)/1 Caveat,cursive;transform:rotate(-5deg)}
+.memory-collage-copy strong{font:700 clamp(25px,4.3vw,58px)/.96 'Playfair Display',Georgia,serif;letter-spacing:-1.5px;text-transform:uppercase;margin:8px 0 15px}
+.memory-collage-copy small{font:italic 700 12px/1.4 Manrope,Arial,sans-serif;letter-spacing:1px}
+.memory-collage-floating-words{position:absolute;z-index:5;inset:0;overflow:hidden;pointer-events:none;color:#fffbd0b8;font:300 clamp(12px,1.9vw,24px)/1 Manrope,Arial,sans-serif;letter-spacing:1px;text-shadow:0 2px 7px #0009}
+.memory-collage-floating-words span{position:absolute;white-space:nowrap}
+.memory-collage-floating-words span:nth-child(1){left:38%;top:13%}.memory-collage-floating-words span:nth-child(2){left:7%;top:24%;font-size:1.35em}.memory-collage-floating-words span:nth-child(3){left:42%;top:31%;font-size:.8em}.memory-collage-floating-words span:nth-child(4){left:25%;top:42%;font-size:.9em}.memory-collage-floating-words span:nth-child(5){left:5%;top:55%;font-size:.8em}.memory-collage-floating-words span:nth-child(6){left:64%;top:46%;font-size:1.1em}.memory-collage-floating-words span:nth-child(7){left:16%;top:72%;font-size:1.2em}.memory-collage-floating-words span:nth-child(8){left:65%;top:78%;font-size:1.15em}.memory-collage-floating-words span:nth-child(9){left:39%;top:89%;font-size:.9em}
+@media(max-width:650px){.lovena-memory-collage{height:78svh;min-height:570px;max-height:780px;grid-template-columns:minmax(0,1.05fr) minmax(0,.88fr);gap:7px}.memory-collage-strip{right:2%;width:41%;padding:8px 0 8px 11px;gap:8px;grid-template-rows:repeat(6,minmax(0,1fr))}.memory-collage-strip figure{border-radius:12px}.memory-collage-strip figure:before{left:-9px;font-size:5px}.memory-collage-main-photo{left:1%;bottom:-1%;width:54%;height:57%;filter:drop-shadow(0 8px 10px #0009)}.memory-collage-main-photo:before{inset:-6px}.memory-collage-copy{top:17%;left:2%;width:53%}.memory-collage-copy span{font-size:clamp(24px,7vw,34px)}.memory-collage-copy strong{font-size:clamp(22px,6.2vw,34px);letter-spacing:-.8px;margin:7px 0 10px}.memory-collage-copy small{font-size:10px}.memory-collage-floating-words{font-size:clamp(9px,2.5vw,14px);letter-spacing:.5px}.memory-collage-floating-words span:nth-child(2){left:5%;top:26%}.memory-collage-floating-words span:nth-child(3){left:42%;top:34%}.memory-collage-floating-words span:nth-child(4){left:23%;top:45%}.memory-collage-floating-words span:nth-child(5){left:4%;top:57%}.memory-collage-floating-words span:nth-child(6){left:62%;top:49%}.memory-collage-floating-words span:nth-child(7){left:10%;top:73%}.memory-collage-floating-words span:nth-child(8){left:61%;top:79%}.memory-collage-floating-words span:nth-child(9){left:35%;top:89%}}
+</style>
+
 </head>
 <body>
 <main class="experience" id="experiencia">
@@ -995,6 +1016,22 @@ body.editor-mode .experience{padding-bottom:28px}
     <div class="gallery-arrows"><button type="button" data-action="gallery-left" aria-label="Fotos anteriores">‹</button><button type="button" data-action="gallery-right" aria-label="Próximas fotos">›</button></div>
    </div>
   </div>
+
+ </section>
+
+ <section class="lovena-memory-collage" id="colagem-memorias" aria-label="Colagem de fotos do casal">
+  <div class="memory-collage-backdrop" aria-hidden="true"></div>
+  <div class="memory-collage-copy" aria-hidden="true"><span>cada foto,</span><strong>um pedacinho<br>da nossa história</strong><small>♡ para sempre</small></div>
+  <div class="memory-collage-main-photo"><img data-memory-collage-photo="0" data-memory-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="Foto principal do casal"></div>
+  <div class="memory-collage-strip" aria-label="Mais momentos do casal">
+   <figure><img data-memory-collage-photo="1" data-memory-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Lembrança do casal"></figure>
+   <figure><img data-memory-collage-photo="2" data-memory-collage-default="assets/lovena-sample-photo-03.jpg" src="assets/lovena-sample-photo-03.jpg" alt="Lembrança do casal"></figure>
+   <figure><img data-memory-collage-photo="3" data-memory-collage-default="assets/lovena-sample-photo-04.jpg" src="assets/lovena-sample-photo-04.jpg" alt="Lembrança do casal"></figure>
+   <figure><img data-memory-collage-photo="4" data-memory-collage-default="assets/lovena-sample-photo-05.jpg" src="assets/lovena-sample-photo-05.jpg" alt="Lembrança do casal"></figure>
+   <figure><img data-memory-collage-photo="5" data-memory-collage-default="assets/lovena-sample-photo-06.jpg" src="assets/lovena-sample-photo-06.jpg" alt="Lembrança do casal"></figure>
+   <figure><img data-memory-collage-photo="6" data-memory-collage-default="assets/lovena-sample-photo-07.jpg" src="assets/lovena-sample-photo-07.jpg" alt="Lembrança do casal"></figure>
+  </div>
+  <div class="memory-collage-floating-words" aria-hidden="true"><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span></div>
  </section>
 
  <section class="history-surprises" id="historia" aria-labelledby="history-title">
@@ -1931,6 +1968,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   });
   row.style.gridTemplateColumns=photos.length>6?"repeat("+photos.length+",112px)":"";
   row.style.overflowX=photos.length>6?"auto":"";
+  document.querySelectorAll("img[data-memory-collage-photo]").forEach(function(image){var photoIndex=Number(image.getAttribute("data-memory-collage-photo"));var source=state.images.gallery[photoIndex];var fallback=image.getAttribute("data-memory-collage-default");image.src=source||fallback||image.src;});
  }
  function makeTimelineIcon(){return '<span class="timeline-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11S3.2 13.9 3.2 8.8a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"/></svg></span>';}
  function syncTimeline(){
@@ -2145,6 +2183,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    if(heroSource){
     [".hero-photo",".pinned-photo-photo"].forEach(function(selector){var el=clone.querySelector(selector);if(el)el.style.backgroundImage='url("'+heroSource+'")';});
    }
+   clone.querySelectorAll("img[data-memory-collage-photo]").forEach(function(img){var photoIndex=Number(img.getAttribute("data-memory-collage-photo"));var source=(offlineData.images.gallery||[])[photoIndex];if(source)img.setAttribute("src",source);img.removeAttribute("srcset");});
    var gallery=clone.querySelector("#galleryRow");
    if(gallery){
     var galleryItems=Array.from(gallery.children).filter(function(el){return el.dataset.galleryClone!=="true";});
