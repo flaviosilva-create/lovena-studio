@@ -506,7 +506,7 @@ body.editor-mode .experience{padding-bottom:28px}
 <script id="lovenaEditBootstrap">
 (function(){
  "use strict";
- var defaults={"songs":[{"title":"Melhor Ainda","artist":"Melim","query":"Melim Melhor Ainda","url":"https://music.youtube.com/search?q=Melim%20Melhor%20Ainda"},{"title":"Meu Abrigo","artist":"Melim","query":"Melim Meu Abrigo","url":"https://music.youtube.com/search?q=Melim%20Meu%20Abrigo"},{"title":"Dois Corações","artist":"Melim","query":"Melim Dois Corações","url":"https://music.youtube.com/search?q=Melim%20Dois%20Cora%C3%A7%C3%B5es"}],"musicLinkLabel":"Ouvir no YouTube Music ↗","milestones":[["Nos conhecemos","Foi quando nossos caminhos se cruzaram. Sem perceber, a vida estava abrindo espaço para uma das histórias mais bonitas.","12 de março de 2021"],["Nosso primeiro encontro","O nervosismo, os sorrisos e aquela sensação boa de que a conversa podia durar para sempre. Um dia simples que virou lembrança importante.","24 de abril de 2021"],["Nossa primeira viagem","Um lugar novo, novas histórias e a certeza de que qualquer destino fica melhor quando estamos juntos.","15 de janeiro de 2022"],["1 ano juntos","Um ano de carinho, parceria e pequenos momentos que se tornaram gigantes. E era só o começo.","12 de março de 2022"],["E tudo continua...","Que venham muitos outros capítulos, lugares para conhecer, músicas para cantar e motivos para escolher um ao outro.","Hoje e sempre"]],"photos":[["Nosso pôr do sol","Tem momentos que parecem feitos para ficarem guardados para sempre."],["Meu lugar favorito","No meio de tantos lugares lindos, é ao seu lado que eu sempre quero estar."],["Para onde formos","O melhor da viagem nunca é só o destino. É dividir o caminho com você."],["Nossa casinha","A paz de estar junto e fazer do cotidiano o nosso lugar preferido."],["Só mais cinco minutos","Os dias simples são os que mais acabam virando saudade boa."],["O mundo é nosso","Ainda há tantos lugares, histórias e pôr do sol esperando por nós."]],"surprises":{"playlist":{"title":"Uma trilha que lembra nós","copy":"Algumas músicas parecem guardar um pedacinho da nossa história. Escolha uma delas e deixe a lembrança tocar de novo.","kicker":"NOSSA TRILHA SONORA"},"card":{"title":"Um cartão só seu","copy":"Guarde isso para os dias corridos: você é uma das coisas mais bonitas que já me aconteceram. Que a vida continue encontrando jeitos de colocar a gente lado a lado.","kicker":"ABRA QUANDO QUISER SORRIR"},"message":{"title":"Uma coisa que eu nunca quero que você esqueça","copy":"Você não precisa fazer nada extraordinário para ser especial. O jeito como você existe, como cuida, como ri e como torna os dias comuns mais leves já é mais do que suficiente. Se eu pudesse escolher de novo, em todas as versões da vida, eu ainda procuraria você.","kicker":"SÓ MAIS UMA COISA","signature":"Você torna tudo mais bonito. ♡"}},"images":{"hero":null,"album":null,"gallery":[]}};
+ var defaults={"songs":[{"title":"Melhor Ainda","artist":"Melim","query":"Melim Melhor Ainda","url":"https://music.youtube.com/search?q=Melim%20Melhor%20Ainda"},{"title":"Meu Abrigo","artist":"Melim","query":"Melim Meu Abrigo","url":"https://music.youtube.com/search?q=Melim%20Meu%20Abrigo"},{"title":"Dois Corações","artist":"Melim","query":"Melim Dois Corações","url":"https://music.youtube.com/search?q=Melim%20Dois%20Cora%C3%A7%C3%B5es"}],"musicLinkLabel":"Ouvir no YouTube Music ↗","milestones":[["Nos conhecemos","Foi quando nossos caminhos se cruzaram. Sem perceber, a vida estava abrindo espaço para uma das histórias mais bonitas.","12 de março de 2021"],["Nosso primeiro encontro","O nervosismo, os sorrisos e aquela sensação boa de que a conversa podia durar para sempre. Um dia simples que virou lembrança importante.","24 de abril de 2021"],["Nossa primeira viagem","Um lugar novo, novas histórias e a certeza de que qualquer destino fica melhor quando estamos juntos.","15 de janeiro de 2022"],["1 ano juntos","Um ano de carinho, parceria e pequenos momentos que se tornaram gigantes. E era só o começo.","12 de março de 2022"],["E tudo continua...","Que venham muitos outros capítulos, lugares para conhecer, músicas para cantar e motivos para escolher um ao outro.","Hoje e sempre"]],"photos":[["Nosso pôr do sol","Tem momentos que parecem feitos para ficarem guardados para sempre."],["Meu lugar favorito","No meio de tantos lugares lindos, é ao seu lado que eu sempre quero estar."],["Para onde formos","O melhor da viagem nunca é só o destino. É dividir o caminho com você."],["Nossa casinha","A paz de estar junto e fazer do cotidiano o nosso lugar preferido."],["Só mais cinco minutos","Os dias simples são os que mais acabam virando saudade boa."],["O mundo é nosso","Ainda há tantos lugares, histórias e pôr do sol esperando por nós."]],"surprises":{"playlist":{"title":"Uma trilha que lembra nós","copy":"Algumas músicas parecem guardar um pedacinho da nossa história. Escolha uma delas e deixe a lembrança tocar de novo.","kicker":"NOSSA TRILHA SONORA"},"card":{"title":"Um cartão só seu","copy":"Guarde isso para os dias corridos: você é uma das coisas mais bonitas que já me aconteceram. Que a vida continue encontrando jeitos de colocar a gente lado a lado.","kicker":"ABRA QUANDO QUISER SORRIR"},"message":{"title":"Uma coisa que eu nunca quero que você esqueça","copy":"Você não precisa fazer nada extraordinário para ser especial. O jeito como você existe, como cuida, como ri e como torna os dias comuns mais leves já é mais do que suficiente. Se eu pudesse escolher de novo, em todas as versões da vida, eu ainda procuraria você.","kicker":"SÓ MAIS UMA COISA","signature":"Você torna tudo mais bonito. ♡"}},"images":{"hero":null,"gallery":[]}};
  var draft=null;
  try{draft=JSON.parse(localStorage.getItem("lovenaExperienceDraftV1")||"null");}catch(error){}
  var data=defaults;
@@ -516,6 +516,7 @@ body.editor-mode .experience{padding-bottom:28px}
   if(draft.data.images)data.images=draft.data.images;
  }
  if(draft&&draft.images)data.images=draft.images;
+ if(data.images)delete data.images.album;
  window.LOVENA_EDIT_DRAFT=draft||{};
  window.LOVENA_EDIT_DATA=data;
 })();
@@ -977,9 +978,9 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  }
 
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
- var state=Object.assign({version:1,texts:{},images:{hero:null,album:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47}},window.LOVENA_EDIT_DRAFT||{});
+ var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47}},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
- state.images=Object.assign({hero:null,album:null,gallery:[]},state.images||{});
+ state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
  var heroX=Number(state.heroPosition.x),heroY=Number(state.heroPosition.y);
@@ -998,7 +999,6 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  var pendingTimer=0;
  var customPalette=document.getElementById("lovenaEditorPalette");
  var defaultHeroImage=getComputedStyle(document.documentElement).getPropertyValue("--hero-photo").trim();
- var defaultAlbumSrc=(document.querySelector(".album-cover")||{}).src||"";
  function q(sel,idx){var nodes=document.querySelectorAll(sel);return idx==null?nodes[0]||null:nodes[idx]||null;}
  function getPath(obj,path){return path.reduce(function(acc,key){return acc==null?undefined:acc[key];},obj);}
  function setPath(obj,path,value){var cur=obj;for(var i=0;i<path.length-1;i++){if(cur[path[i]]==null)cur[path[i]]=typeof path[i+1]==="number"?[]:{};cur=cur[path[i]];}cur[path[path.length-1]]=value;}
@@ -1074,7 +1074,6 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  }
  function imageTargetForKey(key){
   if(key==="hero")return q(".hero")||q(".hero-photo");
-  if(key==="album")return q(".album-cover");
   if(key.indexOf("gallery:")===0)return q(".gallery-item",Number(key.split(":")[1]));
   return null;
  }
@@ -1082,7 +1081,6 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   if(!el||!el.closest)return null;
   if(el.closest(".hero-photo"))return "hero";
   if(el.closest(".pinned-photo"))return "hero";
-  if(el.closest(".album-cover"))return "album";
   var gallery=el.closest(".gallery-item");
   if(gallery&&gallery.hasAttribute("data-photo"))return "gallery:"+gallery.getAttribute("data-photo");
   if(el.closest(".hero")&&!el.closest(".hero-copy,.experience-nav,.pinned-photo,.scroll-cue"))return "hero";
@@ -1098,7 +1096,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   setActivePreviewElement(target);
   if(target&&target.scrollIntoView)target.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
   var label=row&&row.querySelector("strong")?row.querySelector("strong").textContent:"Imagem";
-  var help=key==="hero"?"Esta é a foto da abertura. Use “Trocar foto” ou ajuste o enquadramento logo abaixo.":key==="album"?"Esta é a capa do player musical. Use “Trocar foto” para substituí-la.":"Esta é a foto selecionada na galeria. Use “Trocar foto” para substituir somente esta imagem.";
+  var help=key==="hero"?"Esta é a foto da abertura. Use “Trocar foto” ou ajuste o enquadramento logo abaixo.":"Esta é a foto selecionada na galeria. Use “Trocar foto” para substituir somente esta imagem.";
   updateEditorGuide("Editando: "+label,help);
  }
  function focusEditorMilestone(index){
@@ -1124,7 +1122,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  function markEditableTargets(){
   var targets=[];
   textFields.forEach(function(def){var target=targetFor(def);if(target&&targets.indexOf(target)===-1)targets.push(target);});
-  document.querySelectorAll(".timeline-item,.hero-photo,.pinned-photo,.album-cover,.gallery-photo").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
+  document.querySelectorAll(".timeline-item,.hero-photo,.pinned-photo,.gallery-photo").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
   targets.forEach(function(target){target.classList.add("lovena-edit-target");});
  }
  function buildTextFields(){
@@ -1331,7 +1329,6 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   if(p){p.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";p.style.backgroundPosition=heroPosition;}
   var pinned=document.querySelector(".pinned-photo-photo");
   if(pinned){pinned.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";pinned.style.backgroundPosition=heroPosition;}
-  var a=document.querySelector(".album-cover");if(a)a.src=state.images.album||defaultAlbumSrc;
   syncGallery();
  }
  function syncGallery(){
@@ -1380,7 +1377,6 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  function imageControls(){
   var rows=[
    {key:"hero",label:"Foto principal da abertura · casal ao pôr do sol",help:"Esta é a primeira foto grande da experiência. Toque em “Trocar foto” para escolher uma imagem da pessoa; ela substituirá a foto atual."},
-   {key:"album",label:"Capa do player musical",help:"Ideal: imagem quadrada."}
   ];
   (data.photos||[]).forEach(function(photo,index){rows.push({key:"gallery:"+index,label:"Foto da galeria "+(index+1)+" · "+(photo[0]||"Sem legenda"),help:"Troque a imagem deste quadro ou mantenha a foto original."});});
   imagesHost.innerHTML="";
@@ -1389,10 +1385,9 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    var thumb=document.createElement("span");thumb.className="ed-image-thumb";thumb.setAttribute("aria-hidden","true");
    var thumbBackground="";
    if(item.key==="hero"&&state.images.hero)thumbBackground='url("'+state.images.hero+'")';
-   else if(item.key==="album"){var albumSrc=state.images.album||((q(".album-cover")||{}).src)||defaultAlbumSrc;if(albumSrc)thumbBackground='url("'+albumSrc+'")';}
    else if(item.key.indexOf("gallery:")===0&&state.images.gallery[Number(item.key.split(":")[1])])thumbBackground='url("'+state.images.gallery[Number(item.key.split(":")[1])]+'")';
    else{
-    var visualTarget=item.key==="hero"?q(".hero-photo"):item.key==="album"?q(".album-cover"):q(".gallery-photo",Number(item.key.split(":")[1]));
+    var visualTarget=item.key==="hero"?q(".hero-photo"):q(".gallery-photo",Number(item.key.split(":")[1]));
     if(visualTarget){thumbBackground=visualTarget.tagName==="IMG"?'url("'+visualTarget.src+'")':getComputedStyle(visualTarget).backgroundImage;}
    }
    if(thumbBackground&&thumbBackground!=="none")thumb.style.backgroundImage=thumbBackground;
@@ -1403,7 +1398,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    input.addEventListener("change",function(){var file=input.files&&input.files[0];if(file)readImage(file,item.key,input);});
    var pick=document.createElement("button");pick.type="button";pick.className="ed-mini-button";pick.textContent="Trocar foto";pick.addEventListener("click",function(event){event.preventDefault();input.click();});
    actions.appendChild(pick);actions.appendChild(input);
-   if((item.key==="hero"&&state.images.hero)||(item.key==="album"&&state.images.album)||(item.key.indexOf("gallery:")===0&&state.images.gallery[Number(item.key.split(":")[1])])){
+   if((item.key==="hero"&&state.images.hero)||(item.key.indexOf("gallery:")===0&&state.images.gallery[Number(item.key.split(":")[1])])){
     var clear=document.createElement("button");clear.type="button";clear.className="ed-mini-button ed-danger";clear.textContent="Original";clear.dataset.clearImage=item.key;actions.appendChild(clear);
    }
    row.appendChild(actions);
@@ -1459,7 +1454,6 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
        var uri=reader.result;
        if(typeof uri!=="string"||uri.indexOf("data:image/jpeg;base64,")!==0)throw new Error("Formato convertido inválido.");
        if(key==="hero")state.images.hero=uri;
-       else if(key==="album")state.images.album=uri;
        else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=uri;
        data.images=state.images;
        applyImages();
@@ -1546,7 +1540,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   var removePhoto=event.target.closest("[data-remove-photo]");
   if(removePhoto){var ix=Number(removePhoto.dataset.removePhoto);if(data.photos.length<=1){setStatus("Mantenha pelo menos uma foto.");return;}data.photos.splice(ix,1);state.images.gallery.splice(ix,1);syncGallery();imageControls();buildTextFields();scheduleSave();return;}
   var clearImage=event.target.closest("[data-clear-image]");
-  if(clearImage){var key=clearImage.dataset.clearImage;if(key==="hero")state.images.hero=null;else if(key==="album")state.images.album=null;else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=null;applyImages();imageControls();scheduleSave();return;}
+  if(clearImage){var key=clearImage.dataset.clearImage;if(key==="hero")state.images.hero=null;else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=null;applyImages();imageControls();scheduleSave();return;}
  });
  document.querySelectorAll("[data-editor-color]").forEach(function(input){input.addEventListener("input",function(){state.colors[input.dataset.editorColor]=input.value;applyColors();scheduleSave();});});
  document.getElementById("lovenaEditorImport").addEventListener("change",function(event){
