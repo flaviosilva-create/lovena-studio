@@ -318,7 +318,12 @@ body.lovena-preview-mode #lovenaEditorTrigger{display:flex}
 #lovenaEditor .ed-head p{font-size:10px;line-height:1.6;color:#d8c3b5;margin:7px 0 0;max-width:330px}
 #lovenaEditor .ed-close{flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:transparent;color:#fff0e6;font-size:23px;line-height:1;cursor:pointer}
 #lovenaEditor .ed-scroll{padding:14px 17px 25px;overflow:auto;overscroll-behavior:contain;flex:1}
-#lovenaEditor .ed-notice{border:1px solid #e1c6b4;border-radius:9px;background:#f0dfd1;padding:11px 12px;font-size:10px;line-height:1.6;color:#6c4a3a;margin:0 0 13px}
+#lovenaEditor .ed-notice{display:grid;gap:8px;border:1px solid #7b4a3c;border-left:4px solid #c98f72;border-radius:11px;background:#49211c;padding:15px 15px 14px;font-size:11.5px;line-height:1.6;color:#fff5eb;margin:0 0 14px;box-shadow:0 5px 16px rgba(73,33,28,.12)}
+#lovenaEditor .ed-notice-heading{display:flex;align-items:center;gap:9px;font-size:13px;line-height:1.35;color:#f4c3a7}
+#lovenaEditor .ed-notice-heading strong{font-weight:850}
+#lovenaEditor .ed-notice-icon{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;border-radius:50%;background:#c98f72;color:#49211c;font-size:16px}
+#lovenaEditor .ed-notice p{margin:0;color:#fff5eb}
+#lovenaEditor .ed-notice p strong{color:#f4c3a7;font-weight:800}
 #lovenaEditor details{border:1px solid #e2cfc0;border-radius:10px;background:#fbf5ee;margin:0 0 10px;overflow:hidden}
 #lovenaEditor details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;padding:14px 14px;font-size:12px;font-weight:800;color:#4b2d25}
 #lovenaEditor details>summary::-webkit-details-marker{display:none}
@@ -1210,7 +1215,11 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   <button type="button" class="ed-close" data-editor-action="close" aria-label="Fechar editor">×</button>
  </header>
  <div class="ed-scroll">
-  <p class="ed-notice"><b>É só clicar para editar.</b> Na prévia, clique diretamente no texto, foto, título, data, capítulo ou elemento que deseja mudar. O campo correto abrirá automaticamente e ficará destacado; a alteração aparece na hora. <b>No celular:</b> feche este painel no × e toque no item desejado. Para enviar a página pronta, use <b>Baixar experiência pronta</b>.</p>
+  <div class="ed-notice" role="note" aria-label="Como editar diretamente na prévia">
+   <div class="ed-notice-heading"><span class="ed-notice-icon" aria-hidden="true">✦</span><strong>É só clicar para editar!</strong></div>
+   <p>Na prévia da página, clique diretamente no texto, foto, título, data ou elemento que deseja alterar. O campo correspondente abre automaticamente e a mudança aparece na hora.</p>
+   <p class="ed-notice-mobile"><strong>No celular:</strong> feche este painel no × e toque no item desejado. Para enviar a página pronta, use <strong>Baixar experiência pronta</strong>.</p>
+  </div>
   <div class="ed-live-guide"><span class="ed-live-dot"></span><div><strong id="lovenaEditorFocusTitle">Pronto para personalizar</strong><small id="lovenaEditorFocusHelp">Escolha uma seção abaixo ou toque em um texto da página para editar.</small></div></div>
   <div id="lovenaEditorFields"></div>
   <details open>
