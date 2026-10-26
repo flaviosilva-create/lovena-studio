@@ -1070,6 +1070,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
      applyField(def,ctl.value);
      if(def.path&&def.path[0]==="songs"&&def.path[1]===0){
       var song=data.songs[0]||{};document.getElementById("trackTitle").textContent=song.title||"";document.getElementById("trackArtist").textContent=song.artist||"";
+      window.dispatchEvent(new Event("lovena:music-updated"));
      }
      scheduleSave();
     });
