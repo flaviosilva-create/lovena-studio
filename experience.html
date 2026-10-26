@@ -1052,9 +1052,14 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 }
 @media(max-width:850px){
  #colagem-memorias .memory-collage-strip{--collage-roll-gap:10px}
+ /* On touchscreens, avoid a sticky :hover state stopping the automatic roll. */
+ #colagem-memorias .memory-collage-track{animation-duration:36s;animation-play-state:running}
+ #colagem-memorias .memory-collage-strip:hover .memory-collage-track{animation-play-state:running}
+ #colagem-memorias .memory-collage-strip:active .memory-collage-track{animation-play-state:paused}
 }
 @media(max-width:650px){
  #colagem-memorias .memory-collage-strip{--collage-roll-gap:8px}
+ #colagem-memorias .memory-collage-track{animation-duration:36s}
 }
 @media(prefers-reduced-motion:reduce){
  #colagem-memorias .memory-collage-track{animation:none!important;transform:none!important}
