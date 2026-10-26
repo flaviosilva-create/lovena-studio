@@ -2270,6 +2270,20 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
     [".hero-photo",".pinned-photo-photo"].forEach(function(selector){var el=clone.querySelector(selector);if(el)el.style.backgroundImage='url("'+heroSource+'")';});
    }
    if(offlineData.collage&&offlineData.collage.background){offlineData.collage.background=await imageSourceToDataUrl(offlineData.collage.background);var bg=clone.querySelector(".memory-collage-backdrop");if(bg)bg.style.backgroundImage='linear-gradient(90deg,rgba(28,27,21,.28),rgba(8,8,8,.32)),linear-gradient(0deg,rgba(0,0,0,.64),rgba(0,0,0,.04) 55%,rgba(0,0,0,.12)),url("'+offlineData.collage.background+'")';}
+   if(offlineData.collage){
+    var collage=offlineData.collage;
+    var collageSection=clone.querySelector("#colagem-memorias");
+    if(collageSection){
+     var eyebrow=collageSection.querySelector(".memory-collage-copy span"),title=collageSection.querySelector(".memory-collage-copy strong"),subtitle=collageSection.querySelector(".memory-collage-copy small");
+     if(eyebrow)eyebrow.textContent=collage.eyebrow||"Feliz";
+     if(title)title.textContent=collage.title||"ANIVERSÁRIO";
+     if(subtitle)subtitle.textContent=collage.subtitle||"MEU AMOR";
+     var main=collageSection.querySelector(".memory-collage-main-photo"),strip=collageSection.querySelector(".memory-collage-strip"),copy=collageSection.querySelector(".memory-collage-copy");
+     if(main){main.style.left=(collage.mainX==null?2:collage.mainX)+"%";main.style.bottom=(collage.mainY==null?-2:collage.mainY)+"%";main.style.width="min("+(collage.mainWidth||56)+"%,620px)";main.style.height=(collage.mainHeight||55)+"%";}
+     if(strip)strip.style.width=(collage.stripWidth||40)+"%";
+     if(copy)copy.style.top=(collage.titleY||35)+"%";
+    }
+   }
    clone.querySelectorAll("img[data-memory-collage-photo]").forEach(function(img){var photoIndex=Number(img.getAttribute("data-memory-collage-photo"));var source=(offlineData.images.gallery||[])[photoIndex];if(source)img.setAttribute("src",source);img.removeAttribute("srcset");});
    var gallery=clone.querySelector("#galleryRow");
    if(gallery){
