@@ -2131,6 +2131,9 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    offlineData.images.gallery=await Promise.all(sources.map(imageSourceToDataUrl));
 
    var clone=document.documentElement.cloneNode(true);
+   var cloneHead=clone.querySelector("head");
+   var cloneBody=clone.querySelector("body");
+   if(!cloneHead||!cloneBody)throw new Error("Não foi possível preparar a estrutura do arquivo offline.");
    clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaDynamicEditingStyles,#lovenaEditorRuntime,#lovenaEditBootstrap").forEach(function(el){el.remove();});
    clone.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});
    clone.querySelectorAll('[data-gallery-clone="true"]').forEach(function(el){el.remove();});
@@ -2158,7 +2161,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    dataBootstrap.textContent="window.LOVENA_EDIT_DATA="+safeJson(offlineData)+";";
    var scripts=Array.from(clone.querySelectorAll("script"));
    var main=scripts.find(function(script){return script.textContent.indexOf("var editData=window.LOVENA_EDIT_DATA")>=0;});
-   if(main)main.parentNode.insertBefore(dataBootstrap,main);else clone.querySelector("body").insertBefore(dataBootstrap,clone.querySelector("body").firstChild);
+   if(main)main.parentNode.insertBefore(dataBootstrap,main);else cloneBody.insertBefore(dataBootstrap,cloneBody.firstChild);
 
    var musicCard=clone.querySelector(".music-card");
    if(musicCard){
@@ -2175,11 +2178,11 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    var offlineStyle=document.createElement("style");
    offlineStyle.id="lovena-offline-export-style";
    offlineStyle.textContent=".lovena-offline-note{margin:12px 0 5px;padding:10px 12px;border:1px dashed rgba(197,155,128,.5);border-radius:8px;color:#d9bba7;background:rgba(255,255,255,.035);font:10px/1.6 Arial,sans-serif}.music-card .player-btn:disabled{opacity:.45;cursor:not-allowed}[data-gallery-clone=\"true\"]{pointer-events:none!important}";
-   clone.head.appendChild(offlineStyle);
+   cloneHead.appendChild(offlineStyle);
    var loopScript=document.createElement("script");
    loopScript.id="lovena-offline-gallery-runtime";
    loopScript.textContent="("+offlineGalleryAnimation.toString()+")();";
-   clone.body.appendChild(loopScript);
+   cloneBody.appendChild(loopScript);
 
    clone.querySelector("body").classList.remove("editor-mode","editor-panel-open","lovena-preview-mode");
    var output="<!doctype html>\n"+clone.outerHTML;
