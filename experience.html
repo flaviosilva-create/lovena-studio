@@ -283,7 +283,7 @@ body.editor-mode #lovenaEditorTrigger{display:flex}
 #lovenaEditor .ed-image-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;border:1px solid #e6d4c6;border-radius:8px;padding:10px;background:#fffaf5}
 #lovenaEditor .ed-image-row strong{display:block;font-size:10px;line-height:1.5;color:#58382d}
 #lovenaEditor .ed-image-row small{display:block;font-size:8.5px;color:#927466;margin-top:2px}
-#lovenaEditor .ed-image-row input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+#lovenaEditor .ed-image-row input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 #lovenaEditor .ed-mini-button{border:1px solid #d9beac;border-radius:999px;background:#f3e5d9;color:#654437;padding:8px 11px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}
 #lovenaEditor .ed-mini-button:hover{background:#ead2c0}
 #lovenaEditor .ed-danger{border-color:#ddbbb3;color:#8a4036;background:#fff5f1}
@@ -702,10 +702,14 @@ body.editor-mode .experience{padding-bottom:28px}
  }
 
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
- var state=Object.assign({version:1,texts:{},images:{hero:null,album:null,gallery:[]},colors:colorDefaults},window.LOVENA_EDIT_DRAFT||{});
+ var state=Object.assign({version:1,texts:{},images:{hero:null,album:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47}},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
  state.images=Object.assign({hero:null,album:null,gallery:[]},state.images||{});
  state.colors=Object.assign({},colorDefaults,state.colors||{});
+ state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
+ var heroX=Number(state.heroPosition.x),heroY=Number(state.heroPosition.y);
+ state.heroPosition.x=isFinite(heroX)?Math.max(0,Math.min(100,heroX)):50;
+ state.heroPosition.y=isFinite(heroY)?Math.max(0,Math.min(100,heroY)):47;
  while(state.images.gallery.length<(data.photos||[]).length)state.images.gallery.push(null);
  state.data=data;
  data.images=state.images;
@@ -818,7 +822,7 @@ body.editor-mode .experience{padding-bottom:28px}
  }
  function getSongUrl(song){return song.url||("https://music.youtube.com/search?q="+encodeURIComponent(song.query||song.title||"romantic songs"));}
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
- function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;return {version:1,texts:state.texts,images:state.images,colors:state.colors,data:savedData};}
+ function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;return {version:1,texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,data:savedData};}
  function saveDraft(show){
   try{
    data.images=state.images;
@@ -847,10 +851,12 @@ body.editor-mode .experience{padding-bottom:28px}
  }
  function applyImages(){
   data.images=state.images;
-  // Keep uploaded data URLs off the root CSS variable. Direct per-element backgrounds
-  // avoid forcing a large user image through every CSS rule that references --hero-photo.
-  var p=document.querySelector(".hero-photo");if(p)p.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";
-  var pinned=document.querySelector(".pinned-photo-photo");if(pinned)pinned.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";
+  // Apply the crop controls directly to both large opening photo and scrapbook pin.
+  var heroPosition=state.heroPosition.x+"% "+state.heroPosition.y+"%";
+  var p=document.querySelector(".hero-photo");
+  if(p){p.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";p.style.backgroundPosition=heroPosition;}
+  var pinned=document.querySelector(".pinned-photo-photo");
+  if(pinned){pinned.style.backgroundImage=state.images.hero?'url("'+state.images.hero+'")':"";pinned.style.backgroundPosition=heroPosition;}
   var a=document.querySelector(".album-cover");if(a)a.src=state.images.album||defaultAlbumSrc;
   syncGallery();
  }
@@ -915,7 +921,26 @@ body.editor-mode .experience{padding-bottom:28px}
    if((item.key==="hero"&&state.images.hero)||(item.key==="album"&&state.images.album)||(item.key.indexOf("gallery:")===0&&state.images.gallery[Number(item.key.split(":")[1])])){
     var clear=document.createElement("button");clear.type="button";clear.className="ed-mini-button ed-danger";clear.textContent="Original";clear.dataset.clearImage=item.key;actions.appendChild(clear);
    }
-   row.appendChild(actions);imagesHost.appendChild(row);
+   row.appendChild(actions);
+   if(item.key==="hero"){
+    var crop=document.createElement("div");crop.className="ed-photo-position";
+    crop.style.cssText="grid-column:1 / -1;display:grid;gap:9px;padding-top:10px;margin-top:2px;border-top:1px solid #f0e1d6";
+    var cropTitle=document.createElement("strong");cropTitle.textContent="Ajustar enquadramento da foto";crop.appendChild(cropTitle);
+    var cropHelp=document.createElement("small");cropHelp.textContent="Mova os controles até que os rostos e a parte importante da imagem fiquem bem enquadrados.";crop.appendChild(cropHelp);
+    [{key:"x",label:"Horizontal",hint:"Esquerda ↔ direita"},{key:"y",label:"Vertical",hint:"Topo ↕ base"}].forEach(function(axis){
+     var group=document.createElement("div");group.style.cssText="display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center";
+     var axisLabel=document.createElement("label");axisLabel.textContent=axis.label;axisLabel.style.cssText="font-size:9px;font-weight:800;color:#654437";group.appendChild(axisLabel);
+     var value=document.createElement("span");value.textContent=state.heroPosition[axis.key]+"%";value.style.cssText="font-size:9px;color:#927466;text-align:right";group.appendChild(value);
+     var range=document.createElement("input");range.type="range";range.min="0";range.max="100";range.step="1";range.value=state.heroPosition[axis.key];range.setAttribute("aria-label","Posição "+axis.hint);
+     range.style.cssText="position:static;grid-column:1 / -1;width:100%;height:22px;opacity:1;pointer-events:auto;accent-color:#85574a;cursor:pointer";
+     range.addEventListener("input",function(){state.heroPosition[axis.key]=Number(range.value);value.textContent=range.value+"%";applyImages();scheduleSave();});
+     group.appendChild(range);crop.appendChild(group);
+    });
+    var center=document.createElement("button");center.type="button";center.className="ed-mini-button";center.textContent="Centralizar foto";
+    center.addEventListener("click",function(){state.heroPosition.x=50;state.heroPosition.y=47;crop.querySelectorAll('input[type="range"]').forEach(function(range,index){range.value=index===0?50:47;});var vals=crop.querySelectorAll("span");if(vals[0])vals[0].textContent="50%";if(vals[1])vals[1].textContent="47%";applyImages();scheduleSave();});
+    crop.appendChild(center);row.appendChild(crop);
+   }
+   imagesHost.appendChild(row);
    if(item.key.indexOf("gallery:")===0){var index=Number(item.key.split(":")[1]);var remove=document.createElement("button");remove.type="button";remove.className="ed-mini-button ed-danger";remove.style.marginTop="6px";remove.textContent="Excluir esta foto da galeria";remove.dataset.removePhoto=index;imagesHost.appendChild(remove);}
   });
  }
