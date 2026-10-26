@@ -72,6 +72,19 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 .letter-heart{position:absolute;right:10%;top:24px;color:#9f6258;font-size:13px}
 .letter-to{position:absolute;right:17px;bottom:10px;color:#ac8268;font:17px Caveat,cursive;transform:rotate(5deg)}
 .music-card{position:relative;z-index:2;min-width:0;min-height:398px;padding:25px 24px 20px;color:#f8eee5;background:linear-gradient(155deg,rgba(44,20,15,.96),rgba(21,8,7,.98));border:1px solid rgba(197,155,128,.18);border-radius:12px;box-shadow:0 18px 35px rgba(10,4,3,.3);margin-left:-9px}
+
+/* Place the music player to the left of the letter on desktop */
+@media(min-width:581px){
+ .letter-music-inner{grid-template-columns:minmax(250px,.99fr) minmax(0,1.53fr)}
+ .music-card{grid-column:1;grid-row:1;margin-left:0;margin-right:-9px}
+ .letter-side{grid-column:2;grid-row:1}
+}
+@media(max-width:580px){
+ .letter-music-inner{flex-direction:column}
+ .music-card{order:0}
+ .letter-side{order:1}
+}
+
 .music-heading{display:flex;align-items:flex-start;gap:13px;margin:0 0 18px}
 .music-icon{width:21px;height:21px;flex:0 0 21px;margin-top:2px;stroke:#f1d8c5;fill:none;stroke-width:1.5}
 .music-heading h2{font:400 17px/1.2 'Playfair Display',Georgia,serif;margin:0 0 4px;color:#fff4e9}
