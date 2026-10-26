@@ -1759,7 +1759,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  }
  function imageTargetForKey(key){
   if(key==="hero")return q(".hero")||q(".hero-photo");
-  if(key.indexOf("gallery:")===0){var index=Number(key.split(":")[1]);var collageImage=q("#colagem-memorias [data-memory-collage-photo=\\""+index+"\\"]");return collageImage||q(".gallery-item",index);}
+  if(key.indexOf("gallery:")===0){var index=Number(key.split(":")[1]);var collageImage=q('#colagem-memorias [data-memory-collage-photo="'+index+'"]');return collageImage||q(".gallery-item",index);}
   return null;
  }
  function findImageKeyForElement(el){
