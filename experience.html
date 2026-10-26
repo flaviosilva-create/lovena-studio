@@ -2153,7 +2153,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
      else{visual.style.backgroundImage="linear-gradient(135deg,#e7d1bf,#f6e9dc)";visual.style.backgroundSize="cover";visual.style.backgroundPosition="center";}
     });
    }
-   var dataBootstrap=clone.createElement("script");
+   var dataBootstrap=document.createElement("script");
    dataBootstrap.id="lovenaExperienceData";
    dataBootstrap.textContent="window.LOVENA_EDIT_DATA="+safeJson(offlineData)+";";
    var scripts=Array.from(clone.querySelectorAll("script"));
@@ -2166,17 +2166,17 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
     if(play){play.removeAttribute("data-action");play.disabled=true;play.setAttribute("aria-label","A reprodução exige conexão com a internet");}
     var musicLink=musicCard.querySelector("#musicOpen");
     if(musicLink)musicLink.textContent="Ouvir quando estiver online ↗";
-    var note=clone.createElement("p");
+    var note=document.createElement("p");
     note.className="lovena-offline-note";
     note.textContent="Sua carta, suas fotos e as animações estão guardadas neste arquivo. A música vinculada precisa de conexão com a internet.";
     var heading=musicCard.querySelector(".music-heading");
     if(heading)heading.insertAdjacentElement("afterend",note);else musicCard.appendChild(note);
    }
-   var offlineStyle=clone.createElement("style");
+   var offlineStyle=document.createElement("style");
    offlineStyle.id="lovena-offline-export-style";
    offlineStyle.textContent=".lovena-offline-note{margin:12px 0 5px;padding:10px 12px;border:1px dashed rgba(197,155,128,.5);border-radius:8px;color:#d9bba7;background:rgba(255,255,255,.035);font:10px/1.6 Arial,sans-serif}.music-card .player-btn:disabled{opacity:.45;cursor:not-allowed}[data-gallery-clone=\"true\"]{pointer-events:none!important}";
    clone.head.appendChild(offlineStyle);
-   var loopScript=clone.createElement("script");
+   var loopScript=document.createElement("script");
    loopScript.id="lovena-offline-gallery-runtime";
    loopScript.textContent="("+offlineGalleryAnimation.toString()+")();";
    clone.body.appendChild(loopScript);
