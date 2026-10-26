@@ -936,6 +936,7 @@ body.editor-mode .memory-collage-backdrop{pointer-events:auto;cursor:pointer}
 .memory-collage-copy small{font:italic 800 clamp(10px,1.1vw,14px)/1.3 Manrope,Arial,sans-serif;letter-spacing:.7px;margin-top:1px}
 .memory-collage-floating-words{position:absolute;z-index:5;inset:0;overflow:hidden;pointer-events:none;color:rgba(255,255,255,.8);font:300 clamp(12px,1.9vw,24px)/1 Manrope,Arial,sans-serif;letter-spacing:1px;text-shadow:0 2px 7px rgba(0,0,0,.6)}
 .memory-collage-floating-words span{position:absolute;white-space:nowrap}
+.memory-collage-floating-words .memory-collage-word-hidden{display:none!important}
 body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:pointer}
 .memory-collage-floating-words span:nth-child(1){left:38%;top:18%}
 .memory-collage-floating-words span:nth-child(2){left:8%;top:25%;font-size:1.35em}
@@ -1083,7 +1084,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
    <figure><img data-memory-collage-photo="5" data-memory-collage-default="assets/lovena-sample-photo-06.jpg" src="assets/lovena-sample-photo-06.jpg" alt="Lembrança do casal"></figure>
    <figure><img data-memory-collage-photo="6" data-memory-collage-default="assets/lovena-sample-photo-07.jpg" src="assets/lovena-sample-photo-07.jpg" alt="Lembrança do casal"></figure>
   </div>
-  <div class="memory-collage-floating-words" aria-hidden="true"><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span></div>
+  <div class="memory-collage-floating-words" aria-hidden="true"><span class="memory-collage-word-hidden"></span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span></div>
  </section>
 
  <section class="history-surprises" id="historia" aria-labelledby="history-title">
@@ -1812,7 +1813,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   var targets=[];
   textFields.forEach(function(def){var target=targetFor(def);if(target&&targets.indexOf(target)===-1)targets.push(target);});
   document.querySelectorAll(".timeline-item,.hero-photo,.pinned-photo,.gallery-photo").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
-  document.querySelectorAll("#colagem-memorias .memory-collage-backdrop,#colagem-memorias .memory-collage-main-photo img,#colagem-memorias .memory-collage-strip img,#colagem-memorias .memory-collage-copy span,#colagem-memorias .memory-collage-copy strong,#colagem-memorias .memory-collage-copy small,#colagem-memorias .memory-collage-floating-words span").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
+  document.querySelectorAll("#colagem-memorias .memory-collage-backdrop,#colagem-memorias .memory-collage-main-photo img,#colagem-memorias .memory-collage-strip img,#colagem-memorias .memory-collage-copy span,#colagem-memorias .memory-collage-copy strong,#colagem-memorias .memory-collage-copy small,#colagem-memorias .memory-collage-floating-words span:not(.memory-collage-word-hidden)").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
   targets.forEach(function(target){target.classList.add("lovena-edit-target");});
  }
  function buildTextFields(){
@@ -2080,7 +2081,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  function applyCollage(){
   var cfg=state.collage||{},section=document.getElementById("colagem-memorias");
   if(!section)return;
-  var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),floatingWords=section.querySelectorAll(".memory-collage-floating-words span"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),strip=section.querySelector(".memory-collage-strip");
+  var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),floatingWords=section.querySelectorAll(".memory-collage-floating-words span:not(.memory-collage-word-hidden)"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),strip=section.querySelector(".memory-collage-strip");
   if(eyebrow)eyebrow.textContent=cfg.eyebrow==null?"Feliz":cfg.eyebrow;
   if(title)title.textContent=cfg.title==null?"ANIVERSÁRIO":cfg.title;
   if(subtitle)subtitle.textContent=cfg.subtitle==null?"MEU AMOR":cfg.subtitle;
