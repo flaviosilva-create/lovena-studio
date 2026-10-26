@@ -992,6 +992,15 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   top:clamp(8%,calc(var(--collage-title-y,35%) - 18%),30%) !important;
  }
 }
+
+/* Desktop: give the side-photo column more width without changing mobile. */
+@media(min-width:851px){
+ .lovena-memory-collage .memory-collage-strip{
+  width:min(calc(var(--collage-strip-width,40%) + 6%),56%);
+  right:1.5%;
+  padding-left:10px;
+ }
+}
 </style>
 
 </head>
