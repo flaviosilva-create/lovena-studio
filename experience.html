@@ -1230,7 +1230,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   <details open>
    <summary>Fotografias e imagens</summary>
    <div class="ed-image-grid" id="lovenaEditorImages"></div>
-   <div class="ed-add-row"><button class="ed-mini-button" type="button" data-editor-action="add-photo">+ Adicionar foto à galeria</button><span class="ed-help">Você pode remover fotos ou trocar qualquer imagem por um arquivo seu.</span></div>
+   <div class="ed-add-row"><button class="ed-mini-button" type="button" data-editor-action="add-photo" id="lovenaAddGalleryPhoto">+ Adicionar foto à galeria</button><span class="ed-help"><strong id="lovenaGalleryPhotoCount">9 de 12 fotos</strong> · limite de 12 fotos em “Nossos momentos”. Você pode remover fotos ou trocar qualquer imagem por um arquivo seu.</span></div>
   </details>
   <details open id="lovenaCollageEditorControls">
    <summary>Colagem de fotos · abaixo de Nossos Momentos</summary>
@@ -1874,6 +1874,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47}},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
+ if(!Array.isArray(data.photos))data.photos=[];
+ data.photos=data.photos.slice(0,12);
+ state.images.gallery=state.images.gallery.slice(0,12);
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
  state.collage=Object.assign({title:"ANIVERSÁRIO",eyebrow:"Feliz",subtitle:"MEU AMOR",floatingWord:"Te amo",background:null,mainPhoto:null,photos:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
@@ -2407,6 +2410,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    {key:"hero",label:"Foto principal da abertura · casal ao pôr do sol",help:"Esta é a primeira foto grande da experiência. Toque em “Trocar foto” para escolher uma imagem da pessoa; ela substituirá a foto atual."},
   ];
   (data.photos||[]).forEach(function(photo,index){rows.push({key:"gallery:"+index,label:"Foto da galeria "+(index+1)+" · "+(photo[0]||"Sem legenda"),help:"Troque a imagem deste quadro ou mantenha a foto original."});});
+  var count=document.getElementById("lovenaGalleryPhotoCount");
+  if(count)count.textContent=(data.photos||[]).length+" de 12 fotos";
+  var add=document.getElementById("lovenaAddGalleryPhoto");
+  if(add){add.disabled=(data.photos||[]).length>=12;add.textContent=(data.photos||[]).length>=12?"Limite de 12 fotos atingido":"＋ Adicionar foto à galeria";}
   imagesHost.innerHTML="";
   rows.forEach(function(item){
    var row=document.createElement("div");row.className="ed-image-row";row.dataset.imageKey=item.key;
