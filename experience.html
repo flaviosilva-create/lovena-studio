@@ -1759,7 +1759,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  }
  function imageTargetForKey(key){
   if(key==="hero")return q(".hero")||q(".hero-photo");
-  if(key.indexOf("gallery:")===0)return q(".gallery-item",Number(key.split(":")[1]));
+  if(key.indexOf("gallery:")===0){var index=Number(key.split(":")[1]);var collageImage=q("#colagem-memorias [data-memory-collage-photo=\\""+index+"\\"]");return collageImage||q(".gallery-item",index);}
   return null;
  }
  function findImageKeyForElement(el){
@@ -1808,6 +1808,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   var targets=[];
   textFields.forEach(function(def){var target=targetFor(def);if(target&&targets.indexOf(target)===-1)targets.push(target);});
   document.querySelectorAll(".timeline-item,.hero-photo,.pinned-photo,.gallery-photo").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
+  document.querySelectorAll("#colagem-memorias .memory-collage-main-photo img,#colagem-memorias .memory-collage-strip img,#colagem-memorias .memory-collage-copy span,#colagem-memorias .memory-collage-copy strong,#colagem-memorias .memory-collage-copy small").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
   targets.forEach(function(target){target.classList.add("lovena-edit-target");});
  }
  function buildTextFields(){
@@ -1914,9 +1915,30 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   if(panel.hidden){openEditor();requestAnimationFrame(callback);}
   else callback();
  }
+ function focusCollageControl(id,label,target){
+  focusSelectionWhenReady(function(){
+   var input=document.getElementById(id),details=document.getElementById("lovenaCollageEditorControls");
+   if(details)details.open=true;
+   if(input){var row=input.closest(".ed-field");if(row){row.classList.add("is-editor-active");row.scrollIntoView({behavior:"smooth",block:"center"});}input.focus({preventScroll:true});}
+   setActivePreviewElement(target||null);
+   updateEditorGuide("Editando: "+label,"Você clicou diretamente neste elemento da colagem. Altere o campo destacado para ver a mudança na montagem.");
+  });
+ }
+ function findCollageImageKey(el){
+  var image=el&&el.closest?el.closest("[data-memory-collage-photo]"):null;
+  if(!image)return null;
+  return "gallery:"+Number(image.getAttribute("data-memory-collage-photo")||0);
+ }
  document.addEventListener("click",function(event){
   if(isPreviewing)return;
   if(!panel||panel.contains(event.target)||event.target.closest("#lovenaEditorTrigger"))return;
+  var collageText=event.target.closest&&event.target.closest(".memory-collage-copy span,.memory-collage-copy strong,.memory-collage-copy small");
+  if(collageText){
+   var collageMap=collageText.matches(".memory-collage-copy span")?["lovenaCollageEyebrow","palavra acima do título"]:collageText.matches(".memory-collage-copy strong")?["lovenaCollageTitle","título da colagem"]:["lovenaCollageSubtitle","texto abaixo do título"];
+   event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusCollageControl(collageMap[0],collageMap[1],collageText);return;
+  }
+  var collageImageKey=findCollageImageKey(event.target);
+  if(collageImageKey){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusSelectionWhenReady(function(){focusEditorImage(collageImageKey);});return;}
   var def=findFieldForElement(event.target);
   if(def){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusSelectionWhenReady(function(){focusEditorField(def);});return;}
   var milestone=event.target.closest&&event.target.closest(".timeline-item");
