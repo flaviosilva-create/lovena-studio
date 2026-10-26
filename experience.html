@@ -760,7 +760,7 @@ body.editor-mode .experience{padding-bottom:28px}
     }
     try{
      api.createController(mount,{url:getMusicUrl(song),width:"100%",height:String(embed.height)},function(controller){
-      if(!mount.isConnected||currentMusicEmbed!==embedKey){if(controller&&controller.destroy)controller.destroy();return;}
+      if(!container.isConnected||currentMusicEmbed!==embedKey){if(controller&&controller.destroy)controller.destroy();return;}
       spotifyEmbedController=controller;spotifyEmbedControllerKey=embedKey;
       if(requestedAutoplay){try{controller.play();}catch(error){}}
      });
