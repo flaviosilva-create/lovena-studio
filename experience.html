@@ -918,6 +918,7 @@ body.editor-mode .experience{padding-bottom:28px}
 /* Portrait scrapbook collage: faded photographic background, cut-out foreground and vertical memory strip */
 .lovena-memory-collage{position:relative;isolation:isolate;height:min(112vh,1120px);min-height:760px;overflow:hidden;background:#030304;color:#fff;padding:0;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.88fr);gap:clamp(12px,1.5vw,22px)}
 .memory-collage-backdrop{position:absolute;z-index:-1;inset:0 40% 0 0;background-image:linear-gradient(90deg,rgba(28,27,21,.28),rgba(8,8,8,.32)),linear-gradient(0deg,rgba(0,0,0,.64),rgba(0,0,0,.04) 55%,rgba(0,0,0,.12)),url("assets/lovena-sample-hero.jpg");background-size:cover;background-position:center;filter:grayscale(.72) sepia(.32) brightness(.68);opacity:.97}
+body.editor-mode .memory-collage-backdrop{pointer-events:auto;cursor:pointer}
 .lovena-memory-collage:before{content:"";position:absolute;z-index:0;pointer-events:none;inset:0 40% 0 0;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,247,226,.025) 4px 5px),linear-gradient(90deg,transparent 78%,rgba(0,0,0,.72))}
 .lovena-memory-main-photo{position:absolute;z-index:2;left:2%;bottom:-2%;width:min(56%,620px);height:55%;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55));transform:rotate(-1.2deg)}
 .memory-collage-main-photo{position:absolute;z-index:2;left:2%;bottom:-2%;width:min(56%,620px);height:55%;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55));transform:rotate(-1.2deg)}
@@ -1141,7 +1142,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
     <div class="ed-field"><label for="lovenaCollageEyebrow">Palavra acima do título</label><input id="lovenaCollageEyebrow" type="text" value="Feliz" maxlength="40"></div>
     <div class="ed-field"><label for="lovenaCollageSubtitle">Texto abaixo do título</label><input id="lovenaCollageSubtitle" type="text" value="MEU AMOR" maxlength="80"></div>
     <div class="ed-field"><label for="lovenaCollageFloatingWord">Texto repetido na montagem</label><input id="lovenaCollageFloatingWord" type="text" value="Te amo" maxlength="80"><small class="ed-help">Altere este texto uma única vez para atualizar todas as palavras espalhadas pela colagem.</small></div>
-    <div class="ed-field"><label for="lovenaCollageBg">Foto de fundo da montagem</label><input id="lovenaCollageBg" type="file" accept="image/*"><small class="ed-help">Escolha uma imagem para o fundo vintage da metade esquerda.</small><button type="button" class="ed-mini-button" id="lovenaCollageBgReset">Restaurar fundo original</button></div>
+    <div class="ed-field"><label for="lovenaCollageBg">Foto de fundo da montagem</label><input id="lovenaCollageBg" type="file" accept="image/*"><small class="ed-help">Clique na foto de fundo da montagem ou escolha um arquivo aqui para substituí-la. A alteração será aplicada na hora.</small><button type="button" class="ed-mini-button" id="lovenaCollageBgReset">Restaurar fundo original</button></div>
     <div class="ed-field"><label for="lovenaCollageMainWidth">Tamanho da foto principal <output id="lovenaCollageMainWidthValue">56%</output></label><input id="lovenaCollageMainWidth" type="range" min="35" max="68" value="56"></div>
     <div class="ed-field"><label for="lovenaCollageMainHeight">Altura da foto principal <output id="lovenaCollageMainHeightValue">55%</output></label><input id="lovenaCollageMainHeight" type="range" min="30" max="75" value="55"></div>
     <div class="ed-field"><label for="lovenaCollageMainX">Posição horizontal da foto <output id="lovenaCollageMainXValue">2%</output></label><input id="lovenaCollageMainX" type="range" min="0" max="20" value="2"></div>
@@ -1811,7 +1812,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   var targets=[];
   textFields.forEach(function(def){var target=targetFor(def);if(target&&targets.indexOf(target)===-1)targets.push(target);});
   document.querySelectorAll(".timeline-item,.hero-photo,.pinned-photo,.gallery-photo").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
-  document.querySelectorAll("#colagem-memorias .memory-collage-main-photo img,#colagem-memorias .memory-collage-strip img,#colagem-memorias .memory-collage-copy span,#colagem-memorias .memory-collage-copy strong,#colagem-memorias .memory-collage-copy small,#colagem-memorias .memory-collage-floating-words span").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
+  document.querySelectorAll("#colagem-memorias .memory-collage-backdrop,#colagem-memorias .memory-collage-main-photo img,#colagem-memorias .memory-collage-strip img,#colagem-memorias .memory-collage-copy span,#colagem-memorias .memory-collage-copy strong,#colagem-memorias .memory-collage-copy small,#colagem-memorias .memory-collage-floating-words span").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
   targets.forEach(function(target){target.classList.add("lovena-edit-target");});
  }
  function buildTextFields(){
@@ -1939,6 +1940,14 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  document.addEventListener("click",function(event){
   if(isPreviewing)return;
   if(!panel||panel.contains(event.target)||event.target.closest("#lovenaEditorTrigger"))return;
+  var collageSection=document.getElementById("colagem-memorias");
+  var collageBackground=event.target.closest&&event.target.closest("#colagem-memorias .memory-collage-backdrop");
+  if(!collageBackground&&collageSection&&event.target===collageSection){
+   var backgroundRect=collageSection.querySelector(".memory-collage-backdrop");
+   var bounds=backgroundRect&&backgroundRect.getBoundingClientRect();
+   if(bounds&&event.clientX>=bounds.left&&event.clientX<=bounds.right&&event.clientY>=bounds.top&&event.clientY<=bounds.bottom)collageBackground=backgroundRect;
+  }
+  if(collageBackground){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusCollageControl("lovenaCollageBg","foto de fundo da montagem",collageBackground);return;}
   var floatingWord=event.target.closest&&event.target.closest(".memory-collage-floating-words span");
   if(floatingWord){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusCollageControl("lovenaCollageFloatingWord","texto repetido na montagem",floatingWord);return;}
   var collageText=event.target.closest&&event.target.closest(".memory-collage-copy span,.memory-collage-copy strong,.memory-collage-copy small");
