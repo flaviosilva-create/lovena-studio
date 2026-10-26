@@ -993,12 +993,21 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
  }
 }
 
-/* Desktop: give the side-photo column more width without changing mobile. */
+/* Desktop: use a broader two-column grid so side photos read as nearly square frames. */
 @media(min-width:851px){
  .lovena-memory-collage .memory-collage-strip{
-  width:min(calc(var(--collage-strip-width,40%) + 6%),56%);
+  width:min(calc(var(--collage-strip-width,40%) + 10%),clamp(600px,72vh,780px));
   right:1.5%;
-  padding-left:10px;
+  top:0;
+  height:116%;
+  padding:8px 8px 12px 10px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:repeat(3,minmax(0,1fr));
+  gap:10px;
+ }
+ .lovena-memory-collage .memory-collage-strip figure{
+  aspect-ratio:1/1;
+  min-height:0;
  }
 }
 </style>
