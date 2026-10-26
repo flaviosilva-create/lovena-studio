@@ -911,6 +911,69 @@ body.editor-mode .experience{padding-bottom:28px}
 }
 </style>
 
+
+<style id="lovena-photo-montage-style">
+/* Opening collage inspired by the supplied scrapbook reference */
+.hero{background:#030304}
+.hero-photo{right:auto;width:59%;background-position:58% center;filter:saturate(.76) sepia(.18) contrast(.98)}
+.hero-shade{right:auto;width:59%;background:linear-gradient(90deg,rgba(5,5,6,.08) 0%,rgba(5,5,6,.12) 56%,rgba(5,5,6,.55) 100%),linear-gradient(0deg,rgba(0,0,0,.34),transparent 46%,rgba(0,0,0,.06))}
+.experience-nav{display:none!important}
+.scroll-cue{display:none!important}
+.lovena-photo-montage{position:absolute;z-index:1;inset:0;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.82fr);gap:clamp(10px,1.4vw,18px);padding:0 clamp(12px,2vw,26px) 0 0;pointer-events:none;overflow:hidden}
+.lovena-montage-left{position:relative;min-width:0;min-height:0}
+.lovena-montage-right{position:relative;z-index:2;display:grid;grid-auto-rows:clamp(180px,25vh,280px);align-content:start;gap:clamp(9px,1.1vh,14px);height:100%;min-width:0;overflow:hidden;padding:4px 0 0 15px}
+.lovena-montage-frame{position:relative;display:block;margin:0;width:100%;height:100%;min-height:0;overflow:visible}
+.lovena-montage-frame:before{content:"";position:absolute;z-index:2;left:-12px;top:10px;writing-mode:vertical-rl;transform:rotate(180deg);font:700 6px/1 Manrope,Arial,sans-serif;letter-spacing:1.05px;color:#bb8150;white-space:nowrap}
+.lovena-montage-frame:nth-child(odd):before{content:"MEMORY PORTRAIT"}
+.lovena-montage-frame:nth-child(even):before{content:"LOVE · MEMORY"}
+.lovena-montage-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:clamp(12px,1.8vw,22px);border:1px solid rgba(244,226,207,.35);box-shadow:0 7px 22px rgba(0,0,0,.3);filter:brightness(.85) saturate(.86)}
+.lovena-montage-sticker{position:absolute;z-index:3;left:-3%;bottom:-2%;width:min(98%,58vh);height:58vh;min-height:360px;max-height:76vh;transform:rotate(-1.5deg);filter:drop-shadow(0 10px 14px rgba(0,0,0,.44))}
+.lovena-montage-sticker:before{content:"";position:absolute;inset:0;background:#fff;clip-path:polygon(21% 0%,72% 2%,88% 9%,94% 20%,92% 34%,100% 46%,94% 60%,97% 76%,88% 91%,72% 98%,52% 95%,39% 100%,23% 94%,11% 84%,8% 69%,1% 57%,5% 41%,0% 27%,8% 11%)}
+.lovena-montage-sticker img{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);display:block;object-fit:cover;object-position:center 27%;clip-path:polygon(21% 0%,72% 2%,88% 9%,94% 20%,92% 34%,100% 46%,94% 60%,97% 76%,88% 91%,72% 98%,52% 95%,39% 100%,23% 94%,11% 84%,8% 69%,1% 57%,5% 41%,0% 27%,8% 11%)}
+.lovena-montage-words{position:absolute;z-index:4;inset:0;overflow:hidden;pointer-events:none;color:rgba(255,255,255,.8);font:300 clamp(11px,1.8vw,23px)/1 Manrope,Arial,sans-serif;letter-spacing:1.1px;text-shadow:0 2px 7px rgba(0,0,0,.35)}
+.montage-word{position:absolute;white-space:nowrap}
+.montage-word-1{left:39%;top:17%;font-size:1.03em}.montage-word-2{left:10%;top:22%;font-size:1.42em}
+.montage-word-3{left:43%;top:24%;font-size:.93em}.montage-word-4{left:28%;top:33%;font-size:.83em}
+.montage-word-5{left:6%;top:42%;font-size:.73em}.montage-word-6{left:62%;top:37%;font-size:1.17em}
+.montage-word-7{left:80%;top:58%;font-size:1.1em}.montage-word-8{left:25%;top:68%;font-size:.66em}
+.montage-word-9{left:5%;top:82%;font-size:1.18em}.montage-word-10{left:61%;top:78%;font-size:1.27em}
+.montage-word-11{left:70%;top:9%;font-size:.73em}.montage-word-12{left:37%;top:53%;font-size:.9em}
+.hero-copy{z-index:5;top:31%;left:2.5%;width:54%;max-width:none;text-align:center;color:#fff8f0}
+.hero-eyebrow{font:italic clamp(27px,4.3vw,48px)/.95 Caveat,cursive;letter-spacing:0;text-transform:none;color:#f7eee6;margin:0 0 4px;transform:rotate(-4deg)}
+.hero h1{font:700 clamp(27px,4.7vw,58px)/.98 'Playfair Display',Georgia,serif;letter-spacing:-1.5px;text-transform:uppercase;max-width:100%;margin:0 auto 12px;text-shadow:0 3px 12px rgba(0,0,0,.38);text-wrap:balance}
+.hero-intro{font:italic 700 clamp(10px,1.2vw,15px)/1.3 Manrope,Arial,sans-serif;letter-spacing:.5px;color:#fff6ed;margin:0 auto;max-width:100%;text-shadow:0 2px 8px #0008}
+.hero-signature{display:none!important}
+@media(max-width:850px){
+ .hero{min-height:560px}
+ .lovena-montage-right{grid-auto-rows:clamp(140px,24vh,220px);padding-left:13px;gap:10px}
+ .lovena-montage-sticker{width:min(98%,50vh);height:55vh;min-height:330px;bottom:-1%;left:-4%}
+ .hero-copy{top:33%;left:0;width:56%;padding:0 2px}
+ .hero h1{font-size:clamp(27px,5.4vw,43px);letter-spacing:-1px}
+}
+@media(max-width:580px){
+ .hero{height:100svh;min-height:600px;max-height:none}
+ .hero-photo,.hero-shade{width:59%}
+ .lovena-photo-montage{grid-template-columns:minmax(0,1.12fr) minmax(0,.82fr);gap:7px;padding-right:7px}
+ .lovena-montage-right{grid-auto-rows:30vw;gap:8px;padding:3px 0 0 12px}
+ .lovena-montage-frame img{border-radius:12px}
+ .lovena-montage-frame:before{left:-10px;top:7px;font-size:5px;letter-spacing:.7px}
+ .lovena-montage-sticker{width:calc(100% + 1px);height:56vh;min-height:0;max-height:68vh;left:-5%;bottom:-1%;transform:rotate(-1deg)}
+ .lovena-montage-sticker img{inset:6px;width:calc(100% - 12px);height:calc(100% - 12px)}
+ .hero-copy{top:32%;left:0;width:56%;padding:0 1px}
+ .hero-eyebrow{font-size:clamp(25px,7.5vw,34px);margin-bottom:3px}
+ .hero h1{font-size:clamp(23px,6.65vw,35px);letter-spacing:-.8px;margin-bottom:10px}
+ .hero-intro{font-size:clamp(9px,2.65vw,12px);letter-spacing:.1px}
+ .lovena-montage-words{font-size:clamp(9px,2.5vw,14px);letter-spacing:.6px}
+ .montage-word-1{left:39%;top:17%}.montage-word-2{left:9%;top:24%;font-size:1.3em}
+ .montage-word-3{left:42%;top:27%}.montage-word-4{left:28%;top:34%}
+ .montage-word-5{left:7%;top:44%}.montage-word-6{left:61%;top:38%;font-size:1.1em}
+ .montage-word-7{left:79%;top:59%}.montage-word-8{left:24%;top:69%}
+ .montage-word-9{left:5%;top:82%}.montage-word-10{left:60%;top:78%}
+ .montage-word-11{left:70%;top:10%}.montage-word-12{left:35%;top:52%}
+}
+@media(prefers-reduced-motion:reduce){.lovena-montage-frame img{transition:none}}
+</style>
+
 </head>
 <body>
 <main class="experience" id="experiencia">
@@ -926,10 +989,33 @@ body.editor-mode .experience{padding-bottom:28px}
    </div>
    <button class="nav-love" type="button" data-action="share-story"><span>Uma experiência para você</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11S3.2 13.9 3.2 8.8a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"/></svg></button>
   </nav>
+  <div class="lovena-photo-montage" aria-label="Colagem romântica de fotografias">
+   <div class="lovena-montage-left" aria-hidden="true">
+    <div class="lovena-montage-sticker">
+     <img data-collage-photo="0" data-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="">
+    </div>
+   </div>
+   <div class="lovena-montage-right" aria-label="Galeria vertical de fotos do casal">
+    <figure class="lovena-montage-frame"><img data-collage-photo="1" data-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Momento romântico à beira-mar"></figure>
+    <figure class="lovena-montage-frame"><img data-collage-photo="2" data-collage-default="assets/lovena-sample-photo-03.jpg" src="assets/lovena-sample-photo-03.jpg" alt="Lembrança de um dia especial"></figure>
+    <figure class="lovena-montage-frame"><img data-collage-photo="3" data-collage-default="assets/lovena-sample-photo-04.jpg" src="assets/lovena-sample-photo-04.jpg" alt="Um momento compartilhado pelo casal"></figure>
+    <figure class="lovena-montage-frame"><img data-collage-photo="4" data-collage-default="assets/lovena-sample-photo-05.jpg" src="assets/lovena-sample-photo-05.jpg" alt="Uma lembrança feliz juntos"></figure>
+    <figure class="lovena-montage-frame"><img data-collage-photo="5" data-collage-default="assets/lovena-sample-photo-06.jpg" src="assets/lovena-sample-photo-06.jpg" alt="Um instante especial a dois"></figure>
+    <figure class="lovena-montage-frame"><img data-collage-photo="6" data-collage-default="assets/lovena-sample-photo-07.jpg" src="assets/lovena-sample-photo-07.jpg" alt="Mais uma memória do casal"></figure>
+   </div>
+   <div class="lovena-montage-words" aria-hidden="true">
+    <span class="montage-word montage-word-1">Te amo</span><span class="montage-word montage-word-2">Te amo</span>
+    <span class="montage-word montage-word-3">Te amo</span><span class="montage-word montage-word-4">Te amo</span>
+    <span class="montage-word montage-word-5">Te amo</span><span class="montage-word montage-word-6">Te amo</span>
+    <span class="montage-word montage-word-7">Te amo</span><span class="montage-word montage-word-8">Te amo</span>
+    <span class="montage-word montage-word-9">Te amo</span><span class="montage-word montage-word-10">Te amo</span>
+    <span class="montage-word montage-word-11">Te amo</span><span class="montage-word montage-word-12">Te amo</span>
+   </div>
+  </div>
   <div class="hero-copy">
-   <p class="hero-eyebrow">PARA O AMOR DA MINHA VIDA</p>
-   <h1 id="hero-title">Você torna<br>tudo mais bonito</h1>
-   <p class="hero-intro">Essa é uma pequena parte de tudo o que eu sinto, mas já é um grande pedaço do que eu quero compartilhar com você. Bem-vinda a essa experiência feita especialmente para você.</p>
+   <p class="hero-eyebrow">Feliz</p>
+   <h1 id="hero-title">ANIVERSÁRIO</h1>
+   <p class="hero-intro">MEU AMOR</p>
    <div class="hero-signature"><svg class="hero-signature-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21S2.5 15.5 2.5 8.7C2.5 4 8.7 2.2 12 7c3.3-4.8 9.5-3 9.5 1.7C21.5 15.5 12 21 12 21Z"/></svg><div><small>Com todo o meu amor,</small><strong>Eu</strong></div></div>
   </div>
   <div class="scroll-cue"><div class="scroll-line"><button type="button" data-scroll="#carta" aria-label="Rolar para descobrir"></button></div><span>ROLE<br>PARA<br>DESCOBRIR</span></div>
@@ -1929,6 +2015,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   });
   row.style.gridTemplateColumns=photos.length>6?"repeat("+photos.length+",112px)":"";
   row.style.overflowX=photos.length>6?"auto":"";
+  document.querySelectorAll("img[data-collage-photo]").forEach(function(image){var photoIndex=Number(image.getAttribute("data-collage-photo"));var source=state.images.gallery[photoIndex];var fallback=image.getAttribute("data-collage-default");image.src=source||fallback||image.src;});
  }
  function makeTimelineIcon(){return '<span class="timeline-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11S3.2 13.9 3.2 8.8a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"/></svg></span>';}
  function syncTimeline(){
@@ -2143,6 +2230,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    if(heroSource){
     [".hero-photo",".pinned-photo-photo"].forEach(function(selector){var el=clone.querySelector(selector);if(el)el.style.backgroundImage='url("'+heroSource+'")';});
    }
+   clone.querySelectorAll("img[data-collage-photo]").forEach(function(img){var photoIndex=Number(img.getAttribute("data-collage-photo"));var source=(offlineData.images.gallery||[])[photoIndex];if(source)img.setAttribute("src",source);img.removeAttribute("srcset");});
    var gallery=clone.querySelector("#galleryRow");
    if(gallery){
     var galleryItems=Array.from(gallery.children).filter(function(el){return el.dataset.galleryClone!=="true";});
