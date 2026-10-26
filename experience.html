@@ -601,7 +601,7 @@ body.editor-mode .experience{padding-bottom:28px}
   if(parsed&&detectMusicPlatform(parsed.href)===platform)return parsed.href;
   return musicSearchUrl(song,platform);
  }
- function getMusicEmbed(song){
+ function getMusicEmbed(song,autoplay){
   song=song||songs[songIndex]||{};
   var platform=getMusicPlatform(song);
   var u=parseMusicUrl(song.url);
@@ -614,7 +614,7 @@ body.editor-mode .experience{padding-bottom:28px}
    var kind=pathParts[kindIndex].toLowerCase();
    var id=pathParts[kindIndex+1].split("?")[0];
    if(!/^[A-Za-z0-9]+$/.test(id))return null;
-   return {url:"https://open.spotify.com/embed/"+kind+"/"+id+"?utm_source=generator&theme=0",platform:platform,height:352};
+   return {url:"https://open.spotify.com/embed/"+kind+"/"+id+"?utm_source=generator&theme=0",platform:platform,height:352,autoplay:!!autoplay};
   }
   if(platform==="apple"){
    if(!/(^|\.)apple\.com$/i.test(u.hostname))return null;
@@ -622,12 +622,17 @@ body.editor-mode .experience{padding-bottom:28px}
    u.hostname="embed.music.apple.com";
    u.searchParams.delete("itscg");
    u.searchParams.delete("itsct");
-   return {url:u.href,platform:platform,height:(pathParts.indexOf("song")>=0)?175:450};
+   if(autoplay)u.searchParams.set("autoplay","1");
+   return {url:u.href,platform:platform,height:(pathParts.indexOf("song")>=0)?175:450,autoplay:!!autoplay};
   }
   var host=u.hostname.toLowerCase();
   if(host==="youtu.be"){
    var shortId=pathParts[0];
-   if(shortId&&/^[A-Za-z0-9_-]{11}$/.test(shortId))return {url:"https://www.youtube.com/embed/"+shortId+"?rel=0",platform:platform,height:220};
+   if(shortId&&/^[A-Za-z0-9_-]{11}$/.test(shortId)){
+    var shortUrl="https://www.youtube.com/embed/"+shortId+"?rel=0";
+    if(autoplay)shortUrl+="&autoplay=1&playsinline=1";
+    return {url:shortUrl,platform:platform,height:220,autoplay:!!autoplay};
+   }
   }
   var videoId=u.searchParams.get("v")||"";
   var embedMatch=u.pathname.match(/\/(?:embed|shorts|live)\/([A-Za-z0-9_-]{11})/);
@@ -635,13 +640,48 @@ body.editor-mode .experience{padding-bottom:28px}
   if(videoId&&/^[A-Za-z0-9_-]{11}$/.test(videoId)){
    var videoUrl="https://www.youtube.com/embed/"+videoId+"?rel=0";
    var listId=u.searchParams.get("list");if(listId)videoUrl+="&list="+encodeURIComponent(listId);
-   return {url:videoUrl,platform:platform,height:220};
+   if(autoplay)videoUrl+="&autoplay=1&playsinline=1";
+   return {url:videoUrl,platform:platform,height:220,autoplay:!!autoplay};
   }
   var playlistId=u.searchParams.get("list");
-  if(playlistId)return {url:"https://www.youtube.com/embed/videoseries?list="+encodeURIComponent(playlistId),platform:platform,height:220};
+  if(playlistId){
+   var playlistUrl="https://www.youtube.com/embed/videoseries?list="+encodeURIComponent(playlistId);
+   if(autoplay)playlistUrl+="&autoplay=1&playsinline=1";
+   return {url:playlistUrl,platform:platform,height:220,autoplay:!!autoplay};
+  }
   return null;
  }
  var currentMusicEmbed="";
+ var inlinePlaybackActivated=false;
+ var spotifyIframeAPI=null;
+ var spotifyApiLoading=false;
+ var spotifyApiFailed=false;
+ var spotifyApiWaiters=[];
+ var spotifyEmbedController=null;
+ var spotifyEmbedControllerKey="";
+ function ensureSpotifyIframeAPI(callback){
+  if(spotifyIframeAPI){callback(spotifyIframeAPI);return;}
+  if(spotifyApiFailed){callback(null);return;}
+  spotifyApiWaiters.push(callback);
+  if(spotifyApiLoading)return;
+  spotifyApiLoading=true;
+  var previousReady=window.onSpotifyIframeApiReady;
+  window.onSpotifyIframeApiReady=function(api){
+   spotifyIframeAPI=api||null;spotifyApiLoading=false;spotifyApiFailed=!api;
+   var waiters=spotifyApiWaiters.slice();spotifyApiWaiters.length=0;
+   waiters.forEach(function(done){try{done(spotifyIframeAPI);}catch(error){}});
+   if(typeof previousReady==="function"){try{previousReady(api);}catch(error){}}
+  };
+  var apiScript=document.createElement("script");
+  apiScript.src="https://open.spotify.com/embed/iframe-api/v1";
+  apiScript.async=true;
+  apiScript.onerror=function(){
+   spotifyApiLoading=false;spotifyApiFailed=true;
+   var waiters=spotifyApiWaiters.slice();spotifyApiWaiters.length=0;
+   waiters.forEach(function(done){try{done(null);}catch(error){}});
+  };
+  document.head.appendChild(apiScript);
+ }
  function renderMusicPlayer(){
   var song=songs[songIndex]||{};
   var card=document.querySelector(".music-card");
@@ -650,31 +690,36 @@ body.editor-mode .experience{padding-bottom:28px}
   var playButton=document.querySelector('[data-action="song-play"]');
   if(!card||!container||!link)return;
   var platform=getMusicPlatform(song);
-  var mode=String(song.playbackMode||"redirect").toLowerCase()==="embed"?"embed":"redirect";
+  var mode=(inlinePlaybackActivated||String(song.playbackMode||"redirect").toLowerCase()==="embed")?"embed":"redirect";
+  var shouldAutoplay=inlinePlaybackActivated;
   var defaultLabels=["Ouvir no YouTube Music ↗","Abrir no YouTube Music ↗","Ouvir no Spotify ↗","Abrir no Spotify ↗","Ouvir no Apple Music ↗","Abrir no Apple Music ↗"];
   var customLabel=String(editData.musicLinkLabel||"").trim();
   link.href=getMusicUrl(song);
   link.target="_blank";
   link.rel="noopener noreferrer";
-  link.textContent=customLabel&&defaultLabels.indexOf(customLabel)<0?customLabel:((mode==="embed"?"Abrir no ":"Ouvir no ")+musicPlatformLabel(platform)+" ↗");
-  if(playButton)playButton.setAttribute("aria-label",mode==="embed"?"Abrir música na plataforma escolhida":"Ouvir no "+musicPlatformLabel(platform));
+  link.textContent=customLabel&&defaultLabels.indexOf(customLabel)<0?customLabel:("Ouvir no "+musicPlatformLabel(platform)+" ↗");
+  if(playButton)playButton.setAttribute("aria-label","Reproduzir "+(song.title||"música")+" dentro desta página");
   if(mode!=="embed"){
    card.classList.remove("is-embedded");
    container.hidden=true;
    if(container.firstChild)container.textContent="";
    currentMusicEmbed="";
+   if(spotifyEmbedController&&typeof spotifyEmbedController.destroy==="function"){try{spotifyEmbedController.destroy();}catch(error){}}
+   spotifyEmbedController=null;spotifyEmbedControllerKey="";
    return;
   }
-  var embed=getMusicEmbed(song);
+  var embed=getMusicEmbed(song,shouldAutoplay);
   container.hidden=false;
   if(!embed){
    card.classList.remove("is-embedded");
    var unsupportedKey="unsupported:"+String(song.url||"");
    if(currentMusicEmbed!==unsupportedKey){
+    if(spotifyEmbedController&&typeof spotifyEmbedController.destroy==="function"){try{spotifyEmbedController.destroy();}catch(error){}}
+    spotifyEmbedController=null;spotifyEmbedControllerKey="";
     container.textContent="";
     var note=document.createElement("p");
     note.className="music-embed-note";
-    note.textContent="Não conseguimos incorporar este link. Use um link direto de música, álbum ou playlist da plataforma selecionada. Você também pode abrir a música pelo link abaixo.";
+    note.textContent="Este link não permite reprodução incorporada. Cole um link direto de uma faixa, vídeo, álbum ou playlist compatível. O botão Play não vai redirecionar; o link abaixo continua disponível para abrir a plataforma escolhida.";
     container.appendChild(note);
     currentMusicEmbed=unsupportedKey;
    }
@@ -682,12 +727,54 @@ body.editor-mode .experience{padding-bottom:28px}
   }
   card.classList.add("is-embedded");
   var title="Player de "+musicPlatformLabel(platform)+": "+(song.title||"trilha sonora");
-  var existingFrame=container.querySelector("iframe");
-  if(currentMusicEmbed===embed.url&&existingFrame){
-   existingFrame.title=title;
+  var embedKey=embed.url;
+  if(currentMusicEmbed===embedKey){
+   var existingFrame=container.querySelector("iframe");
+   if(existingFrame){
+    existingFrame.title=title;
+    if(shouldAutoplay&&platform==="spotify"&&spotifyEmbedController&&spotifyEmbedControllerKey===embedKey){
+     try{spotifyEmbedController.play();}catch(error){}
+    }
+    return;
+   }
+   var existingMount=container.querySelector(".spotify-embed-mount");
+   if(existingMount&&platform==="spotify")return;
+  }
+  if(spotifyEmbedController&&typeof spotifyEmbedController.destroy==="function"){try{spotifyEmbedController.destroy();}catch(error){}}
+  spotifyEmbedController=null;spotifyEmbedControllerKey="";
+  container.textContent="";
+  currentMusicEmbed=embedKey;
+  if(platform==="spotify"){
+   var mount=document.createElement("div");mount.className="spotify-embed-mount";mount.style.width="100%";
+   container.appendChild(mount);
+   var requestedAutoplay=shouldAutoplay;
+   ensureSpotifyIframeAPI(function(api){
+    if(!mount.isConnected||currentMusicEmbed!==embedKey)return;
+    if(!api){
+     var fallback=document.createElement("iframe");
+     fallback.className="music-embed-frame music-embed-spotify";fallback.src=embed.url;fallback.title=title;
+     fallback.loading="lazy";fallback.referrerPolicy="strict-origin-when-cross-origin";
+     fallback.allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+     fallback.allowFullscreen=true;fallback.style.height=embed.height+"px";
+     mount.replaceWith(fallback);return;
+    }
+    try{
+     api.createController(mount,{url:getMusicUrl(song),width:"100%",height:String(embed.height)},function(controller){
+      if(!mount.isConnected||currentMusicEmbed!==embedKey){if(controller&&controller.destroy)controller.destroy();return;}
+      spotifyEmbedController=controller;spotifyEmbedControllerKey=embedKey;
+      if(requestedAutoplay){try{controller.play();}catch(error){}}
+     });
+    }catch(error){
+     var fallback=document.createElement("iframe");
+     fallback.className="music-embed-frame music-embed-spotify";fallback.src=embed.url;fallback.title=title;
+     fallback.loading="lazy";fallback.referrerPolicy="strict-origin-when-cross-origin";
+     fallback.allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+     fallback.allowFullscreen=true;fallback.style.height=embed.height+"px";
+     mount.replaceWith(fallback);
+    }
+   });
    return;
   }
-  container.textContent="";
   var frame=document.createElement("iframe");
   frame.className="music-embed-frame music-embed-"+platform;
   frame.src=embed.url;
@@ -698,7 +785,6 @@ body.editor-mode .experience{padding-bottom:28px}
   frame.allowFullscreen=true;
   frame.style.height=embed.height+"px";
   container.appendChild(frame);
-  currentMusicEmbed=embed.url;
  }
  function setSong(next){
   if(!songs.length)return;
@@ -761,13 +847,13 @@ body.editor-mode .experience{padding-bottom:28px}
   }
   if(name==="song-play"){
    var activeSong=songs[songIndex]||{};
-   if(String(activeSong.playbackMode||"redirect").toLowerCase()==="embed"&&getMusicEmbed(activeSong)){
-    var embedded=document.getElementById("musicEmbedContainer");if(embedded)embedded.scrollIntoView({behavior:"smooth",block:"nearest"});
-    showToast("Use os controles do player incorporado para ouvir a música.");
-    return;
-   }
-   if(String(activeSong.playbackMode||"redirect").toLowerCase()==="embed")showToast("Este link não pode ser incorporado; abrindo a plataforma escolhida.");
-   window.open(getMusicUrl(activeSong),"_blank","noopener,noreferrer");return;
+   inlinePlaybackActivated=true;
+   renderMusicPlayer();
+   var embedded=document.getElementById("musicEmbedContainer");
+   if(embedded){embedded.hidden=false;embedded.scrollIntoView({behavior:"smooth",block:"nearest"});}
+   if(getMusicEmbed(activeSong,true))showToast("Reprodução dentro desta página. Se necessário, use os controles do player incorporado.");
+   else showToast("Este link não pode ser reproduzido aqui. Cole um link direto compatível; não vamos redirecionar você.");
+   return;
   }
   if(name==="song-prev"){setSong(songIndex-1);return;}
   if(name==="song-next"){setSong(songIndex+1);return;}
@@ -1121,9 +1207,9 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    });
    platformWrap.appendChild(platformSelect);box.appendChild(platformWrap);
    var modeWrap=document.createElement("div");modeWrap.className="ed-field";
-   var modeLabel=document.createElement("label");modeLabel.textContent="Como a música será reproduzida";modeWrap.appendChild(modeLabel);
+   var modeLabel=document.createElement("label");modeLabel.textContent="Exibição inicial do player";modeWrap.appendChild(modeLabel);
    var modeSelect=document.createElement("select");
-   [["embed","Tocar dentro da própria página"],["redirect","Abrir na plataforma escolhida"]].forEach(function(option){
+   [["embed","Mostrar player dentro da página"],["redirect","Mostrar apenas o link da plataforma"]].forEach(function(option){
     var node=document.createElement("option");node.value=option[0];node.textContent=option[1];modeSelect.appendChild(node);
    });
    modeSelect.value=String(song.playbackMode||"redirect").toLowerCase()==="embed"?"embed":"redirect";
@@ -1134,7 +1220,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    });
    modeWrap.appendChild(modeSelect);box.appendChild(modeWrap);
    var musicHelp=document.createElement("small");musicHelp.className="ed-help";
-   musicHelp.textContent="No modo incorporado, o serviço exibe seus próprios controles. Use o link direto da faixa, vídeo ou álbum — links de pesquisa não podem ser incorporados. No modo redirecionado, a pessoa será levada à música na plataforma escolhida.";
+   musicHelp.textContent="O botão principal Play sempre abre a reprodução dentro desta página. O link abaixo do player continua levando à plataforma escolhida. O player embutido pode exigir um toque nos próprios controles dependendo do serviço e do navegador.";
    box.appendChild(musicHelp);
    var removeSong=document.createElement("button");removeSong.type="button";removeSong.className="ed-mini-button ed-danger";removeSong.textContent="Remover música";removeSong.addEventListener("click",function(){if(data.songs.length<=1){setStatus("Mantenha pelo menos uma música.");return;}data.songs.splice(index,1);syncMusicPreviewFromEditor(0);buildTextFields();scheduleSave();});box.appendChild(removeSong);
    songsBody.appendChild(box);
