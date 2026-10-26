@@ -977,6 +977,10 @@ body.editor-mode .experience{padding-bottom:28px}
  .memory-collage-floating-words span:nth-child(9){left:34%;top:89%}
 }
 @media(prefers-reduced-motion:reduce){.memory-collage-strip img{transition:none}}
+
+/* Dynamic editor controls for the anniversary collage */
+.memory-collage-main-photo{left:var(--collage-main-x,2%);bottom:var(--collage-main-y,-2%);width:min(var(--collage-main-width,56%),620px);height:var(--collage-main-height,55%)}
+.memory-collage-strip{width:var(--collage-strip-width,40%)}
 </style>
 
 </head>
@@ -1126,6 +1130,22 @@ body.editor-mode .experience{padding-bottom:28px}
    <summary>Fotografias e imagens</summary>
    <div class="ed-image-grid" id="lovenaEditorImages"></div>
    <div class="ed-add-row"><button class="ed-mini-button" type="button" data-editor-action="add-photo">+ Adicionar foto à galeria</button><span class="ed-help">Você pode remover fotos ou trocar qualquer imagem por um arquivo seu.</span></div>
+  </details>
+  <details open id="lovenaCollageEditorControls">
+   <summary>Colagem de fotos · abaixo de Nossos Momentos</summary>
+   <p class="ed-help" style="margin:8px 0 12px">Personalize a montagem da referência. A foto principal e as seis fotos laterais também podem ser trocadas em “Fotografias e imagens” acima.</p>
+   <div class="ed-fields">
+    <div class="ed-field"><label for="lovenaCollageTitle">Título da colagem</label><input id="lovenaCollageTitle" type="text" value="ANIVERSÁRIO" maxlength="80"></div>
+    <div class="ed-field"><label for="lovenaCollageEyebrow">Palavra acima do título</label><input id="lovenaCollageEyebrow" type="text" value="Feliz" maxlength="40"></div>
+    <div class="ed-field"><label for="lovenaCollageSubtitle">Texto abaixo do título</label><input id="lovenaCollageSubtitle" type="text" value="MEU AMOR" maxlength="80"></div>
+    <div class="ed-field"><label for="lovenaCollageBg">Foto de fundo da montagem</label><input id="lovenaCollageBg" type="file" accept="image/*"><small class="ed-help">Escolha uma imagem para o fundo vintage da metade esquerda.</small><button type="button" class="ed-mini-button" id="lovenaCollageBgReset">Restaurar fundo original</button></div>
+    <div class="ed-field"><label for="lovenaCollageMainWidth">Tamanho da foto principal <output id="lovenaCollageMainWidthValue">56%</output></label><input id="lovenaCollageMainWidth" type="range" min="35" max="68" value="56"></div>
+    <div class="ed-field"><label for="lovenaCollageMainHeight">Altura da foto principal <output id="lovenaCollageMainHeightValue">55%</output></label><input id="lovenaCollageMainHeight" type="range" min="30" max="75" value="55"></div>
+    <div class="ed-field"><label for="lovenaCollageMainX">Posição horizontal da foto <output id="lovenaCollageMainXValue">2%</output></label><input id="lovenaCollageMainX" type="range" min="0" max="20" value="2"></div>
+    <div class="ed-field"><label for="lovenaCollageMainY">Posição vertical da foto <output id="lovenaCollageMainYValue">-2%</output></label><input id="lovenaCollageMainY" type="range" min="-15" max="10" value="-2"></div>
+    <div class="ed-field"><label for="lovenaCollageStripWidth">Largura da coluna de fotos <output id="lovenaCollageStripWidthValue">40%</output></label><input id="lovenaCollageStripWidth" type="range" min="28" max="48" value="40"></div>
+    <div class="ed-field"><label for="lovenaCollageTitleY">Altura do título <output id="lovenaCollageTitleYValue">35%</output></label><input id="lovenaCollageTitleY" type="range" min="10" max="55" value="35"></div>
+   </div>
   </details>
   <details>
    <summary>Marcos da linha do tempo</summary>
@@ -1648,6 +1668,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
+ state.collage=Object.assign({title:"ANIVERSÁRIO",eyebrow:"Feliz",subtitle:"MEU AMOR",background:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
  var heroX=Number(state.heroPosition.x),heroY=Number(state.heroPosition.y);
  state.heroPosition.x=isFinite(heroX)?Math.max(0,Math.min(100,heroX)):50;
  state.heroPosition.y=isFinite(heroY)?Math.max(0,Math.min(100,heroY)):47;
@@ -2014,6 +2035,26 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   row.style.gridTemplateColumns=photos.length>6?"repeat("+photos.length+",112px)":"";
   row.style.overflowX=photos.length>6?"auto":"";
   document.querySelectorAll("img[data-memory-collage-photo]").forEach(function(image){var photoIndex=Number(image.getAttribute("data-memory-collage-photo"));var source=state.images.gallery[photoIndex];var fallback=image.getAttribute("data-memory-collage-default");image.src=source||fallback||image.src;});
+  applyCollage();
+ }
+ function applyCollage(){
+  var cfg=state.collage||{},section=document.getElementById("colagem-memorias");
+  if(!section)return;
+  var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),strip=section.querySelector(".memory-collage-strip");
+  if(eyebrow)eyebrow.textContent=cfg.eyebrow==null?"Feliz":cfg.eyebrow;
+  if(title)title.textContent=cfg.title==null?"ANIVERSÁRIO":cfg.title;
+  if(subtitle)subtitle.textContent=cfg.subtitle==null?"MEU AMOR":cfg.subtitle;
+  if(bg&&cfg.background)bg.style.backgroundImage='linear-gradient(90deg,rgba(28,27,21,.28),rgba(8,8,8,.32)),linear-gradient(0deg,rgba(0,0,0,.64),rgba(0,0,0,.04) 55%,rgba(0,0,0,.12)),url("'+cfg.background+'")';
+  if(main){main.style.setProperty("--collage-main-width",Number(cfg.mainWidth||56)+"%");main.style.setProperty("--collage-main-height",Number(cfg.mainHeight||55)+"%");main.style.setProperty("--collage-main-x",Number(cfg.mainX==null?2:cfg.mainX)+"%");main.style.setProperty("--collage-main-y",Number(cfg.mainY==null?-2:cfg.mainY)+"%");}
+  if(strip)strip.style.setProperty("--collage-strip-width",Number(cfg.stripWidth||40)+"%");
+  var copy=section.querySelector(".memory-collage-copy");if(copy)copy.style.top=Number(cfg.titleY||35)+"%";
+  ["Title","Eyebrow","Subtitle","MainWidth","MainHeight","MainX","MainY","StripWidth","TitleY"].forEach(function(key){var input=document.getElementById("lovenaCollage"+key);if(!input)return;var prop=key.charAt(0).toLowerCase()+key.slice(1);if(input.type==="range")input.value=cfg[prop]==null?input.value:cfg[prop];var out=document.getElementById(input.id+"Value");if(out)out.textContent=input.value+(input.type==="range"?"%":"");});
+ }
+ function bindCollageControls(){
+  var mapping={lovenaCollageTitle:"title",lovenaCollageEyebrow:"eyebrow",lovenaCollageSubtitle:"subtitle",lovenaCollageMainWidth:"mainWidth",lovenaCollageMainHeight:"mainHeight",lovenaCollageMainX:"mainX",lovenaCollageMainY:"mainY",lovenaCollageStripWidth:"stripWidth",lovenaCollageTitleY:"titleY"};
+  Object.keys(mapping).forEach(function(id){var input=document.getElementById(id);if(!input)return;var key=mapping[id];input.addEventListener("input",function(){state.collage[key]=input.type==="range"?Number(input.value):input.value;applyCollage();var out=document.getElementById(id+"Value");if(out)out.textContent=input.value+(input.type==="range"?"%":"");scheduleSave();});});
+  var file=document.getElementById("lovenaCollageBg");if(file)file.addEventListener("change",function(){var chosen=file.files&&file.files[0];if(!chosen)return;if(!/^image\\//.test(chosen.type)){setStatus("Escolha um arquivo de imagem.");return;}var reader=new FileReader();reader.onload=function(){state.collage.background=String(reader.result);applyCollage();scheduleSave();setStatus("Fundo da colagem atualizado.");};reader.readAsDataURL(chosen);});
+  var reset=document.getElementById("lovenaCollageBgReset");if(reset)reset.addEventListener("click",function(){state.collage.background=null;applyCollage();scheduleSave();setStatus("Fundo original restaurado.");});
  }
  function makeTimelineIcon(){return '<span class="timeline-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11S3.2 13.9 3.2 8.8a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"/></svg></span>';}
  function syncTimeline(){
@@ -2228,6 +2269,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    if(heroSource){
     [".hero-photo",".pinned-photo-photo"].forEach(function(selector){var el=clone.querySelector(selector);if(el)el.style.backgroundImage='url("'+heroSource+'")';});
    }
+   if(offlineData.collage&&offlineData.collage.background){offlineData.collage.background=await imageSourceToDataUrl(offlineData.collage.background);var bg=clone.querySelector(".memory-collage-backdrop");if(bg)bg.style.backgroundImage='linear-gradient(90deg,rgba(28,27,21,.28),rgba(8,8,8,.32)),linear-gradient(0deg,rgba(0,0,0,.64),rgba(0,0,0,.04) 55%,rgba(0,0,0,.12)),url("'+offlineData.collage.background+'")';}
    clone.querySelectorAll("img[data-memory-collage-photo]").forEach(function(img){var photoIndex=Number(img.getAttribute("data-memory-collage-photo"));var source=(offlineData.images.gallery||[])[photoIndex];if(source)img.setAttribute("src",source);img.removeAttribute("srcset");});
    var gallery=clone.querySelector("#galleryRow");
    if(gallery){
@@ -2365,7 +2407,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(!obj||!obj.data||!Array.isArray(obj.data.photos)||!Array.isArray(obj.data.milestones))throw new Error("Arquivo não parece ser um backup Lovena.");localStorage.setItem(EDIT_KEY,JSON.stringify(obj));location.reload();}catch(err){setStatus("Não foi possível importar: "+err.message);}};reader.readAsText(file);event.target.value="";
  });
  window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
- applySavedSnapshot();buildTextFields();imageControls();renderMilestones();
+ applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();
  if(editMode){document.body.classList.add("editor-mode");markEditableTargets();trigger.hidden=false;openEditor();}
 
 
