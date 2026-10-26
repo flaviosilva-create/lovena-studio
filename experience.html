@@ -24,8 +24,8 @@ body{margin:0;background:var(--night);color:var(--cream);font-family:Manrope,Ari
 button,a{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
 button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4px}
 .experience{width:100%;overflow:hidden;background:var(--night)}
-.hero{height:438px;min-height:438px;max-height:560px;position:relative;isolation:isolate;background:#130807;overflow:hidden}
-.hero-photo{position:absolute;z-index:-3;inset:0 0 0 auto;width:72%;background-image:var(--hero-photo);background-size:cover;background-position:center 47%;background-repeat:no-repeat;filter:saturate(.92)}
+.hero{height:100vh;height:100svh;min-height:600px;max-height:none;position:relative;isolation:isolate;background:#130807;overflow:hidden}
+.hero-photo{position:absolute;z-index:-3;inset:0;width:100%;height:100%;background-image:var(--hero-photo);background-size:cover;background-position:center 47%;background-repeat:no-repeat;filter:saturate(.92)}
 .hero-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,#160807 0%,rgba(22,8,7,.95) 14%,rgba(22,8,7,.73) 29%,rgba(22,8,7,.12) 57%,rgba(22,8,7,.12) 100%),linear-gradient(0deg,rgba(17,7,6,.23),transparent 35%,rgba(18,7,6,.1))}
 .experience-nav{height:70px;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(26px,9.1vw,100px);color:#f6eee7}
 .logo-lockup{display:flex;align-items:center;gap:12px;flex-shrink:0}
@@ -148,10 +148,10 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 .modal-envelope span{position:relative;z-index:2;width:31px;height:31px;border-radius:50%;background:#783831;color:#f5dbbf;display:grid;place-items:center;box-shadow:0 2px 5px #51241f77}
 .toast{position:fixed;z-index:30;left:50%;bottom:22px;transform:translate(-50%,14px);padding:11px 16px;max-width:calc(100% - 26px);border-radius:999px;background:#f7e8db;color:#482b24;box-shadow:0 9px 28px rgba(0,0,0,.28);font-size:10px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-@media(min-width:1250px){.hero{height:clamp(480px,43vw,580px)}.hero-copy{top:145px}.letter-music{min-height:470px}.letter-paper{min-height:420px;padding-top:65px}.music-card{min-height:421px;padding:28px 27px 21px}.album-cover{width:180px;height:170px}.gallery-section{height:270px;min-height:270px}.gallery-row{gap:18px}.gallery-photo{aspect-ratio:.93}.history-surprises{min-height:454px;padding-top:29px}.timeline{margin-top:30px;margin-bottom:37px}}
+@media(min-width:1250px){.hero{height:100vh;height:100svh;min-height:600px;max-height:none}.hero-copy{top:145px}.letter-music{min-height:470px}.letter-paper{min-height:420px;padding-top:65px}.music-card{min-height:421px;padding:28px 27px 21px}.album-cover{width:180px;height:170px}.gallery-section{height:270px;min-height:270px}.gallery-row{gap:18px}.gallery-photo{aspect-ratio:.93}.history-surprises{min-height:454px;padding-top:29px}.timeline{margin-top:30px;margin-bottom:37px}}
 @media(max-width:850px){
- .hero{height:500px;min-height:500px;max-height:none}
- .hero-photo{width:80%;background-position:56% center}
+ .hero{height:100vh;height:100svh;min-height:560px;max-height:none}
+ .hero-photo{width:100%;background-position:center center}
  .hero-shade{background:linear-gradient(90deg,#160807 0%,rgba(22,8,7,.92) 18%,rgba(22,8,7,.6) 42%,rgba(22,8,7,.08) 78%),linear-gradient(0deg,rgba(17,7,6,.38),transparent 38%,rgba(18,7,6,.08))}
  .experience-nav{height:67px;padding:0 25px;gap:12px}
  .experience-nav-links{display:none}
@@ -182,8 +182,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
  .pinned-photo{right:-30px}
 }
 @media(max-width:580px){
- .hero{height:570px;min-height:570px}
- .hero-photo{width:100%;background-position:53% center}
+ .hero{height:100vh;height:100svh;min-height:520px;max-height:none}
+ .hero-photo{width:100%;background-position:center center}
  .hero-shade{background:linear-gradient(90deg,rgba(18,7,6,.95) 0%,rgba(18,7,6,.73) 44%,rgba(18,7,6,.23) 100%),linear-gradient(0deg,rgba(18,7,6,.58),transparent 47%,rgba(18,7,6,.2))}
  .experience-nav{height:63px;padding:0 18px}
  .logo-mark{width:23px;height:27px}
