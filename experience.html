@@ -1052,17 +1052,19 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 }
 @media(max-width:850px){
  #colagem-memorias .memory-collage-strip{--collage-roll-gap:10px}
- /* On touchscreens, avoid a sticky :hover state stopping the automatic roll. */
+ /* Touchscreens must not inherit a sticky hover/focus pause. */
  #colagem-memorias .memory-collage-track{animation-duration:36s;animation-play-state:running}
- #colagem-memorias .memory-collage-strip:hover .memory-collage-track{animation-play-state:running}
+ #colagem-memorias .memory-collage-strip:hover .memory-collage-track,
+ #colagem-memorias .memory-collage-strip:focus-within .memory-collage-track{animation-play-state:running}
  #colagem-memorias .memory-collage-strip:active .memory-collage-track{animation-play-state:paused}
 }
 @media(max-width:650px){
  #colagem-memorias .memory-collage-strip{--collage-roll-gap:8px}
  #colagem-memorias .memory-collage-track{animation-duration:36s}
 }
+/* Preserve automatic collage movement, gently slowing it for reduced-motion preferences. */
 @media(prefers-reduced-motion:reduce){
- #colagem-memorias .memory-collage-track{animation:none!important;transform:none!important}
+ #colagem-memorias .memory-collage-track{animation-duration:84s!important;animation-play-state:running!important}
 }
 </style>
 
@@ -2726,6 +2728,30 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
 </script>
 
 
+
+<script id="lovenaCollageAutoScrollRuntime">
+/* Standalone fallback: initialize rolling photos in the published/exported experience too. */
+(function(){
+ "use strict";
+ function initCollageRoll(){
+  var strip=document.querySelector("#colagem-memorias .memory-collage-strip");
+  if(!strip)return;
+  if(strip.querySelector(".memory-collage-track"))return;
+  var photos=Array.prototype.filter.call(strip.children,function(child){return child.tagName&&child.tagName.toLowerCase()==="figure";});
+  if(photos.length<2)return;
+  var cycle=document.createElement("div");cycle.className="memory-collage-cycle";
+  photos.forEach(function(photo){cycle.appendChild(photo);});
+  var repeated=cycle.cloneNode(true);
+  repeated.classList.add("memory-collage-cycle-copy");
+  repeated.setAttribute("aria-hidden","true");
+  var track=document.createElement("div");track.className="memory-collage-track";
+  track.appendChild(cycle);track.appendChild(repeated);strip.appendChild(track);
+  strip.dataset.collageAutoScrollReady="true";
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initCollageRoll,{once:true});
+ else initCollageRoll();
+})();
+</script>
 
 </body>
 </html>
