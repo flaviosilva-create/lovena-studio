@@ -1119,9 +1119,10 @@ body.lovena-simple-page #lovenaEditor .ed-scroll>details:nth-of-type(4){display:
 @media(prefers-reduced-motion:reduce){body.lovena-simple-page .reveal-ready{transition:none}}
 </style>
 <style id="lovena-gallery-navigation-fix">
-/* Galeria de Nossos Momentos: navegação horizontal consistente em computador e celular. */
+/* Galeria horizontal com cartões de largura real para suportar rolagem e setas. */
 #fotos .gallery-row{
  display:flex!important;
+ flex-wrap:nowrap!important;
  grid-template-columns:none!important;
  overflow-x:auto!important;
  overflow-y:hidden!important;
@@ -1131,35 +1132,36 @@ body.lovena-simple-page #lovenaEditor .ed-scroll>details:nth-of-type(4){display:
  scrollbar-width:thin;
 }
 #fotos .gallery-row>.gallery-item{
- flex:0 0 calc((100% - 75px)/6);
- width:auto;
- min-width:0;
- flex-shrink:0;
+ box-sizing:border-box;
+ flex:0 0 118px!important;
+ width:118px!important;
+ min-width:118px!important;
  scroll-snap-align:start;
 }
 #fotos .gallery-arrows{
  display:flex!important;
  visibility:visible!important;
  opacity:1!important;
- z-index:7;
- pointer-events:auto;
+ z-index:20!important;
+ pointer-events:auto!important;
 }
 #fotos .gallery-arrows button{
  position:relative;
- z-index:8;
+ z-index:21;
  cursor:pointer;
+ pointer-events:auto;
  touch-action:manipulation;
 }
 @media(max-width:850px){
  #fotos .gallery-row-wrap{padding-right:40px!important}
  #fotos .gallery-row{gap:12px!important;padding:3px 3px 12px}
- #fotos .gallery-row>.gallery-item{flex:0 0 124px!important;width:124px!important}
+ #fotos .gallery-row>.gallery-item{flex:0 0 124px!important;width:124px!important;min-width:124px!important}
  #fotos .gallery-arrows{top:37%!important;right:0!important}
  #fotos .gallery-arrows button{width:32px;height:32px;font-size:19px}
 }
 @media(max-width:420px){
  #fotos .gallery-row-wrap{padding-right:38px!important}
- #fotos .gallery-row>.gallery-item{flex-basis:105px!important;width:105px!important}
+ #fotos .gallery-row>.gallery-item{flex-basis:105px!important;width:105px!important;min-width:105px!important}
 }
 </style>
 </head>
@@ -2569,6 +2571,37 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var row=document.getElementById("galleryRow");
   if(!row)return;
   var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
+  function bindGalleryArrowNavigation(row){
+  if(!row||row.dataset.galleryArrowsReady==="true")return;
+  row.dataset.galleryArrowsReady="true";
+  var buttons=document.querySelectorAll('#fotos .gallery-arrows button[data-action="gallery-left"],#fotos .gallery-arrows button[data-action="gallery-right"]');
+  buttons.forEach(function(button){
+   button.addEventListener("click",function(event){
+    event.preventDefault();
+    event.stopPropagation();
+    row.dataset.galleryManualNavigation="true";
+    row.style.overflowX="auto";
+    row.style.scrollBehavior="smooth";
+    var first=row.querySelector('.gallery-item:not([data-gallery-clone="true"])');
+    if(!first)return;
+    var style=window.getComputedStyle(row);
+    var gap=parseFloat(style.columnGap||style.gap)||0;
+    var itemWidth=first.getBoundingClientRect().width;
+    var max=Math.max(0,row.scrollWidth-row.clientWidth);
+    if(max<=2)return;
+    var unit=itemWidth+gap;
+    var step=Math.max(unit,Math.min(row.clientWidth*.68,max));
+    var direction=button.dataset.action==="gallery-right"?1:-1;
+    var current=row.scrollLeft;
+    var target;
+    if(direction>0&&current>=max-3)target=0;
+    else if(direction<0&&current<=3)target=max;
+    else target=Math.max(0,Math.min(max,current+direction*step));
+    row.scrollTo({left:target,behavior:"smooth"});
+   },true);
+  });
+ }
+  bindGalleryArrowNavigation(row);
   if(reduce&&reduce.matches)return;
   var originals=Array.from(row.children).filter(function(el){return el.dataset.galleryClone!=="true";});
   if(originals.length<2)return;
@@ -2590,7 +2623,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   row.addEventListener("wheel",pauseBriefly,{passive:true});
   row.addEventListener("focusin",function(){paused=true;});
   row.addEventListener("focusout",function(e){if(!row.contains(e.relatedTarget)){paused=false;last=0;}});
-  function frame(t){if(!last)last=t;var dt=Math.min(50,t-last);last=t;if(!paused&&document.visibilityState!=="hidden"&&width>0){row.scrollLeft+=22*dt/1000;if(row.scrollLeft>=width)row.scrollLeft=row.scrollLeft%width;}requestAnimationFrame(frame);}
+  function frame(t){if(!last)last=t;var dt=Math.min(50,t-last);last=t;if(!paused&&row.dataset.galleryManualNavigation!=="true"&&document.visibilityState!=="hidden"&&width>0){row.scrollLeft+=22*dt/1000;if(row.scrollLeft>=width)row.scrollLeft=row.scrollLeft%width;}requestAnimationFrame(frame);}
   requestAnimationFrame(function(){measure();requestAnimationFrame(frame);});
   window.addEventListener("resize",measure);
  }
@@ -2926,7 +2959,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
       if (!lastFrame) lastFrame = timestamp;
       var elapsed = Math.min(50, timestamp - lastFrame);
       lastFrame = timestamp;
-      if (!paused && !(reducedMotion && reducedMotion.matches) &&
+      if (!paused && row.dataset.galleryManualNavigation !== "true" && !(reducedMotion && reducedMotion.matches) &&
           document.visibilityState !== "hidden" && loopWidth > 0) {
         row.scrollLeft += speed * elapsed / 1000;
         if (row.scrollLeft >= loopWidth) row.scrollLeft = row.scrollLeft % loopWidth;
@@ -2937,6 +2970,37 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
     rebuildLoop();
     requestAnimationFrame(animate);
   })();
+  function bindGalleryArrowNavigation(row){
+  if(!row||row.dataset.galleryArrowsReady==="true")return;
+  row.dataset.galleryArrowsReady="true";
+  var buttons=document.querySelectorAll('#fotos .gallery-arrows button[data-action="gallery-left"],#fotos .gallery-arrows button[data-action="gallery-right"]');
+  buttons.forEach(function(button){
+   button.addEventListener("click",function(event){
+    event.preventDefault();
+    event.stopPropagation();
+    row.dataset.galleryManualNavigation="true";
+    row.style.overflowX="auto";
+    row.style.scrollBehavior="smooth";
+    var first=row.querySelector('.gallery-item:not([data-gallery-clone="true"])');
+    if(!first)return;
+    var style=window.getComputedStyle(row);
+    var gap=parseFloat(style.columnGap||style.gap)||0;
+    var itemWidth=first.getBoundingClientRect().width;
+    var max=Math.max(0,row.scrollWidth-row.clientWidth);
+    if(max<=2)return;
+    var unit=itemWidth+gap;
+    var step=Math.max(unit,Math.min(row.clientWidth*.68,max));
+    var direction=button.dataset.action==="gallery-right"?1:-1;
+    var current=row.scrollLeft;
+    var target;
+    if(direction>0&&current>=max-3)target=0;
+    else if(direction<0&&current<=3)target=max;
+    else target=Math.max(0,Math.min(max,current+direction*step));
+    row.scrollTo({left:target,behavior:"smooth"});
+   },true);
+  });
+ }
+  bindGalleryArrowNavigation(document.getElementById("galleryRow"));
 })();
 </script>
 
