@@ -373,6 +373,223 @@ body.editor-mode .experience{padding-bottom:28px}
 .music-card.is-embedded .music-embed-container{margin:12px 0 0}
 @media(max-width:600px){.music-embed-frame.music-embed-youtube{min-height:200px}.music-embed-frame.music-embed-apple{min-height:175px}}
 </style>
+
+<style id="lovena-mobile-harmony">
+/* Mobile art direction: calmer spacing, more legible copy and comfortable touch targets. */
+@media (max-width: 580px) {
+  html { scroll-padding-top: 14px; }
+  .hero {
+    min-height: max(600px, 100svh);
+    height: 100svh;
+  }
+  .hero-photo { background-position: 58% center; }
+  .hero-shade {
+    background:
+      linear-gradient(90deg, rgba(18,7,6,.94) 0%, rgba(18,7,6,.78) 48%, rgba(18,7,6,.30) 100%),
+      linear-gradient(0deg, rgba(17,7,6,.62), transparent 48%, rgba(18,7,6,.16));
+  }
+  .experience-nav { height: 66px; padding: 0 20px; }
+  .logo-lockup { gap: 9px; }
+  .logo-word { font-size: 19px; letter-spacing: 2.3px; }
+  .nav-love { gap: 8px; font-size: 9px; }
+  .nav-love span { max-width: 145px; overflow: hidden; text-overflow: ellipsis; }
+  .hero-copy {
+    top: clamp(132px, 19svh, 166px);
+    left: 24px;
+    width: calc(100% - 74px);
+    max-width: 350px;
+  }
+  .hero-eyebrow { font-size: 8px; letter-spacing: 2px; line-height: 1.6; margin-bottom: 14px; }
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(37px, 10.3vw, 47px);
+    line-height: 1.045;
+    letter-spacing: -1.45px;
+    margin-bottom: 16px;
+    text-wrap: pretty;
+  }
+  .hero-intro { max-width: 100%; font-size: 13px; line-height: 1.72; }
+  .hero-signature { margin-top: 20px; gap: 10px; }
+  .hero-signature small { font-size: 10px; }
+  .hero-signature strong { font-size: 24px; margin-top: 6px; }
+  .scroll-cue { right: 18px; bottom: 17px; gap: 7px; font-size: 7px; }
+  .scroll-line { height: 42px; margin-left: 1px; }
+
+  .letter-music { padding: 36px 18px 40px; }
+  .letter-music-inner {
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+    gap: 27px;
+    align-items: center;
+  }
+  .music-card {
+    width: 100%;
+    max-width: 430px;
+    min-height: 0;
+    margin: 0;
+    padding: 21px clamp(17px, 5.5vw, 23px) 21px;
+    border-radius: 14px;
+  }
+  .music-heading { gap: 11px; margin-bottom: 17px; }
+  .music-heading h2 { font-size: 18px; line-height: 1.25; }
+  .music-heading p { font-size: 10px; line-height: 1.55; }
+  .album-cover { width: min(168px, 68vw); height: auto; aspect-ratio: 1 / 1; margin-bottom: 17px; }
+  .track-title { font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
+  .track-artist { font-size: 10px; }
+  .player-controls { gap: 14px; justify-content: center; }
+  .player-btn { flex-basis: 32px; width: 32px; height: 32px; }
+  .player-btn svg { width: 19px; height: 19px; }
+  .player-btn.main-play { width: 48px; height: 48px; flex-basis: 48px; }
+  .music-open { font-size: 9px; line-height: 1.6; }
+  .music-embed-container { width: 100%; min-width: 0; margin-top: 14px; }
+  .music-embed-container iframe,
+  .music-embed-frame { width: 100% !important; max-width: 100% !important; min-width: 0 !important; }
+  .letter-side { width: 100%; max-width: 430px; }
+  .letter-paper {
+    width: 100%;
+    min-height: 0;
+    padding: 48px clamp(20px, 6vw, 27px) 29px;
+    transform: rotate(-.55deg);
+  }
+  .envelope-back { left: -8px; top: 16px; }
+  .wax-seal { left: calc(50% - 20px); top: -9px; }
+  .letter-title { font-size: clamp(17px, 4.8vw, 19px); line-height: 1.3; margin: 8px 0 15px; }
+  .letter-copy { font-size: 13px; line-height: 1.72; margin-bottom: 12px; overflow-wrap: anywhere; }
+  .letter-ending { font-size: 15px; line-height: 1.5; }
+
+  .gallery-section {
+    height: auto;
+    min-height: 0;
+    padding: 28px 18px 25px;
+  }
+  .gallery-heading { align-items: flex-start; gap: 8px; flex-direction: column; margin-bottom: 16px; }
+  .gallery-heading h2 { font-size: 25px; line-height: 1.2; margin-bottom: 7px; }
+  .gallery-heading p { max-width: 330px; font-size: 11px; line-height: 1.65; }
+  .gallery-link { align-self: flex-start; font-size: 10px; padding: 5px 0; }
+  .gallery-row-wrap { padding: 0; }
+  .gallery-row {
+    display: flex;
+    gap: 13px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 3px 14px;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 3px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gallery-item { flex: 0 0 124px; width: 124px; scroll-snap-align: start; }
+  .gallery-photo { aspect-ratio: .86; }
+  .gallery-caption { font-size: 14px; padding-top: 7px; }
+  .gallery-arrows { display: none; }
+
+  .history-surprises { min-height: 0; padding: 31px 16px 30px; }
+  .history-heading { padding: 0 4px; }
+  .history-heading h2 { font-size: 26px; line-height: 1.18; margin-bottom: 7px; }
+  .history-heading p { font-size: 11px; line-height: 1.65; max-width: 310px; }
+  .timeline {
+    max-width: none;
+    margin: 25px 0 31px;
+    padding: 12px 3px 15px;
+    gap: 10px;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 3px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .timeline:before { left: 84px; right: auto; top: 26px; width: 712px; }
+  .timeline-item {
+    flex: 0 0 168px;
+    min-height: 138px;
+    padding: 14px 12px 15px;
+    scroll-snap-align: start;
+    border-radius: 12px;
+  }
+  .timeline-node { margin-bottom: 12px; }
+  .timeline-item strong { font-size: 12px; line-height: 1.45; }
+  .timeline-item span:not(.timeline-node) { font-size: 10.5px; line-height: 1.55; }
+  .timeline-item:last-child strong { font-size: 13px; }
+  .timeline-item:last-child span:not(.timeline-node) { font-size: 11px; }
+
+  .surprises-panel { width: 100%; padding: 22px 14px 20px; border-radius: 14px; }
+  .surprise-gift { width: 20px; height: 20px; margin-bottom: 8px; }
+  .surprises-panel h2 { font-size: 22px; line-height: 1.25; margin-bottom: 6px; }
+  .surprises-panel > p { font-size: 10px; line-height: 1.55; margin: 0 auto 16px; max-width: 270px; }
+  .surprise-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .surprise-card { min-height: 100px; padding: 15px 8px 12px; border-radius: 9px; }
+  .surprise-card svg { width: 19px; height: 19px; margin-bottom: 9px; }
+  .surprise-card strong { font-size: 12px; line-height: 1.45; }
+  .surprise-card small { font-size: 9px; line-height: 1.5; }
+  .rose-decoration { left: -78px; bottom: -38px; width: 110px; height: 175px; opacity: .45; }
+  .pinned-photo { width: 88px; right: -25px; bottom: 2px; opacity: .28; }
+  .pinned-photo-photo { height: 72px; }
+  .pinned-photo figcaption { font-size: 12px; }
+  .experience-end { gap: 7px; margin-top: 25px; font-size: 8px; line-height: 1.5; letter-spacing: 1px; }
+  .experience-end:before, .experience-end:after { width: 22px; }
+
+  .modal { width: calc(100% - 24px); border-radius: 14px; max-height: calc(100dvh - 30px); overflow-y: auto; }
+  .modal-content { padding: 29px 21px 23px; }
+  .modal h2 { font-size: 25px; line-height: 1.2; }
+  .modal p { font-size: 14px; line-height: 1.8; }
+  .modal-visual { height: min(290px, 40dvh); }
+
+  #lovenaEditorTrigger { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); padding: 11px 14px; min-height: 42px; }
+}
+@media (max-width: 380px) {
+  .hero-copy { left: 21px; width: calc(100% - 64px); top: clamp(126px, 18svh, 150px); }
+  .hero h1 { font-size: clamp(35px, 10.5vw, 40px); letter-spacing: -1.2px; }
+  .hero-intro { font-size: 12.5px; line-height: 1.68; }
+  .nav-love span { max-width: 112px; }
+  .letter-music { padding-inline: 14px; }
+  .letter-music-inner { gap: 24px; }
+  .music-card { padding-inline: 17px; }
+  .letter-paper { padding-inline: 19px; }
+  .gallery-section { padding-inline: 15px; }
+  .gallery-item { flex-basis: 116px; width: 116px; }
+  .history-surprises { padding-inline: 13px; }
+  .timeline-item { flex-basis: 158px; }
+  .timeline:before { width: 672px; }
+  .surprises-panel { padding-inline: 11px; }
+  .surprise-grid { gap: 8px; }
+  .surprise-card { padding-inline: 6px; }
+  .experience-end { font-size: 7px; gap: 5px; }
+  .experience-end:before, .experience-end:after { width: 17px; }
+}
+@media (max-width: 480px) {
+  #lovenaEditor .ed-head { padding: 17px 15px 14px; }
+  #lovenaEditor .ed-head h2 { font-size: 22px; }
+  #lovenaEditor .ed-head p { font-size: 11px; line-height: 1.55; }
+  #lovenaEditor .ed-scroll { padding: 12px 13px 20px; }
+  #lovenaEditor .ed-notice { font-size: 11px; line-height: 1.7; padding: 12px; }
+  #lovenaEditor .ed-live-guide { padding: 12px; gap: 9px; }
+  #lovenaEditor .ed-live-guide strong { font-size: 12px; }
+  #lovenaEditor .ed-live-guide small { font-size: 11px; line-height: 1.6; }
+  #lovenaEditor .ed-field label { font-size: 11px; }
+  #lovenaEditor .ed-field input:not([type=color]):not([type=file]),
+  #lovenaEditor .ed-field textarea,
+  #lovenaEditor .ed-field select,
+  #lovenaEditor .ed-milestone-row input,
+  #lovenaEditor .ed-milestone-row textarea,
+  #lovenaEditor .ed-song-row input,
+  #lovenaEditor .ed-song-row select {
+    font-size: 16px !important;
+    line-height: 1.4;
+    padding: 12px;
+    min-height: 44px;
+  }
+  #lovenaEditor .ed-mini-button { min-height: 40px; font-size: 10px; }
+  #lovenaEditor .ed-primary, #lovenaEditor .ed-secondary { min-height: 44px; font-size: 11px; }
+  #lovenaEditor .ed-actions { padding: 12px 13px calc(14px + env(safe-area-inset-bottom)); }
+  #lovenaEditorTrigger { max-width: calc(100vw - 24px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-row, .timeline { scroll-behavior: auto; }
+}
+</style>
+
 </head>
 <body>
 <main class="experience" id="experiencia">
