@@ -979,6 +979,7 @@ body.editor-mode .experience{padding-bottom:28px}
 @media(prefers-reduced-motion:reduce){.memory-collage-strip img{transition:none}}
 
 /* Dynamic editor controls for the anniversary collage */
+#colagem-memorias .memory-collage-copy span,#colagem-memorias .memory-collage-copy strong,#colagem-memorias .memory-collage-copy small{pointer-events:auto;cursor:pointer}#colagem-memorias .memory-collage-main-photo,#colagem-memorias .memory-collage-strip figure,#colagem-memorias .memory-collage-strip img{cursor:pointer}
 .memory-collage-main-photo{left:var(--collage-main-x,2%);bottom:var(--collage-main-y,-2%);width:min(var(--collage-main-width,56%),620px);height:var(--collage-main-height,55%)}
 .memory-collage-strip{width:var(--collage-strip-width,40%)}
 </style>
@@ -1925,9 +1926,13 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   });
  }
  function findCollageImageKey(el){
-  var image=el&&el.closest?el.closest("[data-memory-collage-photo]"):null;
-  if(!image)return null;
-  return "gallery:"+Number(image.getAttribute("data-memory-collage-photo")||0);
+  if(!el||!el.closest)return null;
+  var image=el.closest("[data-memory-collage-photo]");
+  if(image)return "gallery:"+Number(image.getAttribute("data-memory-collage-photo")||0);
+  if(el.closest(".memory-collage-main-photo"))return "gallery:0";
+  var figure=el.closest(".memory-collage-strip figure");
+  if(figure){var photo=figure.querySelector("[data-memory-collage-photo]");if(photo)return "gallery:"+Number(photo.getAttribute("data-memory-collage-photo")||0);}
+  return null;
  }
  document.addEventListener("click",function(event){
   if(isPreviewing)return;
