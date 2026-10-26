@@ -931,6 +931,7 @@ body.editor-mode .memory-collage-backdrop{pointer-events:auto;cursor:pointer}
 .memory-collage-main-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;clip-path:polygon(20% 0%,70% 2%,83% 7%,91% 17%,93% 31%,100% 43%,96% 56%,98% 72%,91% 86%,82% 95%,65% 100%,48% 97%,34% 100%,21% 94%,12% 83%,8% 70%,1% 59%,4% 45%,0% 32%,6% 18%,12% 7%);border:0}
 .memory-collage-strip{position:absolute;z-index:2;top:0;right:2.5%;width:40%;height:116%;padding:4px 0 12px 15px;display:grid;grid-template-rows:repeat(6,minmax(0,1fr));gap:12px;overflow:hidden}
 .memory-collage-strip figure{position:relative;min-height:0;margin:0;overflow:hidden;border-radius:clamp(14px,1.8vw,22px);border:1px solid rgba(245,226,204,.24);box-shadow:0 7px 20px #0008}
+.memory-collage-strip figure[hidden]{display:none!important}
 .memory-collage-strip figure:before{content:"MEMORY PORTRAIT";position:absolute;z-index:2;left:-12px;top:12px;writing-mode:vertical-rl;transform:rotate(180deg);font:700 6px/1 Manrope,Arial,sans-serif;letter-spacing:1px;color:#c28a57;text-shadow:0 1px 4px #000}
 .memory-collage-strip figure:nth-child(even):before{content:"LOVE · MEMORY"}
 .memory-collage-strip img{display:block;width:100%;height:100%;object-fit:cover;filter:brightness(.87) saturate(.85)}
@@ -1159,14 +1160,18 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
  <section class="lovena-memory-collage" id="colagem-memorias" aria-label="Colagem de fotos do casal">
   <div class="memory-collage-backdrop" aria-hidden="true"></div>
   <div class="memory-collage-copy" aria-hidden="true"><span>Feliz</span><strong>ANIVERSÁRIO</strong><small>MEU AMOR</small></div>
-  <div class="memory-collage-main-photo"><img data-memory-collage-photo="0" data-memory-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="Foto principal do casal"></div>
-  <div class="memory-collage-strip" aria-label="Mais momentos do casal">
-   <figure><img data-memory-collage-photo="1" data-memory-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Lembrança do casal"></figure>
-   <figure><img data-memory-collage-photo="2" data-memory-collage-default="assets/lovena-sample-photo-03.jpg" src="assets/lovena-sample-photo-03.jpg" alt="Lembrança do casal"></figure>
-   <figure><img data-memory-collage-photo="3" data-memory-collage-default="assets/lovena-sample-photo-04.jpg" src="assets/lovena-sample-photo-04.jpg" alt="Lembrança do casal"></figure>
-   <figure><img data-memory-collage-photo="4" data-memory-collage-default="assets/lovena-sample-photo-05.jpg" src="assets/lovena-sample-photo-05.jpg" alt="Lembrança do casal"></figure>
-   <figure><img data-memory-collage-photo="5" data-memory-collage-default="assets/lovena-sample-photo-06.jpg" src="assets/lovena-sample-photo-06.jpg" alt="Lembrança do casal"></figure>
-   <figure><img data-memory-collage-photo="6" data-memory-collage-default="assets/lovena-sample-photo-07.jpg" src="assets/lovena-sample-photo-07.jpg" alt="Lembrança do casal"></figure>
+  <div class="memory-collage-main-photo"><img data-memory-collage-main-photo data-memory-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="Foto principal independente da colagem"></div>
+  <div class="memory-collage-strip" aria-label="Até 10 fotos independentes em rolagem vertical">
+   <figure><img data-memory-collage-photo="0" data-memory-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Foto rolante 1 da colagem"></figure>
+   <figure><img data-memory-collage-photo="1" data-memory-collage-default="assets/lovena-sample-photo-03.jpg" src="assets/lovena-sample-photo-03.jpg" alt="Foto rolante 2 da colagem"></figure>
+   <figure><img data-memory-collage-photo="2" data-memory-collage-default="assets/lovena-sample-photo-04.jpg" src="assets/lovena-sample-photo-04.jpg" alt="Foto rolante 3 da colagem"></figure>
+   <figure><img data-memory-collage-photo="3" data-memory-collage-default="assets/lovena-sample-photo-05.jpg" src="assets/lovena-sample-photo-05.jpg" alt="Foto rolante 4 da colagem"></figure>
+   <figure><img data-memory-collage-photo="4" data-memory-collage-default="assets/lovena-sample-photo-06.jpg" src="assets/lovena-sample-photo-06.jpg" alt="Foto rolante 5 da colagem"></figure>
+   <figure><img data-memory-collage-photo="5" data-memory-collage-default="assets/lovena-sample-photo-07.jpg" src="assets/lovena-sample-photo-07.jpg" alt="Foto rolante 6 da colagem"></figure>
+   <figure hidden><img data-memory-collage-photo="6" data-memory-collage-default="assets/lovena-sample-photo-08.jpg" src="assets/lovena-sample-photo-08.jpg" alt="Foto rolante 7 da colagem"></figure>
+   <figure hidden><img data-memory-collage-photo="7" data-memory-collage-default="assets/lovena-sample-photo-09.jpg" src="assets/lovena-sample-photo-09.jpg" alt="Foto rolante 8 da colagem"></figure>
+   <figure hidden><img data-memory-collage-photo="8" data-memory-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="Foto rolante 9 da colagem"></figure>
+   <figure hidden><img data-memory-collage-photo="9" data-memory-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Foto rolante 10 da colagem"></figure>
   </div>
   <div class="memory-collage-floating-words" aria-hidden="true"><span class="memory-collage-word-hidden"></span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span><span>Te amo</span></div>
  </section>
@@ -1229,8 +1234,19 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   </details>
   <details open id="lovenaCollageEditorControls">
    <summary>Colagem de fotos · abaixo de Nossos Momentos</summary>
-   <p class="ed-help" style="margin:8px 0 12px">Personalize a montagem da referência. A foto principal e as seis fotos laterais também podem ser trocadas em “Fotografias e imagens” acima.</p>
+   <p class="ed-help" style="margin:8px 0 12px">As fotos desta montagem são independentes da galeria “Nossos momentos”. Escolha uma foto principal e até 10 fotos para a coluna que rola verticalmente.</p>
    <div class="ed-fields">
+    <div class="ed-field">
+     <label>Foto principal da colagem</label>
+     <div id="lovenaCollageMainPhotoControls"></div>
+     <small class="ed-help">Esta imagem é independente da foto de abertura e das fotos da galeria.</small>
+    </div>
+    <div class="ed-field">
+     <label>Fotos rolantes <span id="lovenaCollagePhotoCount">6 de 10 fotos</span></label>
+     <div id="lovenaCollagePhotoControls"></div>
+     <button type="button" class="ed-mini-button" data-editor-action="add-collage-photo" id="lovenaAddCollagePhoto">+ Adicionar foto à montagem</button>
+     <small class="ed-help">Adicione até 10 fotos. Cada imagem pode ser trocada ou removida sem alterar a galeria principal.</small>
+    </div>
     <div class="ed-field"><label for="lovenaCollageTitle">Título da colagem</label><input id="lovenaCollageTitle" type="text" value="ANIVERSÁRIO" maxlength="80"></div>
     <div class="ed-field"><label for="lovenaCollageEyebrow">Palavra acima do título</label><input id="lovenaCollageEyebrow" type="text" value="Feliz" maxlength="40"></div>
     <div class="ed-field"><label for="lovenaCollageSubtitle">Texto abaixo do título</label><input id="lovenaCollageSubtitle" type="text" value="MEU AMOR" maxlength="80"></div>
@@ -1860,7 +1876,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
- state.collage=Object.assign({title:"ANIVERSÁRIO",eyebrow:"Feliz",subtitle:"MEU AMOR",floatingWord:"Te amo",background:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
+ state.collage=Object.assign({title:"ANIVERSÁRIO",eyebrow:"Feliz",subtitle:"MEU AMOR",floatingWord:"Te amo",background:null,mainPhoto:null,photos:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
+ if(!Array.isArray(state.collage.photos))state.collage.photos=Array.from({length:6},function(){return null;});
+ state.collage.photos=state.collage.photos.slice(0,10);
+ if(!Object.prototype.hasOwnProperty.call(state.collage,"mainPhoto"))state.collage.mainPhoto=null;
  var heroX=Number(state.heroPosition.x),heroY=Number(state.heroPosition.y);
  state.heroPosition.x=isFinite(heroX)?Math.max(0,Math.min(100,heroX)):50;
  state.heroPosition.y=isFinite(heroY)?Math.max(0,Math.min(100,heroY)):47;
@@ -1950,8 +1969,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   updateEditorGuide("Editando: "+def.label,help);
  }
  function imageTargetForKey(key){
+  if(key==="collage-main")return q("#colagem-memorias [data-memory-collage-main-photo]");
+  if(key.indexOf("collage:")===0){var collageIndex=Number(key.split(":")[1]);return q('#colagem-memorias [data-memory-collage-photo="'+collageIndex+'"]');}
   if(key==="hero")return q(".hero")||q(".hero-photo");
-  if(key.indexOf("gallery:")===0){var index=Number(key.split(":")[1]);var collageImage=q('#colagem-memorias [data-memory-collage-photo="'+index+'"]');return collageImage||q(".gallery-item",index);}
+  if(key.indexOf("gallery:")===0){var index=Number(key.split(":")[1]);return q(".gallery-item",index)||q(".gallery-photo",index);}
   return null;
  }
  function findImageKeyForElement(el){
@@ -1964,6 +1985,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   return null;
  }
  function focusEditorImage(key){
+  if(key==="collage-main"||key.indexOf("collage:")===0){focusCollagePhoto(key);return;}
   var details=imagesHost.closest("details");if(details)details.open=true;
   fieldsHost.querySelectorAll(".is-editor-active").forEach(function(el){el.classList.remove("is-editor-active");});
   imagesHost.querySelectorAll(".is-editor-active").forEach(function(el){el.classList.remove("is-editor-active");});
@@ -1975,6 +1997,19 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var label=row&&row.querySelector("strong")?row.querySelector("strong").textContent:"Imagem";
   var help=key==="hero"?"Esta é a foto da abertura. Use “Trocar foto” ou ajuste o enquadramento logo abaixo.":"Esta é a foto selecionada na galeria. Use “Trocar foto” para substituir somente esta imagem.";
   updateEditorGuide("Editando: "+label,help);
+ }
+ function focusCollagePhoto(key){
+  var details=document.getElementById("lovenaCollageEditorControls");
+  if(details)details.open=true;
+  var host=key==="collage-main"?document.getElementById("lovenaCollageMainPhotoControls"):document.getElementById("lovenaCollagePhotoControls");
+  if(host)host.querySelectorAll(".is-editor-active").forEach(function(el){el.classList.remove("is-editor-active");});
+  var row=host&&host.querySelector('[data-collage-photo-key="'+key+'"]');
+  if(row){row.classList.add("is-editor-active");row.scrollIntoView({behavior:"smooth",block:"center"});}
+  var target=imageTargetForKey(key);
+  setActivePreviewElement(target);
+  if(target&&target.scrollIntoView)target.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
+  var label=key==="collage-main"?"Foto principal da colagem":"Foto rolante "+(Number(key.split(":")[1])+1);
+  updateEditorGuide("Editando: "+label,"Esta foto pertence somente à colagem rolante. Troque-a aqui sem modificar as fotos de “Nossos momentos”.");
  }
  function focusEditorMilestone(index){
   var details=milestoneHost.closest("details");if(details)details.open=true;
@@ -2118,11 +2153,11 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  }
  function findCollageImageKey(el){
   if(!el||!el.closest)return null;
+  if(el.closest("[data-memory-collage-main-photo]")||el.closest(".memory-collage-main-photo"))return "collage-main";
   var image=el.closest("[data-memory-collage-photo]");
-  if(image)return "gallery:"+Number(image.getAttribute("data-memory-collage-photo")||0);
-  if(el.closest(".memory-collage-main-photo"))return "gallery:0";
+  if(image)return "collage:"+Number(image.getAttribute("data-memory-collage-photo")||0);
   var figure=el.closest(".memory-collage-strip figure");
-  if(figure){var photo=figure.querySelector("[data-memory-collage-photo]");if(photo)return "gallery:"+Number(photo.getAttribute("data-memory-collage-photo")||0);}
+  if(figure){var photo=figure.querySelector("[data-memory-collage-photo]");if(photo)return "collage:"+Number(photo.getAttribute("data-memory-collage-photo")||0);}
   return null;
  }
  document.addEventListener("click",function(event){
@@ -2262,7 +2297,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   });
   row.style.gridTemplateColumns=photos.length>6?"repeat("+photos.length+",112px)":"";
   row.style.overflowX=photos.length>6?"auto":"";
-  document.querySelectorAll("img[data-memory-collage-photo]").forEach(function(image){var photoIndex=Number(image.getAttribute("data-memory-collage-photo"));var source=state.images.gallery[photoIndex];var fallback=image.getAttribute("data-memory-collage-default");image.src=source||fallback||image.src;});
   applyCollage();
  }
  function setupCollageAutoScroll(section){
@@ -2283,7 +2317,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var cfg=state.collage||{},section=document.getElementById("colagem-memorias");
   if(!section)return;
   setupCollageAutoScroll(section);
-  var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),floatingWords=section.querySelectorAll(".memory-collage-floating-words span:not(.memory-collage-word-hidden)"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),strip=section.querySelector(".memory-collage-strip");
+  var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),floatingWords=section.querySelectorAll(".memory-collage-floating-words span:not(.memory-collage-word-hidden)"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),mainImage=section.querySelector("[data-memory-collage-main-photo]"),strip=section.querySelector(".memory-collage-strip");
+  var collagePhotos=Array.isArray(cfg.photos)?cfg.photos.slice(0,10):[];
+  if(mainImage){var mainFallback=mainImage.getAttribute("data-memory-collage-default");mainImage.src=cfg.mainPhoto||mainFallback||mainImage.src;}
+  if(strip){strip.querySelectorAll("img[data-memory-collage-photo]").forEach(function(image){var index=Number(image.getAttribute("data-memory-collage-photo"));var fallback=image.getAttribute("data-memory-collage-default");image.src=collagePhotos[index]||fallback||image.src;var figure=image.closest("figure");if(figure)figure.hidden=index>=collagePhotos.length;});}
   if(eyebrow)eyebrow.textContent=cfg.eyebrow==null?"Feliz":cfg.eyebrow;
   if(title)title.textContent=cfg.title==null?"ANIVERSÁRIO":cfg.title;
   if(subtitle)subtitle.textContent=cfg.subtitle==null?"MEU AMOR":cfg.subtitle;
@@ -2293,6 +2330,42 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(strip){strip.style.setProperty("--collage-strip-width",Number(cfg.stripWidth||40)+"%");strip.style.setProperty("--collage-strip-width-desktop",Math.round(Number(cfg.stripWidth||40)*3.3+110)+"px");}
   var copy=section.querySelector(".memory-collage-copy");if(copy){copy.style.setProperty("--collage-title-y",Number(cfg.titleY||35)+"%");copy.style.top=Number(cfg.titleY||35)+"%";}
   ["Title","Eyebrow","Subtitle","FloatingWord","MainWidth","MainHeight","MainX","MainY","StripWidth","TitleY"].forEach(function(key){var input=document.getElementById("lovenaCollage"+key);if(!input)return;var prop=key.charAt(0).toLowerCase()+key.slice(1);if(input.type==="range")input.value=cfg[prop]==null?input.value:cfg[prop];var out=document.getElementById(input.id+"Value");if(out)out.textContent=input.value+(input.type==="range"?"%":"");});
+ }
+ function renderCollagePhotoControls(){
+  var mainHost=document.getElementById("lovenaCollageMainPhotoControls");
+  var photosHost=document.getElementById("lovenaCollagePhotoControls");
+  if(!mainHost||!photosHost)return;
+  mainHost.innerHTML="";photosHost.innerHTML="";
+  function addRow(host,key,label,help,custom,defaultSource,removeIndex){
+   var row=document.createElement("div");row.className="ed-image-row";row.dataset.collagePhotoKey=key;
+   var thumb=document.createElement("span");thumb.className="ed-image-thumb";thumb.setAttribute("aria-hidden","true");
+   if(custom)thumb.style.backgroundImage='url("'+custom+'")';else if(defaultSource)thumb.style.backgroundImage='url("'+defaultSource+'")';
+   row.appendChild(thumb);
+   var description=document.createElement("div");
+   var strong=document.createElement("strong");strong.textContent=label;description.appendChild(strong);
+   var small=document.createElement("small");small.textContent=help;description.appendChild(small);row.appendChild(description);
+   var actions=document.createElement("div");actions.className="ed-image-actions";actions.style.cssText="display:flex;flex-wrap:wrap;gap:5px;align-items:center";
+   var input=document.createElement("input");input.type="file";input.accept="image/jpeg,image/png,image/webp,image/gif,image/avif";input.setAttribute("aria-label","Escolher "+label);
+   var pick=document.createElement("button");pick.type="button";pick.className="ed-mini-button";pick.textContent="Trocar foto";pick.addEventListener("click",function(event){event.preventDefault();input.click();});
+   input.addEventListener("change",function(){var file=input.files&&input.files[0];if(file)readImage(file,key,input);});
+   actions.appendChild(pick);actions.appendChild(input);
+   if(custom){var original=document.createElement("button");original.type="button";original.className="ed-mini-button ed-danger";original.textContent="Usar original";original.dataset.clearImage=key;actions.appendChild(original);}
+   if(removeIndex!=null){var remove=document.createElement("button");remove.type="button";remove.className="ed-mini-button ed-danger";remove.textContent="Remover";remove.dataset.removeCollagePhoto=String(removeIndex);actions.appendChild(remove);}
+   row.appendChild(actions);host.appendChild(row);
+  }
+  var mainImage=document.querySelector("#colagem-memorias [data-memory-collage-main-photo]");
+  var mainDefault=mainImage&&mainImage.getAttribute("data-memory-collage-default")||"assets/lovena-sample-photo-01.jpg";
+  addRow(mainHost,"collage-main","Foto principal da montagem","Imagem independente da foto de abertura e da galeria.",state.collage.mainPhoto,mainDefault,null);
+  var photos=Array.isArray(state.collage.photos)?state.collage.photos:[];
+  photos.forEach(function(source,index){
+   var image=document.querySelector('#colagem-memorias [data-memory-collage-photo="'+index+'"]');
+   var fallback=image&&image.getAttribute("data-memory-collage-default")||"assets/lovena-sample-photo-02.jpg";
+   addRow(photosHost,"collage:"+index,"Foto rolante "+(index+1),source?"Foto personalizada e independente.":"Foto de exemplo — você pode escolher outra.",source,fallback,index);
+  });
+  var count=document.getElementById("lovenaCollagePhotoCount");
+  if(count)count.textContent=photos.length+" de 10 fotos";
+  var add=document.getElementById("lovenaAddCollagePhoto");
+  if(add){add.disabled=photos.length>=10;add.textContent=photos.length>=10?"Limite de 10 fotos atingido":"＋ Adicionar foto à montagem";}
  }
  function bindCollageControls(){
   var mapping={lovenaCollageTitle:"title",lovenaCollageEyebrow:"eyebrow",lovenaCollageSubtitle:"subtitle",lovenaCollageFloatingWord:"floatingWord",lovenaCollageMainWidth:"mainWidth",lovenaCollageMainHeight:"mainHeight",lovenaCollageMainX:"mainX",lovenaCollageMainY:"mainY",lovenaCollageStripWidth:"stripWidth",lovenaCollageTitleY:"titleY"};
@@ -2387,7 +2460,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(file.size>40*1024*1024){fail("Esta foto tem mais de 40 MB. Escolha uma versão menor.");return;}
   if(typeof window.createImageBitmap!=="function"){fail("Seu navegador não consegue preparar a foto. Atualize o Chrome e tente novamente.");return;}
   setStatus("Preparando a foto… não feche esta janela.");
-  var maxDimension=key==="hero"?1400:1000;
+  var maxDimension=(key==="hero"||key==="collage-main")?1400:1000;
   var maxPixels=750000;
   window.createImageBitmap(file,{resizeWidth:maxDimension,resizeQuality:"high"}).then(function(bitmap){
    var canvas=null;
@@ -2410,8 +2483,11 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
        if(typeof uri!=="string"||uri.indexOf("data:image/jpeg;base64,")!==0)throw new Error("Formato convertido inválido.");
        if(key==="hero")state.images.hero=uri;
        else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=uri;
+       else if(key==="collage-main")state.collage.mainPhoto=uri;
+       else if(key.indexOf("collage:")===0)state.collage.photos[Number(key.split(":")[1])]=uri;
        data.images=state.images;
        applyImages();
+       if(key==="collage-main"||key.indexOf("collage:")===0)renderCollagePhotoControls();
        var row=imagesHost.querySelector('[data-image-key="'+key+'"]');
        var thumb=row&&row.querySelector(".ed-image-thumb");if(thumb)thumb.style.backgroundImage='url("'+uri+'")';
        var actions=row&&row.querySelector(".ed-image-actions");
@@ -2494,6 +2570,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(exportButton)exportButton.disabled=true;
   try{
    var offlineData=JSON.parse(JSON.stringify(data));
+   offlineData.collage=JSON.parse(JSON.stringify(state.collage||{}));
+   offlineData.collage.photos=(Array.isArray(offlineData.collage.photos)?offlineData.collage.photos:[]).slice(0,10);
+   offlineData.collage.mainPhoto=await imageSourceToDataUrl(offlineData.collage.mainPhoto||null);
+   offlineData.collage.photos=await Promise.all(offlineData.collage.photos.map(function(source){return imageSourceToDataUrl(source||null);}));
    offlineData.images=Object.assign({hero:null,gallery:[]},offlineData.images||{});
    offlineData.images.hero=await imageSourceToDataUrl(offlineData.images.hero||null);
    var imageCount=Math.max((offlineData.photos||[]).length,(offlineData.images.gallery||[]).length);
@@ -2528,7 +2608,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
      if(copy)copy.style.top=(collage.titleY||35)+"%";
     }
    }
-   clone.querySelectorAll("img[data-memory-collage-photo]").forEach(function(img){var photoIndex=Number(img.getAttribute("data-memory-collage-photo"));var source=(offlineData.images.gallery||[])[photoIndex];if(source)img.setAttribute("src",source);img.removeAttribute("srcset");});
+   clone.querySelectorAll("img[data-memory-collage-main-photo]").forEach(function(img){var source=offlineData.collage&&offlineData.collage.mainPhoto;var fallback=img.getAttribute("data-memory-collage-default");img.setAttribute("src",source||fallback||img.getAttribute("src"));img.removeAttribute("srcset");});
+   clone.querySelectorAll("img[data-memory-collage-photo]").forEach(function(img){var photoIndex=Number(img.getAttribute("data-memory-collage-photo"));var source=(offlineData.collage&&offlineData.collage.photos||[])[photoIndex];var fallback=img.getAttribute("data-memory-collage-default");img.setAttribute("src",source||fallback||img.getAttribute("src"));img.removeAttribute("srcset");var figure=img.closest("figure");if(figure)figure.hidden=photoIndex>=(offlineData.collage&&offlineData.collage.photos||[]).length;});
    var gallery=clone.querySelector("#galleryRow");
    if(gallery){
     var galleryItems=Array.from(gallery.children).filter(function(el){return el.dataset.galleryClone!=="true";});
@@ -2653,11 +2734,26 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
     if(data.milestones.length>=10){setStatus("Limite de 10 marcos atingido.");return;}
     data.milestones.push(["Novo capítulo","Conte a história deste momento.","Adicione uma data"]);syncTimeline();renderMilestones();buildTextFields();scheduleSave();return;
    }
+   if(name==="add-collage-photo"){
+    if(state.collage.photos.length>=10){setStatus("A colagem aceita no máximo 10 fotos rolantes.");return;}
+    state.collage.photos.push(null);applyCollage();renderCollagePhotoControls();markEditableTargets();scheduleSave();setStatus("Foto adicionada à montagem. Escolha uma imagem para personalizá-la.");return;
+   }
   }
+  var removeCollagePhoto=event.target.closest("[data-remove-collage-photo]");
+  if(removeCollagePhoto){var collageIndex=Number(removeCollagePhoto.dataset.removeCollagePhoto);if(state.collage.photos.length<=1){setStatus("Mantenha pelo menos uma foto na montagem.");return;}state.collage.photos.splice(collageIndex,1);applyCollage();renderCollagePhotoControls();scheduleSave();setStatus("Foto removida somente da montagem.");return;}
   var removePhoto=event.target.closest("[data-remove-photo]");
   if(removePhoto){var ix=Number(removePhoto.dataset.removePhoto);if(data.photos.length<=1){setStatus("Mantenha pelo menos uma foto.");return;}data.photos.splice(ix,1);state.images.gallery.splice(ix,1);syncGallery();imageControls();buildTextFields();scheduleSave();return;}
   var clearImage=event.target.closest("[data-clear-image]");
-  if(clearImage){var key=clearImage.dataset.clearImage;if(key==="hero")state.images.hero=null;else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=null;applyImages();imageControls();scheduleSave();return;}
+  if(clearImage){
+   var key=clearImage.dataset.clearImage;
+   if(key==="hero")state.images.hero=null;
+   else if(key.indexOf("gallery:")===0)state.images.gallery[Number(key.split(":")[1])]=null;
+   else if(key==="collage-main")state.collage.mainPhoto=null;
+   else if(key.indexOf("collage:")===0)state.collage.photos[Number(key.split(":")[1])]=null;
+   applyImages();imageControls();
+   if(key==="collage-main"||key.indexOf("collage:")===0){applyCollage();renderCollagePhotoControls();}
+   scheduleSave();return;
+  }
  });
  document.querySelectorAll("[data-editor-color]").forEach(function(input){input.addEventListener("input",function(){state.colors[input.dataset.editorColor]=input.value;applyColors();scheduleSave();});});
  document.getElementById("lovenaEditorImport").addEventListener("change",function(event){
@@ -2665,7 +2761,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(!obj||!obj.data||!Array.isArray(obj.data.photos)||!Array.isArray(obj.data.milestones))throw new Error("Arquivo não parece ser um backup Lovena.");localStorage.setItem(EDIT_KEY,JSON.stringify(obj));location.reload();}catch(err){setStatus("Não foi possível importar: "+err.message);}};reader.readAsText(file);event.target.value="";
  });
  window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
- applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();
+ applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();renderCollagePhotoControls();
  if(editMode){document.body.classList.add("editor-mode");markEditableTargets();trigger.hidden=false;openEditor();}
 
 
