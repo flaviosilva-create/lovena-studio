@@ -2206,6 +2206,37 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    var remove=document.createElement("button");remove.type="button";remove.className="ed-mini-button ed-danger";remove.textContent="Excluir marco";remove.addEventListener("click",function(){if(data.milestones.length<=1){setStatus("Mantenha pelo menos um marco.");return;}data.milestones.splice(index,1);syncTimeline();renderMilestones();buildTextFields();scheduleSave();});row.appendChild(remove);milestoneHost.appendChild(row);
   });
  }
+
+ function onlineExperienceUrl(){
+  var url=new URL(window.location.href);url.search="";url.hash="";return url.href;
+ }
+ function showOnlineShare(){
+  var panel=document.getElementById("lovenaSharePanel");
+  var input=document.getElementById("lovenaShareUrl");
+  var qr=document.getElementById("lovenaShareQr");
+  var qrLink=document.getElementById("lovenaShareQrLink");
+  if(!panel||!input||!qr||!qrLink)return;
+  panel.hidden=!panel.hidden;
+  if(panel.hidden)return;
+  var url=onlineExperienceUrl();
+  input.value=url;
+  var qrUrl="https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=14&format=png&data="+encodeURIComponent(url);
+  qr.src=qrUrl;qr.hidden=false;qrLink.href=qrUrl;
+  qr.onerror=function(){setStatus("Não foi possível carregar o QR Code. Confira sua conexão e tente novamente.");};
+ }
+ function copyOnlineExperienceUrl(){
+  var input=document.getElementById("lovenaShareUrl");
+  if(!input)return;
+  var value=input.value||onlineExperienceUrl();
+  if(navigator.clipboard&&window.isSecureContext){
+   navigator.clipboard.writeText(value).then(function(){setStatus("Link online copiado. Ele abre a versão pública, não as personalizações locais.");}).catch(function(){input.focus();input.select();setStatus(document.execCommand("copy")?"Link online copiado.":"Selecione e copie o link manualmente.");});
+  }else{input.focus();input.select();setStatus(document.execCommand("copy")?"Link online copiado.":"Selecione e copie o link manualmente.");}
+ }
+ function downloadOnlineQr(){
+  var qr=document.getElementById("lovenaShareQr");
+  if(!qr||!qr.src){setStatus("Primeiro mostre o link e o QR Code.");return;}
+  fetch(qr.src,{mode:"cors"}).then(function(response){if(!response.ok)throw new Error("QR indisponível");return response.blob();}).then(function(blob){downloadBlob(blob,"lovena-qr-code-online.png");setStatus("QR Code do link online baixado.");}).catch(function(){setStatus("Não foi possível baixar o QR automaticamente. Clique na imagem do QR Code e salve-a.");});
+ }
  function resetDraft(){
   if(!confirm("Restaurar a experiência original? Isso apagará o rascunho salvo neste navegador."))return;
   localStorage.removeItem(EDIT_KEY);location.href=location.pathname+"?edit=1&reset="+Date.now();
@@ -2219,6 +2250,9 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
    if(name==="save"){saveDraft(true);return;}
    if(name==="export"){exportPage();return;}
    if(name==="backup"){backup();return;}
+   if(name==="share-online"){showOnlineShare();return;}
+   if(name==="copy-online-link"){copyOnlineExperienceUrl();return;}
+   if(name==="download-online-qr"){downloadOnlineQr();return;}
    if(name==="import"){document.getElementById("lovenaEditorImport").click();return;}
    if(name==="reset"){resetDraft();return;}
    if(name==="view"){enterPreviewMode();return;}
