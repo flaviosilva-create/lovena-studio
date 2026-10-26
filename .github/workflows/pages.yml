@@ -38,7 +38,7 @@ jobs:
           for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
               if marker not in html:
                   raise SystemExit(f"Landing page is missing required structure: {marker}")
-          if 'href="./landing.css?v=20261023-real-flag-images-1"' not in html:
+          if 'href="./landing.css?v=20261026-two-tier-pricing-1"' not in html:
               raise SystemExit("The existing landing page stylesheet must remain linked")
           if 'default_language: "en"' not in html:
               raise SystemExit("Lovena source language must remain English")
