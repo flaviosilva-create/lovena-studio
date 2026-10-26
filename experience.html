@@ -986,14 +986,16 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 .memory-collage-main-photo{left:var(--collage-main-x,2%);bottom:var(--collage-main-y,-2%);width:min(var(--collage-main-width,56%),620px);height:var(--collage-main-height,55%)}
 .memory-collage-strip{width:var(--collage-strip-width,40%)}
 
-/* Desktop: preserve the more open, portrait-like framing of the mobile collage. */
+/* Desktop: frame the collage vertically so it feels as open as the mobile layout. */
 @media(min-width:851px){
  .lovena-memory-collage{
-  height:min(135vh,1280px);
-  min-height:900px;
+  width:min(100%,1180px);
+  margin-inline:auto;
+  height:clamp(1080px,105vw,1480px);
+  min-height:1080px;
  }
  .lovena-memory-collage .memory-collage-strip{
-  width:min(var(--collage-strip-width,40%),clamp(250px,26vw,380px));
+  width:min(var(--collage-strip-width,40%),clamp(220px,19vw,280px));
  }
  .lovena-memory-collage .memory-collage-main-photo{
   height:min(78%,calc(var(--collage-main-height,55%) + 12%));
