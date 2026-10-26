@@ -915,23 +915,68 @@ body.editor-mode .experience{padding-bottom:28px}
 
 
 <style id="lovena-memory-collage-css">
-.lovena-memory-collage{position:relative;isolation:isolate;min-height:clamp(640px,90vh,1000px);height:90vh;max-height:1000px;overflow:hidden;background:#050506;color:#fff;padding:0;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.88fr);gap:clamp(12px,1.5vw,22px)}
-.memory-collage-backdrop{position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 25% 20%,#7d7765 0%,#3d3b32 33%,#0d0d0e 70%);opacity:.72}
-.memory-collage-main-photo{position:absolute;z-index:2;left:2%;bottom:-3%;width:min(54%,600px);height:75%;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55));transform:rotate(-1.2deg)}
-.memory-collage-main-photo:before{content:"";position:absolute;inset:-9px;background:#fff;clip-path:polygon(18% 1%,72% 0%,87% 5%,95% 16%,94% 31%,100% 45%,95% 61%,98% 78%,86% 94%,68% 100%,48% 96%,31% 100%,16% 91%,8% 77%,0 62%,4% 45%,0 29%,7% 12%)}
-.memory-collage-main-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;clip-path:polygon(18% 1%,72% 0%,87% 5%,95% 16%,94% 31%,100% 45%,95% 61%,98% 78%,86% 94%,68% 100%,48% 96%,31% 100%,16% 91%,8% 77%,0 62%,4% 45%,0 29%,7% 12%);border:0}
-.memory-collage-strip{position:absolute;top:0;right:2.5%;width:40%;height:100%;padding:12px 0 12px 15px;display:grid;grid-template-rows:repeat(6,minmax(0,1fr));gap:12px;overflow:hidden}
-.memory-collage-strip figure{position:relative;min-height:0;margin:0;overflow:hidden;border-radius:20px;border:1px solid rgba(245,226,204,.24);box-shadow:0 7px 20px #0006}
-.memory-collage-strip figure:before{content:"MEMORY PORTRAIT";position:absolute;z-index:2;left:-12px;top:12px;writing-mode:vertical-rl;transform:rotate(180deg);font:700 6px/1 Manrope,Arial,sans-serif;letter-spacing:1px;color:#c28a57}
+/* Portrait scrapbook collage: faded photographic background, cut-out foreground and vertical memory strip */
+.lovena-memory-collage{position:relative;isolation:isolate;height:min(112vh,1120px);min-height:760px;overflow:hidden;background:#030304;color:#fff;padding:0;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.88fr);gap:clamp(12px,1.5vw,22px)}
+.memory-collage-backdrop{position:absolute;z-index:-1;inset:0 40% 0 0;background-image:linear-gradient(90deg,rgba(28,27,21,.28),rgba(8,8,8,.32)),linear-gradient(0deg,rgba(0,0,0,.64),rgba(0,0,0,.04) 55%,rgba(0,0,0,.12)),url("assets/lovena-sample-hero.jpg");background-size:cover;background-position:center;filter:grayscale(.72) sepia(.32) brightness(.68);opacity:.97}
+.lovena-memory-collage:before{content:"";position:absolute;z-index:0;pointer-events:none;inset:0 40% 0 0;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,247,226,.025) 4px 5px),linear-gradient(90deg,transparent 78%,rgba(0,0,0,.72))}
+.lovena-memory-main-photo{position:absolute;z-index:2;left:2%;bottom:-2%;width:min(56%,620px);height:55%;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55));transform:rotate(-1.2deg)}
+.memory-collage-main-photo{position:absolute;z-index:2;left:2%;bottom:-2%;width:min(56%,620px);height:55%;filter:drop-shadow(0 12px 14px rgba(0,0,0,.55));transform:rotate(-1.2deg)}
+.memory-collage-main-photo:before{content:"";position:absolute;inset:-9px;background:#fff;clip-path:polygon(20% 0%,70% 2%,83% 7%,91% 17%,93% 31%,100% 43%,96% 56%,98% 72%,91% 86%,82% 95%,65% 100%,48% 97%,34% 100%,21% 94%,12% 83%,8% 70%,1% 59%,4% 45%,0% 32%,6% 18%,12% 7%)}
+.memory-collage-main-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;clip-path:polygon(20% 0%,70% 2%,83% 7%,91% 17%,93% 31%,100% 43%,96% 56%,98% 72%,91% 86%,82% 95%,65% 100%,48% 97%,34% 100%,21% 94%,12% 83%,8% 70%,1% 59%,4% 45%,0% 32%,6% 18%,12% 7%);border:0}
+.memory-collage-strip{position:absolute;z-index:2;top:0;right:2.5%;width:40%;height:116%;padding:4px 0 12px 15px;display:grid;grid-template-rows:repeat(6,minmax(0,1fr));gap:12px;overflow:hidden}
+.memory-collage-strip figure{position:relative;min-height:0;margin:0;overflow:hidden;border-radius:clamp(14px,1.8vw,22px);border:1px solid rgba(245,226,204,.24);box-shadow:0 7px 20px #0008}
+.memory-collage-strip figure:before{content:"MEMORY PORTRAIT";position:absolute;z-index:2;left:-12px;top:12px;writing-mode:vertical-rl;transform:rotate(180deg);font:700 6px/1 Manrope,Arial,sans-serif;letter-spacing:1px;color:#c28a57;text-shadow:0 1px 4px #000}
+.memory-collage-strip figure:nth-child(even):before{content:"LOVE · MEMORY"}
 .memory-collage-strip img{display:block;width:100%;height:100%;object-fit:cover;filter:brightness(.87) saturate(.85)}
-.memory-collage-copy{position:absolute;z-index:4;top:14%;left:6%;width:44%;display:flex;align-items:center;flex-direction:column;text-align:center;text-shadow:0 3px 12px #0009;pointer-events:none}
-.memory-collage-copy span{font:italic 400 clamp(25px,4vw,54px)/1 Caveat,cursive;transform:rotate(-5deg)}
-.memory-collage-copy strong{font:700 clamp(25px,4.3vw,58px)/.96 'Playfair Display',Georgia,serif;letter-spacing:-1.5px;text-transform:uppercase;margin:8px 0 15px}
-.memory-collage-copy small{font:italic 700 12px/1.4 Manrope,Arial,sans-serif;letter-spacing:1px}
-.memory-collage-floating-words{position:absolute;z-index:5;inset:0;overflow:hidden;pointer-events:none;color:#fffbd0b8;font:300 clamp(12px,1.9vw,24px)/1 Manrope,Arial,sans-serif;letter-spacing:1px;text-shadow:0 2px 7px #0009}
+.memory-collage-copy{position:absolute;z-index:4;top:35%;left:4%;width:52%;display:flex;align-items:center;flex-direction:column;text-align:center;text-shadow:0 3px 12px rgba(0,0,0,.6);pointer-events:none}
+.memory-collage-copy span{font:italic 400 clamp(31px,4vw,55px)/.92 Caveat,cursive;transform:rotate(-5deg);margin-bottom:5px}
+.memory-collage-copy strong{font:700 clamp(29px,4.3vw,58px)/.98 'Playfair Display',Georgia,serif;letter-spacing:-1.6px;text-transform:uppercase;margin:0 0 9px}
+.memory-collage-copy strong:after{content:"";display:block;width:60px;height:7px;margin:8px auto 0;border-top:2px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(-4deg);opacity:.9}
+.memory-collage-copy small{font:italic 800 clamp(10px,1.1vw,14px)/1.3 Manrope,Arial,sans-serif;letter-spacing:.7px;margin-top:1px}
+.memory-collage-floating-words{position:absolute;z-index:5;inset:0;overflow:hidden;pointer-events:none;color:rgba(255,255,255,.8);font:300 clamp(12px,1.9vw,24px)/1 Manrope,Arial,sans-serif;letter-spacing:1px;text-shadow:0 2px 7px rgba(0,0,0,.6)}
 .memory-collage-floating-words span{position:absolute;white-space:nowrap}
-.memory-collage-floating-words span:nth-child(1){left:38%;top:13%}.memory-collage-floating-words span:nth-child(2){left:7%;top:24%;font-size:1.35em}.memory-collage-floating-words span:nth-child(3){left:42%;top:31%;font-size:.8em}.memory-collage-floating-words span:nth-child(4){left:25%;top:42%;font-size:.9em}.memory-collage-floating-words span:nth-child(5){left:5%;top:55%;font-size:.8em}.memory-collage-floating-words span:nth-child(6){left:64%;top:46%;font-size:1.1em}.memory-collage-floating-words span:nth-child(7){left:16%;top:72%;font-size:1.2em}.memory-collage-floating-words span:nth-child(8){left:65%;top:78%;font-size:1.15em}.memory-collage-floating-words span:nth-child(9){left:39%;top:89%;font-size:.9em}
-@media(max-width:650px){.lovena-memory-collage{height:78svh;min-height:570px;max-height:780px;grid-template-columns:minmax(0,1.05fr) minmax(0,.88fr);gap:7px}.memory-collage-strip{right:2%;width:41%;padding:8px 0 8px 11px;gap:8px;grid-template-rows:repeat(6,minmax(0,1fr))}.memory-collage-strip figure{border-radius:12px}.memory-collage-strip figure:before{left:-9px;font-size:5px}.memory-collage-main-photo{left:1%;bottom:-1%;width:54%;height:57%;filter:drop-shadow(0 8px 10px #0009)}.memory-collage-main-photo:before{inset:-6px}.memory-collage-copy{top:17%;left:2%;width:53%}.memory-collage-copy span{font-size:clamp(24px,7vw,34px)}.memory-collage-copy strong{font-size:clamp(22px,6.2vw,34px);letter-spacing:-.8px;margin:7px 0 10px}.memory-collage-copy small{font-size:10px}.memory-collage-floating-words{font-size:clamp(9px,2.5vw,14px);letter-spacing:.5px}.memory-collage-floating-words span:nth-child(2){left:5%;top:26%}.memory-collage-floating-words span:nth-child(3){left:42%;top:34%}.memory-collage-floating-words span:nth-child(4){left:23%;top:45%}.memory-collage-floating-words span:nth-child(5){left:4%;top:57%}.memory-collage-floating-words span:nth-child(6){left:62%;top:49%}.memory-collage-floating-words span:nth-child(7){left:10%;top:73%}.memory-collage-floating-words span:nth-child(8){left:61%;top:79%}.memory-collage-floating-words span:nth-child(9){left:35%;top:89%}}
+.memory-collage-floating-words span:nth-child(1){left:38%;top:18%}
+.memory-collage-floating-words span:nth-child(2){left:8%;top:25%;font-size:1.35em}
+.memory-collage-floating-words span:nth-child(3){left:42%;top:31%;font-size:.8em}
+.memory-collage-floating-words span:nth-child(4){left:25%;top:43%;font-size:.9em}
+.memory-collage-floating-words span:nth-child(5){left:6%;top:53%;font-size:.8em}
+.memory-collage-floating-words span:nth-child(6){left:64%;top:39%;font-size:1.1em}
+.memory-collage-floating-words span:nth-child(7){left:11%;top:73%;font-size:1.2em}
+.memory-collage-floating-words span:nth-child(8){left:65%;top:78%;font-size:1.15em}
+.memory-collage-floating-words span:nth-child(9){left:37%;top:88%;font-size:.9em}
+@media(max-width:850px){
+ .lovena-memory-collage{height: min(145vw,1000px);min-height:680px;max-height:1000px}
+ .memory-collage-backdrop,.lovena-memory-collage:before{right:40%}
+ .memory-collage-main-photo{left:1%;bottom:-1%;width:56%;height:53%}
+ .memory-collage-copy{top:36%;left:2%;width:54%}
+ .memory-collage-copy strong{font-size:clamp(28px,5.4vw,43px);letter-spacing:-1px}
+ .memory-collage-strip{width:41%;right:2%;height:116%;padding-left:13px;gap:10px}
+}
+@media(max-width:650px){
+ .lovena-memory-collage{height:min(190vw,1040px);min-height:700px;max-height:1040px;grid-template-columns:minmax(0,1.05fr) minmax(0,.88fr);gap:7px}
+ .memory-collage-backdrop,.lovena-memory-collage:before{right:40%}
+ .memory-collage-strip{right:2%;width:41%;height:116%;padding:4px 0 10px 11px;gap:8px;grid-template-rows:repeat(6,minmax(0,1fr))}
+ .memory-collage-strip figure{border-radius:12px}
+ .memory-collage-strip figure:before{left:-9px;top:7px;font-size:5px;letter-spacing:.7px}
+ .memory-collage-main-photo{left:1%;bottom:-1%;width:55%;height:50%;filter:drop-shadow(0 8px 10px #0009)}
+ .memory-collage-main-photo:before{inset:-6px}
+ .memory-collage-copy{top:35%;left:1%;width:55%}
+ .memory-collage-copy span{font-size:clamp(26px,7.5vw,36px);margin-bottom:3px}
+ .memory-collage-copy strong{font-size:clamp(22px,6.4vw,35px);letter-spacing:-.9px;margin-bottom:7px}
+ .memory-collage-copy strong:after{width:45px;height:5px;margin-top:6px}
+ .memory-collage-copy small{font-size:clamp(9px,2.5vw,11px)}
+ .memory-collage-floating-words{font-size:clamp(9px,2.5vw,14px);letter-spacing:.5px}
+ .memory-collage-floating-words span:nth-child(1){left:39%;top:18%}
+ .memory-collage-floating-words span:nth-child(2){left:5%;top:26%;font-size:1.25em}
+ .memory-collage-floating-words span:nth-child(3){left:39%;top:31%}
+ .memory-collage-floating-words span:nth-child(4){left:20%;top:44%}
+ .memory-collage-floating-words span:nth-child(5){left:4%;top:55%}
+ .memory-collage-floating-words span:nth-child(6){left:62%;top:40%;font-size:1.1em}
+ .memory-collage-floating-words span:nth-child(7){left:9%;top:73%}
+ .memory-collage-floating-words span:nth-child(8){left:60%;top:79%}
+ .memory-collage-floating-words span:nth-child(9){left:34%;top:89%}
+}
+@media(prefers-reduced-motion:reduce){.memory-collage-strip img{transition:none}}
 </style>
 
 </head>
@@ -1021,7 +1066,7 @@ body.editor-mode .experience{padding-bottom:28px}
 
  <section class="lovena-memory-collage" id="colagem-memorias" aria-label="Colagem de fotos do casal">
   <div class="memory-collage-backdrop" aria-hidden="true"></div>
-  <div class="memory-collage-copy" aria-hidden="true"><span>cada foto,</span><strong>um pedacinho<br>da nossa história</strong><small>♡ para sempre</small></div>
+  <div class="memory-collage-copy" aria-hidden="true"><span>Feliz</span><strong>ANIVERSÁRIO</strong><small>MEU AMOR</small></div>
   <div class="memory-collage-main-photo"><img data-memory-collage-photo="0" data-memory-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="Foto principal do casal"></div>
   <div class="memory-collage-strip" aria-label="Mais momentos do casal">
    <figure><img data-memory-collage-photo="1" data-memory-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Lembrança do casal"></figure>
