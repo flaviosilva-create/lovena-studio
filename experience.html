@@ -590,6 +590,236 @@ body.editor-mode .experience{padding-bottom:28px}
 }
 </style>
 
+
+<style id="lovena-desktop-layout-mobile">
+/* Keep the same desktop composition on phones, shrinking components rather than re-stacking the page. */
+@media (max-width: 580px) {
+  .experience-nav {
+    height: 66px;
+    padding: 0 12px;
+    gap: 7px;
+  }
+  .experience-nav-links {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    gap: clamp(4px, 1.25vw, 8px);
+    font-size: clamp(6px, 1.65vw, 7.5px);
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  .experience-nav-links a { flex: 0 0 auto; }
+  .logo-lockup { gap: 5px; }
+  .logo-mark { width: 19px; height: 22px; }
+  .logo-word { font-size: 14px; letter-spacing: 1.3px; }
+  .nav-love {
+    flex: 0 0 auto;
+    margin-left: 0;
+    gap: 0;
+    padding: 5px 0;
+  }
+  .nav-love span { display: none; }
+  .nav-love svg { width: 16px; height: 16px; }
+
+  .hero {
+    height: 100svh;
+    min-height: 560px;
+    max-height: none;
+  }
+  .hero-photo { background-position: center center; }
+  .hero-shade {
+    background:
+      linear-gradient(90deg, rgba(18,7,6,.96) 0%, rgba(18,7,6,.83) 39%, rgba(18,7,6,.28) 100%),
+      linear-gradient(0deg, rgba(17,7,6,.52), transparent 46%, rgba(18,7,6,.12));
+  }
+  .hero-copy {
+    top: clamp(132px, 19svh, 158px);
+    left: 22px;
+    width: 58%;
+    max-width: 300px;
+  }
+  .hero-eyebrow { font-size: 7px; letter-spacing: 1.6px; line-height: 1.55; margin-bottom: 12px; }
+  .hero h1 {
+    font-size: clamp(34px, 9.3vw, 42px);
+    line-height: 1.04;
+    letter-spacing: -1.35px;
+    margin: 0 0 13px;
+    text-wrap: pretty;
+  }
+  .hero-intro { font-size: 11px; line-height: 1.62; }
+  .hero-signature { margin-top: 15px; gap: 8px; }
+  .hero-signature small { font-size: 9px; }
+  .hero-signature strong { font-size: 21px; margin-top: 5px; }
+  .scroll-cue { right: 12px; bottom: 16px; gap: 6px; font-size: 6px; }
+  .scroll-cue span { max-width: 48px; }
+  .scroll-line { height: 38px; }
+
+  /* Keep music on the left and the letter on the right, as on desktop. */
+  .letter-music { padding: 26px 12px 30px; }
+  .letter-music-inner {
+    display: grid;
+    grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+    gap: 9px;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    align-items: center;
+  }
+  .music-card {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 13px 9px 13px;
+    border-radius: 9px;
+  }
+  .music-heading { display: block; margin: 0 0 11px; }
+  .music-icon { width: 16px; height: 16px; margin: 0 auto 7px; }
+  .music-heading h2 { font-size: 12px; line-height: 1.25; text-align: center; }
+  .music-heading p { font-size: 7px; line-height: 1.4; text-align: center; }
+  .album-cover {
+    display: block;
+    width: min(100%, 100px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 10px;
+  }
+  .track-meta { margin: 0 0 9px; }
+  .track-title { font-size: 10px; line-height: 1.35; overflow-wrap: anywhere; }
+  .track-artist { font-size: 7px; line-height: 1.4; overflow-wrap: anywhere; }
+  .track-progress { margin-bottom: 4px; }
+  .track-times { font-size: 6px; margin-bottom: 7px; }
+  .player-controls { gap: 3px; justify-content: space-between; }
+  .player-btn { flex: 0 1 22px; width: 22px; height: 25px; }
+  .player-btn svg { width: 14px; height: 14px; }
+  .player-btn.main-play { flex: 0 0 32px; width: 32px; height: 32px; }
+  .player-btn.main-play svg { width: 15px; height: 15px; }
+  .music-open { font-size: 6.5px; line-height: 1.45; overflow-wrap: anywhere; }
+  .music-card.is-embedded .music-embed-container { margin-top: 8px; }
+  .music-embed-container { width: 100%; min-width: 0; margin-top: 8px; }
+  .music-embed-container iframe,
+  .music-embed-frame { width: 100% !important; max-width: 100% !important; min-width: 0 !important; }
+  .letter-side {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+  }
+  .letter-paper {
+    width: 100%;
+    min-height: 0;
+    padding: 37px 11px 17px;
+    transform: rotate(-1deg);
+  }
+  .envelope-back { width: 87%; height: 91%; left: -5px; top: 10px; }
+  .wax-seal { width: 27px; height: 27px; font-size: 12px; left: calc(50% - 13px); top: -7px; }
+  .letter-heart { top: 12px; right: 8px; font-size: 10px; }
+  .letter-title { font-size: 12px; line-height: 1.25; margin: 3px 0 9px; }
+  .letter-copy { font-size: 9px; line-height: 1.55; margin: 0 0 8px; overflow-wrap: anywhere; }
+  .letter-ending { font-size: 10px; line-height: 1.4; margin-top: 9px; }
+  .letter-to { font-size: 12px; right: 8px; bottom: 4px; }
+
+  /* Preserve the editorial desktop arrangement while allowing thumb scrolling. */
+  .gallery-section { height: auto; min-height: 0; padding: 25px 14px 22px; }
+  .gallery-heading {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 13px;
+  }
+  .gallery-heading h2 { font-size: 21px; line-height: 1.15; }
+  .gallery-heading p { max-width: 230px; font-size: 8px; line-height: 1.5; }
+  .gallery-link { flex: 0 0 auto; font-size: 7px; white-space: nowrap; }
+  .gallery-row-wrap { padding: 0; }
+  .gallery-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 3px 3px 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gallery-item { flex: 0 0 100px; width: 100px; scroll-snap-align: start; }
+  .gallery-photo { aspect-ratio: .92; }
+  .gallery-caption { font-size: 12px; }
+  .gallery-arrows { display: none; }
+
+  .history-surprises { min-height: 0; padding: 26px 13px 25px; }
+  .history-heading { max-width: 875px; padding: 0 3px; }
+  .history-heading h2 { font-size: 22px; margin-bottom: 5px; }
+  .history-heading p { font-size: 9px; line-height: 1.55; }
+  .timeline {
+    display: flex;
+    max-width: none;
+    gap: 9px;
+    margin: 21px 0 25px;
+    padding: 12px 3px 13px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .timeline:before { left: 82px; right: auto; top: 25px; width: 690px; }
+  .timeline-item {
+    flex: 0 0 150px;
+    min-height: 126px;
+    padding: 12px 9px;
+    scroll-snap-align: start;
+  }
+  .timeline-item strong { font-size: 11px; }
+  .timeline-item span:not(.timeline-node) { font-size: 9px; }
+  .timeline-item:last-child strong { font-size: 12px; }
+  .timeline-item:last-child span:not(.timeline-node) { font-size: 10px; }
+
+  .surprises-panel { width: 100%; padding: 18px 9px 16px; border-radius: 12px; }
+  .surprise-gift { width: 17px; height: 17px; margin-bottom: 5px; }
+  .surprises-panel h2 { font-size: 18px; margin-bottom: 4px; }
+  .surprises-panel > p { font-size: 8px; line-height: 1.5; margin: 0 auto 12px; }
+  .surprise-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+  .surprise-card { min-height: 76px; padding: 10px 3px 8px; border-radius: 6px; }
+  .surprise-card svg { width: 15px; height: 15px; margin-bottom: 6px; }
+  .surprise-card strong { font-size: 8px; line-height: 1.35; overflow-wrap: anywhere; }
+  .surprise-card small { font-size: 7px; line-height: 1.35; }
+  .rose-decoration { width: 92px; height: 145px; left: -68px; bottom: -31px; opacity: .42; }
+  .pinned-photo { width: 72px; right: -26px; bottom: 1px; opacity: .24; }
+  .pinned-photo-photo { height: 58px; }
+  .pinned-photo figcaption { font-size: 10px; }
+  .experience-end { font-size: 7px; letter-spacing: 1px; gap: 5px; margin-top: 19px; }
+  .experience-end:before, .experience-end:after { width: 20px; }
+}
+@media (max-width: 380px) {
+  .experience-nav { padding: 0 9px; gap: 5px; }
+  .experience-nav-links { gap: 3px; font-size: 5.8px; }
+  .logo-word { font-size: 12px; letter-spacing: 1px; }
+  .logo-mark { width: 16px; height: 20px; }
+  .hero-copy { left: 18px; width: 60%; }
+  .hero h1 { font-size: 32px; letter-spacing: -1.2px; }
+  .hero-intro { font-size: 10px; }
+  .letter-music { padding-inline: 8px; }
+  .letter-music-inner { gap: 6px; }
+  .music-card { padding-inline: 7px; }
+  .letter-paper { padding-inline: 9px; }
+  .letter-copy { font-size: 8px; }
+  .gallery-heading { gap: 5px; }
+  .gallery-heading h2 { font-size: 18px; }
+  .gallery-heading p { font-size: 7px; max-width: 165px; }
+  .gallery-item { flex-basis: 88px; width: 88px; }
+  .history-surprises { padding-inline: 10px; }
+  .surprises-panel { padding-inline: 6px; }
+  .surprise-grid { gap: 4px; }
+  .surprise-card strong { font-size: 7px; }
+  .surprise-card small { font-size: 6px; }
+}
+</style>
+
 </head>
 <body>
 <main class="experience" id="experiencia">
