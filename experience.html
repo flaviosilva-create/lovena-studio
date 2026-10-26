@@ -258,6 +258,35 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
  .modal-visual{height:250px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.gallery-item,.surprise-card,.toast{transition:none}}
+
+/* Timeline readability: stronger cards, icons and text contrast */
+.timeline{column-gap:10px;align-items:stretch}
+.timeline:before{top:27px;height:2px;background:linear-gradient(90deg,transparent,#d9a58b 8%,#d9a58b 92%,transparent);opacity:.95;z-index:0}
+.timeline-item{z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;box-sizing:border-box;min-height:126px;padding:14px 9px 13px;border:1px solid #936457;border-radius:12px;background:linear-gradient(180deg,#512923 0%,#3d1c19 100%);box-shadow:0 6px 16px rgba(0,0,0,.28);color:#fff4e7}
+.timeline-node{width:27px;height:27px;flex:0 0 27px;margin:0 auto 11px;border:1px solid #fff0df;border-radius:50%;background:#f2dcc4;color:#5b2822;box-shadow:0 0 0 3px rgba(242,205,168,.18);place-items:center}
+.timeline-node svg{width:15px;height:15px;stroke-width:1.8}
+.timeline-item strong{display:block;font:600 12px/1.35 'Playfair Display',Georgia,serif;color:#fff6eb;margin:0 0 7px;text-shadow:0 1px 2px rgba(0,0,0,.45);overflow-wrap:anywhere}
+.timeline-item span:not(.timeline-node){display:block;color:#f3c9a8;font:600 11px/1.45 'Playfair Display',Georgia,serif;text-shadow:0 1px 2px rgba(0,0,0,.55);overflow-wrap:anywhere}
+.timeline-item:last-child strong{font-size:13px;color:#fff2df}
+.timeline-item:last-child span:not(.timeline-node){font-size:11px;color:#ffdaa9}
+.timeline-item:hover{border-color:#e6bb90;background:linear-gradient(180deg,#62342c 0%,#49221e 100%);box-shadow:0 8px 20px rgba(0,0,0,.32)}
+.timeline-item:focus-visible{outline:3px solid #f5d2a7;outline-offset:3px}
+@media(max-width:850px){
+ .timeline{column-gap:8px}
+ .timeline-item{min-height:128px;padding:13px 6px 12px}
+ .timeline-item strong{font-size:11.5px}
+ .timeline-item span:not(.timeline-node){font-size:10.5px}
+}
+@media(max-width:580px){
+ .timeline{gap:10px;margin:25px 0 29px;padding:12px 2px 14px;align-items:stretch}
+ .timeline:before{left:86px;right:auto;top:26px;width:712px}
+ .timeline-item{flex:0 0 168px;min-height:128px;padding:14px 10px 13px}
+ .timeline-item strong{font-size:12px}
+ .timeline-item span:not(.timeline-node){font-size:11px}
+ .timeline-item:last-child strong{font-size:13px}
+ .timeline-item:last-child span:not(.timeline-node){font-size:11px}
+}
+
 </style>
 <style id="lovenaEditorStyles">
 #lovenaEditorTrigger[hidden],#lovenaEditorBackdrop[hidden],#lovenaEditor[hidden]{display:none!important}
