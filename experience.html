@@ -641,7 +641,7 @@ body.editor-mode .experience{padding-bottom:28px}
  var editMode=new URLSearchParams(location.search).get("edit")==="1";
  var data=window.LOVENA_EDIT_DATA||{};
  var textFields=[
-  {key:"brand",label:"Nome da marca",group:"Cabeçalho e abertura",selector:".logo-word"},
+  {key:"brand",label:"Nome da página",group:"Cabeçalho e abertura",selector:".logo-word"},
   {key:"headerMessage",label:"Mensagem ao lado do coração",group:"Cabeçalho e abertura",selector:".nav-love span"},
   {key:"nav0",label:"Navegação: início",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:0},
   {key:"nav1",label:"Navegação: história",group:"Cabeçalho e abertura",selector:".experience-nav-links a",index:1},
@@ -776,6 +776,8 @@ body.editor-mode .experience{padding-bottom:28px}
     if(def.multiline){ctl=document.createElement("textarea");ctl.rows=3;}
     else{ctl=document.createElement("input");ctl.type="text";}
     ctl.id=id;ctl.dataset.editorField=def.key;ctl.value=fieldValue(def);ctl.autocomplete="off";
+    if(def.key==="brand")ctl.placeholder="Alice & James";
+
     ctl.addEventListener("input",function(){
      applyField(def,ctl.value);
      if(def.path&&def.path[0]==="songs"&&def.path[1]===0){
@@ -783,7 +785,9 @@ body.editor-mode .experience{padding-bottom:28px}
      }
      scheduleSave();
     });
-    row.appendChild(ctl);body.appendChild(row);
+    row.appendChild(ctl);
+    if(def.key==="brand"){var hint=document.createElement("small");hint.className="ed-help";hint.textContent="Exemplo: Alice & James. Use os nomes do casal para personalizar o topo da página.";row.appendChild(hint);}
+    body.appendChild(row);
    });
    details.appendChild(body);fieldsHost.appendChild(details);
   });
