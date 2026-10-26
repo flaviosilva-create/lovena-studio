@@ -2071,19 +2071,126 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
  function enterPreviewMode(){saveDraft(true);isPreviewing=true;closeEditor();document.body.classList.remove("editor-mode","editor-panel-open");document.body.classList.add("lovena-preview-mode");document.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});trigger.hidden=false;setTriggerLabel(true);}
  function downloadBlob(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);}
  function safeJson(value){return JSON.stringify(value).replace(/</g,"\\u003c").replace(/<\/script/gi,"<\\/script");}
- function exportPage(){
-  saveDraft(true);
-  var clone=document.documentElement.cloneNode(true);
-  clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaDynamicEditingStyles,#lovenaEditorRuntime,#lovenaEditBootstrap").forEach(function(el){el.remove();});
-  clone.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});
-  var bootstrap=document.createElement("script");bootstrap.id="lovenaExperienceData";bootstrap.textContent="window.LOVENA_EDIT_DATA="+safeJson(data)+";";
-  var scripts=Array.from(clone.querySelectorAll("script"));
-  var main=scripts.find(function(script){return script.textContent.indexOf('var editData=window.LOVENA_EDIT_DATA')>=0;});
-  if(main)main.parentNode.insertBefore(bootstrap,main);else clone.querySelector("body").insertBefore(bootstrap,clone.querySelector("body").firstChild);
-  clone.querySelector("body").classList.remove("editor-mode");
-  var output="<!doctype html>\n"+clone.outerHTML;
-  downloadBlob(new Blob([output],{type:"text/html;charset=utf-8"}),"lovena-experiencia-personalizada.html");
-  setStatus("Experiência personalizada exportada.");
+
+ function imageSourceToDataUrl(source){
+  if(!source)return Promise.resolve(null);
+  if(source.indexOf("data:image/")===0)return Promise.resolve(source);
+  return fetch(source,{credentials:"omit",mode:"cors",cache:"force-cache"}).then(function(response){
+   if(!response.ok)throw new Error("Não foi possível baixar uma das fotos para o arquivo offline ("+response.status+").");
+   return response.blob();
+  }).then(function(blob){
+   if(!blob.type||blob.type.indexOf("image/")!==0)throw new Error("Um dos arquivos selecionados não é uma imagem.");
+   return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(){if(typeof reader.result==="string"&&reader.result.indexOf("data:image/")===0)resolve(reader.result);else reject(new Error("Não foi possível incorporar uma das imagens."));};
+    reader.onerror=function(){reject(new Error("Não foi possível ler uma das imagens para o arquivo offline."));};
+    reader.readAsDataURL(blob);
+   });
+  });
+ }
+ function offlineGalleryAnimation(){
+  var row=document.getElementById("galleryRow");
+  if(!row)return;
+  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
+  if(reduce&&reduce.matches)return;
+  var originals=Array.from(row.children).filter(function(el){return el.dataset.galleryClone!=="true";});
+  if(originals.length<2)return;
+  originals.forEach(function(el){
+   var copy=el.cloneNode(true);
+   copy.dataset.galleryClone="true";
+   copy.setAttribute("aria-hidden","true");
+   copy.querySelectorAll("button,a,input,[tabindex]").forEach(function(control){control.tabIndex=-1;control.setAttribute("aria-hidden","true");});
+   row.appendChild(copy);
+  });
+  var clones=Array.from(row.children).filter(function(el){return el.dataset.galleryClone==="true";});
+  var width=0,paused=false,last=0,resume=0;
+  function measure(){if(!clones.length)return;width=clones[0].getBoundingClientRect().left-originals[0].getBoundingClientRect().left;if(!Number.isFinite(width)||width<=0)width=0;}
+  function pauseBriefly(){paused=true;clearTimeout(resume);resume=setTimeout(function(){paused=false;last=0;},1800);}
+  row.addEventListener("pointerenter",function(e){if(e.pointerType==="mouse")paused=true;});
+  row.addEventListener("pointerleave",function(){paused=false;last=0;});
+  row.addEventListener("touchstart",pauseBriefly,{passive:true});
+  row.addEventListener("touchend",pauseBriefly,{passive:true});
+  row.addEventListener("wheel",pauseBriefly,{passive:true});
+  row.addEventListener("focusin",function(){paused=true;});
+  row.addEventListener("focusout",function(e){if(!row.contains(e.relatedTarget)){paused=false;last=0;}});
+  function frame(t){if(!last)last=t;var dt=Math.min(50,t-last);last=t;if(!paused&&document.visibilityState!=="hidden"&&width>0){row.scrollLeft+=22*dt/1000;if(row.scrollLeft>=width)row.scrollLeft=row.scrollLeft%width;}requestAnimationFrame(frame);}
+  requestAnimationFrame(function(){measure();requestAnimationFrame(frame);});
+  window.addEventListener("resize",measure);
+ }
+ async function exportPage(){
+  saveDraft(false);
+  setStatus("Preparando o arquivo offline e incorporando as fotos…");
+  var exportButton=document.querySelector('[data-editor-action="export"]');
+  if(exportButton)exportButton.disabled=true;
+  try{
+   var offlineData=JSON.parse(JSON.stringify(data));
+   offlineData.images=Object.assign({hero:null,gallery:[]},offlineData.images||{});
+   offlineData.images.hero=await imageSourceToDataUrl(offlineData.images.hero||null);
+   var imageCount=Math.max((offlineData.photos||[]).length,(offlineData.images.gallery||[]).length);
+   var sources=Array.from({length:imageCount},function(_,index){return (offlineData.images.gallery||[])[index]||null;});
+   offlineData.images.gallery=await Promise.all(sources.map(imageSourceToDataUrl));
+
+   var clone=document.documentElement.cloneNode(true);
+   clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaDynamicEditingStyles,#lovenaEditorRuntime,#lovenaEditBootstrap").forEach(function(el){el.remove();});
+   clone.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});
+   clone.querySelectorAll('[data-gallery-clone="true"]').forEach(function(el){el.remove();});
+   clone.querySelectorAll('link[rel="preconnect"][href*="fonts.googleapis.com"],link[rel="preconnect"][href*="fonts.gstatic.com"],link[rel="stylesheet"][href*="fonts.googleapis.com"]').forEach(function(el){el.remove();});
+
+   var heroSource=offlineData.images.hero;
+   if(heroSource){
+    [".hero-photo",".pinned-photo-photo"].forEach(function(selector){var el=clone.querySelector(selector);if(el)el.style.backgroundImage='url("'+heroSource+'")';});
+   }
+   var gallery=clone.querySelector("#galleryRow");
+   if(gallery){
+    var galleryItems=Array.from(gallery.children).filter(function(el){return el.dataset.galleryClone!=="true";});
+    var spritePositions=["0 0","50% 0","100% 0","0 100%","50% 100%","100% 100%"];
+    galleryItems.forEach(function(item,index){
+     var visual=item.querySelector(".gallery-photo");
+     if(!visual)return;
+     var source=offlineData.images.gallery[index];
+     if(source){visual.style.backgroundImage='url("'+source+'")';visual.style.backgroundSize="cover";visual.style.backgroundPosition="center";}
+     else if(index<6){visual.style.backgroundImage="var(--gallery-sprite)";visual.style.backgroundSize="300% 200%";visual.style.backgroundPosition=spritePositions[index];}
+     else{visual.style.backgroundImage="linear-gradient(135deg,#e7d1bf,#f6e9dc)";visual.style.backgroundSize="cover";visual.style.backgroundPosition="center";}
+    });
+   }
+   var dataBootstrap=clone.createElement("script");
+   dataBootstrap.id="lovenaExperienceData";
+   dataBootstrap.textContent="window.LOVENA_EDIT_DATA="+safeJson(offlineData)+";";
+   var scripts=Array.from(clone.querySelectorAll("script"));
+   var main=scripts.find(function(script){return script.textContent.indexOf("var editData=window.LOVENA_EDIT_DATA")>=0;});
+   if(main)main.parentNode.insertBefore(dataBootstrap,main);else clone.querySelector("body").insertBefore(dataBootstrap,clone.querySelector("body").firstChild);
+
+   var musicCard=clone.querySelector(".music-card");
+   if(musicCard){
+    var play=musicCard.querySelector('[data-action="song-play"]');
+    if(play){play.removeAttribute("data-action");play.disabled=true;play.setAttribute("aria-label","A reprodução exige conexão com a internet");}
+    var musicLink=musicCard.querySelector("#musicOpen");
+    if(musicLink)musicLink.textContent="Ouvir quando estiver online ↗";
+    var note=clone.createElement("p");
+    note.className="lovena-offline-note";
+    note.textContent="Sua carta, suas fotos e as animações estão guardadas neste arquivo. A música vinculada precisa de conexão com a internet.";
+    var heading=musicCard.querySelector(".music-heading");
+    if(heading)heading.insertAdjacentElement("afterend",note);else musicCard.appendChild(note);
+   }
+   var offlineStyle=clone.createElement("style");
+   offlineStyle.id="lovena-offline-export-style";
+   offlineStyle.textContent=".lovena-offline-note{margin:12px 0 5px;padding:10px 12px;border:1px dashed rgba(197,155,128,.5);border-radius:8px;color:#d9bba7;background:rgba(255,255,255,.035);font:10px/1.6 Arial,sans-serif}.music-card .player-btn:disabled{opacity:.45;cursor:not-allowed}[data-gallery-clone=\"true\"]{pointer-events:none!important}";
+   clone.head.appendChild(offlineStyle);
+   var loopScript=clone.createElement("script");
+   loopScript.id="lovena-offline-gallery-runtime";
+   loopScript.textContent="("+offlineGalleryAnimation.toString()+")();";
+   clone.body.appendChild(loopScript);
+
+   clone.querySelector("body").classList.remove("editor-mode","editor-panel-open","lovena-preview-mode");
+   var output="<!doctype html>\n"+clone.outerHTML;
+   downloadBlob(new Blob([output],{type:"text/html;charset=utf-8"}),"lovena-presente-para-sempre.html");
+   setStatus("Presente offline pronto! Guarde o arquivo HTML e compartilhe-o como anexo.");
+  }catch(error){
+   console.error("Lovena offline export failed:",error);
+   setStatus(error&&error.message?error.message:"Não foi possível preparar o presente offline. Tente novamente.");
+  }finally{
+   if(exportButton)exportButton.disabled=false;
+  }
  }
  function backup(){saveDraft(true);downloadBlob(new Blob([JSON.stringify(getSnapshot(),null,2)],{type:"application/json"}),"lovena-rascunho.json");}
  function renderMilestones(){
