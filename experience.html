@@ -1092,17 +1092,24 @@ body.editor-mode .experience{padding-bottom:28px}
  var defaults={"songs":[{"title":"Melhor Ainda","artist":"Melim","query":"Melim Melhor Ainda","url":"https://music.youtube.com/search?q=Melim%20Melhor%20Ainda"}],"musicLinkLabel":"Ouvir no YouTube Music ↗","milestones":[["Nos conhecemos","Foi quando nossos caminhos se cruzaram. Sem perceber, a vida estava abrindo espaço para uma das histórias mais bonitas.","12 de março de 2021"],["Nosso primeiro encontro","O nervosismo, os sorrisos e aquela sensação boa de que a conversa podia durar para sempre. Um dia simples que virou lembrança importante.","24 de abril de 2021"],["Nossa primeira viagem","Um lugar novo, novas histórias e a certeza de que qualquer destino fica melhor quando estamos juntos.","15 de janeiro de 2022"],["1 ano juntos","Um ano de carinho, parceria e pequenos momentos que se tornaram gigantes. E era só o começo.","12 de março de 2022"],["E tudo continua...","Que venham muitos outros capítulos, lugares para conhecer, músicas para cantar e motivos para escolher um ao outro.","Hoje e sempre"]],"photos":[["Nosso pôr do sol","Tem momentos que parecem feitos para ficarem guardados para sempre."],["Meu lugar favorito","No meio de tantos lugares lindos, é ao seu lado que eu sempre quero estar."],["Para onde formos","O melhor da viagem nunca é só o destino. É dividir o caminho com você."],["Nossa casinha","A paz de estar junto e fazer do cotidiano o nosso lugar preferido."],["Só mais cinco minutos","Os dias simples são os que mais acabam virando saudade boa."],["O mundo é nosso","Ainda há tantos lugares, histórias e pôr do sol esperando por nós."],["Nova memória","Escreva a história desta foto."],["Nova memória","Escreva a história desta foto."],["Nova memória","Escreva a história desta foto."]],"surprises":{"card":{"title":"Um cartão só seu","copy":"Guarde isso para os dias corridos: você é uma das coisas mais bonitas que já me aconteceram. Que a vida continue encontrando jeitos de colocar a gente lado a lado.","kicker":"ABRA QUANDO QUISER SORRIR"},"message":{"title":"Uma coisa que eu nunca quero que você esqueça","copy":"Você não precisa fazer nada extraordinário para ser especial. O jeito como você existe, como cuida, como ri e como torna os dias comuns mais leves já é mais do que suficiente. Se eu pudesse escolher de novo, em todas as versões da vida, eu ainda procuraria você.","kicker":"SÓ MAIS UMA COISA","signature":"Você torna tudo mais bonito. ♡"}},"images":{"hero":"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-hero.jpg","gallery":["https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-01.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-02.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-03.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-04.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-05.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-06.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-07.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-08.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-09.jpg"]}};
  var draft=null;
  try{draft=JSON.parse(localStorage.getItem("lovenaExperienceDraftV1")||"null");}catch(error){}
+ var hasCurrentImageDraft=!!(draft&&Number(draft.sampleAssetsVersion)===2);
  var data=defaults;
  if(draft&&draft.data){
   data=Object.assign({},defaults,draft.data);
   ["songs","milestones","photos","surprises"].forEach(function(key){if(draft.data[key])data[key]=draft.data[key];});
-  if(draft.data.images)data.images=draft.data.images;
+  if(hasCurrentImageDraft&&draft.data.images)data.images=draft.data.images;
  }
- if(draft&&draft.images)data.images=draft.images;
+ if(hasCurrentImageDraft&&draft.images)data.images=draft.images;
  if(!Array.isArray(data.songs)||!data.songs.length)data.songs=defaults.songs.slice(0,1);else data.songs=data.songs.slice(0,1);
  if(data.surprises)delete data.surprises.playlist;
  if(data.images)delete data.images.album;
- window.LOVENA_EDIT_DRAFT=draft||{images:defaults.images,heroPosition:{"x":31,"y":58},texts:{"brand":"Alice e James"},colors:{"night":"#1b0908","paper":"#fdf2f2","accent":"#a96a6a","ink":"#39271f"}};
+ // Older browser drafts kept their photographs only in that browser. Use the shared GitHub sample assets instead.
+ var initialDraft=draft?Object.assign({},draft):{};
+ if(!hasCurrentImageDraft){
+  initialDraft.images=defaults.images;
+  initialDraft.heroPosition={"x":31,"y":58};
+ }
+ window.LOVENA_EDIT_DRAFT=initialDraft;
  window.LOVENA_EDIT_DATA=data;
 })();
 </script>
@@ -1849,7 +1856,7 @@ body.editor-mode .lovena-edit-selected{outline:2px solid #c98f72!important;outli
   window.dispatchEvent(new Event("lovena:music-updated"));
  }
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
- function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;return {version:1,texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,data:savedData};}
+ function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;return {version:2,sampleAssetsVersion:2,texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,data:savedData};}
  function saveDraft(show){
   try{
    data.images=state.images;
