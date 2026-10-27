@@ -649,37 +649,99 @@
 
     var query = new URLSearchParams(location.search);
     if (query.get("checkout") === "cancelled") {
-      notify("Pagamento cancelado. Seu rascunho continua salvo.", false);
+      publishButton.disabled = false;
+      publishStatus.textContent = "Pagamento cancelado. Seu rascunho continua salvo; você pode revisar e tentar novamente quando quiser.";
     } else if (query.get("checkout") === "success") {
-      notify("Pagamento enviado. Clique em “Verificar pagamento” após a confirmação do Stripe.", false);
-      var verifyButton = makeButton("Verificar pagamento");
-      verifyButton.addEventListener("click", async function () {
-        var sessionId = query.get("session_id");
-        var experienceId = query.get("experience_id");
-        if (!sessionId || !experienceId) { notify("Não encontrei os dados desta sessão de pagamento.", true); return; }
-        verifyButton.disabled = true;
-        try {
-          var result = await getCheckoutStatus(sessionId, experienceId);
-          if (result.status === "paid" && result.publicUrl) {
-            applyPurchaseEntitlements(result);
-            notify(result.includesHtmlDownload
-              ? "Pagamento confirmado! O link está publicado e o download HTML está desbloqueado."
-              : "Pagamento confirmado! Seu link está publicado e pronto para compartilhar.", false);
-            var link = document.createElement("a");
-            link.href = result.publicUrl; link.target = "_blank"; link.rel = "noopener noreferrer";
-            link.textContent = "Abrir experiência publicada";
-            link.style.cssText = "display:block;margin-top:8px;color:#8b5541;overflow-wrap:anywhere";
-            box.appendChild(link);
-            try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, result.publicUrl); } catch (_) {}
-          } else {
-            notify("O Stripe ainda não confirmou o pagamento. Aguarde um pouco e tente verificar novamente.", false);
-          }
-        } catch (error) { notify(error.message || "Não foi possível verificar o pagamento.", true); }
-        finally {
+      var checkoutSessionId = query.get("session_id");
+      var checkoutExperienceId = query.get("experience_id");
+      var checkoutReturnStatus = document.createElement("p");
+      checkoutReturnStatus.setAttribute("role", "status");
+      checkoutReturnStatus.setAttribute("aria-live", "polite");
+      checkoutReturnStatus.style.cssText = "font-size:12px;line-height:1.55;margin:9px 0;color:#765d50;overflow-wrap:anywhere";
+      checkoutReturnStatus.textContent = "Confirmando seu pagamento com segurança…";
+      var verifyButton = document.createElement("button");
+      verifyButton.type = "button";
+      verifyButton.textContent = "Verificando pagamento…";
+      verifyButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:10px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:8px";
+      publication.insertBefore(verifyButton, publishStatus);
+      publication.insertBefore(checkoutReturnStatus, publishStatus);
+      publishButton.disabled = true;
+      publishButton.textContent = "Confirmando pagamento…";
+      var verifyAttempts = 0;
+      var verifyRunning = false;
+      var verifyTimer = null;
+      var paymentConfirmed = false;
+      var paymentStopped = false;
+
+      async function verifyCheckoutPayment(manual) {
+        if (verifyRunning || paymentConfirmed || paymentStopped) return;
+        if (!checkoutSessionId || !checkoutExperienceId) {
+          checkoutReturnStatus.textContent = "Não encontrei os dados desta sessão de pagamento. Preserve esta página e tente abrir novamente o link de retorno da Stripe.";
           verifyButton.disabled = false;
+          verifyButton.textContent = "Dados de pagamento ausentes";
+          paymentStopped = true;
+          return;
+        }
+        verifyRunning = true;
+        verifyAttempts += 1;
+        verifyButton.disabled = true;
+        verifyButton.textContent = "Verificando pagamento…";
+        checkoutReturnStatus.textContent = manual
+          ? "Consultando o status mais recente da Stripe…"
+          : "Aguardando a confirmação segura da Stripe. Não faça outra compra enquanto verificamos esta.";
+        var retry = false;
+        try {
+          var result = await getCheckoutStatus(checkoutSessionId, checkoutExperienceId);
+          if (result.status === "paid" && result.publicUrl) {
+            paymentConfirmed = true;
+            applyPurchaseEntitlements(result);
+            checkoutReturnStatus.textContent = result.includesHtmlDownload
+              ? "Pagamento confirmado! Sua página está publicada e o download HTML está liberado."
+              : "Pagamento confirmado! Sua página está publicada e pronta para compartilhar.";
+            publishStatus.textContent = checkoutReturnStatus.textContent;
+            verifyButton.hidden = true;
+            try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, result.publicUrl); } catch (_) {}
+          } else if (result.status === "failed" || result.status === "refunded" || result.status === "disputed") {
+            paymentStopped = true;
+            publishButton.disabled = result.status !== "failed";
+            publishButton.textContent = result.status === "failed"
+              ? "Tentar publicar e pagar " + onlinePriceLabel
+              : "Pagamento não elegível";
+            checkoutReturnStatus.textContent = result.status === "failed"
+              ? "Este pagamento não foi concluído. Seu rascunho continua salvo; você pode tentar novamente."
+              : "Este pagamento não está elegível para publicação. Entre em contato com o suporte antes de tentar novamente.";
+            verifyButton.hidden = true;
+          } else {
+            retry = verifyAttempts < 12;
+            checkoutReturnStatus.textContent = "O pagamento ainda está sendo confirmado. Vamos consultar novamente automaticamente; não é necessário criar uma conta nem repetir a compra.";
+          }
+        } catch (error) {
+          checkoutReturnStatus.textContent = error.message || "Ainda não foi possível confirmar o pagamento. Vamos tentar novamente.";
+          retry = verifyAttempts < 8;
+        } finally {
+          verifyRunning = false;
+          if (paymentConfirmed || paymentStopped) {
+            verifyButton.disabled = true;
+          } else if (retry) {
+            verifyButton.disabled = true;
+            verifyButton.textContent = "Verificando automaticamente…";
+            var delay = Math.min(1500 + verifyAttempts * 500, 5000);
+            verifyTimer = window.setTimeout(function () { verifyCheckoutPayment(false); }, delay);
+          } else {
+            verifyButton.disabled = false;
+            verifyButton.textContent = "Verificar pagamento novamente";
+            checkoutReturnStatus.textContent += " Use o botão para consultar novamente. Não refaça a compra enquanto o status estiver pendente.";
+          }
           refreshPurchaseEntitlements();
         }
+      }
+      verifyButton.addEventListener("click", function () {
+        verifyAttempts = 0;
+        paymentStopped = false;
+        if (verifyTimer) { window.clearTimeout(verifyTimer); verifyTimer = null; }
+        verifyCheckoutPayment(true);
       });
+      verifyCheckoutPayment(false);
     }
 
     if (options && options.setStatus) {
