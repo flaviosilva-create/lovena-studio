@@ -173,8 +173,8 @@ jobs:
             const pageErrors = [];
             page.on("pageerror", error => pageErrors.push(error.message));
             await page.goto(process.env.PUBLIC_EXPERIENCE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
-            await page.waitForFunction(() => window.LOVENA_BOOTSTRAP_PROMISE instanceof Promise, null, { timeout: 15000 });
-            await page.evaluate(() => window.LOVENA_BOOTSTRAP_PROMISE);
+            // Do not wait for the Supabase data request: this test must verify that public controls still work even if that request stalls.
+            await page.waitForFunction(() => window.LOVENA_EDIT_DEFAULTS && document.querySelector('script[src*="lovena-public-interactions.js"]'), null, { timeout: 15000 });
             await page.locator('#galleryRow .gallery-item[data-photo="0"]:not([data-gallery-clone="true"])').click({ timeout: 15000 });
             await page.locator("#detailModal[open]").waitFor({ timeout: 5000 });
             await page.locator('[data-action="close-modal"]').click();
