@@ -28,6 +28,11 @@
     var res = await supabase.auth.getSession();
     if (res.error) console.warn("Lovena Auth session check:", res.error.message);
     return supabase;
+  }).catch(function (error) {
+    // A failed auth/CDN initialization must never prevent a published gift from rendering
+    // or stop its independent, read-only public-experience request.
+    console.warn("Lovena backend initialization failed; public experiences remain interactive.", error);
+    return null;
   });
 
   async function currentSession(supabase) {
