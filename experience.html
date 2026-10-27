@@ -2591,6 +2591,14 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  }
  function guessExperienceLanguage(text){
   var lower=String(text||"").toLowerCase(),count=function(pattern){return (lower.match(pattern)||[]).length;};
+  if(/[\\u3040-\\u30ff]/.test(text))return "ja";
+  if(/[\\uac00-\\ud7af]/.test(text))return "ko";
+  if(/[\\u4e00-\\u9fff]/.test(text))return "zh-CN";
+  if(/[\\u0600-\\u06ff]/.test(text))return "ar";
+  if(/[\\u0900-\\u097f]/.test(text))return "hi";
+  if(/[\\u0e00-\\u0e7f]/.test(text))return "th";
+  if(/[\\u0370-\\u03ff]/.test(text))return "el";
+  if(/[\\u0590-\\u05ff]/.test(text))return "he";
   var scores={
    pt:count(/\b(?:voce|você|vocês|nao|não|uma|umas|meu|minha|nosso|nossa|amor|obrigado|obrigada|para|tambem|também|muito|muita|que|com|estou|sempre|saudade|beijo|te amo)\b/g)+count(/[ãõçáéíóú]/g),
    fr:count(/\b(?:je|tu|vous|nous|mon|ma|mes|amour|avec|pour|merci|toujours|une|des|les|pas|dans|est|suis|coeur|bonheur|chérie)\b/g)+count(/[àâçéèêëîïôûùüÿœ]/g),
@@ -2618,7 +2626,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   try{
    var locale=await requestExperienceLanguage(text);
    if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
-   if(!locale||locale==="und")locale=guessExperienceLanguage(text)||state.locale||"en";
+   var heuristic=guessExperienceLanguage(text);if((!locale||locale==="und"||locale==="en")&&heuristic&&heuristic!=="en")locale=heuristic;if(!locale||locale==="und")locale=state.locale||"en";
    if(locale)applyExperienceLocale(locale,"writing");
   }catch(error){
    if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
@@ -3060,7 +3068,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    var cloneHead=clone.querySelector("head");
    var cloneBody=clone.querySelector("body");
    if(!cloneHead||!cloneBody)throw new Error("Could not prepare the offline file structure.");
-   clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaDynamicEditingStyles,#lovenaEditorRuntime,#lovenaEditBootstrap").forEach(function(el){el.remove();});
+   clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaDynamicEditingStyles,#lovenaEditorRuntime,#lovenaEditBootstrap,script[src*='translation-bridge.js']").forEach(function(el){el.remove();});
    clone.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});
    clone.querySelectorAll('[data-gallery-clone="true"]').forEach(function(el){el.remove();});
    clone.querySelectorAll('link[rel="preconnect"][href*="fonts.googleapis.com"],link[rel="preconnect"][href*="fonts.gstatic.com"],link[rel="stylesheet"][href*="fonts.googleapis.com"]').forEach(function(el){el.remove();});
