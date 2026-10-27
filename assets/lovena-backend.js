@@ -254,7 +254,7 @@
     var supabase = await client();
     var session = await currentSession(supabase);
     if (!session || !session.access_token) throw new Error("Não foi possível iniciar a sessão da Lovena. Atualize a página e tente novamente.");
-    var type = purchaseType === "html_download" ? "html_download" : "online";
+    var type = purchaseType === "html_download" ? "html_download" : (purchaseType === "online_with_html" ? "online_with_html" : "online");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
@@ -339,14 +339,35 @@
 
     var publication = document.createElement("section");
     publication.className = "lovena-cloud-publication";
-    publication.style.cssText = "margin:0 0 16px;padding:14px;border:1px solid #e5d1c2;border-radius:14px;background:#fff;color:#51392f";
+    publication.style.cssText = "position:relative;margin:0 0 18px;padding:18px;border:2px solid #b78367;border-radius:16px;background:linear-gradient(145deg,#fff8f1,#fff);color:#51392f;box-shadow:0 8px 22px rgba(97,63,46,.10)";
     var publicationTitle = document.createElement("strong");
-    var onlinePriceLabel = planFor(options.editorKey) === "simple" ? "US$ 4,99" : "US$ 9,99";
-    publicationTitle.textContent = "Publicar sua página Lovena";
-    publicationTitle.style.cssText = "display:block;font-size:14px;margin-bottom:6px";
+    var planIsSimple = planFor(options.editorKey) === "simple";
+    var basePriceCents = planIsSimple ? 499 : 999;
+    var onlinePriceLabel = planIsSimple ? "US$ 4,99" : "US$ 9,99";
+    function priceLabel(cents) { return "US$ " + (cents / 100).toFixed(2).replace(".", ","); }
+    publicationTitle.textContent = "Publique sua página Lovena";
+    publicationTitle.style.cssText = "display:block;font-size:17px;line-height:1.35;margin-bottom:8px;color:#472b23";
     var publicationCopy = document.createElement("p");
-    publicationCopy.style.cssText = "font-size:12px;line-height:1.55;margin:0 0 10px;color:#82695a";
-    publicationCopy.textContent = (planFor(options.editorKey) === "simple" ? "Lovena Simple" : "Lovena Premium") + " · " + onlinePriceLabel + " para publicar seu link por 1 ano. Crie e revise a página primeiro; depois clique no botão abaixo para pagar e liberar o link. O HTML offline é opcional e aparece depois da publicação.";
+    publicationCopy.style.cssText = "font-size:13px;line-height:1.6;margin:0 0 12px;color:#765d50";
+    var publicationTotal = document.createElement("div");
+    publicationTotal.style.cssText = "font-size:21px;font-weight:800;letter-spacing:-.3px;margin:0 0 12px;color:#59372f";
+    var includeHtmlCheckbox = document.createElement("input");
+    includeHtmlCheckbox.type = "checkbox";
+    includeHtmlCheckbox.id = "lovenaIncludeHtmlDownload";
+    includeHtmlCheckbox.style.cssText = "width:19px;height:19px;flex:0 0 19px;margin:1px 0 0;accent-color:#784b3d;cursor:pointer";
+    var includeHtmlLabel = document.createElement("label");
+    includeHtmlLabel.htmlFor = includeHtmlCheckbox.id;
+    includeHtmlLabel.style.cssText = "display:flex;gap:11px;align-items:flex-start;padding:13px 12px;border:1px solid #dcc0ad;border-radius:12px;background:#fff;cursor:pointer;margin:0 0 12px";
+    var includeHtmlText = document.createElement("span");
+    includeHtmlText.style.cssText = "display:grid;gap:4px;font-size:13px;line-height:1.4;color:#51392f";
+    var includeHtmlTitle = document.createElement("strong");
+    includeHtmlTitle.textContent = "Adicionar HTML offline (+US$ 1,00)";
+    includeHtmlTitle.style.cssText = "font-size:13px";
+    var includeHtmlHelp = document.createElement("span");
+    includeHtmlHelp.textContent = "Receba também um arquivo HTML para baixar e guardar offline. Opcional.";
+    includeHtmlHelp.style.cssText = "font-size:11px;line-height:1.5;color:#82695a";
+    includeHtmlText.append(includeHtmlTitle, includeHtmlHelp);
+    includeHtmlLabel.append(includeHtmlCheckbox, includeHtmlText);
     var htmlPurchaseButton = document.createElement("button");
     htmlPurchaseButton.type = "button";
     htmlPurchaseButton.textContent = "Download HTML offline · US$ 1,00 (opcional)";
@@ -377,12 +398,25 @@
     var publishButton = document.createElement("button");
     publishButton.type = "button";
     publishButton.textContent = "Publicar página e pagar " + onlinePriceLabel;
-    publishButton.style.cssText = "width:100%;border:0;border-radius:10px;padding:12px;background:#59372f;color:#fff;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:4px";
+    publishButton.style.cssText = "width:100%;border:0;border-radius:11px;padding:14px 12px;background:#59372f;color:#fff;font:800 14px Manrope,Arial,sans-serif;cursor:pointer;margin-top:2px;box-shadow:0 5px 12px rgba(89,55,47,.16)";
     var publishStatus = document.createElement("p");
     publishStatus.style.cssText = "font-size:12px;line-height:1.5;margin:8px 0 0;color:#82695a;overflow-wrap:anywhere";
     publishStatus.setAttribute("role", "status");
-    publication.append(publicationTitle, publicationCopy, publishButton, publishStatus, htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
-    if (liveGuide) scroll.insertBefore(publication, liveGuide); else scroll.insertBefore(publication, box.nextSibling);
+    publication.append(publicationTitle, publicationCopy, publicationTotal, includeHtmlLabel, publishButton, publishStatus, htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
+    // Keep checkout at the very top of the editor rather than below account controls.
+    scroll.insertBefore(publication, scroll.firstChild);
+    function updatePublicationPrice() {
+      var total = basePriceCents + (includeHtmlCheckbox.checked ? 100 : 0);
+      onlinePriceLabel = priceLabel(total);
+      publicationTotal.textContent = "Total: " + onlinePriceLabel;
+      publicationCopy.textContent = (planIsSimple ? "Lovena Simple" : "Lovena Premium") + " · publicação online por 1 ano. " +
+        (includeHtmlCheckbox.checked
+          ? "Inclui também o download HTML offline (+US$ 1,00)."
+          : "O HTML offline é opcional: marque a caixa abaixo para incluí-lo.");
+      publishButton.textContent = "Publicar página e pagar " + onlinePriceLabel;
+    }
+    includeHtmlCheckbox.addEventListener("change", updatePublicationPrice);
+    updatePublicationPrice();
 
     var htmlExportButton = document.querySelector('[data-editor-action="export"]');
     var originalExportText = htmlExportButton ? htmlExportButton.textContent.trim() : "Baixar presente completo (.html)";
@@ -403,6 +437,9 @@
         htmlExportButton.title = htmlUnlocked ? "Download HTML liberado para esta experiência." : "Pague o adicional de US$ 1,00 após publicar o link online para desbloquear este arquivo.";
         htmlExportButton.setAttribute("aria-disabled", htmlUnlocked ? "false" : "true");
       }
+      if (htmlUnlocked) includeHtmlCheckbox.checked = true;
+      includeHtmlCheckbox.disabled = onlinePaid;
+      updatePublicationPrice();
       publishButton.disabled = onlinePaid;
       publishButton.textContent = onlinePaid
         ? "Pagamento confirmado · link online liberado"
@@ -497,8 +534,11 @@
         var snapshot = options.getSnapshot();
         localStorage.setItem(options.editorKey, JSON.stringify(snapshot));
         var result = await saveDraft(snapshot, options.editorKey);
-        var checkout = await createCheckout(result.id, options.editorKey, "online");
-        publishStatus.textContent = "Abrindo o checkout seguro do Stripe…";
+        var selectedPurchaseType = includeHtmlCheckbox.checked ? "online_with_html" : "online";
+        var checkout = await createCheckout(result.id, options.editorKey, selectedPurchaseType);
+        publishStatus.textContent = includeHtmlCheckbox.checked
+          ? "Abrindo o checkout seguro com publicação e HTML offline…"
+          : "Abrindo o checkout seguro do Stripe…";
         window.location.assign(checkout.url);
       } catch (error) {
         publishStatus.textContent = error.message || "Não foi possível iniciar o pagamento. O rascunho local continua disponível.";
