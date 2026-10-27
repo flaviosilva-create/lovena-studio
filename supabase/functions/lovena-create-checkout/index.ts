@@ -44,6 +44,7 @@ Deno.serve(async (req: Request) => {
     const { data: authData, error: authError } = await admin.auth.getUser(accessToken);
     const user = authData?.user;
     if (authError || !user) return reply(401, { error: "invalid_session" });
+    if (user.is_anonymous) return reply(401, { error: "verified_account_required" });
 
     const { data: experience, error: experienceError } = await admin
       .from("lovena_experiences")
