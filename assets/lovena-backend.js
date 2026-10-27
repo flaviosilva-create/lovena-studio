@@ -253,7 +253,6 @@
   async function createCheckout(experienceId, editorKey, htmlDownload) {
     var supabase = await client();
     var user = await currentUser(supabase, true);
-    if (user && user.is_anonymous) throw new Error("Para comprar e publicar sua Lovena, crie uma conta ou entre na sua conta pelo painel de nuvem.");
     var session = await currentSession(supabase);
     if (!session || !session.access_token) throw new Error("Entre na Lovena para iniciar o pagamento.");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
@@ -262,7 +261,7 @@
       body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), htmlDownload: !!htmlDownload })
     });
     var body = await response.json().catch(function () { return {}; });
-    if (!response.ok || !body.url) throw new Error(body.error || "Não foi possível iniciar o pagamento.");
+    if (!response.ok || !body.url) throw new Error(body.message || body.error || "Não foi possível iniciar o pagamento.");
     return body;
   }
 
