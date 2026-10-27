@@ -253,6 +253,7 @@
   async function createCheckout(experienceId, editorKey, htmlDownload) {
     var supabase = await client();
     var user = await currentUser(supabase, true);
+    if (user && user.is_anonymous) throw new Error("Para comprar e publicar sua Lovena, crie uma conta ou entre na sua conta pelo painel de nuvem.");
     var session = await currentSession(supabase);
     if (!session || !session.access_token) throw new Error("Entre na Lovena para iniciar o pagamento.");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
