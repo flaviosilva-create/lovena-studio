@@ -521,11 +521,11 @@
     publishStatus.style.cssText = "font-size:10px;line-height:1.4;margin:0;color:#82695a;overflow-wrap:anywhere";
     publishStatus.setAttribute("role", "status");
 
-    // A persistent publishing dock stays visible while the editor content scrolls.
+    // Publishing, offline export, save, and preview actions live in their own panel.
     var publicationDock = document.createElement("section");
     publicationDock.className = "lovena-publication-dock";
     publicationDock.setAttribute("aria-label", "Publish and pay");
-    publicationDock.style.cssText = "position:relative;z-index:4;flex:0 0 auto;display:grid;gap:6px;padding:9px 16px 10px;background:#fffaf6;border-bottom:1px solid #e2cabb;box-shadow:0 4px 12px rgba(73,33,28,.08)";
+    publicationDock.style.cssText = "position:relative;display:grid;gap:8px;padding:14px;border:1px solid #e2cabb;border-radius:14px;background:#fffaf6;box-shadow:0 5px 16px rgba(73,33,28,.07)";
     var publicationDockHeader = document.createElement("div");
     publicationDockHeader.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0";
     var publicationDockLabel = document.createElement("strong");
@@ -545,10 +545,107 @@
     priceAndHtmlRow.append(publicationTotal, includeHtmlLabel);
     publicationDock.append(publicationDockHeader, publicationTitle, publicationCopy, priceAndHtmlRow, publishButton, publishStatus);
 
+    var publicationBackdrop = document.createElement("div");
+    publicationBackdrop.id = "lovenaPublicationBackdrop";
+    publicationBackdrop.setAttribute("data-editor-only", "");
+    publicationBackdrop.hidden = true;
+    publicationBackdrop.style.cssText = "position:fixed;z-index:10004;inset:0;background:rgba(13,5,4,.66);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .22s ease";
+    var publicationPanel = document.createElement("aside");
+    publicationPanel.id = "lovenaPublicationPanel";
+    publicationPanel.setAttribute("data-editor-only", "");
+    publicationPanel.setAttribute("role", "dialog");
+    publicationPanel.setAttribute("aria-modal", "true");
+    publicationPanel.setAttribute("aria-label", "Publish and export your Lovena page");
+    publicationPanel.setAttribute("aria-hidden", "true");
+    publicationPanel.hidden = true;
+    publicationPanel.style.cssText = "position:fixed;z-index:10005;top:0;right:0;width:min(460px,96vw);height:100dvh;overflow:hidden;display:flex;flex-direction:column;background:#f7eee5;color:#382820;box-shadow:-20px 0 55px rgba(0,0,0,.28);font-family:Manrope,Arial,sans-serif;transform:translateX(102%);transition:transform .25s ease";
+    var publicationPanelHeader = document.createElement("header");
+    publicationPanelHeader.style.cssText = "display:flex;align-items:flex-start;gap:14px;justify-content:space-between;padding:21px 20px 17px;background:#2b100d;color:#f9eee5;border-bottom:1px solid rgba(255,255,255,.12);flex:0 0 auto";
+    var publicationPanelHeading = document.createElement("div");
+    var publicationPanelKicker = document.createElement("p");
+    publicationPanelKicker.textContent = "LOVENA STUDIO";
+    publicationPanelKicker.style.cssText = "font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#c79a89;margin:0 0 7px";
+    var publicationPanelTitle = document.createElement("h2");
+    publicationPanelTitle.textContent = "Publish & Export";
+    publicationPanelTitle.style.cssText = "font:400 24px/1.15 'Playfair Display',Georgia,serif;margin:0;color:#fff3e8";
+    var publicationPanelCopy = document.createElement("p");
+    publicationPanelCopy.textContent = "Manage online publishing and your downloadable gift here, separately from the editing tools.";
+    publicationPanelCopy.style.cssText = "font-size:10px;line-height:1.6;color:#d8c3b5;margin:7px 0 0;max-width:330px";
+    publicationPanelHeading.append(publicationPanelKicker, publicationPanelTitle, publicationPanelCopy);
+    var publicationPanelClose = document.createElement("button");
+    publicationPanelClose.type = "button";
+    publicationPanelClose.textContent = "×";
+    publicationPanelClose.setAttribute("aria-label", "Close publish and export panel");
+    publicationPanelClose.style.cssText = "flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:transparent;color:#fff0e6;font-size:23px;line-height:1;cursor:pointer";
+    publicationPanelHeader.append(publicationPanelHeading, publicationPanelClose);
+    var publicationPanelScroll = document.createElement("div");
+    publicationPanelScroll.style.cssText = "flex:1;overflow:auto;overscroll-behavior:contain;padding:14px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px";
+    publicationPanel.appendChild(publicationPanelHeader);
+    publicationPanel.appendChild(publicationPanelScroll);
+
+    var publicationTrigger = document.createElement("button");
+    publicationTrigger.type = "button";
+    publicationTrigger.id = "lovenaPublishExportTrigger";
+    publicationTrigger.setAttribute("data-editor-only", "");
+    publicationTrigger.setAttribute("aria-controls", "lovenaPublicationPanel");
+    publicationTrigger.setAttribute("aria-expanded", "false");
+    publicationTrigger.textContent = "Publish & Export";
+    publicationTrigger.style.cssText = "position:fixed;z-index:10006;left:18px;bottom:18px;display:flex;align-items:center;justify-content:center;gap:8px;max-width:calc(50vw - 26px);min-height:44px;border:1px solid rgba(248,227,212,.22);border-radius:999px;padding:12px 15px;background:#835845;color:#fff5eb;box-shadow:0 12px 30px rgba(0,0,0,.28);font:800 11px Manrope,Arial,sans-serif;cursor:pointer;white-space:nowrap";
+    var publicationPanelStyle = document.createElement("style");
+    publicationPanelStyle.setAttribute("data-editor-only", "");
+    publicationPanelStyle.textContent = "#lovenaPublicationPanel .ed-actions{display:grid;gap:8px;border-top:0;padding:2px 0 5px;background:transparent}#lovenaPublicationPanel .ed-primary,#lovenaPublicationPanel .ed-secondary{display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;border-radius:999px;padding:10px 14px;font:800 11px Manrope,Arial,sans-serif;cursor:pointer;text-decoration:none;box-sizing:border-box}#lovenaPublicationPanel .ed-primary{border:1px solid #54241d;background:#54241d;color:#fff5eb;width:100%}#lovenaPublicationPanel .ed-secondary{border:1px solid #d8bfad;background:#fffaf5;color:#563b30}#lovenaPublicationPanel .ed-action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}#lovenaPublicationPanel .ed-status{min-height:14px;text-align:center;color:#7e695d;font-size:9px}#lovenaPublicationPanel .ed-export-heading{display:grid;gap:7px;padding:15px 14px;border:1px solid #e2cabb;border-radius:13px;background:#fffaf6}#lovenaPublicationPanel .ed-export-heading>strong{font:700 16px/1.35 'Playfair Display',Georgia,serif;color:#51392f}#lovenaPublicationPanel .ed-export-heading .ed-help{font-size:10px;line-height:1.55;color:#82695a;margin:0}#lovenaPublicationPanel [data-editor-action='export']{width:100%;border-radius:11px}#lovenaPublicationPanel [data-editor-action='view'],#lovenaPublicationPanel [data-editor-action='save']{min-width:0}#lovenaPublishExportTrigger:focus-visible,#lovenaPublicationPanel button:focus-visible{outline:3px solid #d6a17e;outline-offset:3px}";
+    document.head.appendChild(publicationPanelStyle);
+    var actionFooter = panel.querySelector(".ed-actions");
     publication.append(htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
-    scroll.insertBefore(publication, scroll.firstChild);
-    // It sits between the fixed editor heading and the scrollable editing area.
-    panel.insertBefore(publicationDock, scroll);
+    publicationPanelScroll.append(publicationDock, publication);
+    if (actionFooter) publicationPanelScroll.appendChild(actionFooter);
+    document.body.append(publicationBackdrop, publicationPanel, publicationTrigger);
+
+    function closePublicationPanel() {
+      if (publicationPanel.hidden) return;
+      publicationPanel.style.transform = "translateX(102%)";
+      publicationBackdrop.style.opacity = "0";
+      publicationBackdrop.style.pointerEvents = "none";
+      publicationPanel.setAttribute("aria-hidden", "true");
+      publicationTrigger.setAttribute("aria-expanded", "false");
+      window.setTimeout(function () {
+        if (publicationPanel.getAttribute("aria-hidden") === "true") {
+          publicationPanel.hidden = true;
+          publicationBackdrop.hidden = true;
+        }
+      }, 270);
+    }
+    function openPublicationPanel() {
+      if (panel.getAttribute("aria-hidden") === "false" && panel.classList.contains("is-open")) {
+        var closeEditorButton = panel.querySelector('[data-editor-action="close"]');
+        if (closeEditorButton) closeEditorButton.click();
+      }
+      publicationBackdrop.hidden = false;
+      publicationPanel.hidden = false;
+      publicationPanel.setAttribute("aria-hidden", "false");
+      publicationTrigger.setAttribute("aria-expanded", "true");
+      publicationPanel.style.transform = "translateX(102%)";
+      publicationBackdrop.style.opacity = "0";
+      publicationBackdrop.style.pointerEvents = "auto";
+      window.requestAnimationFrame(function () {
+        publicationPanel.style.transform = "translateX(0)";
+        publicationBackdrop.style.opacity = "1";
+      });
+      publicationPanelClose.focus();
+    }
+    publicationTrigger.addEventListener("click", function () {
+      if (publicationPanel.hidden) openPublicationPanel();
+      else closePublicationPanel();
+    });
+    publicationPanelClose.addEventListener("click", closePublicationPanel);
+    publicationBackdrop.addEventListener("click", closePublicationPanel);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !publicationPanel.hidden) closePublicationPanel();
+    });
+    var previewExperienceButton = actionFooter && actionFooter.querySelector('[data-editor-action="view"]');
+    if (previewExperienceButton) previewExperienceButton.addEventListener("click", closePublicationPanel);
+
+
     function updatePublicationPrice() {
       var total = basePriceCents + (includeHtmlCheckbox.checked ? 100 : 0);
       onlinePriceLabel = priceLabel(total);
