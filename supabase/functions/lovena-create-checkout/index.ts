@@ -32,7 +32,11 @@ Deno.serve(async (req: Request) => {
   try { input = await req.json(); } catch { return reply(400, { error: "invalid_json" }); }
   const experienceId = typeof input.experienceId === "string" ? input.experienceId : "";
   const plan = input.plan === "simple" || input.plan === "premium" ? input.plan : null;
-  const purchaseType = input.purchaseType === "html_download" ? "html_download" : "online";
+  const purchaseType = input.purchaseType === "html_download"
+    ? "html_download"
+    : input.purchaseType === "online_with_html"
+      ? "online_with_html"
+      : "online";
   if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(experienceId) || !plan) {
     return reply(400, { error: "invalid_checkout_request" });
   }
@@ -89,6 +93,10 @@ Deno.serve(async (req: Request) => {
       if (experience.status !== "draft" || experience.public_slug) {
         return reply(409, { error: "experience_not_editable", message: "Esta experiência já foi publicada ou não está mais disponível para compra inicial." });
       }
+      if (purchaseType === "online_with_html") {
+        totalCents = baseCents + 100;
+        includesHtmlDownload = true;
+      }
     }
 
     const currency = "usd";
@@ -108,7 +116,11 @@ Deno.serve(async (req: Request) => {
     if (orderError) throw orderError;
 
     const editorPage = plan === "simple" ? "experience-simple.html" : "experience.html";
-    const purchaseQuery = purchaseType === "html_download" ? "&purchase=html_download" : "&purchase=online";
+    const purchaseQuery = purchaseType === "html_download"
+      ? "&purchase=html_download"
+      : purchaseType === "online_with_html"
+        ? "&purchase=online_with_html"
+        : "&purchase=online";
     const successUrl = "https://flaviosilva-create.github.io/lovena-studio/" + editorPage +
       "?edit=1&checkout=success" + purchaseQuery +
       "&session_id={CHECKOUT_SESSION_ID}&experience_id=" + encodeURIComponent(experienceId);
@@ -128,9 +140,15 @@ Deno.serve(async (req: Request) => {
     form.set("metadata[purchase_type]", purchaseType);
     form.set("metadata[online_term]", "one_year");
     form.set("line_items[0][price_data][currency]", currency);
-    form.set("line_items[0][price_data][unit_amount]", String(totalCents));
+    form.set("line_items[0][price_data][unit_amount]", String(purchaseType === "online_with_html" ? baseCents : totalCents));
     form.set("line_items[0][price_data][product_data][name]", productName);
     form.set("line_items[0][quantity]", "1");
+    if (purchaseType === "online_with_html") {
+      form.set("line_items[1][price_data][currency]", currency);
+      form.set("line_items[1][price_data][unit_amount]", "100");
+      form.set("line_items[1][price_data][product_data][name]", "Adicional opcional — download HTML offline");
+      form.set("line_items[1][quantity]", "1");
+    }
 
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",
