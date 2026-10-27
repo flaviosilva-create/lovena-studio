@@ -147,7 +147,23 @@
     return "lovenaStoredSnapshot:" + editorKey;
   }
 
+  function containsStoredMediaReferences(value) {
+    if (typeof value === "string") return value.indexOf("lovena-media://") === 0;
+    if (Array.isArray(value)) return value.some(containsStoredMediaReferences);
+    if (value && typeof value === "object") return Object.keys(value).some(function (key) {
+      return containsStoredMediaReferences(value[key]);
+    });
+    return false;
+  }
+
   function preserveStoredMediaReferences(current, source) {
+    // A partially hydrated editor can report null/empty image fields even though
+    // the last canonical snapshot still has saved media. Never overwrite those
+    // durable references with missing values.
+    if ((current === null || current === undefined || current === "") &&
+        source !== null && source !== undefined && containsStoredMediaReferences(source)) {
+      return source;
+    }
     if (typeof current === "string" && typeof source === "string" &&
         source.indexOf("lovena-media://") === 0 && /^https?:\/\//i.test(current)) {
       return source;
@@ -285,7 +301,8 @@
         }, new Map(), { value: 0 });
         var publishedResult = await syncPublishedExperience(supabase, "save-published", experienceId, publishedTransformed);
         localStorage.setItem(storedSnapshotKey(editorKey), JSON.stringify(publishedTransformed));
-        await pruneUnusedMedia(supabase, experienceId, publishedTransformed);
+        // Keep existing published media until a complete, explicit media diff is available.
+        // A partial editor snapshot must never delete photos from a live shared page.
         return {
           id: experienceId,
           userId: user.id,
