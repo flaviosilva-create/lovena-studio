@@ -56,7 +56,7 @@ Deno.serve(async (req: Request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceRoleKey) return reply(500, { error: "server_configuration_error" });
-  const accessToken = (req.headers.get("Authorization") || "").replace(/^Bearer\\s+/i, "");
+  const accessToken = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   if (!accessToken) return reply(401, { error: "authentication_required" });
 
   let input: { sessionId?: unknown; experienceId?: unknown; action?: unknown };
