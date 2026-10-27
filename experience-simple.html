@@ -2104,6 +2104,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    if(typeof value!=="string")return value;
    var key=normalized(value);
    if(Object.prototype.hasOwnProperty.call(exact,key))return exact[key];
+   var keyWithoutEndingPunctuation=key.replace(/[\s.!?…]+$/g,"");
+   if(Object.prototype.hasOwnProperty.call(exact,keyWithoutEndingPunctuation))return exact[keyWithoutEndingPunctuation];
    return value.replace(/feliz\s+anivers[aá]rio/gi,"Happy Anniversary").replace(/o melhor ainda est[aá] por vir/gi,"The best is yet to come");
   }
   function walk(node){
