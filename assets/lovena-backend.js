@@ -464,7 +464,7 @@
     var publicationCopy = document.createElement("p");
     publicationCopy.style.cssText = "font-size:13px;line-height:1.6;margin:0 0 12px;color:#765d50";
     var publicationTotal = document.createElement("div");
-    publicationTotal.style.cssText = "font-size:21px;font-weight:800;letter-spacing:-.3px;margin:0 0 12px;color:#59372f";
+    publicationTotal.style.cssText = "font-size:17px;font-weight:850;letter-spacing:-.3px;margin:0;color:#59372f";
     var includeHtmlCheckbox = document.createElement("input");
     includeHtmlCheckbox.type = "checkbox";
     includeHtmlCheckbox.id = "lovenaIncludeHtmlDownload";
@@ -516,13 +516,28 @@
     var publishButton = document.createElement("button");
     publishButton.type = "button";
     publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
-    publishButton.style.cssText = "width:100%;border:0;border-radius:11px;padding:14px 12px;background:#59372f;color:#fff;font:800 14px Manrope,Arial,sans-serif;cursor:pointer;margin-top:2px;box-shadow:0 5px 12px rgba(89,55,47,.16)";
+    publishButton.style.cssText = "display:block;width:100%;min-height:42px;border:0;border-radius:10px;padding:10px 12px;background:#59372f;color:#fff;font:800 12px/1.35 Manrope,Arial,sans-serif;cursor:pointer;margin:0;box-shadow:0 5px 12px rgba(89,55,47,.16)";
     var publishStatus = document.createElement("p");
-    publishStatus.style.cssText = "font-size:12px;line-height:1.5;margin:8px 0 0;color:#82695a;overflow-wrap:anywhere";
+    publishStatus.style.cssText = "font-size:10px;line-height:1.4;margin:0;color:#82695a;overflow-wrap:anywhere";
     publishStatus.setAttribute("role", "status");
-    publication.append(publicationTitle, publicationCopy, publicationTotal, includeHtmlLabel, publishButton, publishStatus, htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
-    // Keep checkout at the very top of the editor rather than below account controls.
+
+    // A persistent publishing dock stays visible while the editor content scrolls.
+    var publicationDock = document.createElement("section");
+    publicationDock.className = "lovena-publication-dock";
+    publicationDock.setAttribute("aria-label", "Publish and pay");
+    publicationDock.style.cssText = "position:relative;z-index:4;flex:0 0 auto;display:grid;gap:7px;padding:10px 16px;background:#fffaf6;border-bottom:1px solid #e2cabb;box-shadow:0 4px 12px rgba(73,33,28,.08)";
+    var publicationDockHeader = document.createElement("div");
+    publicationDockHeader.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0";
+    var publicationDockLabel = document.createElement("strong");
+    publicationDockLabel.textContent = "PUBLISH & PAY";
+    publicationDockLabel.style.cssText = "font-size:10px;line-height:1.3;font-weight:850;letter-spacing:1.4px;color:#765044";
+    publicationDockHeader.append(publicationDockLabel, publicationTotal);
+    publicationDock.append(publicationDockHeader, publishButton, publishStatus);
+
+    publication.append(publicationTitle, publicationCopy, includeHtmlLabel, htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
     scroll.insertBefore(publication, scroll.firstChild);
+    // It sits between the fixed editor heading and the scrollable editing area.
+    panel.insertBefore(publicationDock, scroll);
     function updatePublicationPrice() {
       var total = basePriceCents + (includeHtmlCheckbox.checked ? 100 : 0);
       onlinePriceLabel = priceLabel(total);
@@ -781,8 +796,8 @@
       verifyButton.type = "button";
       verifyButton.textContent = "Checking payment…";
       verifyButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:10px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:8px";
-      publication.insertBefore(verifyButton, publishStatus);
-      publication.insertBefore(checkoutReturnStatus, publishStatus);
+      publicationDock.insertBefore(verifyButton, publishStatus);
+      publicationDock.insertBefore(checkoutReturnStatus, publishStatus);
       publishButton.disabled = true;
       publishButton.textContent = "Confirming payment…";
       var verifyAttempts = 0;
