@@ -1882,7 +1882,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  "use strict";
  await window.LOVENA_BOOTSTRAP_PROMISE;
  var EDIT_KEY="lovenaExperienceDraftV1";
- var editMode=new URLSearchParams(location.search).get("edit")==="1";
+ var pageQuery=new URLSearchParams(location.search);
+ var editMode=pageQuery.get("edit")==="1"&&!pageQuery.get("slug");
  var isPreviewing=false;
  var data=window.LOVENA_EDIT_DATA||{};
  if(!Array.isArray(data.songs)||!data.songs.length)data.songs=[{title:"",artist:"",query:"",url:"",platform:"youtube",playbackMode:"embed"}];else data.songs=data.songs.slice(0,1);
@@ -2240,7 +2241,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   return null;
  }
  document.addEventListener("click",function(event){
-  if(isPreviewing)return;
+  // Public share links are read-only; editing is available only on explicit editor URLs.
+  if(!editMode||isPreviewing)return;
   if(!panel||panel.contains(event.target)||event.target.closest("#lovenaEditorTrigger"))return;
   var collageSection=document.getElementById("colagem-memorias");
   var collageBackground=event.target.closest&&event.target.closest("#colagem-memorias .memory-collage-backdrop");
@@ -2890,7 +2892,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var file=event.target.files&&event.target.files[0];if(!file)return;
   var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(!obj||!obj.data||!Array.isArray(obj.data.photos)||!Array.isArray(obj.data.milestones))throw new Error("Arquivo não parece ser um backup Lovena.");localStorage.setItem(EDIT_KEY,JSON.stringify(obj));location.reload();}catch(err){setStatus("Não foi possível importar: "+err.message);}};reader.readAsText(file);event.target.value="";
  });
- window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
+ if(editMode)window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
  applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();renderCollagePhotoControls();
 
  if(editMode){
