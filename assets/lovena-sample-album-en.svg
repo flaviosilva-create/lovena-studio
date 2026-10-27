@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">The best is yet to come</title>
+  <desc id="desc">A romantic sunset over the ocean with an English handwritten message and a small heart.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0.1" y2="1">
+      <stop offset="0" stop-color="#3b252c"/>
+      <stop offset=".34" stop-color="#98605a"/>
+      <stop offset=".63" stop-color="#df9365"/>
+      <stop offset=".82" stop-color="#f4b26d"/>
+      <stop offset="1" stop-color="#9e5944"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3e3435"/>
+      <stop offset=".55" stop-color="#332b2e"/>
+      <stop offset="1" stop-color="#201e25"/>
+    </linearGradient>
+    <linearGradient id="reflection" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffc47a" stop-opacity=".88"/>
+      <stop offset="1" stop-color="#e27b43" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop offset="0" stop-color="#ffe5ad" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#f6b76e" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 .09"/></feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="soft-light"/>
+    </filter>
+    <clipPath id="frame"><rect width="512" height="512" rx="5"/></clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="512" height="512" fill="url(#sky)"/>
+    <ellipse cx="356" cy="318" rx="145" ry="100" fill="url(#glow)"/>
+    <path d="M0 90 Q62 66 122 91 T245 85 T375 89 T512 72 L512 130 Q438 150 360 135 T210 147 T0 136Z" fill="#f8d0aa" opacity=".12"/>
+    <path d="M0 159 Q80 139 151 163 T300 154 T512 144" stroke="#ffe0b9" stroke-opacity=".18" stroke-width="10" fill="none"/>
+    <path d="M0 204 Q73 181 152 201 T312 194 T512 182" stroke="#ffe4bc" stroke-opacity=".17" stroke-width="8" fill="none"/>
+    <path d="M0 246 Q92 225 170 240 T344 232 T512 225" stroke="#fad4b2" stroke-opacity=".15" stroke-width="5" fill="none"/>
+    <circle cx="365" cy="319" r="20" fill="#ffdf9d"/>
+    <path d="M0 355 Q89 347 168 353 T317 351 T512 348 L512 512 L0 512Z" fill="url(#sea)"/>
+    <path d="M321 351 L407 351 L472 512 L271 512Z" fill="url(#reflection)" opacity=".58"/>
+    <g fill="none" stroke="#e6a56f" stroke-linecap="round">
+      <path d="M15 372h126 M185 379h85 M342 373h77 M433 386h60" stroke-opacity=".42" stroke-width="2"/>
+      <path d="M56 398h93 M207 394h63 M304 402h131 M28 421h110 M168 431h71 M314 425h58 M393 445h92" stroke-opacity=".36" stroke-width="2"/>
+      <path d="M14 456h72 M113 464h150 M288 455h76 M382 471h96 M42 489h139 M215 493h69 M314 484h115" stroke-opacity=".29" stroke-width="2"/>
+    </g>
+    <rect width="512" height="512" fill="#29161a" opacity=".12"/>
+    <rect x="5" y="5" width="502" height="502" rx="3" fill="none" stroke="#f4d7b6" stroke-opacity=".5" stroke-width="2"/>
+    <g fill="#fff6e9" text-anchor="middle" font-family="'Segoe Script','Bradley Hand','Brush Script MT',cursive" font-style="italic" font-weight="400">
+      <text x="250" y="196" font-size="41" transform="rotate(-4 250 196)">The best is</text>
+      <text x="252" y="247" font-size="43" transform="rotate(-3 252 247)">yet to come</text>
+    </g>
+    <path d="M246 272 C236 259 220 269 246 293 C272 269 256 259 246 272Z" fill="none" stroke="#fff6e9" stroke-width="2.6" stroke-linejoin="round"/>
+    <rect width="512" height="512" filter="url(#grain)" opacity=".25"/>
+  </g>
+</svg>
