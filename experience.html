@@ -1365,12 +1365,19 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="./assets/lovena-backend.js"></script>
 <script id="lovenaEditBootstrap">
-(function(){
+(async function(){
  "use strict";
  var defaults={"songs":[{"title":"Melhor Ainda","artist":"Melim","query":"Melim Melhor Ainda","url":"https://music.youtube.com/search?q=Melim%20Melhor%20Ainda"}],"musicLinkLabel":"Ouvir no YouTube Music ↗","milestones":[["Nos conhecemos","Foi quando nossos caminhos se cruzaram. Sem perceber, a vida estava abrindo espaço para uma das histórias mais bonitas.","12 de março de 2021"],["Nosso primeiro encontro","O nervosismo, os sorrisos e aquela sensação boa de que a conversa podia durar para sempre. Um dia simples que virou lembrança importante.","24 de abril de 2021"],["Nossa primeira viagem","Um lugar novo, novas histórias e a certeza de que qualquer destino fica melhor quando estamos juntos.","15 de janeiro de 2022"],["1 ano juntos","Um ano de carinho, parceria e pequenos momentos que se tornaram gigantes. E era só o começo.","12 de março de 2022"],["E tudo continua...","Que venham muitos outros capítulos, lugares para conhecer, músicas para cantar e motivos para escolher um ao outro.","Hoje e sempre"]],"photos":[["Nosso pôr do sol","Tem momentos que parecem feitos para ficarem guardados para sempre."],["Meu lugar favorito","No meio de tantos lugares lindos, é ao seu lado que eu sempre quero estar."],["Para onde formos","O melhor da viagem nunca é só o destino. É dividir o caminho com você."],["Nossa casinha","A paz de estar junto e fazer do cotidiano o nosso lugar preferido."],["Só mais cinco minutos","Os dias simples são os que mais acabam virando saudade boa."],["O mundo é nosso","Ainda há tantos lugares, histórias e pôr do sol esperando por nós."],["Nova memória","Escreva a história desta foto."],["Nova memória","Escreva a história desta foto."],["Nova memória","Escreva a história desta foto."]],"surprises":{"card":{"title":"Um cartão só seu","copy":"Guarde isso para os dias corridos: você é uma das coisas mais bonitas que já me aconteceram. Que a vida continue encontrando jeitos de colocar a gente lado a lado.","kicker":"ABRA QUANDO QUISER SORRIR"},"message":{"title":"Uma coisa que eu nunca quero que você esqueça","copy":"Você não precisa fazer nada extraordinário para ser especial. O jeito como você existe, como cuida, como ri e como torna os dias comuns mais leves já é mais do que suficiente. Se eu pudesse escolher de novo, em todas as versões da vida, eu ainda procuraria você.","kicker":"SÓ MAIS UMA COISA","signature":"Você torna tudo mais bonito. ♡"}},"images":{"hero":"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-hero.jpg","gallery":["https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-01.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-02.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-03.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-04.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-05.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-06.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-07.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-08.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-09.jpg"]}};
  var draft=null;
  try{draft=JSON.parse(localStorage.getItem("lovenaExperienceDraftV1")||"null");}catch(error){}
+ var shareSlug=new URLSearchParams(location.search).get("slug");
+ var publicExperience=null;
+ if(shareSlug&&window.LovenaBackend){
+  try{var remote=await window.LovenaBackend.getPublicExperience(shareSlug);publicExperience=remote.experience;draft=publicExperience&&publicExperience.data?publicExperience.data:null;if(publicExperience&&publicExperience.locale)document.documentElement.lang=publicExperience.locale;}
+  catch(error){window.LOVENA_PUBLIC_LOAD_ERROR=error&&error.message?error.message:"Não foi possível carregar esta experiência.";console.error("Lovena public experience load failed",error);}
+ }
  var hasCurrentImageDraft=!!(draft&&Number(draft.sampleAssetsVersion)===2);
  var data=defaults;
  if(draft&&draft.data){
@@ -1857,7 +1864,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 @media(max-width:420px){#lovenaEditor .ed-image-row{grid-template-columns:44px minmax(0,1fr)}#lovenaEditor .ed-image-thumb{width:40px;height:40px}}
 @media(prefers-reduced-motion:reduce){body.editor-mode .lovena-edit-target{transition:none}}
 </style>
-<script src="./assets/lovena-backend.js"></script>
 <script id="lovenaEditorRuntime">
 (function(){
  "use strict";
