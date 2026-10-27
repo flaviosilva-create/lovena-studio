@@ -2606,7 +2606,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   syncExperienceLanguagePicker();
   var status=document.getElementById("lovenaExperienceLanguageStatus");
   if(status){
-   var names={en:"English",pt:"Portuguese",fr:"French",de:"German",es:"Spanish",it:"Italian",nl:"Dutch",pl:"Polish",ru:"Russian",uk:"Ukrainian",tr:"Turkish",ar:"Arabic",fa:"Persian",ur:"Urdu",he:"Hebrew",hi:"Hindi",bn:"Bengali",pa:"Punjabi",ta:"Tamil",te:"Telugu",kn:"Kannada",ml:"Malayalam",mr:"Marathi",gu:"Gujarati",ja:"Japanese",ko:"Korean","zh-CN":"Chinese (Simplified)","zh-TW":"Chinese (Traditional)",id:"Indonesian",ms:"Malay",tl:"Filipino",vi:"Vietnamese",th:"Thai",lo:"Lao",my:"Burmese",km:"Khmer",sv:"Swedish",da:"Danish",no:"Norwegian",fi:"Finnish",el:"Greek",cs:"Czech",sk:"Slovak",sl:"Slovenian",ro:"Romanian",hu:"Hungarian",bg:"Bulgarian",sr:"Serbian",hr:"Croatian",bs:"Bosnian",et:"Estonian",lt:"Lithuanian",lv:"Latvian",is:"Icelandic",af:"Afrikaans",sw:"Swahili",ca:"Catalan",cy:"Welsh",sq:"Albanian",mk:"Macedonian",ka:"Georgian",hy:"Armenian",az:"Azerbaijani",kk:"Kazakh",uz:"Uzbek"};
+   var names={en:"English",pt:"Portuguese",fr:"French",de:"German",es:"Spanish",it:"Italian",nl:"Dutch",pl:"Polish",ru:"Russian",uk:"Ukrainian",tr:"Turkish",ar:"Arabic",fa:"Persian",ur:"Urdu",he:"Hebrew",hi:"Hindi",bn:"Bengali",pa:"Punjabi",ta:"Tamil",te:"Telugu",kn:"Kannada",ml:"Malayalam",mr:"Marathi",gu:"Gujarati",ja:"Japanese",ko:"Korean","zh-CN":"Chinese (Simplified)","zh-TW":"Chinese (Traditional)",id:"Indonesian",ms:"Malay",tl:"Filipino",vi:"Vietnamese",th:"Thai",lo:"Lao",my:"Burmese",km:"Khmer",sv:"Swedish",da:"Danish",no:"Norwegian",fi:"Finnish",el:"Greek",cs:"Czech",sk:"Slovak",sl:"Slovenian",ro:"Romanian",hu:"Hungarian",bg:"Bulgarian",sr:"Serbian",hr:"Croatian",bs:"Bosnian",et:"Estonian",lt:"Lithuanian",lv:"Latvian",is:"Icelandic",af:"Afrikaans",sw:"Swahili",ca:"Catalan",cy:"Welsh",sq:"Albanian",mk:"Macedonian",ka:"Georgian",hy:"Armenian",az:"Azerbaijani",kk:"Kazakh",uz:"Uzbek",mr:"Marathi",gu:"Gujarati",bn:"Bengali",pa:"Punjabi",ta:"Tamil",te:"Telugu",kn:"Kannada",ml:"Malayalam",lo:"Lao",my:"Burmese",km:"Khmer",fa:"Persian",ur:"Urdu",he:"Hebrew",af:"Afrikaans",sw:"Swahili",tl:"Filipino",bg:"Bulgarian",sr:"Serbian",hr:"Croatian",bs:"Bosnian",is:"Icelandic",lt:"Lithuanian",lv:"Latvian",et:"Estonian",ms:"Malay",sq:"Albanian",mk:"Macedonian",ka:"Georgian",hy:"Armenian",az:"Azerbaijani",kk:"Kazakh",uz:"Uzbek"};
    status.textContent=(state.localeMode==="auto"?"Detected language: ":"Page language: ")+(names[locale]||locale.toUpperCase());
   }
   if(languageChanged){window.dispatchEvent(new CustomEvent("lovena:experience-language-changed",{detail:{locale:locale,reason:reason||"selection"}}));if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();}
@@ -2630,8 +2630,15 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(/[\u3040-\u30ff]/.test(value))return "ja";
   if(/[\uac00-\ud7af]/.test(value))return "ko";
   if(/[\u4e00-\u9fff]/.test(value))return "zh-CN";
-  if(/[\u0600-\u06ff]/.test(value))return "ar";
-  if(/[\u0900-\u097f]/.test(value))return "hi";
+  if(/[\u0600-\u06ff]/.test(value)){
+   if(/[پچژگ]/.test(value))return "fa";
+   if(/[ٹڈڑںھۂے]/.test(value))return "ur";
+   return "ar";
+  }
+  if(/[\u0900-\u097f]/.test(value)){
+   if(/(?:माझं|माझी|तुझं|तुझी|प्रेम|आपण)/.test(value))return "mr";
+   return "hi";
+  }
   if(/[\u0980-\u09ff]/.test(value))return "bn";
   if(/[\u0a00-\u0a7f]/.test(value))return "pa";
   if(/[\u0b80-\u0bff]/.test(value))return "ta";
@@ -2644,13 +2651,28 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(/[\u1780-\u17ff]/.test(value))return "km";
   if(/[\u0370-\u03ff]/.test(value))return "el";
   if(/[\u0590-\u05ff]/.test(value))return "he";
-  if(/[\u0400-\u04ff]/.test(value))return /[іїєґ]/i.test(value)?"uk":"ru";
+  if(/[\u0400-\u04ff]/.test(value)){
+   if(/[іїєґ]/i.test(value))return "uk";
+   if(/\b(?:обичам|сърце|винаги|любов)\b/i.test(value))return "bg";
+   if(/[јђћџ]/i.test(value))return "sr";
+   return "ru";
+  }
   if(/\b(?:je\s+t['’]aime|mon\s+amour|je\s+t'aime)\b/i.test(value))return "fr";
   if(/\bich\s+liebe\s+dich\b/i.test(value))return "de";
   if(/\bi\s+love\s+you\b/i.test(value))return "en";
   if(/\bti\s+amo\b/i.test(value))return "it";
   if(/\beu\s+te\s+amo\b/i.test(value))return "pt";
   if(/\bte\s+quiero\b/i.test(value))return "es";
+  if(/\b(?:saya|awak)\b.*\b(?:sayang|cinta)\b/i.test(value))return "ms";
+  if(/\b(?:aku|kita)\b.*\b(?:sayang|cinta)\b/i.test(value))return "id";
+  if(/\b(?:mahal kita|mahal na mahal|ikaw ay)\b/i.test(value))return "tl";
+  if(/\b(?:nakupenda|upendo|asante sana|moyo wangu)\b/i.test(value))return "sw";
+  if(/\b(?:obicham te|обичам те|сърце|любов моя)\b/i.test(value))return "bg";
+  if(/\b(?:volim te|volim te puno|ljubavi moja)\b/i.test(value))return "hr";
+  if(/\b(?:kocham cię|kocham cie|moja miłość)\b/i.test(value))return "pl";
+  if(/\b(?:te iubesc|dragostea mea)\b/i.test(value))return "ro";
+  if(/\b(?:miluji tě|miluji te)\b/i.test(value))return "cs";
+  if(/\b(?:szeretlek|szerelmem)\b/i.test(value))return "hu";
   if(/[đăơư]/i.test(value))return "vi";
   var scores={
    en:count(/\b(?:the|you|and|with|your|love|always|our|we|this|that|for|from|beautiful|are|is|it|me|to|of|my|together|heart|thank)\b/g),
@@ -2671,7 +2693,14 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    fi:count(/\b(?:minä|sinä|meidän|rakkaus|rakastan|aina|sydän|yhdessä|kiitos|sinulle)\b/g)+count(/[äöå]/g),
    id:count(/\b(?:aku|kamu|sayang|cinta|selalu|terima kasih|kita|untuk|indah|bersama|hati|yang|tidak|dengan)\b/g),
    ms:count(/\b(?:saya|awak|sayang|cinta|selalu|terima kasih|kita|untuk|indah|bersama|hati|yang|tidak|dengan)\b/g),
-   vi:count(/\b(?:anh|em|yêu|thương|luôn|cảm ơn|chúng|mình|đẹp|nhất|với|bên|của|là|những)\b/g)+count(/[đăơư]/g)*2
+   vi:count(/\b(?:anh|em|yêu|thương|luôn|cảm ơn|chúng|mình|đẹp|nhất|với|bên|của|là|những)\b/g)+count(/[đăơư]/g)*2,
+   af:count(/\b(?:ek|jy|jou|liefde|altyd|ons|saam|dankie|mooi)\b/g),
+   sw:count(/\b(?:nakupenda|upendo|wewe|daima|pamoja|asante|moyo|wetu)\b/g),
+   tl:count(/\b(?:mahal|ikaw|palagi|salamat|puso|tayo|maganda)\b/g),
+   bg:count(/\b(?:обичам|любов|сърце|винаги|заедно)\b/g)+count(/[ъщюя]/g),
+   sr:count(/\b(?:volim|љубав|увек|срце|заувек|заједно)\b/g)+count(/[јђћџ]/g),
+   hr:count(/\b(?:volim|ljubav|zauvijek|srce|uvijek|zajedno)\b/g)+count(/[čćđšž]/g),
+   bs:count(/\b(?:volim|ljubav|zauvijek|srce|uvijek|zajedno)\b/g)+count(/[čćđšž]/g)
   };
   var best="",score=0;Object.keys(scores).forEach(function(key){if(scores[key]>score){score=scores[key];best=key;}});
   return score>=2?best:"";
