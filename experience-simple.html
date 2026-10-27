@@ -370,6 +370,7 @@ body.editor-mode .experience{padding-bottom:28px}
 .music-embed-container[hidden]{display:none!important}
 .music-embed-frame{display:block;width:100%;max-width:100%;border:0;border-radius:8px;background:#fff}
 .music-embed-frame.music-embed-spotify{min-height:152px}
+.music-embed-frame.music-embed-youtube{min-height:225px}
 .music-embed-frame.music-embed-apple{min-height:175px}
 .music-embed-note{margin:0;padding:12px 13px;border:1px dashed rgba(225,195,171,.44);border-radius:8px;color:#e5cdbb;font:10px/1.65 Manrope,Arial,sans-serif}
 .music-embed-service-link{display:inline-flex;align-items:center;justify-content:center;margin-top:9px;padding:9px 13px;border:1px solid rgba(225,195,171,.45);border-radius:999px;color:#f5e9dc;text-decoration:none;font:700 10px/1.4 Manrope,Arial,sans-serif}
@@ -1624,8 +1625,31 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
    if(autoplay)u.searchParams.set("autoplay","1");
    return {url:u.href,platform:platform,height:(pathParts.indexOf("song")>=0)?175:450,autoplay:!!autoplay};
   }
-  // YouTube Music has no supported audio-only embedded player. Never embed a video
-  // inside a Lovena experience; open the track in YouTube Music from the Play button.
+  if(platform==="youtube"){
+   var host=u.hostname.toLowerCase();
+   var videoId=u.searchParams.get("v")||"";
+   if(!videoId&&host==="youtu.be")videoId=u.pathname.split("/").filter(Boolean)[0]||"";
+   if(!videoId){
+    var youtubeMatch=u.pathname.match(/\/(?:embed|shorts|live)\/([A-Za-z0-9_-]{11})/);
+    if(youtubeMatch)videoId=youtubeMatch[1];
+   }
+   var listId=u.searchParams.get("list")||"";
+   if(/^[A-Za-z0-9_-]{11}$/.test(videoId)){
+    var youtubeEmbedUrl=new URL("https://www.youtube.com/embed/"+videoId);
+    youtubeEmbedUrl.searchParams.set("playsinline","1");
+    youtubeEmbedUrl.searchParams.set("rel","0");
+    if(listId)youtubeEmbedUrl.searchParams.set("list",listId);
+    if(autoplay)youtubeEmbedUrl.searchParams.set("autoplay","1");
+    return {url:youtubeEmbedUrl.href,platform:platform,height:225,autoplay:!!autoplay};
+   }
+   if(listId){
+    var playlistEmbedUrl=new URL("https://www.youtube.com/embed/videoseries");
+    playlistEmbedUrl.searchParams.set("list",listId);
+    playlistEmbedUrl.searchParams.set("playsinline","1");
+    if(autoplay)playlistEmbedUrl.searchParams.set("autoplay","1");
+    return {url:playlistEmbedUrl.href,platform:platform,height:225,autoplay:!!autoplay};
+   }
+  }
   return null;
  }
  var currentMusicEmbed="";
@@ -1699,7 +1723,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
     var note=document.createElement("p");
     note.className="music-embed-note";
     if(platform==="youtube"){
-     note.textContent="YouTube Music cannot play here as audio-only without showing a video. To keep this Lovena page video-free, use a Spotify or Apple Music track link for in-page playback, or use the link below to open YouTube Music.";
+     note.textContent="This YouTube link does not point to a playable video or playlist. Paste a direct YouTube Music or YouTube track/playlist link to play it here.";
      var serviceLink=document.createElement("a");
      serviceLink.className="music-embed-service-link";
      serviceLink.href=getMusicUrl(song);
@@ -1772,8 +1796,8 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   frame.title=title;
   frame.loading="lazy";
   frame.referrerPolicy="strict-origin-when-cross-origin";
-  frame.allow="autoplay; clipboard-write; encrypted-media";
-  frame.allowFullscreen=false;
+  frame.allow=platform==="youtube"?"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share":"autoplay; clipboard-write; encrypted-media";
+  frame.allowFullscreen=platform==="youtube";
   frame.style.height=embed.height+"px";
   container.appendChild(frame);
  }
@@ -1838,12 +1862,11 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
    renderMusicPlayer();
    var embedded=document.getElementById("musicEmbedContainer");
    if(embedded){embedded.hidden=false;embedded.scrollIntoView({behavior:"smooth",block:"nearest"});}
-   if(getMusicPlatform(activeSong)==="youtube"){
-    showToast("YouTube Music does not provide an audio-only player for this page. Use Spotify or Apple Music for in-page playback, or open the link below.");
-   }else if(getMusicEmbed(activeSong,true)){
-    showToast("Starting the embedded music player. If playback is blocked, use the player controls below.");
+   if(getMusicEmbed(activeSong,true)){
+    if(getMusicPlatform(activeSong)==="youtube")showToast("Loading the YouTube video player here. If playback does not start automatically, press Play inside the video.");
+    else showToast("Starting the embedded music player. If playback is blocked, use the player controls below.");
    }else{
-    showToast("This track cannot be played inline. Use the link below to open the music service.");
+    showToast("This track cannot be played inline. Paste a direct track or playlist link, or use the link below.");
    }
    return;
   }
@@ -2478,7 +2501,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    });
    modeWrap.appendChild(modeSelect);box.appendChild(modeWrap);
    var musicHelp=document.createElement("small");musicHelp.className="ed-help";
-   musicHelp.textContent="Spotify and Apple Music can play through their embedded players on this page when the track is supported. YouTube Music does not provide an official audio-only embedded player, so the Lovena page will not open it automatically.";
+   musicHelp.textContent="Spotify, Apple Music and YouTube Music can play inside this page when the link supports embedding. YouTube Music uses a visible video player; if autoplay is blocked, press Play inside the player.";
    box.appendChild(musicHelp);
    songsBody.appendChild(box);
   });
