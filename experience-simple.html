@@ -2564,6 +2564,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  function markLovenaUserText(element){if(element&&element.setAttribute)element.setAttribute("data-lovena-user-content","true");}
  function applyExperienceLocale(value,reason){
   var locale=normalizeExperienceLanguage(value);
+  var languageChanged=normalizeExperienceLanguage(state.locale||"en")!==locale||document.documentElement.getAttribute("data-lovena-language")!==locale;
   state.locale=locale;data.locale=locale;data.language=locale;
   document.documentElement.lang=locale;document.documentElement.setAttribute("data-lovena-language",locale);
   var picker=document.getElementById("lovenaExperienceLanguage");
@@ -2573,8 +2574,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    var names={en:"English",pt:"Portuguese",fr:"French",de:"German",es:"Spanish",it:"Italian",nl:"Dutch",pl:"Polish",ru:"Russian",uk:"Ukrainian",tr:"Turkish",ar:"Arabic",hi:"Hindi",ja:"Japanese",ko:"Korean","zh-CN":"Chinese","zh-TW":"Traditional Chinese",id:"Indonesian",vi:"Vietnamese",th:"Thai",sv:"Swedish",da:"Danish",no:"Norwegian",fi:"Finnish",el:"Greek",cs:"Czech",ro:"Romanian",hu:"Hungarian"};
    status.textContent=(state.localeMode==="auto"?"Detected language: ":"Page language: ")+(names[locale]||locale.toUpperCase());
   }
-  window.dispatchEvent(new CustomEvent("lovena:experience-language-changed",{detail:{locale:locale,reason:reason||"selection"}}));
-  if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();
+  if(languageChanged){window.dispatchEvent(new CustomEvent("lovena:experience-language-changed",{detail:{locale:locale,reason:reason||"selection"}}));if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();}
  }
  var localeDetectionTimer=0,localeDetectionSequence=0;
  function getWrittenExperienceText(){
