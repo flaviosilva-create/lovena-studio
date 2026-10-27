@@ -334,8 +334,9 @@
     var cloudButton = makeButton("Carregar último rascunho da nuvem");
     var resetButton = makeButton("Esqueci minha senha");
     box.append(heading, description, authStatus, email, password, buttons);
-    var liveGuide = scroll.querySelector(".ed-live-guide");
-    if (liveGuide) scroll.insertBefore(box, liveGuide); else scroll.insertBefore(box, scroll.firstChild);
+    // Cadastro é opcional: não exibimos login/criação de conta durante a compra.
+    // saveDraft() cria uma sessão anônima temporária automaticamente quando necessário.
+    // Os campos de conta ficam fora do DOM para não sugerir que o cadastro é obrigatório.
 
     var publication = document.createElement("section");
     publication.className = "lovena-cloud-publication";
