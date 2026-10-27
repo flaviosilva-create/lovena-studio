@@ -43,7 +43,7 @@
     if (!signInPromise) {
       signInPromise = supabase.auth.signInAnonymously().then(function (result) {
         if (result.error) throw result.error;
-        if (!result.data || !result.data.user) throw new Error("O Supabase não retornou uma sessão válida.");
+        if (!result.data || !result.data.user) throw new Error("Supabase did not return a valid session.");
         return result.data.user;
       }).finally(function () { signInPromise = null; });
     }
@@ -78,10 +78,10 @@
       if (memo.has(value)) return memo.get(value);
       var promise = (async function () {
         var response = await fetch(value);
-        if (!response.ok) throw new Error("Não foi possível preparar uma foto para a nuvem.");
+        if (!response.ok) throw new Error("Could not prepare a photo for cloud storage.");
         var blob = await response.blob();
-        if (!blob.type || blob.type.indexOf("image/") !== 0) throw new Error("Formato de imagem inválido.");
-        if (blob.size > 20 * 1024 * 1024) throw new Error("Cada imagem deve ter até 20 MB.");
+        if (!blob.type || blob.type.indexOf("image/") !== 0) throw new Error("Invalid image format.");
+        if (blob.size > 20 * 1024 * 1024) throw new Error("Each image must be 20 MB or smaller.");
         var digest = await sha256(value);
         var path = context.userId + "/" + context.experienceId + "/" + digest + "." + extensionFor(blob.type);
         var upload = await context.supabase.storage.from("lovena-media").upload(path, blob, {
@@ -129,13 +129,13 @@
     collectMediaPaths(snapshot, used);
     var listed = await supabase.from("lovena_media").select("storage_path")
       .eq("experience_id", experienceId);
-    if (listed.error) { console.warn("Lovena: não foi possível verificar mídias antigas.", listed.error.message); return; }
+    if (listed.error) { console.warn("Lovena: could not check older media.", listed.error.message); return; }
     var remove = (listed.data || []).map(function (item) { return item.storage_path; }).filter(function (path) { return !used.has(path); });
     if (!remove.length) return;
     var objects = await supabase.storage.from("lovena-media").remove(remove);
-    if (objects.error) console.warn("Lovena: algumas mídias antigas não foram removidas.", objects.error.message);
+    if (objects.error) console.warn("Lovena: some older media could not be removed.", objects.error.message);
     var metadata = await supabase.from("lovena_media").delete().eq("experience_id", experienceId).in("storage_path", remove);
-    if (metadata.error) console.warn("Lovena: metadados de mídia antiga não foram removidos.", metadata.error.message);
+    if (metadata.error) console.warn("Lovena: metadata for older media could not be removed.", metadata.error.message);
   }
 
   async function findDraft(supabase, user, editorKey) {
@@ -163,7 +163,7 @@
       if (value.indexOf("lovena-media://") !== 0) return value;
       var path = value.slice("lovena-media://".length);
       var signed = await supabase.storage.from("lovena-media").createSignedUrl(path, 3600);
-      if (signed.error || !signed.data || !signed.data.signedUrl) throw (signed.error || new Error("Não foi possível abrir uma foto salva."));
+      if (signed.error || !signed.data || !signed.data.signedUrl) throw (signed.error || new Error("Could not open a saved photo."));
       return signed.data.signedUrl;
     }
     if (Array.isArray(value)) {
@@ -215,7 +215,7 @@
         status: "draft",
         public_slug: null,
         plan: planFor(editorKey),
-        locale: (snapshot.data && (snapshot.data.locale || snapshot.data.language)) || document.documentElement.lang || "pt-BR",
+        locale: (snapshot.data && (snapshot.data.locale || snapshot.data.language)) || document.documentElement.lang || "en",
         experience_data: {}
       }).select("id").single();
       if (created.error) throw created.error;
@@ -230,7 +230,7 @@
 
     var update = await supabase.from("lovena_experiences").update({
       experience_data: transformed,
-      locale: (snapshot.data && (snapshot.data.locale || snapshot.data.language)) || document.documentElement.lang || "pt-BR",
+      locale: (snapshot.data && (snapshot.data.locale || snapshot.data.language)) || document.documentElement.lang || "en",
       updated_at: new Date().toISOString()
     }).eq("id", experienceId).eq("owner_id", user.id).eq("status", "draft").is("public_slug", null).select("id").single();
     if (update.error) throw update.error;
@@ -239,21 +239,21 @@
   }
 
   async function getPublicExperience(slug) {
-    if (!slug || !/^[a-zA-Z0-9_-]{6,160}$/.test(slug)) throw new Error("Link de experiência inválido.");
+    if (!slug || !/^[a-zA-Z0-9_-]{6,160}$/.test(slug)) throw new Error("Invalid experience link.");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-public-experience?slug=" + encodeURIComponent(slug), {
       method: "GET",
       headers: { apikey: SUPABASE_KEY },
       cache: "no-store"
     });
     var body = await response.json().catch(function () { return {}; });
-    if (!response.ok) throw new Error(body.error || (response.status === 404 ? "Esta experiência não foi encontrada." : "Não foi possível carregar esta experiência."));
+    if (!response.ok) throw new Error(body.error || (response.status === 404 ? "This experience could not be found." : "Could not load this experience."));
     return body;
   }
 
   async function createCheckout(experienceId, editorKey, purchaseType) {
     var supabase = await client();
     var session = await currentSession(supabase);
-    if (!session || !session.access_token) throw new Error("Não foi possível iniciar a sessão da Lovena. Atualize a página e tente novamente.");
+    if (!session || !session.access_token) throw new Error("Could not start your Lovena session. Refresh the page and try again.");
     var type = purchaseType === "html_download" ? "html_download" : (purchaseType === "online_with_html" ? "online_with_html" : "online");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
       method: "POST",
@@ -261,21 +261,21 @@
       body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type })
     });
     var body = await response.json().catch(function () { return {}; });
-    if (!response.ok || !body.url) throw new Error(body.message || body.error || "Não foi possível iniciar o pagamento.");
+    if (!response.ok || !body.url) throw new Error(body.message || body.error || "Could not start checkout.");
     return body;
   }
 
   async function getCheckoutStatus(sessionId, experienceId) {
     var supabase = await client();
     var session = await currentSession(supabase);
-    if (!session || !session.access_token) throw new Error("Não encontrei sua sessão da Lovena. Entre novamente e tente verificar.");
+    if (!session || !session.access_token) throw new Error("Your Lovena session was not found. Sign in again and try to verify.");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-checkout-status", {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
       body: JSON.stringify({ sessionId: sessionId, experienceId: experienceId })
     });
     var body = await response.json().catch(function () { return {}; });
-    if (!response.ok) throw new Error(body.message || body.error || "Não foi possível verificar o pagamento.");
+    if (!response.ok) throw new Error(body.message || body.error || "Could not verify the payment.");
     return body;
   }
 
@@ -289,7 +289,7 @@
       body: JSON.stringify({ action: "entitlements", experienceId: experienceId })
     });
     var body = await response.json().catch(function () { return {}; });
-    if (!response.ok) throw new Error(body.message || body.error || "Não foi possível consultar as compras desta experiência.");
+    if (!response.ok) throw new Error(body.message || body.error || "Could not check purchases for this experience.");
     return body;
   }
 
@@ -305,7 +305,7 @@
     box.className = "lovena-cloud-account";
     box.style.cssText = "margin:0 0 16px;padding:14px;border:1px solid #e5d1c2;border-radius:14px;background:linear-gradient(135deg,#fffaf6,#fff);color:#51392f";
     var heading = document.createElement("strong");
-    heading.textContent = "Salvar e acessar sua Lovena em outros dispositivos";
+    heading.textContent = "Save and access your Lovena on other devices";
     heading.style.cssText = "display:block;font-size:14px;margin-bottom:6px";
     var description = document.createElement("p");
     description.style.cssText = "font-size:12px;line-height:1.55;margin:0 0 10px;color:#82695a";
@@ -313,12 +313,12 @@
     authStatus.style.cssText = "font-size:12px;line-height:1.4;margin:0 0 10px;color:#7a5947";
     authStatus.setAttribute("role", "status");
     var email = document.createElement("input");
-    email.type = "email"; email.autocomplete = "email"; email.placeholder = "Seu e-mail";
-    email.setAttribute("aria-label", "E-mail da conta Lovena");
+    email.type = "email"; email.autocomplete = "email"; email.placeholder = "Your email";
+    email.setAttribute("aria-label", "Lovena account email");
     email.style.cssText = "display:block;width:100%;box-sizing:border-box;padding:10px 11px;border:1px solid #dfc6b4;border-radius:9px;margin:7px 0;background:#fff;color:#51392f";
     var password = document.createElement("input");
-    password.type = "password"; password.autocomplete = "current-password"; password.placeholder = "Senha (mínimo 8 caracteres)";
-    password.setAttribute("aria-label", "Senha da conta Lovena");
+    password.type = "password"; password.autocomplete = "current-password"; password.placeholder = "Password (at least 8 characters)";
+    password.setAttribute("aria-label", "Lovena account password");
     password.style.cssText = email.style.cssText;
     var buttons = document.createElement("div");
     buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:7px;margin-top:8px";
@@ -330,8 +330,8 @@
       return button;
     }
     var loginButton = makeButton("Entrar");
-    var createButton = makeButton("Criar conta / vincular e-mail");
-    var cloudButton = makeButton("Carregar último rascunho da nuvem");
+    var createButton = makeButton("Create account / link email");
+    var cloudButton = makeButton("Load Latest Cloud Draft");
     var resetButton = makeButton("Esqueci minha senha");
     box.append(heading, description, authStatus, email, password, buttons);
     // Cadastro é opcional: não exibimos login/criação de conta durante a compra.
@@ -346,7 +346,7 @@
     var basePriceCents = planIsSimple ? 499 : 999;
     var onlinePriceLabel = planIsSimple ? "US$ 4,99" : "US$ 9,99";
     function priceLabel(cents) { return "US$ " + (cents / 100).toFixed(2).replace(".", ","); }
-    publicationTitle.textContent = "Publique sua página Lovena";
+    publicationTitle.textContent = "Publish Your Lovena Page";
     publicationTitle.style.cssText = "display:block;font-size:17px;line-height:1.35;margin-bottom:8px;color:#472b23";
     var publicationCopy = document.createElement("p");
     publicationCopy.style.cssText = "font-size:13px;line-height:1.6;margin:0 0 12px;color:#765d50";
@@ -362,10 +362,10 @@
     var includeHtmlText = document.createElement("span");
     includeHtmlText.style.cssText = "display:grid;gap:4px;font-size:13px;line-height:1.4;color:#51392f";
     var includeHtmlTitle = document.createElement("strong");
-    includeHtmlTitle.textContent = "Adicionar HTML offline (+US$ 1,00)";
+    includeHtmlTitle.textContent = "Add offline HTML (+$1.00)";
     includeHtmlTitle.style.cssText = "font-size:13px";
     var includeHtmlHelp = document.createElement("span");
-    includeHtmlHelp.textContent = "Receba também um arquivo HTML para baixar e guardar offline. Opcional.";
+    includeHtmlHelp.textContent = "Also get an HTML file to download and keep offline. Optional.";
     includeHtmlHelp.style.cssText = "font-size:11px;line-height:1.5;color:#82695a";
     includeHtmlText.append(includeHtmlTitle, includeHtmlHelp);
     includeHtmlLabel.append(includeHtmlCheckbox, includeHtmlText);
@@ -377,28 +377,28 @@
     htmlPurchaseButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:11px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:9px";
     var htmlPurchaseStatus = document.createElement("p");
     htmlPurchaseStatus.style.cssText = "font-size:12px;line-height:1.5;margin:7px 0 0;color:#82695a";
-    htmlPurchaseStatus.textContent = "Opcional: depois de pagar pela publicação online, você pode pagar mais US$ 1,00 para baixar o HTML e usar offline.";
+    htmlPurchaseStatus.textContent = "Optional: after paying for online publishing, you can pay $1.00 more to download the HTML and use it offline.";
     htmlPurchaseStatus.hidden = true;
 
     var paidSharePanel = document.createElement("div");
     paidSharePanel.hidden = true;
     paidSharePanel.style.cssText = "margin-top:12px;padding:12px;border:1px solid #d9c2af;border-radius:10px;background:#fffaf6";
     var paidShareTitle = document.createElement("strong");
-    paidShareTitle.textContent = "Seu link está pronto para compartilhar";
+    paidShareTitle.textContent = "Your link is ready to share";
     paidShareTitle.style.cssText = "display:block;font-size:12px;margin-bottom:6px";
     var paidShareLink = document.createElement("a");
     paidShareLink.target = "_blank";
     paidShareLink.rel = "noopener noreferrer";
     paidShareLink.style.cssText = "display:block;color:#8b5541;font-size:12px;line-height:1.5;overflow-wrap:anywhere";
-    paidShareLink.textContent = "Abrir experiência publicada ↗";
+    paidShareLink.textContent = "Open Published Experience ↗";
     var copyPaidLinkButton = document.createElement("button");
     copyPaidLinkButton.type = "button";
-    copyPaidLinkButton.textContent = "Copiar link para compartilhar";
+    copyPaidLinkButton.textContent = "Copy Share Link";
     copyPaidLinkButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:9px;padding:9px;background:#fff;color:#654739;font:600 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:8px";
     paidSharePanel.append(paidShareTitle, paidShareLink, copyPaidLinkButton);
     var publishButton = document.createElement("button");
     publishButton.type = "button";
-    publishButton.textContent = "Publicar página e pagar " + onlinePriceLabel;
+    publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
     publishButton.style.cssText = "width:100%;border:0;border-radius:11px;padding:14px 12px;background:#59372f;color:#fff;font:800 14px Manrope,Arial,sans-serif;cursor:pointer;margin-top:2px;box-shadow:0 5px 12px rgba(89,55,47,.16)";
     var publishStatus = document.createElement("p");
     publishStatus.style.cssText = "font-size:12px;line-height:1.5;margin:8px 0 0;color:#82695a;overflow-wrap:anywhere";
@@ -410,21 +410,21 @@
       var total = basePriceCents + (includeHtmlCheckbox.checked ? 100 : 0);
       onlinePriceLabel = priceLabel(total);
       publicationTotal.textContent = "Total: " + onlinePriceLabel;
-      publicationCopy.textContent = (planIsSimple ? "Lovena Simple" : "Lovena Premium") + " · publicação online por 1 ano. " +
+      publicationCopy.textContent = (planIsSimple ? "Lovena Simple" : "Lovena Premium") + " · online publication for 1 year. " +
         (includeHtmlCheckbox.checked
-          ? "Inclui também o download HTML offline (+US$ 1,00)."
-          : "O HTML offline é opcional: marque a caixa abaixo para incluí-lo.");
-      publishButton.textContent = "Publicar página e pagar " + onlinePriceLabel;
+          ? "Also includes the offline HTML download (+$1.00)."
+          : "Offline HTML is optional: check the box below to include it.");
+      publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
     }
     includeHtmlCheckbox.addEventListener("change", updatePublicationPrice);
     updatePublicationPrice();
 
     var htmlExportButton = document.querySelector('[data-editor-action="export"]');
-    var originalExportText = htmlExportButton ? htmlExportButton.textContent.trim() : "Baixar presente completo (.html)";
+    var originalExportText = htmlExportButton ? htmlExportButton.textContent.trim() : "Download Complete Gift (.html)";
     if (htmlExportButton) {
       htmlExportButton.disabled = true;
       htmlExportButton.textContent = "HTML offline bloqueado · US$ 1,00";
-      htmlExportButton.title = "Pague o adicional de US$ 1,00 após publicar o link online para desbloquear este arquivo.";
+      htmlExportButton.title = "Pay the additional $1.00 after publishing your online link to unlock this file.";
       htmlExportButton.setAttribute("aria-disabled", "true");
     }
 
@@ -435,7 +435,7 @@
       if (htmlExportButton) {
         htmlExportButton.disabled = !htmlUnlocked;
         htmlExportButton.textContent = htmlUnlocked ? originalExportText : "HTML offline bloqueado · US$ 1,00";
-        htmlExportButton.title = htmlUnlocked ? "Download HTML liberado para esta experiência." : "Pague o adicional de US$ 1,00 após publicar o link online para desbloquear este arquivo.";
+        htmlExportButton.title = htmlUnlocked ? "HTML download unlocked for this experience." : "Pay the additional $1.00 after publishing your online link to unlock this file.";
         htmlExportButton.setAttribute("aria-disabled", htmlUnlocked ? "false" : "true");
       }
       if (htmlUnlocked) includeHtmlCheckbox.checked = true;
@@ -443,8 +443,8 @@
       updatePublicationPrice();
       publishButton.disabled = onlinePaid;
       publishButton.textContent = onlinePaid
-        ? "Pagamento confirmado · link online liberado"
-        : "Publicar página e pagar " + onlinePriceLabel;
+        ? "Payment confirmed · online link unlocked"
+        : "Publish Page & Pay " + onlinePriceLabel;
       var showHtmlOption = onlinePaid && !!publicUrl;
       htmlPurchaseButton.hidden = !showHtmlOption;
       htmlPurchaseStatus.hidden = !showHtmlOption;
@@ -453,8 +453,8 @@
         ? "Download HTML desbloqueado ✓"
         : "Download HTML offline · US$ 1,00 (opcional)";
       htmlPurchaseStatus.textContent = htmlUnlocked
-        ? "Compra adicional confirmada. O botão de download no editor está desbloqueado."
-        : "Opcional: pague mais US$ 1,00 para baixar o HTML e guardar sua experiência offline.";
+        ? "Additional purchase confirmed. The download button in the editor is unlocked."
+        : "Optional: pay $1.00 more to download the HTML and keep your experience offline.";
       if (onlinePaid && publicUrl) {
         paidSharePanel.hidden = false;
         paidShareLink.href = publicUrl;
@@ -482,9 +482,9 @@
           temporaryInput.remove();
           if (!copied) throw new Error("copy_failed");
         }
-        htmlPurchaseStatus.textContent = "Link copiado. Agora você pode compartilhá-lo com quem quiser.";
+        htmlPurchaseStatus.textContent = "Link copied. You can now share it with anyone.";
       } catch (_) {
-        htmlPurchaseStatus.textContent = "Não foi possível copiar automaticamente. Clique no link acima, copie o endereço e compartilhe.";
+        htmlPurchaseStatus.textContent = "Could not copy automatically. Click the link above, copy the address, and share it.";
       }
     });
 
@@ -499,7 +499,7 @@
         var entitlements = await getPurchaseEntitlements(experienceId);
         applyPurchaseEntitlements(entitlements);
       } catch (error) {
-        htmlPurchaseStatus.textContent = error.message || "Não foi possível verificar as compras. Atualize a página e tente novamente.";
+        htmlPurchaseStatus.textContent = error.message || "Could not verify purchases. Refresh the page and try again.";
       }
     }
     refreshPurchaseEntitlements();
@@ -508,29 +508,29 @@
       var params = new URLSearchParams(window.location.search);
       var experienceId = params.get("experience_id") || localStorage.getItem(remoteIdKey(options.editorKey));
       if (!experienceId) {
-        htmlPurchaseStatus.textContent = "Salve sua experiência e publique o link online antes de comprar o HTML offline.";
+        htmlPurchaseStatus.textContent = "Save your experience and publish its online link before purchasing the offline HTML.";
         return;
       }
       htmlPurchaseButton.disabled = true;
-      htmlPurchaseButton.textContent = "Preparando pagamento do HTML…";
+      htmlPurchaseButton.textContent = "Preparing HTML checkout…";
       try {
         var checkout = await createCheckout(experienceId, options.editorKey, "html_download");
         htmlPurchaseStatus.textContent = "Abrindo o checkout seguro da Stripe para o adicional de US$ 1,00…";
         window.location.assign(checkout.url);
       } catch (error) {
-        htmlPurchaseStatus.textContent = error.message || "Não foi possível iniciar a compra do HTML offline.";
+        htmlPurchaseStatus.textContent = error.message || "Could not start the offline HTML purchase.";
         await refreshPurchaseEntitlements();
       }
     });
 
     publishButton.addEventListener("click", async function () {
       if (!options || typeof options.getSnapshot !== "function") {
-        publishStatus.textContent = "O editor ainda não está pronto para sincronizar.";
+        publishStatus.textContent = "The editor is not ready to sync yet.";
         return;
       }
       publishButton.disabled = true;
-      publishButton.textContent = "Salvando com segurança…";
-      publishStatus.textContent = "Salvando texto e fotografias na nuvem.";
+      publishButton.textContent = "Saving securely…";
+      publishStatus.textContent = "Saving text and photos to the cloud.";
       try {
         var snapshot = options.getSnapshot();
         localStorage.setItem(options.editorKey, JSON.stringify(snapshot));
@@ -538,14 +538,14 @@
         var selectedPurchaseType = includeHtmlCheckbox.checked ? "online_with_html" : "online";
         var checkout = await createCheckout(result.id, options.editorKey, selectedPurchaseType);
         publishStatus.textContent = includeHtmlCheckbox.checked
-          ? "Abrindo o checkout seguro com publicação e HTML offline…"
+          ? "Opening secure checkout for online publishing and offline HTML…"
           : "Abrindo o checkout seguro do Stripe…";
         window.location.assign(checkout.url);
       } catch (error) {
-        publishStatus.textContent = error.message || "Não foi possível iniciar o pagamento. O rascunho local continua disponível.";
+        publishStatus.textContent = error.message || "Could not start checkout. Your local draft is still available.";
       } finally {
         publishButton.disabled = false;
-        publishButton.textContent = "Publicar página e pagar " + onlinePriceLabel;
+        publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
       }
     });
 
@@ -560,29 +560,29 @@
         var session = await currentSession(supabase);
         var user = session && session.user;
         if (!user) {
-          description.textContent = "As alterações continuam guardadas neste navegador. Entre ou crie uma conta para recuperar rascunhos em outros dispositivos.";
-          notify("Você ainda não está conectado à nuvem.", false);
+          description.textContent = "Your changes remain saved in this browser. Sign in or create an account to recover drafts on other devices.";
+          notify("You are not connected to the cloud yet.", false);
           return;
         }
         if (user.is_anonymous) {
-          description.textContent = "Seu rascunho pode ser sincronizado neste navegador. Vincule um e-mail e senha para recuperar sua experiência em outros dispositivos.";
-          notify("Sessão temporária ativa neste navegador.", false);
+          description.textContent = "Your draft can sync in this browser. Link an email and password to recover your experience on other devices.";
+          notify("Temporary session active in this browser.", false);
           email.value = email.value || (user.email || "");
         } else {
-          description.textContent = "Sua conta está conectada. Os rascunhos salvos na nuvem ficam associados a este usuário.";
-          notify("Conectado como " + (user.email || "conta Lovena") + ".", false);
+          description.textContent = "Your account is connected. Cloud drafts are associated with this user.";
+          notify("Conectado como " + (user.email || "Lovena account") + ".", false);
           email.value = user.email || email.value;
         }
       } catch (error) {
-        description.textContent = "O salvamento local continua disponível enquanto a conexão é configurada.";
-        notify(error.message || "Não foi possível consultar a conta.", true);
+        description.textContent = "Local saving remains available while the connection is being configured.";
+        notify(error.message || "Could not check the account.", true);
       }
     }
     async function authAction(action) {
       var address = email.value.trim();
       var secret = password.value;
       if (!address || address.indexOf("@") < 1) { notify("Digite um e-mail válido.", true); return; }
-      if (action !== "reset" && secret.length < 8) { notify("Use uma senha com pelo menos 8 caracteres.", true); return; }
+      if (action !== "reset" && secret.length < 8) { notify("Use a password with at least 8 characters.", true); return; }
       loginButton.disabled = createButton.disabled = resetButton.disabled = true;
       try {
         var supabase = await client();
@@ -591,7 +591,7 @@
         if (action === "login") {
           var login = await supabase.auth.signInWithPassword({ email: address, password: secret });
           if (login.error) throw login.error;
-          notify("Login realizado. A nuvem está conectada.", false);
+          notify("Signed in. Cloud sync is connected.", false);
         } else if (action === "create") {
           var result;
           if (user && user.is_anonymous) {
@@ -601,21 +601,21 @@
           }
           if (result.error) throw result.error;
           if (result.data && result.data.session) {
-            notify("Conta pronta. Seu rascunho permanece vinculado a ela.", false);
+            notify("Account ready. Your draft remains linked to it.", false);
           } else {
-            notify("Confira seu e-mail para confirmar a conta e depois entre aqui.", false);
+            notify("Check your email to confirm your account, then sign in here.", false);
           }
         } else {
           var reset = await supabase.auth.resetPasswordForEmail(address, {
             redirectTo: SITE_BASE + "experience.html?edit=1"
           });
           if (reset.error) throw reset.error;
-          notify("Se o e-mail estiver cadastrado, você receberá as instruções de recuperação.", false);
+          notify("If that email is registered, you will receive recovery instructions.", false);
         }
         await refreshAuth();
-        if (status && action !== "reset") status.textContent = "Conta atualizada · salvando na nuvem";
+        if (status && action !== "reset") status.textContent = "Account updated · saving to the cloud";
       } catch (error) {
-        notify(error.message || "Não foi possível concluir a operação de conta.", true);
+        notify(error.message || "Could not complete the account operation.", true);
       } finally {
         loginButton.disabled = createButton.disabled = resetButton.disabled = false;
       }
@@ -627,15 +627,15 @@
       cloudButton.disabled = true;
       try {
         var local = localStorage.getItem(options.editorKey);
-        if (local && !window.confirm("Carregar o último rascunho da nuvem substituirá o rascunho atual deste navegador. Deseja continuar?")) return;
+        if (local && !window.confirm("Loading the latest cloud draft will replace this browser's current draft. Continue?")) return;
         var remote = await loadDraft(options.editorKey);
-        if (!remote) { notify("Não encontrei um rascunho remoto desta versão para esta conta.", false); return; }
+        if (!remote) { notify("No cloud draft for this version was found for this account.", false); return; }
         localStorage.setItem(options.editorKey, JSON.stringify(remote.snapshot));
         localStorage.setItem(remoteIdKey(options.editorKey), remote.id);
-        notify("Rascunho carregado. Atualizando o editor…", false);
+        notify("Draft loaded. Updating the editor…", false);
         location.reload();
       } catch (error) {
-        notify(error.message || "Não foi possível carregar o rascunho da nuvem.", true);
+        notify(error.message || "Could not load the cloud draft.", true);
       } finally {
         cloudButton.disabled = false;
       }
@@ -650,7 +650,7 @@
     var query = new URLSearchParams(location.search);
     if (query.get("checkout") === "cancelled") {
       publishButton.disabled = false;
-      publishStatus.textContent = "Pagamento cancelado. Seu rascunho continua salvo; você pode revisar e tentar novamente quando quiser.";
+      publishStatus.textContent = "Payment canceled. Your draft is still saved; review it and try again whenever you are ready.";
     } else if (query.get("checkout") === "success") {
       var checkoutSessionId = query.get("session_id");
       var checkoutExperienceId = query.get("experience_id");
@@ -658,15 +658,15 @@
       checkoutReturnStatus.setAttribute("role", "status");
       checkoutReturnStatus.setAttribute("aria-live", "polite");
       checkoutReturnStatus.style.cssText = "font-size:12px;line-height:1.55;margin:9px 0;color:#765d50;overflow-wrap:anywhere";
-      checkoutReturnStatus.textContent = "Confirmando seu pagamento com segurança…";
+      checkoutReturnStatus.textContent = "Securely confirming your payment…";
       var verifyButton = document.createElement("button");
       verifyButton.type = "button";
-      verifyButton.textContent = "Verificando pagamento…";
+      verifyButton.textContent = "Checking payment…";
       verifyButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:10px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:8px";
       publication.insertBefore(verifyButton, publishStatus);
       publication.insertBefore(checkoutReturnStatus, publishStatus);
       publishButton.disabled = true;
-      publishButton.textContent = "Confirmando pagamento…";
+      publishButton.textContent = "Confirming payment…";
       var verifyAttempts = 0;
       var verifyRunning = false;
       var verifyTimer = null;
@@ -676,19 +676,19 @@
       async function verifyCheckoutPayment(manual) {
         if (verifyRunning || paymentConfirmed || paymentStopped) return;
         if (!checkoutSessionId || !checkoutExperienceId) {
-          checkoutReturnStatus.textContent = "Não encontrei os dados desta sessão de pagamento. Preserve esta página e tente abrir novamente o link de retorno da Stripe.";
+          checkoutReturnStatus.textContent = "I could not find details for this payment session. Keep this page open and try opening the Stripe return link again.";
           verifyButton.disabled = false;
-          verifyButton.textContent = "Dados de pagamento ausentes";
+          verifyButton.textContent = "Missing payment details";
           paymentStopped = true;
           return;
         }
         verifyRunning = true;
         verifyAttempts += 1;
         verifyButton.disabled = true;
-        verifyButton.textContent = "Verificando pagamento…";
+        verifyButton.textContent = "Checking payment…";
         checkoutReturnStatus.textContent = manual
-          ? "Consultando o status mais recente da Stripe…"
-          : "Aguardando a confirmação segura da Stripe. Não faça outra compra enquanto verificamos esta.";
+          ? "Checking the latest status from Stripe…"
+          : "Waiting for secure confirmation from Stripe. Do not make another purchase while we check this one.";
         var retry = false;
         try {
           var result = await getCheckoutStatus(checkoutSessionId, checkoutExperienceId);
@@ -696,8 +696,8 @@
             paymentConfirmed = true;
             applyPurchaseEntitlements(result);
             checkoutReturnStatus.textContent = result.includesHtmlDownload
-              ? "Pagamento confirmado! Sua página está publicada e o download HTML está liberado."
-              : "Pagamento confirmado! Sua página está publicada e pronta para compartilhar.";
+              ? "Payment confirmed! Your page is published and the HTML download is unlocked."
+              : "Payment confirmed! Your page is published and ready to share.";
             publishStatus.textContent = checkoutReturnStatus.textContent;
             verifyButton.hidden = true;
             try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, result.publicUrl); } catch (_) {}
@@ -705,18 +705,18 @@
             paymentStopped = true;
             publishButton.disabled = result.status !== "failed";
             publishButton.textContent = result.status === "failed"
-              ? "Tentar publicar e pagar " + onlinePriceLabel
-              : "Pagamento não elegível";
+              ? "Try Publishing & Paying " + onlinePriceLabel
+              : "Payment Not Eligible";
             checkoutReturnStatus.textContent = result.status === "failed"
-              ? "Este pagamento não foi concluído. Seu rascunho continua salvo; você pode tentar novamente."
-              : "Este pagamento não está elegível para publicação. Entre em contato com o suporte antes de tentar novamente.";
+              ? "This payment was not completed. Your draft is still saved; you can try again."
+              : "This payment is not eligible for publication. Contact support before trying again.";
             verifyButton.hidden = true;
           } else {
             retry = verifyAttempts < 12;
-            checkoutReturnStatus.textContent = "O pagamento ainda está sendo confirmado. Vamos consultar novamente automaticamente; não é necessário criar uma conta nem repetir a compra.";
+            checkoutReturnStatus.textContent = "Your payment is still being confirmed. We will check again automatically; you do not need to create an account or repeat the purchase.";
           }
         } catch (error) {
-          checkoutReturnStatus.textContent = error.message || "Ainda não foi possível confirmar o pagamento. Vamos tentar novamente.";
+          checkoutReturnStatus.textContent = error.message || "We could not confirm the payment yet. We will try again.";
           retry = verifyAttempts < 8;
         } finally {
           verifyRunning = false;
@@ -729,8 +729,8 @@
             verifyTimer = window.setTimeout(function () { verifyCheckoutPayment(false); }, delay);
           } else {
             verifyButton.disabled = false;
-            verifyButton.textContent = "Verificar pagamento novamente";
-            checkoutReturnStatus.textContent += " Use o botão para consultar novamente. Não refaça a compra enquanto o status estiver pendente.";
+            verifyButton.textContent = "Verify Payment Again";
+            checkoutReturnStatus.textContent += " Use the button to check again. Do not purchase again while the status is pending.";
           }
           refreshPurchaseEntitlements();
         }
@@ -748,8 +748,8 @@
       window.addEventListener("lovena:cloud-saved", function (event) {
         var result = event.detail || {};
         notify(result.anonymous
-          ? "Rascunho na nuvem nesta sessão temporária. Vincule um e-mail para recuperar em outros dispositivos."
-          : "Rascunho sincronizado na nuvem.", false);
+          ? "Cloud draft in this temporary session. Link an email to recover it on other devices."
+          : "Draft synced to the cloud.", false);
       });
     }
   }
