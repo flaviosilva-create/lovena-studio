@@ -6,10 +6,6 @@
 
   var fallbackPhotoIndex = 0;
 
-  function primaryReady() {
-    return window.LOVENA_PUBLIC_INTERACTIONS_READY === true;
-  }
-
   function textFor(value, index) {
     if (Array.isArray(value)) return value[index] == null ? "" : String(value[index]);
     if (value && typeof value === "object") {
@@ -83,7 +79,9 @@
   }
 
   function handleFallback(event) {
-    if (primaryReady()) return;
+    // Always use this capture-phase handler for public story controls. The primary
+    // listener may be registered yet still fail at runtime; a readiness flag alone
+    // is not proof that the clicked control actually worked.
     var target = event.target && event.target.closest ? event.target.closest(
       "[data-scroll], [data-photo], [data-milestone], [data-surprise], [data-action]"
     ) : null;
