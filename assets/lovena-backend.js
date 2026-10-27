@@ -332,11 +332,11 @@
     var loginButton = makeButton("Entrar");
     var createButton = makeButton("Create account / link email");
     var cloudButton = makeButton("Load Latest Cloud Draft");
-    var resetButton = makeButton("Esqueci minha senha");
+    var resetButton = makeButton("Forgot password");
     box.append(heading, description, authStatus, email, password, buttons);
-    // Cadastro é opcional: não exibimos login/criação de conta durante a compra.
-    // saveDraft() cria uma sessão anônima temporária automaticamente quando necessário.
-    // Os campos de conta ficam fora do DOM para não sugerir que o cadastro é obrigatório.
+    // Account creation is optional; the purchase flow does not show login or sign-up.
+    // saveDraft() automatically creates a temporary anonymous session when needed.
+    // Account fields stay outside the DOM so sign-up does not appear mandatory.
 
     var publication = document.createElement("section");
     publication.className = "lovena-cloud-publication";
@@ -581,7 +581,7 @@
     async function authAction(action) {
       var address = email.value.trim();
       var secret = password.value;
-      if (!address || address.indexOf("@") < 1) { notify("Digite um e-mail válido.", true); return; }
+      if (!address || address.indexOf("@") < 1) { notify("Enter a valid email address.", true); return; }
       if (action !== "reset" && secret.length < 8) { notify("Use a password with at least 8 characters.", true); return; }
       loginButton.disabled = createButton.disabled = resetButton.disabled = true;
       try {
