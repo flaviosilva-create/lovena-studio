@@ -2030,8 +2030,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   {key:"letterTo",label:"Signature on the Letter",group:"Love Letter",selector:".letter-to"},
   {key:"musicHeading",label:"Player Title",group:"Music",selector:".music-heading h2"},
   {key:"musicSub",label:"Player Description",group:"Music",selector:".music-heading p"},
-  {key:"trackTitle",label:"Song Title",group:"Music",selector:"#trackTitle",path:["songs",0,"title"]},
-  {key:"trackArtist",label:"First Song Artist",group:"Music",selector:"#trackArtist",path:["songs",0,"artist"]},
   {key:"musicLinkLabel",label:"Listen Link Text",group:"Music",selector:"#musicOpen",path:["musicLinkLabel"]},
   {key:"trackElapsed",label:"Displayed Start Time",group:"Music",selector:"#trackElapsed"},
   {key:"trackDuration",label:"Displayed Duration",group:"Music",selector:"#trackDuration"},
@@ -2445,40 +2443,26 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   (data.songs||[]).forEach(function(song,index){
    var box=document.createElement("div");box.style.cssText="border:1px solid #e5d1c2;border-radius:8px;padding:10px;display:grid;gap:8px";
    var heading=document.createElement("strong");heading.style.cssText="font-size:10px;color:#654536";heading.textContent="Music "+(index+1);box.appendChild(heading);
-   var platformSelect=null;
-   [["title","Song Title"],["artist","Artista"],["url","Song Link (full URL)"]].forEach(function(spec){
-    var wrap=document.createElement("div");wrap.className="ed-field";
-    var label=document.createElement("label");label.textContent=spec[1];wrap.appendChild(label);
-    var input=document.createElement("input");input.type=spec[0]==="url"?"url":"text";input.value=song[spec[0]]||"";input.dataset.songIndex=index;input.dataset.songProp=spec[0];
-    if(spec[0]==="url"){input.placeholder="Cole o link do Spotify, Apple Music ou YouTube Music";input.autocomplete="url";}
-    input.addEventListener("input",function(){
-     data.songs[index][spec[0]]=input.value;
-     if(spec[0]==="title"||spec[0]==="artist")data.songs[index].query=[data.songs[index].title,data.songs[index].artist].filter(Boolean).join(" ");
-     if(spec[0]==="url"){
-      var detected=detectEditorMusicPlatform(input.value);
-      if(detected){data.songs[index].platform=detected;if(platformSelect)platformSelect.value=detected;}
-     }
-     syncMusicPreviewFromEditor(index);
-     scheduleSave();
-    });
-    wrap.appendChild(input);
-    if(spec[0]==="url"){
-     var linkHelp=document.createElement("small");linkHelp.className="ed-help";linkHelp.textContent="Paste a direct link to a single song or track. The service will be identified automatically when possible.";wrap.appendChild(linkHelp);
-    }
-    box.appendChild(wrap);
+   var linkWrap=document.createElement("div");linkWrap.className="ed-field";
+   var linkLabel=document.createElement("label");linkLabel.textContent="Music Link";linkWrap.appendChild(linkLabel);
+   var linkInput=document.createElement("input");linkInput.type="url";linkInput.value=song.url||"";linkInput.dataset.songIndex=index;linkInput.dataset.songProp="url";linkInput.placeholder="Paste a Spotify, Apple Music, or YouTube Music track link";linkInput.autocomplete="url";
+   var linkHelp=document.createElement("small");linkHelp.className="ed-help";linkHelp.textContent="The song title and artist are detected automatically from this link.";
+   var metadataStatus=document.createElement("small");metadataStatus.className="ed-help";metadataStatus.setAttribute("role","status");metadataStatus.setAttribute("aria-live","polite");
+   metadataStatus.textContent=song.title&&song.artist?"Song title and artist are saved from the current track.":"Paste a song link to detect its title and artist automatically.";
+   linkWrap.appendChild(linkInput);linkWrap.appendChild(linkHelp);linkWrap.appendChild(metadataStatus);
+   linkInput.addEventListener("input",function(){
+    data.songs[index].url=linkInput.value;
+    var detected=detectEditorMusicPlatform(linkInput.value);
+    data.songs[index].platform=detected||"";
+    data.songs[index].title="";
+    data.songs[index].artist="";
+    data.songs[index].query="";
+    syncMusicPreviewFromEditor(index);
+    scheduleSave();
+    scheduleSongMetadataLookup(index,linkInput.value,metadataStatus,550);
    });
-   var platformWrap=document.createElement("div");platformWrap.className="ed-field";
-   var platformLabel=document.createElement("label");platformLabel.textContent="Plataforma de destino";platformWrap.appendChild(platformLabel);
-   platformSelect=document.createElement("select");
-   [["spotify","Spotify"],["apple","Apple Music"],["youtube","YouTube Music"]].forEach(function(option){
-    var node=document.createElement("option");node.value=option[0];node.textContent=option[1];platformSelect.appendChild(node);
-   });
-   platformSelect.value=normalizeEditorMusicPlatform(song.platform)||detectEditorMusicPlatform(song.url)||"youtube";
-   platformSelect.addEventListener("change",function(){
-    data.songs[index].platform=platformSelect.value;
-    syncMusicPreviewFromEditor(index);scheduleSave();
-   });
-   platformWrap.appendChild(platformSelect);box.appendChild(platformWrap);
+   box.appendChild(linkWrap);
+   if(song.url&&(!song.title||!song.artist))scheduleSongMetadataLookup(index,song.url,metadataStatus,250);
    var modeWrap=document.createElement("div");modeWrap.className="ed-field";
    var modeLabel=document.createElement("label");modeLabel.textContent="Player’s Initial Display";modeWrap.appendChild(modeLabel);
    var modeSelect=document.createElement("select");
@@ -2493,7 +2477,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    });
    modeWrap.appendChild(modeSelect);box.appendChild(modeWrap);
    var musicHelp=document.createElement("small");musicHelp.className="ed-help";
-   musicHelp.textContent="Spotify and Apple Music use a compact audio embed when the selected track supports it. YouTube Music opens separately because its official embed is a video player; the Lovena page itself stays video-free. Full playback may require a provider account or subscription.";
+   musicHelp.textContent="Paste a direct link to a single track. The song title and artist are detected automatically when the music service provides public track metadata.";
    box.appendChild(musicHelp);
    songsBody.appendChild(box);
   });
@@ -2577,6 +2561,127 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   return "";
  }
  function editorMusicPlatformLabel(platform){return platform==="spotify"?"Spotify":platform==="apple"?"Apple Music":"YouTube Music";}
+
+ var musicMetadataLookupTimers={};
+ var musicMetadataLookupTokens={};
+ var musicMetadataLookupControllers={};
+ function normalizeTrackMatch(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]/g,"");}
+ function cleanMusicTrackTitle(value){
+  return String(value||"").replace(/\s+/g," ").trim()
+   .replace(/\s*[\[(](?:official\b[^)\]]*|lyric(?:s)?\b[^)\]]*|music video\b[^)\]]*|audio\b[^)\]]*|visualizer\b[^)\]]*)[\])]/ig,"")
+   .replace(/\s*[-|]\s*(?:official(?: music)? video|official audio|lyrics?|lyric video|music video|visualizer)(?:\s.*)?$/i,"").trim();
+ }
+ function cleanMusicArtist(value){return String(value||"").replace(/\s+/g," ").trim().replace(/\s*-\s*Topic$/i,"").replace(/\s*VEVO$/i,"").trim();}
+ function extractYouTubeTrackId(parsed){
+  if(!parsed)return "";
+  var host=parsed.hostname.toLowerCase(),parts=parsed.pathname.split("/").filter(Boolean),id="";
+  if(host==="youtu.be")id=parts[0]||"";
+  else{ id=parsed.searchParams.get("v")||""; if(!id){var match=parsed.pathname.match(/\/(?:embed|shorts|live)\/([A-Za-z0-9_-]{11})/);if(match)id=match[1];} }
+  return /^[A-Za-z0-9_-]{11}$/.test(id)?id:"";
+ }
+ function extractAppleTrackId(parsed){
+  if(!parsed)return "";
+  var queryId=parsed.searchParams.get("i")||"";
+  if(/^\d{6,}$/.test(queryId))return queryId;
+  var parts=parsed.pathname.split("/").filter(Boolean),songIndex=parts.findIndex(function(part){return part.toLowerCase()==="song";});
+  if(songIndex>=0){for(var i=parts.length-1;i>songIndex;i--)if(/^\d{6,}$/.test(parts[i]))return parts[i];}
+  return "";
+ }
+ function extractAppleTitleFromUrl(parsed){
+  if(!parsed)return "";
+  var parts=parsed.pathname.split("/").filter(Boolean),songIndex=parts.findIndex(function(part){return part.toLowerCase()==="song";});
+  if(songIndex<0||!parts[songIndex+1])return "";
+  try{return decodeURIComponent(parts[songIndex+1]).replace(/-/g," ").trim();}catch(error){return parts[songIndex+1].replace(/-/g," ").trim();}
+ }
+ async function fetchMusicMetadataJson(url,signal){
+  var response=await fetch(url,{mode:"cors",credentials:"omit",signal:signal||undefined});
+  if(!response.ok)throw new Error("Metadata request failed");
+  return await response.json();
+ }
+ async function findAppleTrackByTitle(title,signal){
+  title=cleanMusicTrackTitle(title);if(!title)return null;
+  var countries=["us","br"];
+  for(var c=0;c<countries.length;c++){
+   try{
+    var result=await fetchMusicMetadataJson("https://itunes.apple.com/search?term="+encodeURIComponent(title)+"&entity=song&limit=25&country="+countries[c],signal);
+    var matches=Array.isArray(result.results)?result.results:[];
+    var normalized=normalizeTrackMatch(title);
+    var exact=matches.find(function(item){return item&&item.trackName&&normalizeTrackMatch(item.trackName)===normalized&&(item.kind==="song"||item.wrapperType==="track");});
+    if(exact)return {title:exact.trackName,artist:exact.artistName||""};
+   }catch(error){if(signal&&signal.aborted)throw error;}
+  }
+  return null;
+ }
+ async function fetchMusicMetadata(rawUrl,signal){
+  var parsed=parseEditorMusicUrl(rawUrl),platform=detectEditorMusicPlatform(rawUrl);
+  if(!parsed||!platform)throw new Error("Enter a supported song URL");
+  if(platform==="apple"){
+   var trackId=extractAppleTrackId(parsed);
+   if(trackId){
+    try{
+     var lookup=await fetchMusicMetadataJson("https://itunes.apple.com/lookup?id="+encodeURIComponent(trackId)+"&entity=song&country=us",signal);
+     var songResult=(lookup.results||[]).find(function(item){return item&&item.trackName&&item.artistName&&(item.kind==="song"||item.wrapperType==="track");});
+     if(songResult)return {title:songResult.trackName,artist:songResult.artistName,platform:platform};
+    }catch(error){if(signal&&signal.aborted)throw error;}
+   }
+   var appleSearch=await findAppleTrackByTitle(extractAppleTitleFromUrl(parsed),signal);
+   if(appleSearch)return {title:appleSearch.title,artist:appleSearch.artist,platform:platform};
+   throw new Error("Could not resolve this Apple Music song");
+  }
+  if(platform==="youtube"){
+   var youtubeId=extractYouTubeTrackId(parsed);
+   if(!youtubeId)throw new Error("Paste a direct link to one YouTube Music track");
+   var youtubeData=await fetchMusicMetadataJson("https://www.youtube.com/oembed?format=json&url="+encodeURIComponent("https://www.youtube.com/watch?v="+youtubeId),signal);
+   var originalAuthor=String(youtubeData.author_name||"").trim(),artist=cleanMusicArtist(originalAuthor),title=cleanMusicTrackTitle(youtubeData.title||"");
+   var separator=title.match(/^(.{1,100}?)\s[-–—|:•]\s(.+)$/);
+   if(separator){
+    var titleArtist=separator[1].trim(),titleSong=separator[2].trim(),authorHasSuffix=/(?:-\s*Topic|VEVO)\s*$/i.test(originalAuthor);
+    if(normalizeTrackMatch(titleArtist)===normalizeTrackMatch(artist)||authorHasSuffix){artist=cleanMusicArtist(titleArtist);title=cleanMusicTrackTitle(titleSong);}
+   }
+   if(title&&!artist){var youtubeSearch=await findAppleTrackByTitle(title,signal);if(youtubeSearch&&youtubeSearch.artist)artist=youtubeSearch.artist;}
+   if(!title)throw new Error("YouTube did not return a song title");
+   return {title:title,artist:artist,platform:platform};
+  }
+  if(platform==="spotify"){
+   var spotifyData=await fetchMusicMetadataJson("https://open.spotify.com/oembed?url="+encodeURIComponent(parsed.href),signal);
+   var spotifyTitle=cleanMusicTrackTitle(spotifyData.title||"");
+   if(!spotifyTitle)throw new Error("Spotify did not return a song title");
+   var spotifyMatch=await findAppleTrackByTitle(spotifyTitle,signal);
+   if(spotifyMatch)return {title:spotifyMatch.title,artist:spotifyMatch.artist,platform:platform};
+   return {title:spotifyTitle,artist:"",platform:platform};
+  }
+  throw new Error("Unsupported music platform");
+ }
+ function scheduleSongMetadataLookup(index,rawUrl,statusNode,delay){
+  musicMetadataLookupTokens[index]=(musicMetadataLookupTokens[index]||0)+1;
+  var token=musicMetadataLookupTokens[index];
+  if(musicMetadataLookupTimers[index])clearTimeout(musicMetadataLookupTimers[index]);
+  musicMetadataLookupTimers[index]=null;
+  if(musicMetadataLookupControllers[index]){try{musicMetadataLookupControllers[index].abort();}catch(error){}musicMetadataLookupControllers[index]=null;}
+  var raw=String(rawUrl||"").trim(),platform=detectEditorMusicPlatform(raw);
+  if(!raw){if(statusNode)statusNode.textContent="Paste a song link to detect its title and artist automatically.";return;}
+  if(!platform){if(statusNode)statusNode.textContent="Use a direct Spotify, Apple Music, or YouTube Music link.";return;}
+  if(statusNode)statusNode.textContent="Detecting song title and artist…";
+  musicMetadataLookupTimers[index]=setTimeout(function(){resolveSongMetadata(index,raw,statusNode,token);},Math.max(0,Number(delay)||0));
+ }
+ async function resolveSongMetadata(index,rawUrl,statusNode,token){
+  var controller=typeof AbortController!=="undefined"?new AbortController():null;
+  if(controller)musicMetadataLookupControllers[index]=controller;
+  try{
+   var metadata=await fetchMusicMetadata(rawUrl,controller?controller.signal:undefined);
+   if(musicMetadataLookupTokens[index]!==token||String((data.songs[index]||{}).url||"").trim()!==rawUrl)return;
+   if(!metadata||!metadata.title)throw new Error("No song metadata found");
+   var song=data.songs[index]||(data.songs[index]={});
+   song.title=metadata.title;song.artist=metadata.artist||"";song.platform=metadata.platform||detectEditorMusicPlatform(rawUrl);
+   song.query=[song.title,song.artist].filter(Boolean).join(" ");
+   syncMusicPreviewFromEditor(index);scheduleSave();
+   if(statusNode)statusNode.textContent=song.artist?"Song title and artist updated automatically.":"Song title detected. Artist details were not provided for this link.";
+  }catch(error){
+   if(controller&&controller.signal.aborted)return;
+   if(musicMetadataLookupTokens[index]!==token||String((data.songs[index]||{}).url||"").trim()!==rawUrl)return;
+   if(statusNode)statusNode.textContent="Could not retrieve this track's details. Paste a direct link to a single song.";
+  }finally{if(controller&&musicMetadataLookupControllers[index]===controller)musicMetadataLookupControllers[index]=null;}
+ }
  function getSongUrl(song){
   song=song||{};
   var platform=normalizeEditorMusicPlatform(song.platform)||detectEditorMusicPlatform(song.url)||"youtube";
@@ -2594,10 +2699,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    var link=document.getElementById("musicOpen");
    if(title)title.textContent=song.title||"";
    if(artist)artist.textContent=song.artist||"";
-   var titleField=fieldsHost.querySelector('[data-editor-field="trackTitle"]');
-   var artistField=fieldsHost.querySelector('[data-editor-field="trackArtist"]');
-   if(titleField&&document.activeElement!==titleField)titleField.value=song.title||"";
-   if(artistField&&document.activeElement!==artistField)artistField.value=song.artist||"";
    if(link)link.href=getSongUrl(song);
   }
   window.dispatchEvent(new Event("lovena:music-updated"));
