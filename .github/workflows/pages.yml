@@ -38,6 +38,15 @@ jobs:
           for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
               if marker not in html:
                   raise SystemExit(f"Landing page is missing required structure: {marker}")
+          # Keep prices explicitly in USD when browser translation is enabled.
+          for price_markup in [
+              '<div class="lr-price notranslate" translate="no" lang="en-US" aria-label="4.99 US dollars">$4.99</div>',
+              '<div class="lr-price notranslate" translate="no" lang="en-US" aria-label="9.99 US dollars">$9.99</div>',
+          ]:
+              if price_markup not in html:
+                  raise SystemExit(f"Pricing must remain untranslated in USD: {price_markup}")
+          if html.count('class="notranslate" translate="no" lang="en-US">$1.00</span>') != 2:
+              raise SystemExit("Both optional HTML download fees must remain displayed in USD")
           if 'href="./landing.css?v=20261026-two-tier-pricing-1"' not in html:
               raise SystemExit("The existing landing page stylesheet must remain linked")
           if 'default_language: "en"' not in html:
