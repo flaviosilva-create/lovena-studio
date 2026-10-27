@@ -2155,7 +2155,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var target=q(".timeline-item",index);setActivePreviewElement(target);
   if(target&&target.scrollIntoView)target.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"});
   var milestone=(data.milestones||[])[index]||[];
-  updateEditorGuide("Editando: Milestone "+(index+1)+" · "+(milestone[0]||"New Chapter"),"This timeline card corresponds to the title, date, and story fields highlighted in the panel.");
+  updateEditorGuide("Editing: Milestone "+(index+1)+" · "+(milestone[0]||"New Chapter"),"This timeline card corresponds to the title, date, and story fields highlighted in the panel.");
  }
  function findFieldForElement(el){
   if(!el)return null;
@@ -2871,7 +2871,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    if(name==="reset"){resetDraft();return;}
    if(name==="view"){enterPreviewMode();return;}
    if(name==="add-photo"){
-    if(data.photos.length>=12){setStatus("Limite de 12 fotos atingido.");return;}
+    if(data.photos.length>=12){setStatus("12-photo limit reached.");return;}
     data.photos.push(["New Memory","Write the story behind this photo."]);state.images.gallery.push(null);syncGallery();imageControls();buildTextFields();scheduleSave();return;
    }
    if(name==="add-milestone"){
