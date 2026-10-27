@@ -1960,6 +1960,15 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  function migrateLegacyEnglishDemo(){
   if(!editMode)return;
   function normalized(value){return String(value||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
+  var oldMilestoneTitle=normalized((data.milestones||[])[0]&&(data.milestones[0]||[])[0]);
+  var oldPhotoTitle=normalized((data.photos||[])[0]&&(data.photos[0]||[])[0]);
+  var oldCollageTitleMarker=normalized(state.collage.title);
+  var oldCollageEyebrowMarker=normalized(state.collage.eyebrow);
+  var oldSong=data.songs&&data.songs[0];
+  var oldSongMarker=!!(oldSong&&normalized(oldSong.title)==="melhor ainda"&&normalized(oldSong.artist)==="melim");
+  var legacyPortugueseDemo=(oldMilestoneTitle==="nos conhecemos"&&(oldPhotoTitle==="nosso por do sol"|| (oldCollageTitleMarker==="aniversario"&&oldCollageEyebrowMarker==="feliz")||oldSongMarker))||
+   (oldPhotoTitle==="nosso por do sol"&&oldCollageTitleMarker==="aniversario"&&oldCollageEyebrowMarker==="feliz");
+  if(!legacyPortugueseDemo)return;
   var exact={
    "feliz aniversario":"HAPPY ANNIVERSARY",
    "feliz aniversario!":"HAPPY ANNIVERSARY",
@@ -2128,6 +2137,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    return translateExact(node);
   }
   var oldCollageTitle=normalized(state.collage.title);
+  var oldCollageEyebrow=normalized(state.collage.eyebrow);
+  var oldCollageSubtitle=normalized(state.collage.subtitle);
+  var oldCollageFloatingWord=normalized(state.collage.floatingWord);
   state.texts=walk(state.texts||{});
   if(normalized(state.texts.signature)==="eu")state.texts.signature="Yours";
   data.musicLinkLabel=translateExact(data.musicLinkLabel);
@@ -2135,7 +2147,12 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   data.milestones=walk(data.milestones||[]);
   data.surprises=walk(data.surprises||{});
   state.collage=walk(state.collage||{});
-  if(oldCollageTitle==="feliz aniversario"||oldCollageTitle==="feliz aniversario!"){
+  if(oldCollageTitle==="aniversario"&&oldCollageEyebrow==="feliz"){
+   state.collage.title="ANNIVERSARY";
+   state.collage.eyebrow="Happy";
+   if(oldCollageSubtitle==="meu amor")state.collage.subtitle="MY LOVE";
+   if(oldCollageFloatingWord==="te amo")state.collage.floatingWord="I love you";
+  }else if(oldCollageTitle==="feliz aniversario"||oldCollageTitle==="feliz aniversario!"){
    state.collage.eyebrow="Happy";
    state.collage.title="ANNIVERSARY";
   }
