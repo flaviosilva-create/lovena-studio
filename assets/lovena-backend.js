@@ -985,6 +985,10 @@
       verifyCheckoutPayment(false);
     }
 
+    if (query.get("checkout") === "cancelled" || query.get("checkout") === "success") {
+      window.setTimeout(openPublicationPanel, 80);
+    }
+
     if (options && options.setStatus) {
       window.addEventListener("lovena:cloud-saved", function (event) {
         var result = event.detail || {};
