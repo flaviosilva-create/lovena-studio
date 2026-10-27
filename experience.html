@@ -1365,7 +1365,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="./assets/lovena-backend.js"></script>
+<script src="./assets/lovena-backend.js?v=20261027b"></script>
 <script id="lovenaEditBootstrap">
 window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
  "use strict";
@@ -2892,7 +2892,30 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  });
  window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
  applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();renderCollagePhotoControls();
- if(editMode&&window.LovenaBackend&&window.LovenaBackend.mountEditor){window.LovenaBackend.mountEditor({editorKey:EDIT_KEY,getSnapshot:getSnapshot,setStatus:setStatus});}
+
+ if(editMode){
+  function showPublicationLoadNotice(message){
+   var paymentScroll=document.querySelector("#lovenaEditor .ed-scroll");
+   if(!paymentScroll||paymentScroll.querySelector("[data-lovena-payment-load-notice]"))return;
+   var notice=document.createElement("section");
+   notice.setAttribute("data-lovena-payment-load-notice","true");
+   notice.style.cssText="margin:0 0 16px;padding:14px;border:1px solid #dfbcae;border-radius:14px;background:#fff8f4;color:#51392f";
+   var title=document.createElement("strong");
+   title.textContent="Publicação online e pagamento";
+   title.style.cssText="display:block;font-size:14px;margin-bottom:6px";
+   var copy=document.createElement("p");
+   copy.textContent=message;
+   copy.style.cssText="font-size:12px;line-height:1.55;margin:0;color:#82695a";
+   notice.append(title,copy);
+   paymentScroll.insertBefore(notice,paymentScroll.firstChild);
+  }
+  if(window.LovenaBackend&&typeof window.LovenaBackend.mountEditor==="function"){
+   try{window.LovenaBackend.mountEditor({editorKey:EDIT_KEY,getSnapshot:getSnapshot,setStatus:setStatus});}
+   catch(mountError){console.error("Lovena publication panel failed to mount:",mountError);showPublicationLoadNotice("O módulo de publicação não iniciou corretamente. Atualize esta página. Seu rascunho local continua preservado.");}
+  }else{
+   showPublicationLoadNotice("O módulo de publicação não foi carregado. Atualize esta página com Ctrl+F5 para carregar a versão mais recente e habilitar o pagamento seguro.");
+  }
+ }
  if(editMode){document.body.classList.add("editor-mode");markEditableTargets();trigger.hidden=false;openEditor();}
 
 
