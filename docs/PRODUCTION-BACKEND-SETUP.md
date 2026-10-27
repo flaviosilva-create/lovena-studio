@@ -2,7 +2,9 @@
 
 This repository currently contains a static HTML frontend. The SQL migration in
 `supabase/migrations/202610260001_initial_lovena_schema.sql` prepares the core
-database, but does not by itself enable payments or public publishing.
+database. The Supabase project, private media bucket, core Stripe Edge Functions,
+and public experience function have been provisioned; live payment processing
+still depends on configuring Stripe secrets and its webhook endpoint.
 
 ## Architecture
 
@@ -64,7 +66,11 @@ service-role key, Stripe secret key, or webhook signing secret in frontend files
 
 ## Current status
 
-The database migration is a starting point only. No Supabase project, Storage
-bucket, Stripe webhook, production secrets, commercial hosting, or production
-payment flow is configured by this file. The RLS policies intentionally deny
-direct browser access until trusted Edge Functions are implemented.
+Supabase project `cjlbiohykewwizbdtgvw` is active in `sa-east-1`; the private
+`lovena-media` bucket and core Edge Functions have been provisioned. Security
+advisors currently report no security lints. Production payments are not yet
+verified: configure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` as Supabase
+function secrets, configure the Stripe webhook destination to
+`https://cjlbiohykewwizbdtgvw.supabase.co/functions/v1/lovena-stripe-webhook`,
+then test successful, failed, duplicate, and refunded payment events. Keep all
+server secrets out of the repository and browser code.
