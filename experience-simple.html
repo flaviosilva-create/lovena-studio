@@ -2622,7 +2622,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  async function detectExperienceLanguage(){
   if(state.localeMode!=="auto")return;
   var sequence=++localeDetectionSequence,text=getWrittenExperienceText();
-  if(!text||text.replace(/[^\p{L}]/gu,"").length<8)return;
+  if(!text||text.replace(/[^\p{L}]/gu,"").length<5)return;
   try{
    var locale=await requestExperienceLanguage(text);
    if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
@@ -2919,7 +2919,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    fail("Your browser could not open this photo. Try a JPG or PNG image.",error);
   });
  }
- function openEditor(){isPreviewing=false;document.body.classList.remove("lovena-preview-mode");document.body.classList.add("editor-mode","editor-panel-open");setTriggerLabel(false);trigger.hidden=false;markEditableTargets();backdrop.hidden=false;panel.hidden=false;requestAnimationFrame(function(){backdrop.classList.add("is-open");panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");});}
+ function openEditor(){isPreviewing=false;document.body.classList.remove("lovena-preview-mode");document.body.classList.add("editor-mode","editor-panel-open");setTriggerLabel(false);trigger.hidden=false;markEditableTargets();backdrop.hidden=false;panel.hidden=false;requestAnimationFrame(function(){backdrop.classList.add("is-open");panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();});}
  function closeEditor(){document.body.classList.remove("editor-panel-open");setActivePreviewElement(null);panel.classList.remove("is-open");backdrop.classList.remove("is-open");panel.setAttribute("aria-hidden","true");setTimeout(function(){if(!panel.classList.contains("is-open")){panel.hidden=true;backdrop.hidden=true;}},260);}
  function setTriggerLabel(preview){var label=trigger.querySelector(".ed-trigger-label");if(label)label.textContent=preview?"Back to Editing":"Edit Experience";trigger.setAttribute("aria-label",preview?"Back to Editing":"Open experience editor");}
  function enterPreviewMode(){saveDraft(true);isPreviewing=true;closeEditor();document.body.classList.remove("editor-mode","editor-panel-open");document.body.classList.add("lovena-preview-mode");document.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});trigger.hidden=false;setTriggerLabel(true);}
