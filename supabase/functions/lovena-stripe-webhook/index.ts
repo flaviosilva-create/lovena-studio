@@ -102,6 +102,9 @@ Deno.serve(async (req: Request) => {
       }
 
       if (eventType === "charge.dispute.created") {
+        if (order.payment_status === "refunded") {
+          return reply(200, { received: true, ignored: true });
+        }
         const { error } = await admin.from("lovena_orders")
           .update({ payment_status: "disputed", updated_at: now })
           .eq("id", order.id);
@@ -116,6 +119,9 @@ Deno.serve(async (req: Request) => {
         return reply(200, { received: true, disputed: true });
       }
 
+      if (order.payment_status !== "disputed") {
+        return reply(200, { received: true, ignored: true });
+      }
       const disputeWon = payload.status === "won";
       const nextStatus = disputeWon ? "paid" : "disputed";
       const { error: disputeUpdateError } = await admin.from("lovena_orders")
