@@ -2008,7 +2008,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    "feliz aniversario":"HAPPY ANNIVERSARY","feliz aniversario!":"HAPPY ANNIVERSARY",
    "nossa historia":"Our Story","nossa historia de amor":"Our Story",
    "nossos momentos":"Our Moments","nossos momentos especiais":"Our Moments",
-   "o melhor ainda esta por vir":"The best is yet to come","eu te amo":"I love you",
+   "o melhor ainda esta por vir":"The best is yet to come",
    "o dia em que nos conhecemos":"The Day We Met","nosso primeiro encontro":"Our First Date",
    "nossa primeira viagem":"Our First Trip","um ano juntos":"One Year Together",
    "e a historia continua...":"And the Story Continues...","nosso por do sol":"Our Sunset",
@@ -2149,7 +2149,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    if(Object.prototype.hasOwnProperty.call(exact,key))return exact[key];
    var keyWithoutEndingPunctuation=key.replace(/[\s.!?…]+$/g,"");
    if(Object.prototype.hasOwnProperty.call(exact,keyWithoutEndingPunctuation))return exact[keyWithoutEndingPunctuation];
-   return value.replace(/feliz\s+anivers[aá]rio/gi,"Happy Anniversary").replace(/o melhor ainda est[aá] por vir/gi,"The best is yet to come");
+   return value;
   }
   function walk(node){
    if(Array.isArray(node)){for(var i=0;i<node.length;i++)node[i]=walk(node[i]);return node;}
