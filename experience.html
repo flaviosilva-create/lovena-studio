@@ -2653,8 +2653,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(/[\u0590-\u05ff]/.test(value))return "he";
   if(/[\u0400-\u04ff]/.test(value)){
    if(/[іїєґ]/i.test(value))return "uk";
-   if(/\b(?:обичам|сърце|винаги|любов)\b/i.test(value))return "bg";
-   if(/[јђћџ]/i.test(value))return "sr";
+   if(/(?:обичам|сърце|винаги|любов)/i.test(value))return "bg";
+   if(/[ѓќѕ]/i.test(value))return "mk";
+   if(/[јђћџљњ]/i.test(value))return "sr";
    return "ru";
   }
   if(/\b(?:je\s+t['’]aime|mon\s+amour|je\s+t'aime)\b/i.test(value))return "fr";
