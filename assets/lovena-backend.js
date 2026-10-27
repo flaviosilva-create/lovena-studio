@@ -250,15 +250,15 @@
     return body;
   }
 
-  async function createCheckout(experienceId, editorKey, htmlDownload) {
+  async function createCheckout(experienceId, editorKey, purchaseType) {
     var supabase = await client();
-    var user = await currentUser(supabase, true);
     var session = await currentSession(supabase);
-    if (!session || !session.access_token) throw new Error("Entre na Lovena para iniciar o pagamento.");
+    if (!session || !session.access_token) throw new Error("Não foi possível iniciar a sessão da Lovena. Atualize a página e tente novamente.");
+    var type = purchaseType === "html_download" ? "html_download" : "online";
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
-      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), htmlDownload: !!htmlDownload })
+      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type })
     });
     var body = await response.json().catch(function () { return {}; });
     if (!response.ok || !body.url) throw new Error(body.message || body.error || "Não foi possível iniciar o pagamento.");
@@ -268,14 +268,28 @@
   async function getCheckoutStatus(sessionId, experienceId) {
     var supabase = await client();
     var session = await currentSession(supabase);
-    if (!session || !session.access_token) throw new Error("Entre na conta usada na compra para verificar o pagamento.");
+    if (!session || !session.access_token) throw new Error("Não encontrei sua sessão da Lovena. Entre novamente e tente verificar.");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-checkout-status", {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
       body: JSON.stringify({ sessionId: sessionId, experienceId: experienceId })
     });
     var body = await response.json().catch(function () { return {}; });
-    if (!response.ok) throw new Error(body.error || "Não foi possível verificar o pagamento.");
+    if (!response.ok) throw new Error(body.message || body.error || "Não foi possível verificar o pagamento.");
+    return body;
+  }
+
+  async function getPurchaseEntitlements(experienceId) {
+    var supabase = await client();
+    var session = await currentSession(supabase);
+    if (!session || !session.access_token) return { onlinePaid: false, includesHtmlDownload: false, publicUrl: null };
+    var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-checkout-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
+      body: JSON.stringify({ action: "entitlements", experienceId: experienceId })
+    });
+    var body = await response.json().catch(function () { return {}; });
+    if (!response.ok) throw new Error(body.message || body.error || "Não foi possível consultar as compras desta experiência.");
     return body;
   }
 
@@ -332,23 +346,140 @@
     var publicationCopy = document.createElement("p");
     publicationCopy.style.cssText = "font-size:12px;line-height:1.55;margin:0 0 10px;color:#82695a";
     publicationCopy.textContent = (planFor(options.editorKey) === "simple" ? "Lovena Simple · US$ 4,99" : "Lovena Premium · US$ 9,99") + " · link online por 1 ano. O pagamento é confirmado pelo servidor antes da publicação.";
-    var htmlLabel = document.createElement("label");
-    htmlLabel.style.cssText = "display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.5;margin:10px 0";
-    var htmlDownload = document.createElement("input");
-    htmlDownload.type = "checkbox";
-    htmlDownload.style.cssText = "margin-top:2px";
-    var htmlText = document.createElement("span");
-    htmlText.textContent = "Incluir experiência HTML para baixar (+ US$ 1,00)";
-    htmlLabel.append(htmlDownload, htmlText);
+    var htmlPurchaseButton = document.createElement("button");
+    htmlPurchaseButton.type = "button";
+    htmlPurchaseButton.textContent = "HTML offline · disponível após publicar";
+    htmlPurchaseButton.disabled = true;
+    htmlPurchaseButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:11px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:9px";
+    var htmlPurchaseStatus = document.createElement("p");
+    htmlPurchaseStatus.style.cssText = "font-size:12px;line-height:1.5;margin:7px 0 0;color:#82695a";
+    htmlPurchaseStatus.textContent = "Após publicar o link online, você poderá desbloquear o arquivo HTML por US$ 1,00.";
+
+    var paidSharePanel = document.createElement("div");
+    paidSharePanel.hidden = true;
+    paidSharePanel.style.cssText = "margin-top:12px;padding:12px;border:1px solid #d9c2af;border-radius:10px;background:#fffaf6";
+    var paidShareTitle = document.createElement("strong");
+    paidShareTitle.textContent = "Seu link está pronto para compartilhar";
+    paidShareTitle.style.cssText = "display:block;font-size:12px;margin-bottom:6px";
+    var paidShareLink = document.createElement("a");
+    paidShareLink.target = "_blank";
+    paidShareLink.rel = "noopener noreferrer";
+    paidShareLink.style.cssText = "display:block;color:#8b5541;font-size:12px;line-height:1.5;overflow-wrap:anywhere";
+    paidShareLink.textContent = "Abrir experiência publicada ↗";
+    var copyPaidLinkButton = document.createElement("button");
+    copyPaidLinkButton.type = "button";
+    copyPaidLinkButton.textContent = "Copiar link para compartilhar";
+    copyPaidLinkButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:9px;padding:9px;background:#fff;color:#654739;font:600 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:8px";
+    paidSharePanel.append(paidShareTitle, paidShareLink, copyPaidLinkButton);
     var publishButton = document.createElement("button");
     publishButton.type = "button";
-    publishButton.textContent = "Salvar e continuar para pagamento";
+    publishButton.textContent = "Salvar e pagar";
     publishButton.style.cssText = "width:100%;border:0;border-radius:10px;padding:12px;background:#59372f;color:#fff;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:4px";
     var publishStatus = document.createElement("p");
     publishStatus.style.cssText = "font-size:12px;line-height:1.5;margin:8px 0 0;color:#82695a;overflow-wrap:anywhere";
     publishStatus.setAttribute("role", "status");
-    publication.append(publicationTitle, publicationCopy, htmlLabel, publishButton, publishStatus);
+    publication.append(publicationTitle, publicationCopy, publishButton, publishStatus, htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
     if (liveGuide) scroll.insertBefore(publication, liveGuide); else scroll.insertBefore(publication, box.nextSibling);
+
+    var htmlExportButton = document.querySelector('[data-editor-action="export"]');
+    var originalExportText = htmlExportButton ? htmlExportButton.textContent.trim() : "Baixar presente completo (.html)";
+    if (htmlExportButton) {
+      htmlExportButton.disabled = true;
+      htmlExportButton.textContent = "HTML offline bloqueado · US$ 1,00";
+      htmlExportButton.title = "Pague o adicional de US$ 1,00 após publicar o link online para desbloquear este arquivo.";
+      htmlExportButton.setAttribute("aria-disabled", "true");
+    }
+
+    function applyPurchaseEntitlements(entitlements) {
+      var onlinePaid = !!(entitlements && entitlements.onlinePaid);
+      var htmlUnlocked = !!(entitlements && entitlements.includesHtmlDownload);
+      var publicUrl = entitlements && entitlements.publicUrl;
+      if (htmlExportButton) {
+        htmlExportButton.disabled = !htmlUnlocked;
+        htmlExportButton.textContent = htmlUnlocked ? originalExportText : "HTML offline bloqueado · US$ 1,00";
+        htmlExportButton.title = htmlUnlocked ? "Download HTML liberado para esta experiência." : "Pague o adicional de US$ 1,00 após publicar o link online para desbloquear este arquivo.";
+        htmlExportButton.setAttribute("aria-disabled", htmlUnlocked ? "false" : "true");
+      }
+      publishButton.disabled = onlinePaid;
+      publishButton.textContent = onlinePaid ? "Pagamento confirmado · link online liberado" : "Salvar e pagar";
+      htmlPurchaseButton.disabled = !onlinePaid || !publicUrl || htmlUnlocked;
+      htmlPurchaseButton.textContent = !onlinePaid
+        ? "HTML offline · disponível após publicar"
+        : htmlUnlocked
+          ? "Download HTML desbloqueado ✓"
+          : "Desbloquear download HTML offline · US$ 1,00";
+      htmlPurchaseStatus.textContent = !onlinePaid
+        ? "Primeiro publique seu presente online. Depois, se desejar, compre o arquivo HTML offline por US$ 1,00."
+        : htmlUnlocked
+          ? "Compra confirmada. O botão de download HTML ao final do editor está liberado."
+          : "Seu link online já está liberado. O arquivo HTML offline é opcional e custa US$ 1,00.";
+      if (onlinePaid && publicUrl) {
+        paidSharePanel.hidden = false;
+        paidShareLink.href = publicUrl;
+        paidShareLink.textContent = publicUrl;
+        try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, publicUrl); } catch (_) {}
+      } else {
+        paidSharePanel.hidden = true;
+      }
+    }
+
+    copyPaidLinkButton.addEventListener("click", async function () {
+      var url = paidShareLink.href;
+      if (!url || url === "about:blank") return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(url);
+        } else {
+          var temporaryInput = document.createElement("textarea");
+          temporaryInput.value = url;
+          temporaryInput.style.position = "fixed";
+          temporaryInput.style.opacity = "0";
+          document.body.appendChild(temporaryInput);
+          temporaryInput.select();
+          var copied = document.execCommand("copy");
+          temporaryInput.remove();
+          if (!copied) throw new Error("copy_failed");
+        }
+        htmlPurchaseStatus.textContent = "Link copiado. Agora você pode compartilhá-lo com quem quiser.";
+      } catch (_) {
+        htmlPurchaseStatus.textContent = "Não foi possível copiar automaticamente. Clique no link acima, copie o endereço e compartilhe.";
+      }
+    });
+
+    async function refreshPurchaseEntitlements() {
+      var params = new URLSearchParams(window.location.search);
+      var experienceId = params.get("experience_id") || localStorage.getItem(remoteIdKey(options.editorKey));
+      if (!experienceId) {
+        applyPurchaseEntitlements({ onlinePaid: false, includesHtmlDownload: false, publicUrl: null });
+        return;
+      }
+      try {
+        var entitlements = await getPurchaseEntitlements(experienceId);
+        applyPurchaseEntitlements(entitlements);
+      } catch (error) {
+        htmlPurchaseStatus.textContent = error.message || "Não foi possível verificar as compras. Atualize a página e tente novamente.";
+      }
+    }
+    refreshPurchaseEntitlements();
+
+    htmlPurchaseButton.addEventListener("click", async function () {
+      var params = new URLSearchParams(window.location.search);
+      var experienceId = params.get("experience_id") || localStorage.getItem(remoteIdKey(options.editorKey));
+      if (!experienceId) {
+        htmlPurchaseStatus.textContent = "Salve sua experiência e publique o link online antes de comprar o HTML offline.";
+        return;
+      }
+      htmlPurchaseButton.disabled = true;
+      htmlPurchaseButton.textContent = "Preparando pagamento do HTML…";
+      try {
+        var checkout = await createCheckout(experienceId, options.editorKey, "html_download");
+        htmlPurchaseStatus.textContent = "Abrindo o checkout seguro da Stripe para o adicional de US$ 1,00…";
+        window.location.assign(checkout.url);
+      } catch (error) {
+        htmlPurchaseStatus.textContent = error.message || "Não foi possível iniciar a compra do HTML offline.";
+        await refreshPurchaseEntitlements();
+      }
+    });
 
     publishButton.addEventListener("click", async function () {
       if (!options || typeof options.getSnapshot !== "function") {
@@ -362,14 +493,14 @@
         var snapshot = options.getSnapshot();
         localStorage.setItem(options.editorKey, JSON.stringify(snapshot));
         var result = await saveDraft(snapshot, options.editorKey);
-        var checkout = await createCheckout(result.id, options.editorKey, htmlDownload.checked);
+        var checkout = await createCheckout(result.id, options.editorKey, "online");
         publishStatus.textContent = "Abrindo o checkout seguro do Stripe…";
         window.location.assign(checkout.url);
       } catch (error) {
         publishStatus.textContent = error.message || "Não foi possível iniciar o pagamento. O rascunho local continua disponível.";
       } finally {
         publishButton.disabled = false;
-        publishButton.textContent = "Salvar e continuar para pagamento";
+        publishButton.textContent = "Salvar e pagar";
       }
     });
 
@@ -485,17 +616,24 @@
         try {
           var result = await getCheckoutStatus(sessionId, experienceId);
           if (result.status === "paid" && result.publicUrl) {
-            notify("Pagamento confirmado! Seu link está pronto: " + result.publicUrl, false);
+            applyPurchaseEntitlements(result);
+            notify(result.includesHtmlDownload
+              ? "Pagamento confirmado! O link está publicado e o download HTML está desbloqueado."
+              : "Pagamento confirmado! Seu link está publicado e pronto para compartilhar.", false);
             var link = document.createElement("a");
             link.href = result.publicUrl; link.target = "_blank"; link.rel = "noopener noreferrer";
             link.textContent = "Abrir experiência publicada";
             link.style.cssText = "display:block;margin-top:8px;color:#8b5541;overflow-wrap:anywhere";
             box.appendChild(link);
+            try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, result.publicUrl); } catch (_) {}
           } else {
             notify("O Stripe ainda não confirmou o pagamento. Aguarde um pouco e tente verificar novamente.", false);
           }
         } catch (error) { notify(error.message || "Não foi possível verificar o pagamento.", true); }
-        finally { verifyButton.disabled = false; }
+        finally {
+          verifyButton.disabled = false;
+          refreshPurchaseEntitlements();
+        }
       });
     }
 
