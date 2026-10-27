@@ -1271,7 +1271,36 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
    <p>In the page preview, click the text, photo, title, date, or element you want to change. The matching field opens automatically, and your change appears right away.</p>
    <p class="ed-notice-mobile"><strong>On mobile:</strong> close this panel with × and tap the item you want. To share the finished page, use <strong>Download Finished Experience</strong>.</p>
   </div>
-  <div class="ed-live-guide"><span class="ed-live-dot"></span><div><strong id="lovenaEditorFocusTitle">Ready to Personalize</strong><small id="lovenaEditorFocusHelp">Choose a section below or tap any text on the page to edit it.</small></div></div>
+  
+ <details id="lovenaExperienceLanguageSettings" open>
+  <summary>Experience Language</summary>
+  <div class="ed-fields">
+   <div class="ed-field">
+    <label for="lovenaExperienceLanguage">How should the page choose its language?</label>
+    <select id="lovenaExperienceLanguage" name="experience-language">
+     <option value="auto">Automatically follow my writing</option>
+     <option value="en">English</option><option value="pt">Português</option>
+     <option value="fr">Français</option><option value="de">Deutsch</option>
+     <option value="es">Español</option><option value="it">Italiano</option>
+     <option value="nl">Nederlands</option><option value="pl">Polski</option>
+     <option value="ru">Русский</option><option value="uk">Українська</option>
+     <option value="tr">Türkçe</option><option value="ar">العربية</option>
+     <option value="hi">हिन्दी</option><option value="ja">日本語</option>
+     <option value="ko">한국어</option><option value="zh-CN">中文（简体）</option>
+     <option value="id">Bahasa Indonesia</option><option value="vi">Tiếng Việt</option>
+     <option value="th">ไทย</option><option value="sv">Svenska</option>
+     <option value="da">Dansk</option><option value="no">Norsk</option>
+     <option value="fi">Suomi</option><option value="el">Ελληνικά</option>
+     <option value="cs">Čeština</option><option value="ro">Română</option>
+     <option value="hu">Magyar</option>
+    </select>
+    <small id="lovenaExperienceLanguageHelp" class="ed-help">In automatic mode, Lovena detects the language in the text you write. Your words are never translated automatically.</small>
+   </div>
+   <p id="lovenaExperienceLanguageStatus" role="status" aria-live="polite">Current page language: English</p>
+  </div>
+ </details>
+
+ <div class="ed-live-guide"><span class="ed-live-dot"></span><div><strong id="lovenaEditorFocusTitle">Ready to Personalize</strong><small id="lovenaEditorFocusHelp">Choose a section below or tap any text on the page to edit it.</small></div></div>
   <div id="lovenaEditorFields"></div>
   <details open>
    <summary>Photos and Images</summary>
@@ -1408,7 +1437,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   initialDraft.heroPosition={"x":31,"y":58};
  }
  window.LOVENA_EDIT_DRAFT=initialDraft;
- window.LOVENA_EDIT_DATA=data;
+ window.LOVENA_EDIT_DATA=data;window.LOVENA_EDIT_DEFAULTS=defaults;
 })();
 </script>
 <script>
@@ -1438,7 +1467,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   toastTimer=setTimeout(function(){toastNode.classList.remove("show");},2700);
  }
  function closeModal(){if(modal.open)modal.close();}
- function openModal(title,copy,kicker,options){
+ function openModal(title,copy,kicker,options){markLovenaUserText(document.getElementById("modalTitle"));markLovenaUserText(document.getElementById("modalCopy"));
   options=options||{};
   modalTitle.textContent=title;
   modalCopy.textContent=copy;
@@ -1948,7 +1977,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  }
 
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
- var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47}},window.LOVENA_EDIT_DRAFT||{});
+ var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47},locale:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.locale)||data.locale||document.documentElement.lang||"en",localeMode:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.localeMode)||"auto"},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  if(!Array.isArray(data.photos))data.photos=[];
@@ -2201,7 +2230,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  function applyField(def,value){
   if(def.path)setPath(data,def.path,value);
   else state.texts[def.key]=String(value);
-  if(def.selector)setElement(targetFor(def),value,def.multiline);
+  if(def.selector){markLovenaUserText(targetFor(def));setElement(targetFor(def),value,def.multiline);}
   if(def.key==="musicLinkLabel"){
    var link=document.getElementById("musicOpen");if(link)link.textContent=value;
    window.dispatchEvent(new Event("lovena:music-updated"));
@@ -2521,7 +2550,127 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   window.dispatchEvent(new Event("lovena:music-updated"));
  }
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
- function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;return {version:2,sampleAssetsVersion:2,texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,collage:state.collage,data:savedData};}
+ function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;savedData.locale=state.locale||"en";savedData.language=state.locale||"en";return {version:2,sampleAssetsVersion:2,locale:state.locale||"en",localeMode:state.localeMode||"auto",texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,collage:state.collage,data:savedData};}
+ 
+ function normalizeExperienceLanguage(value){
+  var lang=String(value||"en").trim().replace("_","-").toLowerCase();
+  if(lang==="pt-br"||lang==="pt-pt")return "pt";
+  if(lang==="zh-cn"||lang==="zh-hans")return "zh-CN";
+  if(lang==="zh-tw"||lang==="zh-hant")return "zh-TW";
+  if(lang==="iw")return "he";if(lang==="in")return "id";
+  if(lang==="nb"||lang==="nn")return "no";
+  return lang||"en";
+ }
+ function markLovenaUserText(element){if(element&&element.setAttribute)element.setAttribute("data-lovena-user-content","true");}
+ function applyExperienceLocale(value,reason){
+  var locale=normalizeExperienceLanguage(value);
+  state.locale=locale;data.locale=locale;data.language=locale;
+  document.documentElement.lang=locale;document.documentElement.setAttribute("data-lovena-language",locale);
+  var picker=document.getElementById("lovenaExperienceLanguage");
+  if(picker)picker.value=state.localeMode==="manual"?locale:"auto";
+  var status=document.getElementById("lovenaExperienceLanguageStatus");
+  if(status){
+   var names={en:"English",pt:"Portuguese",fr:"French",de:"German",es:"Spanish",it:"Italian",nl:"Dutch",pl:"Polish",ru:"Russian",uk:"Ukrainian",tr:"Turkish",ar:"Arabic",hi:"Hindi",ja:"Japanese",ko:"Korean","zh-CN":"Chinese","zh-TW":"Traditional Chinese",id:"Indonesian",vi:"Vietnamese",th:"Thai",sv:"Swedish",da:"Danish",no:"Norwegian",fi:"Finnish",el:"Greek",cs:"Czech",ro:"Romanian",hu:"Hungarian"};
+   status.textContent=(state.localeMode==="auto"?"Detected language: ":"Page language: ")+(names[locale]||locale.toUpperCase());
+  }
+  window.dispatchEvent(new CustomEvent("lovena:experience-language-changed",{detail:{locale:locale,reason:reason||"selection"}}));
+  if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();
+ }
+ var localeDetectionTimer=0,localeDetectionSequence=0;
+ function getWrittenExperienceText(){
+  var values=[],baseline=window.LOVENA_EDIT_DEFAULTS||{};
+  Object.keys(state.texts||{}).forEach(function(key){var value=state.texts[key];if(typeof value==="string"&&value.trim())values.push(value.trim());});
+  (textFields||[]).forEach(function(def){
+   if(!def.path)return;
+   var value=getPath(data,def.path),original=getPath(baseline,def.path);
+   if(typeof value==="string"&&value.trim()&&String(value)!==String(original==null?"":original))values.push(value.trim());
+  });
+  var collageDefaults={title:"ANNIVERSARY",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you"};
+  Object.keys(collageDefaults).forEach(function(key){var value=state.collage&&state.collage[key];if(typeof value==="string"&&value.trim()&&value!==collageDefaults[key])values.push(value.trim());});
+  return Array.from(new Set(values)).filter(function(value){return value.length>1;}).join("\n").slice(0,4500);
+ }
+ function guessExperienceLanguage(text){
+  var lower=String(text||"").toLowerCase(),count=function(pattern){return (lower.match(pattern)||[]).length;};
+  var scores={
+   pt:count(/\b(?:voce|você|vocês|nao|não|uma|umas|meu|minha|nosso|nossa|amor|obrigado|obrigada|para|tambem|também|muito|muita|que|com|estou|sempre|saudade|beijo|te amo)\b/g)+count(/[ãõçáéíóú]/g),
+   fr:count(/\b(?:je|tu|vous|nous|mon|ma|mes|amour|avec|pour|merci|toujours|une|des|les|pas|dans|est|suis|coeur|bonheur|chérie)\b/g)+count(/[àâçéèêëîïôûùüÿœ]/g),
+   de:count(/\b(?:ich|du|wir|mein|meine|liebe|lieber|und|nicht|der|die|das|für|danke|immer|mit|schön|herz)\b/g)+count(/[äöüß]/g),
+   es:count(/\b(?:hola|te quiero|te amo|mi|amor|para|gracias|siempre|corazón|nuestro|nuestra|usted|ustedes|muy|eres|quiero)\b/g)+count(/[ñ¿¡]/g),
+   it:count(/\b(?:io|tu|noi|mio|mia|amore|con|per|grazie|sempre|cuore|ti amo|sei|sono|nostro|nostra|bellissimo|bellissima)\b/g)+count(/[àèéìòù]/g),
+   nl:count(/\b(?:ik|jij|wij|mijn|liefde|met|voor|bedankt|altijd|ons|onze|heel|mooi|hart)\b/g),
+   ru:count(/[а-яё]{3,}/g),
+   uk:count(/[іїєґ]/g)*3+count(/\b(?:кохання|люблю|дякую|завжди|серце)\b/g)*3
+  };
+  var best="",score=0;Object.keys(scores).forEach(function(key){if(scores[key]>score){score=scores[key];best=key;}});
+  return score>=2?best:"";
+ }
+ async function requestExperienceLanguage(text){
+  var url=new URL("https://translate.googleapis.com/translate_a/single");
+  url.searchParams.set("client","gtx");url.searchParams.set("sl","auto");url.searchParams.set("tl","en");url.searchParams.set("dt","t");url.searchParams.set("q",text);
+  var response=await fetch(url.toString(),{method:"GET",mode:"cors",credentials:"omit",cache:"no-store",headers:{"Accept":"application/json"}});
+  if(!response.ok)throw new Error("Language detection unavailable");
+  var payload=await response.json();return normalizeExperienceLanguage(payload&&payload[2]||"");
+ }
+ async function detectExperienceLanguage(){
+  if(state.localeMode!=="auto")return;
+  var sequence=++localeDetectionSequence,text=getWrittenExperienceText();
+  if(!text||text.replace(/[^\p{L}]/gu,"").length<8)return;
+  try{
+   var locale=await requestExperienceLanguage(text);
+   if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
+   if(!locale||locale==="und")locale=guessExperienceLanguage(text)||state.locale||"en";
+   if(locale)applyExperienceLocale(locale,"writing");
+  }catch(error){
+   if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
+   var guess=guessExperienceLanguage(text);if(guess)applyExperienceLocale(guess,"writing");
+  }
+ }
+ function scheduleExperienceLanguageDetection(){
+  if(state.localeMode!=="auto")return;
+  if(localeDetectionTimer)clearTimeout(localeDetectionTimer);
+  localeDetectionTimer=setTimeout(function(){localeDetectionTimer=0;detectExperienceLanguage();},1000);
+ }
+ function markSavedUserContent(){
+  var baseline=window.LOVENA_EDIT_DEFAULTS||{};
+  (textFields||[]).forEach(function(def){
+   var saved=def.path?getPath(data,def.path):(state.texts&&Object.prototype.hasOwnProperty.call(state.texts,def.key)?state.texts[def.key]:undefined);
+   var original=def.path?getPath(baseline,def.path):undefined;
+   var changed=def.path?saved!=null&&String(saved)!==String(original==null?"":original):saved!==undefined;
+   if(changed)markLovenaUserText(targetFor(def));
+  });
+  var collageDefaults={title:"ANNIVERSARY",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you"};
+  var selectors={title:"#colagem-memorias .memory-collage-copy strong",eyebrow:"#colagem-memorias .memory-collage-copy span",subtitle:"#colagem-memorias .memory-collage-copy small",floatingWord:"#colagem-memorias .memory-collage-floating-words span:not(.memory-collage-word-hidden)"};
+  Object.keys(collageDefaults).forEach(function(key){if(state.collage&&state.collage[key]!==collageDefaults[key])document.querySelectorAll(selectors[key]).forEach(markLovenaUserText);});
+ }
+ function setupExperienceLanguage(){
+  var picker=document.getElementById("lovenaExperienceLanguage");
+  state.locale=normalizeExperienceLanguage(state.locale||data.locale||document.documentElement.getAttribute("data-lovena-language")||document.documentElement.lang||"en");
+  state.localeMode=state.localeMode==="manual"?"manual":"auto";
+  data.locale=state.locale;data.language=state.locale;
+  document.documentElement.lang=state.locale;document.documentElement.setAttribute("data-lovena-language",state.locale);
+  if(!picker)return;
+  picker.value=state.localeMode==="manual"?state.locale:"auto";
+  applyExperienceLocale(state.locale,"initial");
+  picker.addEventListener("change",function(){
+   var value=picker.value;
+   if(value==="auto"){state.localeMode="auto";applyExperienceLocale(state.locale,"automatic");scheduleExperienceLanguageDetection();}
+   else{state.localeMode="manual";localeDetectionSequence++;applyExperienceLocale(value,"manual");}
+   scheduleSave();
+  });
+  document.addEventListener("input",function(event){
+   var input=event.target;if(!input)return;
+   if(input.matches&&input.matches("[data-editor-field]")){
+    var def=textFields.find(function(item){return item.key===input.getAttribute("data-editor-field");});
+    if(def)markLovenaUserText(targetFor(def));
+   }else if(input.id&&/^lovenaCollage(?:Title|Eyebrow|Subtitle|FloatingWord)$/.test(input.id)){
+    var map={lovenaCollageTitle:"#colagem-memorias .memory-collage-copy strong",lovenaCollageEyebrow:"#colagem-memorias .memory-collage-copy span",lovenaCollageSubtitle:"#colagem-memorias .memory-collage-copy small",lovenaCollageFloatingWord:"#colagem-memorias .memory-collage-floating-words span:not(.memory-collage-word-hidden)"};
+    document.querySelectorAll(map[input.id]||"").forEach(markLovenaUserText);
+   }
+   scheduleExperienceLanguageDetection();
+  });
+ }
+
+ setupExperienceLanguage();
  function saveDraft(show){
   try{
    data.images=state.images;
@@ -3100,7 +3249,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(!obj||!obj.data||!Array.isArray(obj.data.photos)||!Array.isArray(obj.data.milestones))throw new Error("This file does not appear to be a Lovena backup.");localStorage.setItem(EDIT_KEY,JSON.stringify(obj));location.reload();}catch(err){setStatus("Could not import: "+err.message);}};reader.readAsText(file);event.target.value="";
  });
  if(editMode)window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
- applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();renderCollagePhotoControls();
+ applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();markSavedUserContent();if(state.localeMode==="auto")scheduleExperienceLanguageDetection();renderCollagePhotoControls();
 
  if(editMode){
   function showPublicationLoadNotice(message){
@@ -3325,5 +3474,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 
 
 
+<script src="./translation-bridge.js?v=20261027-experience-language-1" defer></script>
 </body>
 </html>
