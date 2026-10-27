@@ -2533,6 +2533,23 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    var collageMap=collageText.matches(".memory-collage-copy span")?["lovenaCollageEyebrow","eyebrow above the title"]:collageText.matches(".memory-collage-copy strong")?["lovenaCollageTitle","collage title"]:["lovenaCollageSubtitle","subtitle below the title"];
    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusCollageControl(collageMap[0],collageMap[1],collageText);return;
   }
+  var musicPlayTarget=event.target.closest&&event.target.closest('.music-card [data-action="song-play"]');
+  if(musicPlayTarget){
+   event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+   focusSelectionWhenReady(function(){
+    var input=panel.querySelector('input[data-song-prop="url"]');
+    var details=input&&input.closest("details");
+    if(details)details.open=true;
+    if(input){
+     var row=input.closest(".ed-field");
+     if(row){row.classList.add("is-editor-active");row.scrollIntoView({behavior:"smooth",block:"center"});}
+     input.focus({preventScroll:true});
+    }
+    setActivePreviewElement(musicPlayTarget.closest(".music-card"));
+    updateEditorGuide("Editing: Music Link","Paste a direct song link from Apple Music, YouTube Music, or Spotify. The song title and artist update automatically when available.");
+   });
+   return;
+  }
   var collageImageKey=findCollageImageKey(event.target);
   if(collageImageKey){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusSelectionWhenReady(function(){focusEditorImage(collageImageKey);});return;}
   var def=findFieldForElement(event.target);
