@@ -2577,13 +2577,25 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;savedData.locale=state.locale||"en";savedData.language=state.locale||"en";return {version:2,sampleAssetsVersion:2,locale:state.locale||"en",localeMode:state.localeMode||"auto",texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,collage:state.collage,data:savedData};}
  
  function normalizeExperienceLanguage(value){
-  var lang=String(value||"en").trim().replace("_","-").toLowerCase();
+  var lang=String(value||"en").trim().replace(/_/g,"-").toLowerCase();
   if(lang==="pt-br"||lang==="pt-pt")return "pt";
   if(lang==="zh-cn"||lang==="zh-hans")return "zh-CN";
   if(lang==="zh-tw"||lang==="zh-hant")return "zh-TW";
-  if(lang==="iw")return "he";if(lang==="in")return "id";
+  if(lang==="iw")return "he";
+  if(lang==="in")return "id";
+  if(lang==="fil")return "tl";
   if(lang==="nb"||lang==="nn")return "no";
   return lang||"en";
+ }
+ function syncExperienceLanguagePicker(){
+  var picker=document.getElementById("lovenaExperienceLanguage");
+  var wrap=document.getElementById("lovenaExperienceLanguageCodeWrap");
+  var codeInput=document.getElementById("lovenaExperienceLanguageCode");
+  if(!picker)return;
+  var hasOption=Array.from(picker.options||[]).some(function(option){return option.value===state.locale;});
+  picker.value=state.localeMode==="manual"?(hasOption?state.locale:"other"):"auto";
+  if(wrap)wrap.style.display=state.localeMode==="manual"&&!hasOption?"grid":"none";
+  if(codeInput&&state.localeMode==="manual"&&!hasOption)codeInput.value=state.locale;
  }
  function markLovenaUserText(element){if(element&&element.setAttribute)element.setAttribute("data-lovena-user-content","true");}
  function applyExperienceLocale(value,reason){
@@ -2591,11 +2603,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var languageChanged=normalizeExperienceLanguage(state.locale||"en")!==locale||document.documentElement.getAttribute("data-lovena-language")!==locale;
   state.locale=locale;data.locale=locale;data.language=locale;
   document.documentElement.lang=locale;document.documentElement.setAttribute("data-lovena-language",locale);
-  var picker=document.getElementById("lovenaExperienceLanguage");
-  if(picker)picker.value=state.localeMode==="manual"?locale:"auto";
+  syncExperienceLanguagePicker();
   var status=document.getElementById("lovenaExperienceLanguageStatus");
   if(status){
-   var names={en:"English",pt:"Portuguese",fr:"French",de:"German",es:"Spanish",it:"Italian",nl:"Dutch",pl:"Polish",ru:"Russian",uk:"Ukrainian",tr:"Turkish",ar:"Arabic",hi:"Hindi",ja:"Japanese",ko:"Korean","zh-CN":"Chinese","zh-TW":"Traditional Chinese",id:"Indonesian",vi:"Vietnamese",th:"Thai",sv:"Swedish",da:"Danish",no:"Norwegian",fi:"Finnish",el:"Greek",cs:"Czech",ro:"Romanian",hu:"Hungarian"};
+   var names={en:"English",pt:"Portuguese",fr:"French",de:"German",es:"Spanish",it:"Italian",nl:"Dutch",pl:"Polish",ru:"Russian",uk:"Ukrainian",tr:"Turkish",ar:"Arabic",fa:"Persian",ur:"Urdu",he:"Hebrew",hi:"Hindi",bn:"Bengali",pa:"Punjabi",ta:"Tamil",te:"Telugu",kn:"Kannada",ml:"Malayalam",mr:"Marathi",gu:"Gujarati",ja:"Japanese",ko:"Korean","zh-CN":"Chinese (Simplified)","zh-TW":"Chinese (Traditional)",id:"Indonesian",ms:"Malay",tl:"Filipino",vi:"Vietnamese",th:"Thai",lo:"Lao",my:"Burmese",km:"Khmer",sv:"Swedish",da:"Danish",no:"Norwegian",fi:"Finnish",el:"Greek",cs:"Czech",sk:"Slovak",sl:"Slovenian",ro:"Romanian",hu:"Hungarian",bg:"Bulgarian",sr:"Serbian",hr:"Croatian",bs:"Bosnian",et:"Estonian",lt:"Lithuanian",lv:"Latvian",is:"Icelandic",af:"Afrikaans",sw:"Swahili",ca:"Catalan",cy:"Welsh",sq:"Albanian",mk:"Macedonian",ka:"Georgian",hy:"Armenian",az:"Azerbaijani",kk:"Kazakh",uz:"Uzbek"};
    status.textContent=(state.localeMode==="auto"?"Detected language: ":"Page language: ")+(names[locale]||locale.toUpperCase());
   }
   if(languageChanged){window.dispatchEvent(new CustomEvent("lovena:experience-language-changed",{detail:{locale:locale,reason:reason||"selection"}}));if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();}
@@ -2697,17 +2708,38 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  }
  function setupExperienceLanguage(){
   var picker=document.getElementById("lovenaExperienceLanguage");
+  var codeInput=document.getElementById("lovenaExperienceLanguageCode");
+  var codeWrap=document.getElementById("lovenaExperienceLanguageCodeWrap");
   state.locale=normalizeExperienceLanguage(state.locale||data.locale||document.documentElement.getAttribute("data-lovena-language")||document.documentElement.lang||"en");
   state.localeMode=state.localeMode==="manual"?"manual":"auto";
   data.locale=state.locale;data.language=state.locale;
   if(!picker){document.documentElement.lang=state.locale;document.documentElement.setAttribute("data-lovena-language",state.locale);return;}
-  picker.value=state.localeMode==="manual"?state.locale:"auto";
+  syncExperienceLanguagePicker();
   applyExperienceLocale(state.locale,"initial");
   picker.addEventListener("change",function(){
    var value=picker.value;
-   if(value==="auto"){state.localeMode="auto";applyExperienceLocale(state.locale,"automatic");scheduleExperienceLanguageDetection();}
-   else{state.localeMode="manual";localeDetectionSequence++;applyExperienceLocale(value,"manual");}
+   if(value==="auto"){
+    state.localeMode="auto";syncExperienceLanguagePicker();applyExperienceLocale(state.locale,"automatic");scheduleExperienceLanguageDetection();
+   }else if(value==="other"){
+    state.localeMode="manual";localeDetectionSequence++;
+    if(codeWrap)codeWrap.style.display="grid";
+    if(codeInput)codeInput.focus();
+    var status=document.getElementById("lovenaExperienceLanguageStatus");
+    if(status)status.textContent="Enter the language code to apply it to this page.";
+   }else{
+    state.localeMode="manual";localeDetectionSequence++;applyExperienceLocale(value,"manual");
+   }
    scheduleSave();
+  });
+  if(codeInput)codeInput.addEventListener("input",function(){
+   var code=normalizeExperienceLanguage(codeInput.value);
+   if(!/^[a-z]{2,3}(?:-[a-z0-9]{2,8})?$/i.test(code)){
+    var status=document.getElementById("lovenaExperienceLanguageStatus");
+    if(status)status.textContent="Enter a valid language code, such as fa, ur, or sw.";
+    return;
+   }
+   state.localeMode="manual";localeDetectionSequence++;
+   applyExperienceLocale(code,"manual");scheduleSave();
   });
   document.addEventListener("input",function(event){
    var input=event.target;if(!input)return;
