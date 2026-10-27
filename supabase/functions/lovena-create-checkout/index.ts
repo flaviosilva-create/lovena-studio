@@ -73,8 +73,9 @@ Deno.serve(async (req: Request) => {
       .single();
     if (orderError) throw orderError;
 
-    const successUrl = "https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&checkout=success&session_id={CHECKOUT_SESSION_ID}&experience_id=" + encodeURIComponent(experienceId);
-    const cancelUrl = "https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&checkout=cancelled&experience_id=" + encodeURIComponent(experienceId);
+    const editorPage = plan === "simple" ? "experience-simple.html" : "experience.html";
+    const successUrl = "https://flaviosilva-create.github.io/lovena-studio/" + editorPage + "?edit=1&checkout=success&session_id={CHECKOUT_SESSION_ID}&experience_id=" + encodeURIComponent(experienceId);
+    const cancelUrl = "https://flaviosilva-create.github.io/lovena-studio/" + editorPage + "?edit=1&checkout=cancelled&experience_id=" + encodeURIComponent(experienceId);
     const form = new URLSearchParams();
     form.set("mode", "payment");
     form.set("success_url", successUrl);
