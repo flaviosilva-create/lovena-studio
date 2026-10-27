@@ -7,6 +7,20 @@ const corsHeaders = {
   "Content-Type": "application/json; charset=utf-8",
 };
 
+
+function resolveMediaReferences(value: unknown, mediaUrls: Map<string, string>): unknown {
+  if (typeof value === "string") {
+    if (!value.startsWith("lovena-media://")) return value;
+    return mediaUrls.get(value.slice("lovena-media://".length)) ?? "";
+  }
+  if (Array.isArray(value)) return value.map((item) => resolveMediaReferences(item, mediaUrls));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>)
+      .map(([key, item]) => [key, resolveMediaReferences(item, mediaUrls)]));
+  }
+  return value;
+}
+
 function jsonResponse(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
@@ -69,6 +83,7 @@ Deno.serve(async (req: Request) => {
       return jsonResponse(500, { error: "media_lookup_failed" });
     }
 
+    const mediaUrls = new Map<string, string>();
     const media = await Promise.all((mediaRows ?? []).map(async (item) => {
       const { data, error: signError } = await supabase.storage
         .from("lovena-media")
@@ -83,6 +98,7 @@ Deno.serve(async (req: Request) => {
           unavailable: true,
         };
       }
+      mediaUrls.set(item.storage_path, data.signedUrl);
       return {
         id: item.id,
         type: item.media_type,
@@ -97,7 +113,7 @@ Deno.serve(async (req: Request) => {
         slug: experience.public_slug,
         plan: experience.plan,
         locale: experience.locale,
-        data: experience.experience_data,
+        data: resolveMediaReferences(experience.experience_data, mediaUrls),
         published_at: experience.published_at,
         expires_at: experience.online_expires_at,
       },
