@@ -1073,7 +1073,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 </style>
 
 <style id="lovena-gallery-navigation-fix">
-/* Gallery horizontal com cartões de largura real para suportar rolagem e setas. */
+/* Horizontal photo gallery with fixed-width cards for scrolling and arrow navigation. */
 #fotos .gallery-row{
  display:flex!important;
  flex-wrap:nowrap!important;
@@ -1142,7 +1142,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   <div class="scroll-cue"><div class="scroll-line"><button type="button" data-scroll="#carta" aria-label="Scroll to discover"></button></div><span>SCROLL<br>TO<br>EXPLORE</span></div>
  </section>
 
- <section class="letter-music" id="carta" aria-label="Letter e trilha sonora">
+ <section class="letter-music" id="carta" aria-label="Love letter and soundtrack">
   <svg class="stage-flowers" viewBox="0 0 190 330" aria-hidden="true">
    <defs><linearGradient id="stem" x1="0" x2="1"><stop stop-color="#8b7556"/><stop offset="1" stop-color="#3c3929"/></linearGradient><radialGradient id="petal"><stop stop-color="#fffdf3"/><stop offset="1" stop-color="#d9d0ba"/></radialGradient></defs>
    <g fill="none" stroke="url(#stem)" stroke-width="2"><path d="M8 328Q51 219 61 75"/><path d="M35 330Q75 222 116 113"/><path d="M9 326Q23 246 20 177"/><path d="M29 290Q72 276 91 236"/><path d="M54 234Q16 215 10 189"/><path d="M69 205Q103 188 119 161"/><path d="M87 165Q60 144 63 123"/></g>
@@ -1682,7 +1682,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   if(uploadedPhoto){modalVisual.style.backgroundImage='url("'+uploadedPhoto+'")';modalVisual.style.backgroundSize="cover";modalVisual.style.backgroundPosition="center";}
   else{modalVisual.style.backgroundImage="var(--gallery-sprite)";modalVisual.style.backgroundSize="300% 200%";}
   modalCopy.style.marginBottom="0";
-  modalExtra.innerHTML='<div style="display:flex;justify-content:space-between;gap:12px;margin-top:16px"><button type="button" class="modal-action" data-action="modal-prev">← Previous</button><button type="button" class="modal-action" data-action="modal-next">Próxima →</button></div>';
+  modalExtra.innerHTML='<div style="display:flex;justify-content:space-between;gap:12px;margin-top:16px"><button type="button" class="modal-action" data-action="modal-prev">← Previous</button><button type="button" class="modal-action" data-action="modal-next">Next →</button></div>';
  }
  function htmlEscape(value){
   return String(value==null?"":value).replace(/[&<>"']/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];});
@@ -2517,7 +2517,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    var strong=document.createElement("strong");strong.textContent=label;description.appendChild(strong);
    var small=document.createElement("small");small.textContent=help;description.appendChild(small);row.appendChild(description);
    var actions=document.createElement("div");actions.className="ed-image-actions";actions.style.cssText="display:flex;flex-wrap:wrap;gap:5px;align-items:center";
-   var input=document.createElement("input");input.type="file";input.accept="image/jpeg,image/png,image/webp,image/gif,image/avif";input.setAttribute("aria-label","Escolher "+label);
+   var input=document.createElement("input");input.type="file";input.accept="image/jpeg,image/png,image/webp,image/gif,image/avif";input.setAttribute("aria-label","Choose "+label);
    var pick=document.createElement("button");pick.type="button";pick.className="ed-mini-button";pick.textContent="Change Photo";pick.addEventListener("click",function(event){event.preventDefault();input.click();});
    input.addEventListener("change",function(){var file=input.files&&input.files[0];if(file)readImage(file,key,input);});
    actions.appendChild(pick);actions.appendChild(input);
