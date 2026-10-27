@@ -8,7 +8,7 @@
   var SOURCE_LANGUAGE = "en";
   var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
   var CACHE_KEY = "lovenaDynamicTranslationCacheV3";
-  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy"];
+  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy", "lovenaEditor", "lovenaEditHint", "lovenaEditorTrigger", "detailModal"];
   var textOriginals = new WeakMap();
   var attrOriginals = new WeakMap();
   var cache = new Map();
@@ -107,6 +107,12 @@
       var selected = canonicalLanguage(selector.value);
       if (selected) return selected;
     }
+    // Experience locale belongs to the gift, not to the viewer's landing-page preference.
+    var htmlLanguage = document.documentElement.getAttribute("data-lovena-language");
+    if (htmlLanguage && document.getElementById("experiencia")) {
+      var explicitPageLanguage = canonicalLanguage(htmlLanguage);
+      if (explicitPageLanguage) return explicitPageLanguage;
+    }
     try {
       var cookie = document.cookie.split(";").map(function (item) { return item.trim(); })
         .find(function (item) { return item.indexOf("googtrans=") === 0; });
@@ -116,16 +122,18 @@
         if (parts.length > 1) return canonicalLanguage(parts[parts.length - 1]);
       }
     } catch (error) {}
-    var htmlLanguage = document.documentElement.getAttribute("data-lovena-language");
     if (htmlLanguage) { var htmlLang = canonicalLanguage(htmlLanguage); if (htmlLang) return htmlLang; }
     return readSavedLanguage() || SOURCE_LANGUAGE;
   }
 
   function saveLanguage(language) {
     activeLanguage = canonicalLanguage(language) || SOURCE_LANGUAGE;
-    try { localStorage.setItem("lovenaPreferredLanguage", activeLanguage); } catch (error) {}
-    document.documentElement.setAttribute("lang", activeLanguage);
-    document.documentElement.setAttribute("data-lovena-language", activeLanguage);
+    // Do not leak a gift's language into the visitor's preferred landing-page language.
+    if (!document.getElementById("experiencia")) {
+      try { localStorage.setItem("lovenaPreferredLanguage", activeLanguage); } catch (error) {}
+    }
+    if (document.documentElement.getAttribute("lang") !== activeLanguage) document.documentElement.setAttribute("lang", activeLanguage);
+    if (document.documentElement.getAttribute("data-lovena-language") !== activeLanguage) document.documentElement.setAttribute("data-lovena-language", activeLanguage);
   }
 
   function loadCache() {
@@ -148,7 +156,10 @@
   }
 
   function getRoots() {
-    roots = ROOT_IDS.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+    var experienceRoot = document.getElementById("experiencia");
+    var allRoots = ROOT_IDS.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+    if (experienceRoot) allRoots.unshift(experienceRoot);
+    roots = Array.from(new Set(allRoots));
     roots.forEach(function (root) {
       root.classList.add("notranslate");
       root.setAttribute("translate", "no");
@@ -456,6 +467,13 @@
     scheduleTranslation(80);
   }
 
+  window.addEventListener("lovena:experience-language-changed", function (event) {
+    if (!document.getElementById("experiencia")) return;
+    var language = canonicalLanguage(event && event.detail && event.detail.locale);
+    if (!language) return;
+    saveLanguage(language);
+    scheduleTranslation(60);
+  });
   document.addEventListener("change", handleLanguageSelection, true);
   document.addEventListener("input", handleLanguageSelection, true);
 
@@ -484,6 +502,13 @@
     observeRoots();
     observeSelectorWidgets();
     var selector = selectorElement();
+    if (!selector && document.getElementById("experiencia")) {
+      var pageLanguage = canonicalLanguage(document.documentElement.getAttribute("data-lovena-language") || document.documentElement.lang || SOURCE_LANGUAGE) || SOURCE_LANGUAGE;
+      saveLanguage(pageLanguage);
+      scheduleTranslation(80);
+      window.dispatchEvent(new CustomEvent("lovena:translation-bridge-ready", { detail: { language: pageLanguage } }));
+      return;
+    }
     if (!selector) {
       attempts++;
       if (attempts < 80) window.setTimeout(initializeWidget, 250);
