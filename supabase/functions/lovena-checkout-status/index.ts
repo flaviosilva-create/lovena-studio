@@ -43,7 +43,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: experience, error: experienceError } = await admin
       .from("lovena_experiences")
-      .select("id, owner_id, public_slug, status, online_expires_at")
+      .select("id, owner_id, public_slug, status, online_expires_at, plan")
       .eq("id", experienceId)
       .maybeSingle();
     if (experienceError) throw experienceError;
@@ -58,8 +58,9 @@ Deno.serve(async (req: Request) => {
     if (orderError) throw orderError;
     if (!order) return reply(404, { error: "checkout_not_found" });
 
+    const publicPage = experience.plan === "simple" ? "experience-simple.html" : "experience.html";
     const publicUrl = order.payment_status === "paid" && experience.public_slug
-      ? "https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=" + encodeURIComponent(experience.public_slug)
+      ? "https://flaviosilva-create.github.io/lovena-studio/" + publicPage + "?slug=" + encodeURIComponent(experience.public_slug)
       : null;
     return reply(200, {
       status: order.payment_status,
