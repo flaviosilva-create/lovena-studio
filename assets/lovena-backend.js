@@ -460,9 +460,9 @@
     var onlinePriceLabel = planIsSimple ? "US$ 4,99" : "US$ 9,99";
     function priceLabel(cents) { return "US$ " + (cents / 100).toFixed(2).replace(".", ","); }
     publicationTitle.textContent = "Publish Your Lovena Page";
-    publicationTitle.style.cssText = "display:block;font-size:17px;line-height:1.35;margin-bottom:8px;color:#472b23";
+    publicationTitle.style.cssText = "display:block;font-size:13px;line-height:1.3;margin:0;color:#472b23";
     var publicationCopy = document.createElement("p");
-    publicationCopy.style.cssText = "font-size:13px;line-height:1.6;margin:0 0 12px;color:#765d50";
+    publicationCopy.style.cssText = "font-size:10.5px;line-height:1.4;margin:0;color:#765d50";
     var publicationTotal = document.createElement("div");
     publicationTotal.style.cssText = "font-size:17px;font-weight:850;letter-spacing:-.3px;margin:0;color:#59372f";
     var includeHtmlCheckbox = document.createElement("input");
@@ -471,15 +471,15 @@
     includeHtmlCheckbox.style.cssText = "width:19px;height:19px;flex:0 0 19px;margin:1px 0 0;accent-color:#784b3d;cursor:pointer";
     var includeHtmlLabel = document.createElement("label");
     includeHtmlLabel.htmlFor = includeHtmlCheckbox.id;
-    includeHtmlLabel.style.cssText = "display:flex;gap:11px;align-items:flex-start;padding:13px 12px;border:1px solid #dcc0ad;border-radius:12px;background:#fff;cursor:pointer;margin:0 0 12px";
+    includeHtmlLabel.style.cssText = "display:flex;gap:8px;align-items:flex-start;padding:7px 9px;border:1px solid #dcc0ad;border-radius:10px;background:#fff;cursor:pointer;margin:0";
     var includeHtmlText = document.createElement("span");
-    includeHtmlText.style.cssText = "display:grid;gap:4px;font-size:13px;line-height:1.4;color:#51392f";
+    includeHtmlText.style.cssText = "display:grid;gap:2px;font-size:11px;line-height:1.3;color:#51392f";
     var includeHtmlTitle = document.createElement("strong");
     includeHtmlTitle.textContent = "Add offline HTML (+$1.00)";
-    includeHtmlTitle.style.cssText = "font-size:13px";
+    includeHtmlTitle.style.cssText = "font-size:11px";
     var includeHtmlHelp = document.createElement("span");
     includeHtmlHelp.textContent = "Also get an HTML file to download and keep offline. Optional.";
-    includeHtmlHelp.style.cssText = "font-size:11px;line-height:1.5;color:#82695a";
+    includeHtmlHelp.style.cssText = "font-size:9.5px;line-height:1.35;color:#82695a";
     includeHtmlText.append(includeHtmlTitle, includeHtmlHelp);
     includeHtmlLabel.append(includeHtmlCheckbox, includeHtmlText);
     var htmlPurchaseButton = document.createElement("button");
@@ -525,16 +525,16 @@
     var publicationDock = document.createElement("section");
     publicationDock.className = "lovena-publication-dock";
     publicationDock.setAttribute("aria-label", "Publish and pay");
-    publicationDock.style.cssText = "position:relative;z-index:4;flex:0 0 auto;display:grid;gap:7px;padding:10px 16px;background:#fffaf6;border-bottom:1px solid #e2cabb;box-shadow:0 4px 12px rgba(73,33,28,.08)";
+    publicationDock.style.cssText = "position:relative;z-index:4;flex:0 0 auto;display:grid;gap:6px;padding:9px 16px 10px;background:#fffaf6;border-bottom:1px solid #e2cabb;box-shadow:0 4px 12px rgba(73,33,28,.08)";
     var publicationDockHeader = document.createElement("div");
     publicationDockHeader.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0";
     var publicationDockLabel = document.createElement("strong");
     publicationDockLabel.textContent = "PUBLISH & PAY";
     publicationDockLabel.style.cssText = "font-size:10px;line-height:1.3;font-weight:850;letter-spacing:1.4px;color:#765044";
     publicationDockHeader.append(publicationDockLabel, publicationTotal);
-    publicationDock.append(publicationDockHeader, publishButton, publishStatus);
+    publicationDock.append(publicationDockHeader, publicationTitle, publicationCopy, includeHtmlLabel, publishButton, publishStatus);
 
-    publication.append(publicationTitle, publicationCopy, includeHtmlLabel, htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
+    publication.append(htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
     scroll.insertBefore(publication, scroll.firstChild);
     // It sits between the fixed editor heading and the scrollable editing area.
     panel.insertBefore(publicationDock, scroll);
