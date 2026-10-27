@@ -2589,50 +2589,71 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   Object.keys(collageDefaults).forEach(function(key){var value=state.collage&&state.collage[key];if(typeof value==="string"&&value.trim()&&value!==collageDefaults[key])values.push(value.trim());});
   return Array.from(new Set(values)).filter(function(value){return value.length>1;}).join("\n").slice(0,4500);
  }
+
  function guessExperienceLanguage(text){
-  var lower=String(text||"").toLowerCase(),count=function(pattern){return (lower.match(pattern)||[]).length;};
-  if(/[\u3040-\u30ff]/.test(text))return "ja";
-  if(/[\uac00-\ud7af]/.test(text))return "ko";
-  if(/[\u4e00-\u9fff]/.test(text))return "zh-CN";
-  if(/[\u0600-\u06ff]/.test(text))return "ar";
-  if(/[\u0900-\u097f]/.test(text))return "hi";
-  if(/[\u0e00-\u0e7f]/.test(text))return "th";
-  if(/[\u0370-\u03ff]/.test(text))return "el";
-  if(/[\u0590-\u05ff]/.test(text))return "he";
+  var value=String(text||""),lower=value.toLowerCase(),count=function(pattern){return (lower.match(pattern)||[]).length;};
+  if(/[\u3040-\u30ff]/.test(value))return "ja";
+  if(/[\uac00-\ud7af]/.test(value))return "ko";
+  if(/[\u4e00-\u9fff]/.test(value))return "zh-CN";
+  if(/[\u0600-\u06ff]/.test(value))return "ar";
+  if(/[\u0900-\u097f]/.test(value))return "hi";
+  if(/[\u0980-\u09ff]/.test(value))return "bn";
+  if(/[\u0a00-\u0a7f]/.test(value))return "pa";
+  if(/[\u0b80-\u0bff]/.test(value))return "ta";
+  if(/[\u0c00-\u0c7f]/.test(value))return "te";
+  if(/[\u0c80-\u0cff]/.test(value))return "kn";
+  if(/[\u0d00-\u0d7f]/.test(value))return "ml";
+  if(/[\u0e00-\u0e7f]/.test(value))return "th";
+  if(/[\u0e80-\u0eff]/.test(value))return "lo";
+  if(/[\u1000-\u109f]/.test(value))return "my";
+  if(/[\u1780-\u17ff]/.test(value))return "km";
+  if(/[\u0370-\u03ff]/.test(value))return "el";
+  if(/[\u0590-\u05ff]/.test(value))return "he";
+  if(/[\u0400-\u04ff]/.test(value))return /[іїєґ]/i.test(value)?"uk":"ru";
+  if(/\b(?:je\s+t['’]aime|mon\s+amour|je\s+t'aime)\b/i.test(value))return "fr";
+  if(/\bich\s+liebe\s+dich\b/i.test(value))return "de";
+  if(/\bi\s+love\s+you\b/i.test(value))return "en";
+  if(/\bti\s+amo\b/i.test(value))return "it";
+  if(/\beu\s+te\s+amo\b/i.test(value))return "pt";
+  if(/\bte\s+quiero\b/i.test(value))return "es";
+  if(/[đăơư]/i.test(value))return "vi";
   var scores={
-   pt:count(/\b(?:voce|você|vocês|nao|não|uma|umas|meu|minha|nosso|nossa|amor|obrigado|obrigada|para|tambem|também|muito|muita|que|com|estou|sempre|saudade|beijo|te amo)\b/g)+count(/[ãõçáéíóú]/g),
-   fr:count(/\b(?:je|tu|vous|nous|mon|ma|mes|amour|avec|pour|merci|toujours|une|des|les|pas|dans|est|suis|coeur|bonheur|chérie)\b/g)+count(/[àâçéèêëîïôûùüÿœ]/g),
-   de:count(/\b(?:ich|du|wir|mein|meine|liebe|lieber|und|nicht|der|die|das|für|danke|immer|mit|schön|herz)\b/g)+count(/[äöüß]/g),
-   es:count(/\b(?:hola|te quiero|te amo|mi|amor|para|gracias|siempre|corazón|nuestro|nuestra|usted|ustedes|muy|eres|quiero)\b/g)+count(/[ñ¿¡]/g),
-   it:count(/\b(?:io|tu|noi|mio|mia|amore|con|per|grazie|sempre|cuore|ti amo|sei|sono|nostro|nostra|bellissimo|bellissima)\b/g)+count(/[àèéìòù]/g),
-   nl:count(/\b(?:ik|jij|wij|mijn|liefde|met|voor|bedankt|altijd|ons|onze|heel|mooi|hart)\b/g),
-   ru:count(/[а-яё]{3,}/g),
-   uk:count(/[іїєґ]/g)*3+count(/\b(?:кохання|люблю|дякую|завжди|серце)\b/g)*3
+   en:count(/\b(?:the|you|and|with|your|love|always|our|we|this|that|for|from|beautiful|are|is|it|me|to|of|my|together|heart|thank)\b/g),
+   pt:count(/\b(?:voce|você|vocês|nao|não|uma|umas|meu|minha|nosso|nossa|amor|obrigado|obrigada|para|tambem|também|muito|muita|que|com|estou|sempre|saudade|beijo|eu|te|amo)\b/g)+count(/[ãõçáéíóú]/g),
+   fr:count(/\b(?:je|tu|vous|nous|mon|ma|mes|amour|avec|pour|merci|toujours|une|des|les|pas|dans|est|suis|coeur|bonheur|chérie|coeur|ensemble)\b/g)+count(/[àâçéèêëîïôûùüÿœ]/g),
+   de:count(/\b(?:ich|du|wir|mein|meine|liebe|lieber|und|nicht|der|die|das|für|danke|immer|mit|schön|herz|zusammen|bist)\b/g)+count(/[äöüß]/g),
+   es:count(/\b(?:hola|te quiero|te amo|mi|amor|para|gracias|siempre|corazón|nuestro|nuestra|usted|ustedes|muy|eres|quiero|contigo|juntos)\b/g)+count(/[ñ¿¡]/g),
+   it:count(/\b(?:io|tu|noi|mio|mia|amore|con|per|grazie|sempre|cuore|ti amo|sei|sono|nostro|nostra|bellissimo|bellissima|insieme)\b/g)+count(/[àèéìòù]/g),
+   nl:count(/\b(?:ik|jij|wij|mijn|liefde|met|voor|bedankt|altijd|ons|onze|heel|mooi|hart|samen|jouw|je)\b/g),
+   pl:count(/\b(?:kocham|miłość|zawsze|serce|nasz|nasza|moje|jesteś|jest|dziękuję|się|dla|razem)\b/g)+count(/[ąćęłńśźż]/g),
+   tr:count(/\b(?:ben|sen|seni|seviyorum|aşk|her|zaman|biz|için|çok|güzel|kalbim|birlikte)\b/g)+count(/[ğışİı]/g)*2,
+   ro:count(/\b(?:te iubesc|dragoste|pentru|sunt|nostru|noastră|inimă|mereu|împreună|mulțumesc|frumos)\b/g)+count(/[ăâîșşțţ]/g),
+   cs:count(/\b(?:miluji|láska|tebe|jsem|jsi|náš|naše|děkuji|vždy|srdce|spolu)\b/g)+count(/[ěščřžýáíéůúďťň]/g),
+   hu:count(/\b(?:szeretlek|szerelem|mindig|vagyok|együtt|szívem|kedvesem|köszönöm|miattad)\b/g)+count(/[őű]/g),
+   sv:count(/\b(?:jag|du|vi|min|mitt|kärlek|älskar|alltid|hjärta|tillsammans|för|och|med)\b/g)+count(/[åäö]/g),
+   da:count(/\b(?:jeg|du|vi|min|mit|elsker|altid|hjerte|sammen|tak|med|vores)\b/g)+count(/[æøå]/g),
+   no:count(/\b(?:jeg|du|vi|min|mitt|elsker|alltid|hjerte|sammen|takk|med|vår|vårt)\b/g)+count(/[æøå]/g),
+   fi:count(/\b(?:minä|sinä|meidän|rakkaus|rakastan|aina|sydän|yhdessä|kiitos|sinulle)\b/g)+count(/[äöå]/g),
+   id:count(/\b(?:aku|kamu|sayang|cinta|selalu|terima kasih|kita|untuk|indah|bersama|hati|yang|tidak|dengan)\b/g),
+   ms:count(/\b(?:saya|awak|sayang|cinta|selalu|terima kasih|kita|untuk|indah|bersama|hati|yang|tidak|dengan)\b/g),
+   vi:count(/\b(?:anh|em|yêu|thương|luôn|cảm ơn|chúng|mình|đẹp|nhất|với|bên|của|là|những)\b/g)+count(/[đăơư]/g)*2
   };
   var best="",score=0;Object.keys(scores).forEach(function(key){if(scores[key]>score){score=scores[key];best=key;}});
   return score>=2?best:"";
  }
- async function requestExperienceLanguage(text){
-  var url=new URL("https://translate.googleapis.com/translate_a/single");
-  url.searchParams.set("client","gtx");url.searchParams.set("sl","auto");url.searchParams.set("tl","en");url.searchParams.set("dt","t");url.searchParams.set("q",text);
-  var response=await fetch(url.toString(),{method:"GET",mode:"cors",credentials:"omit",cache:"no-store",headers:{"Accept":"application/json"}});
-  if(!response.ok)throw new Error("Language detection unavailable");
-  var payload=await response.json();return normalizeExperienceLanguage(payload&&payload[2]||"");
- }
- async function detectExperienceLanguage(){
+ function detectExperienceLanguage(){
   if(state.localeMode!=="auto")return;
   var sequence=++localeDetectionSequence,text=getWrittenExperienceText();
   if(!text||text.replace(/[^\p{L}]/gu,"").length<5)return;
-  try{
-   var locale=await requestExperienceLanguage(text);
-   if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
-   var heuristic=guessExperienceLanguage(text);if((!locale||locale==="und"||locale==="en")&&heuristic&&heuristic!=="en")locale=heuristic;if(!locale||locale==="und")locale=state.locale||"en";
-   if(locale)applyExperienceLocale(locale,"writing");
-  }catch(error){
-   if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
-   var guess=guessExperienceLanguage(text);if(guess)applyExperienceLocale(guess,"writing");
+  if(sequence!==localeDetectionSequence||state.localeMode!=="auto")return;
+  var locale=guessExperienceLanguage(text);
+  if(locale&&locale!==state.locale)applyExperienceLocale(locale,"writing");
+  else if(!locale){
+   var status=document.getElementById("lovenaExperienceLanguageStatus");
+   if(status)status.textContent="Keep writing to detect the language, or select it above.";
   }
  }
+
  function scheduleExperienceLanguageDetection(){
   if(state.localeMode!=="auto")return;
   if(localeDetectionTimer)clearTimeout(localeDetectionTimer);
