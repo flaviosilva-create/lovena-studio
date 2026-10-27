@@ -1,76 +1,48 @@
-# Lovena Studio — production backend setup
+# Lovena Studio — backend and launch checklist
 
-This repository currently contains a static HTML frontend. The SQL migration in
-`supabase/migrations/202610260001_initial_lovena_schema.sql` prepares the core
-database. The Supabase project, private media bucket, core Stripe Edge Functions,
-and public experience function have been provisioned; live payment processing
-still depends on configuring Stripe secrets and its webhook endpoint.
+## Current architecture
 
-## Architecture
+- Frontend: static HTML pages published from GitHub Pages.
+- Database and media: Supabase Postgres with a private Storage bucket named `lovena-media`.
+- Server actions: Supabase Edge Functions for draft sync, checkout creation, checkout status, publication, and public experience delivery.
+- Payments: Stripe Checkout Sessions, with server-side prices in USD: Simple US$4.99, Premium US$9.99, and optional HTML download US$1.00. Review pricing, tax obligations, and currency before production launch.
+- Publication: the Stripe webhook is designed to verify signatures and confirm payment before publication. Do not treat a return to the success page as proof of payment.
+- Accounts: anonymous sessions may save drafts in the current browser, but checkout and payment-status verification require a linked account.
 
-- Frontend: deploy the static site to a commercial static host (for example,
-  Cloudflare Pages) rather than relying on GitHub Pages for a commercial SaaS.
-- Database and media: Supabase Postgres plus a **private** Storage bucket named
-  `lovena-media`.
-- Payments: Stripe Checkout. Prices and entitlements must be calculated on the
-  server, not accepted from browser-submitted amounts.
-- Trusted server actions: Supabase Edge Functions using server-only secrets.
-- Publishing: an experience becomes public only after a verified Stripe webhook
-  confirms payment. Public pages must check the slug, publication state and
-  expiration. Private media should be delivered using short-lived signed URLs.
+## Deployed Supabase resources
 
-## Suggested Edge Functions
+Project: `cjlbiohykewwizbdtgvw` (region `sa-east-1`).
 
-1. `create-checkout`: validate plan/add-ons, create a pending order, and create
-   a Stripe Checkout Session using server-side price configuration.
-2. `stripe-webhook`: verify the raw request body against Stripe's webhook
-   signature; handle duplicate deliveries idempotently; mark the order paid and
-   grant the matching entitlement.
-3. `save-experience`: validate and save a customer's draft and upload metadata.
-4. `publish-experience`: verify the paid order before assigning a random public
-   slug and setting the online expiration date.
-5. `get-public-experience`: return only published, non-expired public content
-   and short-lived signed media URLs.
-6. `download-entitlement`: verify the paid HTML-download entitlement before
-   creating a downloadable standalone HTML file.
-7. `expire-experiences`: scheduled task to mark expired links and support the
-   agreed grace period before permanent media deletion.
+Active Edge Functions:
+- `lovena-draft-sync`
+- `lovena-create-checkout`
+- `lovena-checkout-status`
+- `lovena-publish-experience`
+- `lovena-public-experience`
+- `lovena-stripe-webhook`
 
-## Secrets / environment variables
+The `lovena-media` bucket is private and has a 25 MiB upload limit. RLS policies are applied for owner-scoped drafts, media metadata, orders, and user-owned storage paths. The Supabase security advisor currently reports no security lints. The performance advisor reports unused indexes, an informational finding while the project has little or no workload; do not remove them until production query patterns are known.
 
-Configure these in Supabase Edge Function secrets (never commit them):
+## Required before any real payment
 
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- Server-side price IDs or validated price configuration for each supported
-  plan, online term, and optional HTML download.
+1. In Supabase Edge Function secrets, configure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`. Keep both server-only; never commit them or put them in frontend code.
+2. In the Stripe **test-mode** account, configure a webhook endpoint:
+   `https://cjlbiohykewwizbdtgvw.supabase.co/functions/v1/lovena-stripe-webhook`
+3. Subscribe at minimum to:
+   - `checkout.session.completed`
+   - `checkout.session.async_payment_succeeded`
+   - `checkout.session.async_payment_failed`
+   - `checkout.session.expired`
+   - `charge.refunded`
+   - `charge.dispute.created`
+   - `charge.dispute.closed`
+4. Copy the webhook signing secret from Stripe into the Supabase secret named `STRIPE_WEBHOOK_SECRET`. Never paste it into chat or commit it.
+5. Run test-mode end-to-end checks for paid, failed, expired, duplicate, refunded, and disputed sessions. Verify that unpaid sessions never publish and a refund/dispute revokes public access.
+6. Confirm account creation, email confirmation/reset, cloud draft recovery on a second device, and image upload/public display.
+7. Review the product's currency/prices, privacy/retention terms, expiry behavior, HTML-download entitlement, and hosting/domain choice before launch.
 
-Only publishable Supabase settings may appear in the browser. Never expose the
-service-role key, Stripe secret key, or webhook signing secret in frontend files.
+## Important limits
 
-## Before production
-
-- Create the Supabase project and apply the SQL migration.
-- Create the private `lovena-media` Storage bucket and add scoped upload/read
-  authorization through Edge Functions.
-- Implement and test the functions above before exposing checkout buttons.
-- Configure Stripe test-mode products/prices and webhook; test successful,
-  failed, duplicate and refunded payments before switching to live mode.
-- Deploy the frontend to a commercial host and configure the custom domain.
-- Add privacy/retention terms and a 30-day grace period before permanent deletion
-  of expired experiences.
-- Test the full flow on desktop and mobile, including a published link, expiry,
-  HTML entitlement, and unauthorized access attempts.
-
-## Current status
-
-Supabase project `cjlbiohykewwizbdtgvw` is active in `sa-east-1`; the private
-`lovena-media` bucket and core Edge Functions have been provisioned. Security
-advisors currently report no security lints. Production payments are not yet
-verified: configure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` as Supabase
-function secrets, configure the Stripe webhook destination to
-`https://cjlbiohykewwizbdtgvw.supabase.co/functions/v1/lovena-stripe-webhook`,
-then test successful, failed, duplicate, and refunded payment events. Keep all
-server secrets out of the repository and browser code.
+- Stripe test-mode currently has no webhook endpoint or saved products/prices visible to the connected Stripe integration. The checkout currently creates inline price data, so saved Product/Price records are not required, but the webhook must be configured.
+- The available Supabase connection can deploy functions and apply migrations, but does not expose a secure function-secret setter. Configure the two Stripe secrets directly in the Supabase Dashboard.
+- No successful end-to-end payment has been claimed or verified yet. Do not switch to Stripe live mode until the test checklist passes.
