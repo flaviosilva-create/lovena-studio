@@ -79,26 +79,28 @@ Deno.serve(async (req: Request) => {
       const paymentIntent = payload.payment_intent;
       if (typeof paymentIntent !== "string") return reply(200, { received: true, ignored: true });
       const { data: order, error: orderError } = await admin.from("lovena_orders")
-        .select("id, experience_id, payment_status, amount_total")
+        .select("id, experience_id, payment_status, amount_total, plan")
         .eq("stripe_payment_intent_id", paymentIntent)
         .maybeSingle();
       if (orderError) throw orderError;
       if (!order) return reply(200, { received: true, ignored: true });
 
       const now = new Date().toISOString();
+      const baseCents = order.plan === "simple" ? 499 : 999;
+      const includesOnlinePublication = order.amount_total >= baseCents;
       if (eventType === "charge.refunded") {
         const { error } = await admin.from("lovena_orders")
           .update({ payment_status: "refunded", updated_at: now })
           .eq("id", order.id);
         if (error) throw error;
-        if (order.experience_id) {
+        if (order.experience_id && includesOnlinePublication) {
           const { error: revokeError } = await admin.from("lovena_experiences")
             .update({ status: "removed", updated_at: now })
             .eq("id", order.experience_id)
             .eq("status", "published");
           if (revokeError) throw revokeError;
         }
-        return reply(200, { received: true, refunded: true });
+        return reply(200, { received: true, refunded: true, publicationRevoked: includesOnlinePublication });
       }
 
       if (eventType === "charge.dispute.created") {
@@ -109,14 +111,14 @@ Deno.serve(async (req: Request) => {
           .update({ payment_status: "disputed", updated_at: now })
           .eq("id", order.id);
         if (error) throw error;
-        if (order.experience_id) {
+        if (order.experience_id && includesOnlinePublication) {
           const { error: revokeError } = await admin.from("lovena_experiences")
             .update({ status: "removed", updated_at: now })
             .eq("id", order.experience_id)
             .eq("status", "published");
           if (revokeError) throw revokeError;
         }
-        return reply(200, { received: true, disputed: true });
+        return reply(200, { received: true, disputed: true, publicationRevoked: includesOnlinePublication });
       }
 
       if (order.payment_status !== "disputed") {
@@ -128,7 +130,7 @@ Deno.serve(async (req: Request) => {
         .update({ payment_status: nextStatus, updated_at: now })
         .eq("id", order.id);
       if (disputeUpdateError) throw disputeUpdateError;
-      if (disputeWon && order.experience_id) {
+      if (disputeWon && includesOnlinePublication && order.experience_id) {
         const { data: experience, error: experienceError } = await admin.from("lovena_experiences")
           .select("id, status, public_slug, online_expires_at")
           .eq("id", order.experience_id).maybeSingle();
@@ -152,15 +154,22 @@ Deno.serve(async (req: Request) => {
     if (session.payment_status !== "paid") return reply(200, { received: true, paymentPending: true });
 
     const { data: order, error: orderError } = await admin.from("lovena_orders")
-      .select("id, experience_id, stripe_checkout_session_id, payment_status, amount_total, currency, plan")
+      .select("id, experience_id, stripe_checkout_session_id, payment_status, amount_total, currency, plan, includes_html_download")
       .eq("stripe_checkout_session_id", session.id).maybeSingle();
     if (orderError) throw orderError;
     if (!order) {
       console.error("No order for Stripe checkout session", session.id);
       return reply(500, { error: "order_not_found" });
     }
+    const expectedPurchaseType = order.includes_html_download
+      ? (order.amount_total === 100 ? "html_download" : "online_with_html")
+      : "online";
     if (session.metadata?.experience_id !== order.experience_id ||
         session.metadata?.order_id !== order.id ||
+        session.metadata?.plan !== order.plan ||
+        session.metadata?.purchase_type !== expectedPurchaseType ||
+        session.client_reference_id !== order.experience_id ||
+        session.mode !== "payment" ||
         session.amount_total !== order.amount_total ||
         String(session.currency).toLowerCase() !== String(order.currency).toLowerCase()) {
       console.error("Stripe session does not match Lovena order", session.id);
