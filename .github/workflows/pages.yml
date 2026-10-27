@@ -65,7 +65,7 @@ jobs:
               if required not in bridge:
                   raise SystemExit(f"Language-selector validation failed: missing {required}")
           experience = Path("experience.html").read_text(encoding="utf-8")
-          experience_scripts = re.findall(r'<script\b[^>]*>\s*(.*?)\s*</script>', experience, re.S)
+          experience_scripts = re.findall(r'<script(?![^>]*\bsrc=)[^>]*>\s*(.*?)\s*</script>', experience, re.S)
           if len(experience_scripts) != 3:
               raise SystemExit(f"Expected 3 experience scripts, found {len(experience_scripts)}")
           for marker in [
