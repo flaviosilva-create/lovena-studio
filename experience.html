@@ -375,7 +375,7 @@ body.editor-mode .experience{padding-bottom:28px}
 .music-embed-service-link{display:inline-flex;align-items:center;justify-content:center;margin-top:9px;padding:9px 13px;border:1px solid rgba(225,195,171,.45);border-radius:999px;color:#f5e9dc;text-decoration:none;font:700 10px/1.4 Manrope,Arial,sans-serif}
 .music-embed-service-link:hover{background:rgba(255,255,255,.08)}
 .music-card.is-youtube-external .track-progress,.music-card.is-youtube-external .track-times{display:none!important}
-.music-card.is-embedded .album-cover,.music-card.is-embedded .track-progress,.music-card.is-embedded .track-times{display:none!important}.music-card.is-embedded .player-controls{display:none!important}
+.music-card.is-embedded .album-cover,.music-card.is-embedded .track-progress,.music-card.is-embedded .track-times{display:none!important}.music-card.is-embedded .player-controls{display:flex!important}
 .music-card.is-embedded .track-meta{margin:3px 0 12px}
 .music-card.is-embedded .music-embed-container{margin:12px 0 0}
 @media(max-width:600px){.music-embed-frame.music-embed-youtube{min-height:200px}.music-embed-frame.music-embed-apple{min-height:175px}}
@@ -1175,7 +1175,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
     <input class="track-progress" id="trackProgress" type="range" min="0" max="100" value="43" aria-label="Music progress">
     <div class="track-times"><span id="trackElapsed">1:52</span><span id="trackDuration">3:48</span></div>
     <div class="player-controls">
-     <button class="player-btn main-play" type="button" data-action="song-play" aria-label="Open music on YouTube Music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/></svg></button>
+     <button class="player-btn main-play" type="button" data-action="song-play" aria-label="Play music on this page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/></svg></button>
      <button class="player-btn" type="button" data-action="song-love" aria-label="Add song to favorites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11S3.2 13.9 3.2 8.8a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"/></svg></button>
     </div>
     <div id="musicEmbedContainer" class="music-embed-container" hidden aria-label="Embedded music player"></div>
@@ -1636,7 +1636,8 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   if(!card||!container||!link)return;
   var platform=getMusicPlatform(song);
   if(platform==="youtube")card.classList.add("is-youtube-external");else card.classList.remove("is-youtube-external");
-  var mode=(inlinePlaybackActivated||String(song.playbackMode||"redirect").toLowerCase()==="embed")?"embed":"redirect";
+  var savedPlaybackMode=String(song.playbackMode||"redirect").toLowerCase();
+  var mode=(inlinePlaybackActivated||platform==="spotify"||platform==="apple"||savedPlaybackMode==="embed")?"embed":"redirect";
   var shouldAutoplay=inlinePlaybackActivated;
   var defaultLabels=["Listen on YouTube Music ↗","Open on YouTube Music ↗","Listen on Spotify ↗","Open on Spotify ↗","Listen on Apple Music ↗","Open on Apple Music ↗"];
   var customLabel=String(editData.musicLinkLabel||"").trim();
@@ -1666,7 +1667,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
     var note=document.createElement("p");
     note.className="music-embed-note";
     if(platform==="youtube"){
-     note.textContent="To keep your Lovena page free of video, YouTube Music opens in its own player. Press Play or use the link below to listen. YouTube Music may show a video inside its own service depending on the selected version of the song.";
+     note.textContent="YouTube Music cannot play here as audio-only without showing a video. To keep this Lovena page video-free, use a Spotify or Apple Music track link for in-page playback, or use the link below to open YouTube Music.";
      var serviceLink=document.createElement("a");
      serviceLink.className="music-embed-service-link";
      serviceLink.href=getMusicUrl(song);
@@ -1801,17 +1802,17 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   }
   if(name==="song-play"){
    var activeSong=songs[songIndex]||{};
-   if(getMusicPlatform(activeSong)==="youtube"){
-    window.open(getMusicUrl(activeSong),"_blank","noopener,noreferrer");
-    showToast("Opening YouTube Music separately so no video appears in your Lovena page.");
-    return;
-   }
    inlinePlaybackActivated=true;
    renderMusicPlayer();
    var embedded=document.getElementById("musicEmbedContainer");
    if(embedded){embedded.hidden=false;embedded.scrollIntoView({behavior:"smooth",block:"nearest"});}
-   if(getMusicEmbed(activeSong,true))showToast("Playback is available on this page. If needed, use the embedded player controls.");
-   else showToast("This link cannot be played here. Paste a compatible direct link; use the link below to open your chosen platform.");
+   if(getMusicPlatform(activeSong)==="youtube"){
+    showToast("YouTube Music does not provide an audio-only player for this page. Use Spotify or Apple Music for in-page playback, or open the link below.");
+   }else if(getMusicEmbed(activeSong,true)){
+    showToast("Starting the embedded music player. If playback is blocked, use the player controls below.");
+   }else{
+    showToast("This track cannot be played inline. Use the link below to open the music service.");
+   }
    return;
   }
   if(name==="song-love"){action.classList.toggle("is-loved");showToast(action.classList.contains("is-loved")?"Song added to favorites ♡":"Song removed from favorites");return;}
@@ -2477,7 +2478,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    });
    modeWrap.appendChild(modeSelect);box.appendChild(modeWrap);
    var musicHelp=document.createElement("small");musicHelp.className="ed-help";
-   musicHelp.textContent="Paste a direct link to a single track. The song title and artist are detected automatically when the music service provides public track metadata.";
+   musicHelp.textContent="Spotify and Apple Music can play through their embedded players on this page when the track is supported. YouTube Music does not provide an official audio-only embedded player, so the Lovena page will not open it automatically.";
    box.appendChild(musicHelp);
    songsBody.appendChild(box);
   });
