@@ -196,7 +196,7 @@
         acceptNode: function (node) {
           if (!node.parentElement) return NodeFilter.FILTER_REJECT;
           var tag = node.parentElement.tagName;
-          if (["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA", "OPTION"].includes(tag) ||
+          if (["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA"].includes(tag) || (tag === "OPTION" && !(node.parentElement.value === "other" && node.parentElement.parentElement && node.parentElement.parentElement.id === "lovenaExperienceLanguage")) ||
               node.parentElement.closest("textarea,[contenteditable='true']") ||
               isUserAuthoredElement(node.parentElement)) return NodeFilter.FILTER_REJECT;
           var original = originalText(node);
@@ -208,7 +208,7 @@
 
       var elements = [root].concat(Array.from(root.querySelectorAll("*")));
       elements.forEach(function (element) {
-        if (!element.isConnected || element.tagName === "OPTION" || isUserAuthoredElement(element)) return;
+        if (!element.isConnected || (element.tagName === "OPTION" && !(element.value === "other" && element.parentElement && element.parentElement.id === "lovenaExperienceLanguage")) || isUserAuthoredElement(element)) return;
         ["placeholder", "title", "aria-label", "alt"].forEach(function (name) {
           if (!element.hasAttribute(name)) return;
           var source = rememberAttribute(element, name);
