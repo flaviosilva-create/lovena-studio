@@ -1803,6 +1803,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
    else{showToast("This experience was made just for you ♡");}
   }
  });
+ window.LOVENA_PUBLIC_INTERACTIONS_READY=true;
  document.getElementById("trackProgress").addEventListener("input",function(){
   var value=Number(this.value);
   var seconds=Math.round(228*value/100);
@@ -3615,6 +3616,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 
 
 
+<script src="./assets/lovena-public-interactions.js?v=20261027-public-fallback-1"></script>
 <script src="./translation-bridge.js?v=20261027-experience-language-4" defer></script>
 </body>
 </html>
