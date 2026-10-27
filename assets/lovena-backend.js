@@ -531,8 +531,19 @@
     var publicationDockLabel = document.createElement("strong");
     publicationDockLabel.textContent = "PUBLISH & PAY";
     publicationDockLabel.style.cssText = "font-size:10px;line-height:1.3;font-weight:850;letter-spacing:1.4px;color:#765044";
-    publicationDockHeader.append(publicationDockLabel, publicationTotal);
-    publicationDock.append(publicationDockHeader, publicationTitle, publicationCopy, includeHtmlLabel, publishButton, publishStatus);
+    publicationDockHeader.append(publicationDockLabel);
+
+    var priceAndHtmlRow = document.createElement("div");
+    priceAndHtmlRow.className = "lovena-price-html-row";
+    priceAndHtmlRow.style.cssText = "display:flex;align-items:stretch;justify-content:space-between;gap:9px;min-width:0";
+    publicationTotal.style.cssText = "display:flex;align-items:center;flex:0 0 auto;white-space:nowrap;font-size:15px;font-weight:850;letter-spacing:-.3px;margin:0;color:#59372f";
+    includeHtmlLabel.style.cssText = "display:flex;flex:1 1 auto;min-width:0;gap:7px;align-items:center;padding:6px 8px;border:1px solid #dcc0ad;border-radius:9px;background:#fff;cursor:pointer;margin:0";
+    includeHtmlCheckbox.style.cssText = "width:17px;height:17px;flex:0 0 17px;margin:0;accent-color:#784b3d;cursor:pointer";
+    includeHtmlText.style.cssText = "display:grid;gap:2px;min-width:0;font-size:10px;line-height:1.28;color:#51392f";
+    includeHtmlTitle.style.cssText = "font-size:10px;line-height:1.3";
+    includeHtmlHelp.style.cssText = "font-size:9px;line-height:1.3;color:#82695a";
+    priceAndHtmlRow.append(publicationTotal, includeHtmlLabel);
+    publicationDock.append(publicationDockHeader, publicationTitle, publicationCopy, priceAndHtmlRow, publishButton, publishStatus);
 
     publication.append(htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
     scroll.insertBefore(publication, scroll.firstChild);
