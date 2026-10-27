@@ -2655,8 +2655,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   state.locale=normalizeExperienceLanguage(state.locale||data.locale||document.documentElement.getAttribute("data-lovena-language")||document.documentElement.lang||"en");
   state.localeMode=state.localeMode==="manual"?"manual":"auto";
   data.locale=state.locale;data.language=state.locale;
-  document.documentElement.lang=state.locale;document.documentElement.setAttribute("data-lovena-language",state.locale);
-  if(!picker)return;
+  if(!picker){document.documentElement.lang=state.locale;document.documentElement.setAttribute("data-lovena-language",state.locale);return;}
   picker.value=state.localeMode==="manual"?state.locale:"auto";
   applyExperienceLocale(state.locale,"initial");
   picker.addEventListener("change",function(){
