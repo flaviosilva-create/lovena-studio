@@ -341,19 +341,22 @@
     publication.className = "lovena-cloud-publication";
     publication.style.cssText = "margin:0 0 16px;padding:14px;border:1px solid #e5d1c2;border-radius:14px;background:#fff;color:#51392f";
     var publicationTitle = document.createElement("strong");
-    publicationTitle.textContent = "Publicar seu presente online";
+    var onlinePriceLabel = planFor(options.editorKey) === "simple" ? "US$ 4,99" : "US$ 9,99";
+    publicationTitle.textContent = "Publicar sua página Lovena";
     publicationTitle.style.cssText = "display:block;font-size:14px;margin-bottom:6px";
     var publicationCopy = document.createElement("p");
     publicationCopy.style.cssText = "font-size:12px;line-height:1.55;margin:0 0 10px;color:#82695a";
-    publicationCopy.textContent = (planFor(options.editorKey) === "simple" ? "Lovena Simple · US$ 4,99" : "Lovena Premium · US$ 9,99") + " · link online por 1 ano. O pagamento é confirmado pelo servidor antes da publicação.";
+    publicationCopy.textContent = (planFor(options.editorKey) === "simple" ? "Lovena Simple" : "Lovena Premium") + " · " + onlinePriceLabel + " para publicar seu link por 1 ano. Crie e revise a página primeiro; depois clique no botão abaixo para pagar e liberar o link. O HTML offline é opcional e aparece depois da publicação.";
     var htmlPurchaseButton = document.createElement("button");
     htmlPurchaseButton.type = "button";
-    htmlPurchaseButton.textContent = "HTML offline · disponível após publicar";
+    htmlPurchaseButton.textContent = "Download HTML offline · US$ 1,00 (opcional)";
+    htmlPurchaseButton.hidden = true;
     htmlPurchaseButton.disabled = true;
     htmlPurchaseButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:11px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:9px";
     var htmlPurchaseStatus = document.createElement("p");
     htmlPurchaseStatus.style.cssText = "font-size:12px;line-height:1.5;margin:7px 0 0;color:#82695a";
-    htmlPurchaseStatus.textContent = "Após publicar o link online, você poderá desbloquear o arquivo HTML por US$ 1,00.";
+    htmlPurchaseStatus.textContent = "Opcional: depois de pagar pela publicação online, você pode pagar mais US$ 1,00 para baixar o HTML e usar offline.";
+    htmlPurchaseStatus.hidden = true;
 
     var paidSharePanel = document.createElement("div");
     paidSharePanel.hidden = true;
@@ -373,7 +376,7 @@
     paidSharePanel.append(paidShareTitle, paidShareLink, copyPaidLinkButton);
     var publishButton = document.createElement("button");
     publishButton.type = "button";
-    publishButton.textContent = "Salvar e pagar";
+    publishButton.textContent = "Publicar página e pagar " + onlinePriceLabel;
     publishButton.style.cssText = "width:100%;border:0;border-radius:10px;padding:12px;background:#59372f;color:#fff;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:4px";
     var publishStatus = document.createElement("p");
     publishStatus.style.cssText = "font-size:12px;line-height:1.5;margin:8px 0 0;color:#82695a;overflow-wrap:anywhere";
@@ -401,18 +404,19 @@
         htmlExportButton.setAttribute("aria-disabled", htmlUnlocked ? "false" : "true");
       }
       publishButton.disabled = onlinePaid;
-      publishButton.textContent = onlinePaid ? "Pagamento confirmado · link online liberado" : "Salvar e pagar";
-      htmlPurchaseButton.disabled = !onlinePaid || !publicUrl || htmlUnlocked;
-      htmlPurchaseButton.textContent = !onlinePaid
-        ? "HTML offline · disponível após publicar"
-        : htmlUnlocked
-          ? "Download HTML desbloqueado ✓"
-          : "Desbloquear download HTML offline · US$ 1,00";
-      htmlPurchaseStatus.textContent = !onlinePaid
-        ? "Primeiro publique seu presente online. Depois, se desejar, compre o arquivo HTML offline por US$ 1,00."
-        : htmlUnlocked
-          ? "Compra confirmada. O botão de download HTML ao final do editor está liberado."
-          : "Seu link online já está liberado. O arquivo HTML offline é opcional e custa US$ 1,00.";
+      publishButton.textContent = onlinePaid
+        ? "Pagamento confirmado · link online liberado"
+        : "Publicar página e pagar " + onlinePriceLabel;
+      var showHtmlOption = onlinePaid && !!publicUrl;
+      htmlPurchaseButton.hidden = !showHtmlOption;
+      htmlPurchaseStatus.hidden = !showHtmlOption;
+      htmlPurchaseButton.disabled = !showHtmlOption || htmlUnlocked;
+      htmlPurchaseButton.textContent = htmlUnlocked
+        ? "Download HTML desbloqueado ✓"
+        : "Download HTML offline · US$ 1,00 (opcional)";
+      htmlPurchaseStatus.textContent = htmlUnlocked
+        ? "Compra adicional confirmada. O botão de download no editor está desbloqueado."
+        : "Opcional: pague mais US$ 1,00 para baixar o HTML e guardar sua experiência offline.";
       if (onlinePaid && publicUrl) {
         paidSharePanel.hidden = false;
         paidShareLink.href = publicUrl;
@@ -500,7 +504,7 @@
         publishStatus.textContent = error.message || "Não foi possível iniciar o pagamento. O rascunho local continua disponível.";
       } finally {
         publishButton.disabled = false;
-        publishButton.textContent = "Salvar e pagar";
+        publishButton.textContent = "Publicar página e pagar " + onlinePriceLabel;
       }
     });
 
