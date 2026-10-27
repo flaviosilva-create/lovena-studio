@@ -22,6 +22,7 @@
   var activeLanguage = SOURCE_LANGUAGE;
   var attempts = 0;
   var roots = [];
+  var originalExperienceMetadata = null;
 
   function canonicalLanguage(value) {
     // Empty widget values are placeholders, not English.
@@ -336,6 +337,34 @@
     });
   }
 
+  async function updateExperienceMetadata(language, token) {
+    if (!document.getElementById("experiencia")) return;
+    if (!originalExperienceMetadata) {
+      var descriptionMeta = document.querySelector('meta[name="description"]');
+      originalExperienceMetadata = {
+        title: document.title || "",
+        description: descriptionMeta ? descriptionMeta.getAttribute("content") || "" : "",
+        hasDescription: !!descriptionMeta
+      };
+    }
+    var descriptionNode = document.querySelector('meta[name="description"]');
+    if (language === SOURCE_LANGUAGE) {
+      document.title = originalExperienceMetadata.title;
+      if (originalExperienceMetadata.hasDescription && descriptionNode) descriptionNode.setAttribute("content", originalExperienceMetadata.description);
+      return;
+    }
+    var sources = [originalExperienceMetadata.title];
+    if (originalExperienceMetadata.hasDescription) sources.push(originalExperienceMetadata.description);
+    var translations = await translateSources(sources, language, token);
+    if (token !== generation || selectedLanguage() !== language) return;
+    var translatedTitle = translations.get(originalExperienceMetadata.title);
+    if (typeof translatedTitle === "string" && translatedTitle.trim()) document.title = translatedTitle;
+    if (originalExperienceMetadata.hasDescription && descriptionNode) {
+      var translatedDescription = translations.get(originalExperienceMetadata.description);
+      if (typeof translatedDescription === "string" && translatedDescription.trim()) descriptionNode.setAttribute("content", translatedDescription);
+    }
+  }
+
   async function applyLanguage(language, token) {
     var allRoots = getRoots();
     // Closed creator/reader overlays are skipped. If an overlay is open, its
@@ -345,12 +374,13 @@
     var records = collectRecords(rootList);
     if (language === SOURCE_LANGUAGE) {
       restoreEnglish(records);
+      await updateExperienceMetadata(language, token);
       return;
     }
     var sources = Array.from(new Set(records.map(function (record) {
       return record.source;
     }).filter(meaningful)));
-    if (!sources.length) return;
+    if (!sources.length) { await updateExperienceMetadata(language, token); return; }
 
     // Apply each small batch immediately instead of waiting for every string
     // on the whole page. The language change begins at once and the page
@@ -374,6 +404,7 @@
       if (token !== generation || selectedLanguage() !== language) return;
       applyTranslatedRecords(records, translations);
     }
+    await updateExperienceMetadata(language, token);
   }
   function scheduleTranslation(delay) {
     if (scheduledTimer) window.clearTimeout(scheduledTimer);
