@@ -1992,6 +1992,45 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
  state.collage=Object.assign({title:"ANNIVERSARY",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you",background:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
+ function migrateLegacyEnglishDemo(){
+  if(!editMode)return;
+  function normalized(value){return String(value||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
+  var exact={
+   "feliz aniversario":"HAPPY ANNIVERSARY","feliz aniversario!":"HAPPY ANNIVERSARY",
+   "nossa historia":"Our Story","nossa historia de amor":"Our Story",
+   "nossos momentos":"Our Moments","nossos momentos especiais":"Our Moments",
+   "o melhor ainda esta por vir":"The best is yet to come","eu te amo":"I love you","meu amor":"MY LOVE",
+   "o dia em que nos conhecemos":"The Day We Met","nosso primeiro encontro":"Our First Date",
+   "nossa primeira viagem":"Our First Trip","um ano juntos":"One Year Together",
+   "e a historia continua...":"And the Story Continues...","nosso por do sol":"Our Sunset",
+   "meu lugar favorito":"My Favorite Place","onde quer que vamos":"Wherever We Go",
+   "nosso pequeno lar":"Our Little Home","so mais cinco minutos":"Just Five More Minutes",
+   "o mundo e nosso":"The World Is Ours","nova memoria":"New Memory",
+   "escreva a historia por tras desta foto.":"Write the story behind this photo.",
+   "cada momento com voce e um capitulo especial.":"Every moment with you is a special chapter.",
+   "algumas lembrancas de tudo o que compartilhamos... e tudo o que ainda esta por vir.":"A few memories of everything we have shared... and everything still to come."
+  };
+  function translateExact(value){
+   if(typeof value!=="string")return value;
+   var key=normalized(value);
+   if(Object.prototype.hasOwnProperty.call(exact,key))return exact[key];
+   return value.replace(/feliz\s+anivers[aá]rio/gi,"Happy Anniversary").replace(/o melhor ainda est[aá] por vir/gi,"The best is yet to come");
+  }
+  function walk(node){
+   if(Array.isArray(node)){for(var i=0;i<node.length;i++)node[i]=walk(node[i]);return node;}
+   if(node&&typeof node==="object"){Object.keys(node).forEach(function(key){node[key]=walk(node[key]);});return node;}
+   return translateExact(node);
+  }
+  var oldCollageTitle=normalized(state.collage.title);
+  state.texts=walk(state.texts||{});data.photos=walk(data.photos||[]);data.milestones=walk(data.milestones||[]);
+  data.surprises=walk(data.surprises||{});state.collage=walk(state.collage||{});
+  if(oldCollageTitle==="feliz aniversario"||oldCollageTitle==="feliz aniversario!"){state.collage.eyebrow="Happy";state.collage.title="ANNIVERSARY";}
+  var sampleSong=data.songs&&data.songs[0];
+  if(sampleSong&&normalized(sampleSong.title)==="melhor ainda"&&normalized(sampleSong.artist)==="melim"){
+   sampleSong.title="Perfect";sampleSong.artist="Ed Sheeran";sampleSong.query="Ed Sheeran Perfect";sampleSong.url="https://music.youtube.com/search?q=Ed%20Sheeran%20Perfect";
+  }
+ }
+ migrateLegacyEnglishDemo();
  var heroX=Number(state.heroPosition.x),heroY=Number(state.heroPosition.y);
  state.heroPosition.x=isFinite(heroX)?Math.max(0,Math.min(100,heroX)):50;
  state.heroPosition.y=isFinite(heroY)?Math.max(0,Math.min(100,heroY)):47;
