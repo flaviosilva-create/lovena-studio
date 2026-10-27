@@ -1367,12 +1367,24 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 
 <script src="./assets/lovena-backend.js"></script>
 <script id="lovenaEditBootstrap">
-(async function(){
+window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
  "use strict";
+ await (window.LovenaBackend ? window.LovenaBackend.ready : Promise.resolve());
  var defaults={"songs":[{"title":"Melhor Ainda","artist":"Melim","query":"Melim Melhor Ainda","url":"https://music.youtube.com/search?q=Melim%20Melhor%20Ainda"}],"musicLinkLabel":"Ouvir no YouTube Music ↗","milestones":[["Nos conhecemos","Foi quando nossos caminhos se cruzaram. Sem perceber, a vida estava abrindo espaço para uma das histórias mais bonitas.","12 de março de 2021"],["Nosso primeiro encontro","O nervosismo, os sorrisos e aquela sensação boa de que a conversa podia durar para sempre. Um dia simples que virou lembrança importante.","24 de abril de 2021"],["Nossa primeira viagem","Um lugar novo, novas histórias e a certeza de que qualquer destino fica melhor quando estamos juntos.","15 de janeiro de 2022"],["1 ano juntos","Um ano de carinho, parceria e pequenos momentos que se tornaram gigantes. E era só o começo.","12 de março de 2022"],["E tudo continua...","Que venham muitos outros capítulos, lugares para conhecer, músicas para cantar e motivos para escolher um ao outro.","Hoje e sempre"]],"photos":[["Nosso pôr do sol","Tem momentos que parecem feitos para ficarem guardados para sempre."],["Meu lugar favorito","No meio de tantos lugares lindos, é ao seu lado que eu sempre quero estar."],["Para onde formos","O melhor da viagem nunca é só o destino. É dividir o caminho com você."],["Nossa casinha","A paz de estar junto e fazer do cotidiano o nosso lugar preferido."],["Só mais cinco minutos","Os dias simples são os que mais acabam virando saudade boa."],["O mundo é nosso","Ainda há tantos lugares, histórias e pôr do sol esperando por nós."],["Nova memória","Escreva a história desta foto."],["Nova memória","Escreva a história desta foto."],["Nova memória","Escreva a história desta foto."]],"surprises":{"card":{"title":"Um cartão só seu","copy":"Guarde isso para os dias corridos: você é uma das coisas mais bonitas que já me aconteceram. Que a vida continue encontrando jeitos de colocar a gente lado a lado.","kicker":"ABRA QUANDO QUISER SORRIR"},"message":{"title":"Uma coisa que eu nunca quero que você esqueça","copy":"Você não precisa fazer nada extraordinário para ser especial. O jeito como você existe, como cuida, como ri e como torna os dias comuns mais leves já é mais do que suficiente. Se eu pudesse escolher de novo, em todas as versões da vida, eu ainda procuraria você.","kicker":"SÓ MAIS UMA COISA","signature":"Você torna tudo mais bonito. ♡"}},"images":{"hero":"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-hero.jpg","gallery":["https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-01.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-02.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-03.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-04.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-05.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-06.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-07.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-08.jpg","https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-09.jpg"]}};
  var draft=null;
  try{draft=JSON.parse(localStorage.getItem("lovenaExperienceDraftV1")||"null");}catch(error){}
  var shareSlug=new URLSearchParams(location.search).get("slug");
+ var lovenaEditMode=new URLSearchParams(location.search).get("edit")==="1";
+ if(!shareSlug&&lovenaEditMode&&window.LovenaBackend){
+  try{
+   var pendingLocal=!!localStorage.getItem("lovenaLocalPending:lovenaExperienceDraftV1");
+   var remoteDraft=await window.LovenaBackend.loadDraft("lovenaExperienceDraftV1");
+   if(remoteDraft&&remoteDraft.snapshot&&(!draft||!pendingLocal)){
+    draft=remoteDraft.snapshot;
+    localStorage.setItem("lovenaExperienceDraftV1",JSON.stringify(draft));
+   }
+  }catch(remoteLoadError){console.warn("Lovena cloud draft restore:",remoteLoadError);}
+ }
  var publicExperience=null;
  if(shareSlug&&window.LovenaBackend){
   try{var remote=await window.LovenaBackend.getPublicExperience(shareSlug);publicExperience=remote.experience;draft=publicExperience&&publicExperience.data?publicExperience.data:null;if(publicExperience&&publicExperience.locale)document.documentElement.lang=publicExperience.locale;}
@@ -1400,8 +1412,9 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 })();
 </script>
 <script>
-(function(){
+(async function(){
  "use strict";
+ await window.LOVENA_BOOTSTRAP_PROMISE;
  var modal=document.getElementById("detailModal");
  var modalTitle=document.getElementById("modalTitle");
  var modalKicker=document.getElementById("modalKicker");
@@ -1865,8 +1878,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 @media(prefers-reduced-motion:reduce){body.editor-mode .lovena-edit-target{transition:none}}
 </style>
 <script id="lovenaEditorRuntime">
-(function(){
+(async function(){
  "use strict";
+ await window.LOVENA_BOOTSTRAP_PROMISE;
  var EDIT_KEY="lovenaExperienceDraftV1";
  var editMode=new URLSearchParams(location.search).get("edit")==="1";
  var isPreviewing=false;
@@ -2310,10 +2324,12 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   try{
    data.images=state.images;
    localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));
+   localStorage.setItem("lovenaLocalPending:"+EDIT_KEY,String(Date.now()));
    state.data=data;
    setStatus(show?"Salvo neste navegador; sincronizando…":"Salvando localmente e sincronizando…");
    if(window.LovenaBackend){
     window.LovenaBackend.saveDraft(getSnapshot(),EDIT_KEY).then(function(result){
+     localStorage.removeItem("lovenaLocalPending:"+EDIT_KEY);
      setStatus((show?"Rascunho salvo":"Salvamento automático concluído")+" · nuvem e navegador");
      window.dispatchEvent(new CustomEvent("lovena:cloud-saved",{detail:result}));
     }).catch(function(error){
@@ -2797,7 +2813,12 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(!panel||!input||!qr||!qrLink)return;
   panel.hidden=!panel.hidden;
   if(panel.hidden)return;
-  var url=onlineExperienceUrl();
+  var query=new URLSearchParams(window.location.search);
+  var slug=query.get("slug");
+  var url=null;
+  if(slug){var publicPage=new URL(window.location.href);publicPage.search="";publicPage.hash="";publicPage.searchParams.set("slug",slug);url=publicPage.href;}
+  if(!url){try{url=localStorage.getItem("lovenaPublicUrl:"+EDIT_KEY);}catch(error){}}
+  if(!url){input.value="";qr.hidden=true;qrLink.removeAttribute("href");setStatus("Ainda não existe um link público para esta experiência. Use “Publicar seu presente online” e conclua o pagamento.");return;}
   input.value=url;
   var qrUrl="https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=14&format=png&data="+encodeURIComponent(url);
   qr.src=qrUrl;qr.hidden=false;qrLink.href=qrUrl;
@@ -2871,6 +2892,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  });
  window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
  applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();renderCollagePhotoControls();
+ if(editMode&&window.LovenaBackend&&window.LovenaBackend.mountEditor){window.LovenaBackend.mountEditor({editorKey:EDIT_KEY,getSnapshot:getSnapshot,setStatus:setStatus});}
  if(editMode){document.body.classList.add("editor-mode");markEditableTargets();trigger.hidden=false;openEditor();}
 
 
