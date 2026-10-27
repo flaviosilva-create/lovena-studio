@@ -2614,7 +2614,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  var localeDetectionTimer=0,localeDetectionSequence=0;
  function getWrittenExperienceText(){
   var values=[],baseline=window.LOVENA_EDIT_DEFAULTS||{};
-  Object.keys(state.texts||{}).forEach(function(key){var value=state.texts[key];if(typeof value==="string"&&value.trim())values.push(value.trim());});
+  Object.keys(state.texts||{}).forEach(function(key){var value=state.texts[key],baselineText=defaultTextBaseline[key];if(typeof value==="string"&&value.trim()&&(baselineText==null||value.trim()!==String(baselineText).trim()))values.push(value.trim());});
   (textFields||[]).forEach(function(def){
    if(!def.path)return;
    var value=getPath(data,def.path),original=getPath(baseline,def.path);
@@ -2727,8 +2727,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var baseline=window.LOVENA_EDIT_DEFAULTS||{};
   (textFields||[]).forEach(function(def){
    var saved=def.path?getPath(data,def.path):(state.texts&&Object.prototype.hasOwnProperty.call(state.texts,def.key)?state.texts[def.key]:undefined);
-   var original=def.path?getPath(baseline,def.path):undefined;
-   var changed=def.path?saved!=null&&String(saved)!==String(original==null?"":original):saved!==undefined;
+   var original=def.path?getPath(baseline,def.path):defaultTextBaseline[def.key];
+   var changed=saved!=null&&String(saved)!==String(original==null?"":original);
    if(changed)markLovenaUserText(targetFor(def));
   });
   var collageDefaults={title:"ANNIVERSARY",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you"};
@@ -3362,6 +3362,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(!obj||!obj.data||!Array.isArray(obj.data.photos)||!Array.isArray(obj.data.milestones))throw new Error("This file does not appear to be a Lovena backup.");localStorage.setItem(EDIT_KEY,JSON.stringify(obj));location.reload();}catch(err){setStatus("Could not import: "+err.message);}};reader.readAsText(file);event.target.value="";
  });
  if(editMode)window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
+ var defaultTextBaseline={};textFields.forEach(function(def){var element=targetFor(def);if(element)defaultTextBaseline[def.key]=readElement(element,def.multiline);});
  applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();markSavedUserContent();if(state.localeMode==="auto")scheduleExperienceLanguageDetection();renderCollagePhotoControls();
 
  if(editMode){
