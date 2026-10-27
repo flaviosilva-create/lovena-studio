@@ -2595,7 +2595,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var hasOption=Array.from(picker.options||[]).some(function(option){return option.value===state.locale;});
   picker.value=state.localeMode==="manual"?(hasOption?state.locale:"other"):"auto";
   if(wrap)wrap.style.display=state.localeMode==="manual"&&!hasOption?"grid":"none";
-  if(codeInput&&state.localeMode==="manual"&&!hasOption)codeInput.value=state.locale;
+  if(codeInput&&state.localeMode==="manual"&&!hasOption&&document.activeElement!==codeInput)codeInput.value=state.locale;
  }
  function markLovenaUserText(element){if(element&&element.setAttribute)element.setAttribute("data-lovena-user-content","true");}
  function applyExperienceLocale(value,reason){
