@@ -1122,7 +1122,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
   <nav class="experience-nav" aria-label="Experience navigation">
    <a class="logo-lockup" href="#inicio" aria-label="Lovena — home">
     <svg class="logo-mark" viewBox="0 0 36 36" aria-hidden="true"><path d="M17.2 29.5C6.5 27.7 2.3 19.2 5.6 8.5c8.8 1 13.9 8.5 11.6 21Z" fill="#d6a7a0"/><path d="M18.3 29.6C15 18.1 21.5 7.8 31.3 5.8c2 11.1-2.3 20.2-13 23.8Z" fill="#a86d70"/><path d="M17.8 30.8 18 14.2" stroke="#ead2c3" stroke-width="1.2" fill="none"/></svg>
-    <span class="logo-word">LOVENA</span>
+    <span class="logo-word">Alice &amp; James</span>
    </a>
    <div class="experience-nav-links">
     <a href="#inicio">Home</a><a href="#historia">Our Story</a><a href="#fotos">Photos</a><a href="#carta">Letter</a><a href="#musica">Music</a><a href="#surpresas">Surprises</a>
@@ -2041,6 +2041,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
  var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47},locale:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.locale)||data.locale||document.documentElement.lang||"en",localeMode:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.localeMode)||"auto"},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
+ if(!state.texts.brand||/^(?:lovena|lovena studio)$/i.test(String(state.texts.brand).trim()))state.texts.brand="Alice & James";
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  if(!Array.isArray(data.photos))data.photos=[];
  data.photos=data.photos.slice(0,12);
