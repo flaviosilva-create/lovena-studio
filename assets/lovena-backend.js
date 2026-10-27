@@ -323,6 +323,56 @@
     var liveGuide = scroll.querySelector(".ed-live-guide");
     if (liveGuide) scroll.insertBefore(box, liveGuide); else scroll.insertBefore(box, scroll.firstChild);
 
+    var publication = document.createElement("section");
+    publication.className = "lovena-cloud-publication";
+    publication.style.cssText = "margin:0 0 16px;padding:14px;border:1px solid #e5d1c2;border-radius:14px;background:#fff;color:#51392f";
+    var publicationTitle = document.createElement("strong");
+    publicationTitle.textContent = "Publicar seu presente online";
+    publicationTitle.style.cssText = "display:block;font-size:14px;margin-bottom:6px";
+    var publicationCopy = document.createElement("p");
+    publicationCopy.style.cssText = "font-size:12px;line-height:1.55;margin:0 0 10px;color:#82695a";
+    publicationCopy.textContent = (planFor(options.editorKey) === "simple" ? "Lovena Simple · US$ 4,99" : "Lovena Premium · US$ 9,99") + " · link online por 1 ano. O pagamento é confirmado pelo servidor antes da publicação.";
+    var htmlLabel = document.createElement("label");
+    htmlLabel.style.cssText = "display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.5;margin:10px 0";
+    var htmlDownload = document.createElement("input");
+    htmlDownload.type = "checkbox";
+    htmlDownload.style.cssText = "margin-top:2px";
+    var htmlText = document.createElement("span");
+    htmlText.textContent = "Incluir experiência HTML para baixar (+ US$ 1,00)";
+    htmlLabel.append(htmlDownload, htmlText);
+    var publishButton = document.createElement("button");
+    publishButton.type = "button";
+    publishButton.textContent = "Salvar e continuar para pagamento";
+    publishButton.style.cssText = "width:100%;border:0;border-radius:10px;padding:12px;background:#59372f;color:#fff;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:4px";
+    var publishStatus = document.createElement("p");
+    publishStatus.style.cssText = "font-size:12px;line-height:1.5;margin:8px 0 0;color:#82695a;overflow-wrap:anywhere";
+    publishStatus.setAttribute("role", "status");
+    publication.append(publicationTitle, publicationCopy, htmlLabel, publishButton, publishStatus);
+    if (liveGuide) scroll.insertBefore(publication, liveGuide); else scroll.insertBefore(publication, box.nextSibling);
+
+    publishButton.addEventListener("click", async function () {
+      if (!options || typeof options.getSnapshot !== "function") {
+        publishStatus.textContent = "O editor ainda não está pronto para sincronizar.";
+        return;
+      }
+      publishButton.disabled = true;
+      publishButton.textContent = "Salvando com segurança…";
+      publishStatus.textContent = "Salvando texto e fotografias na nuvem.";
+      try {
+        var snapshot = options.getSnapshot();
+        localStorage.setItem(options.editorKey, JSON.stringify(snapshot));
+        var result = await saveDraft(snapshot, options.editorKey);
+        var checkout = await createCheckout(result.id, options.editorKey, htmlDownload.checked);
+        publishStatus.textContent = "Abrindo o checkout seguro do Stripe…";
+        window.location.assign(checkout.url);
+      } catch (error) {
+        publishStatus.textContent = error.message || "Não foi possível iniciar o pagamento. O rascunho local continua disponível.";
+      } finally {
+        publishButton.disabled = false;
+        publishButton.textContent = "Salvar e continuar para pagamento";
+      }
+    });
+
     function notify(message, isError) {
       authStatus.textContent = message;
       authStatus.style.color = isError ? "#a33d36" : "#7a5947";
