@@ -155,6 +155,7 @@ Deno.serve(async (req: Request) => {
       headers: {
         "Authorization": "Bearer " + stripeKey,
         "Content-Type": "application/x-www-form-urlencoded",
+        "Idempotency-Key": "lovena-checkout-" + order.id,
       },
       body: form.toString(),
     });
