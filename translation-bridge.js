@@ -416,6 +416,7 @@
       saveLanguage(activeLanguage);
       if (activeLanguage === SOURCE_LANGUAGE) {
         restoreEnglish(collectRecords(getRoots()));
+        updateExperienceMetadata(activeLanguage, token).catch(function (error) { console.warn("Lovena metadata language reset failed:", error); });
         return;
       }
       if (running) { pending = true; return; }
