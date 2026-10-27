@@ -82,6 +82,20 @@ jobs:
           backend = Path("assets/lovena-backend.js").read_text(encoding="utf-8")
           if "public experiences remain interactive." not in backend:
               raise SystemExit("Backend initialization failure must not prevent public experiences from rendering")
+          for required in [
+              'function storedSnapshotKey(editorKey)',
+              'preserveStoredMediaReferences',
+              'syncPublishedExperience(supabase, "load-published"',
+              'syncPublishedExperience(supabase, "save-published"',
+              'published: true',
+              'The same shared link will show the latest saved version'
+          ]:
+              if required not in backend:
+                  raise SystemExit(f"Post-payment editing validation failed: missing {required}")
+          for public_path in ("experience.html", "experience-simple.html"):
+              public_html = Path(public_path).read_text(encoding="utf-8")
+              if 'assets/lovena-backend.js?v=20261027-post-payment-editing-1' not in public_html:
+                  raise SystemExit(f"{public_path} must bust cached backend after post-payment editing changes")
 
           experience = Path("experience.html").read_text(encoding="utf-8")
           experience_scripts = re.findall(r'<script(?![^>]*\bsrc=)[^>]*>\s*(.*?)\s*</script>', experience, re.S)

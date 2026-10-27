@@ -1418,7 +1418,7 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="./assets/lovena-backend.js?v=20261027-public-interactions-1"></script>
+<script src="./assets/lovena-backend.js?v=20261027-post-payment-editing-1"></script>
 <script id="lovenaEditBootstrap">
 window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
  "use strict";
@@ -2822,7 +2822,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    if(window.LovenaBackend){
     window.LovenaBackend.saveDraft(getSnapshot(),EDIT_KEY).then(function(result){
      localStorage.removeItem("lovenaLocalPending:"+EDIT_KEY);
-     setStatus((show?"Draft saved":"Autosave complete")+" · cloud and browser");
+     setStatus(result && result.published
+      ? (show ? "Published page updated · same share link" : "Changes synced to the shared link")
+      : (show ? "Draft saved" : "Autosave complete")+" · cloud and browser");
      window.dispatchEvent(new CustomEvent("lovena:cloud-saved",{detail:result}));
     }).catch(function(error){
      console.warn("Lovena cloud sync unavailable",error);
@@ -3328,7 +3330,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(!input)return;
   var value=input.value||onlineExperienceUrl();
   if(navigator.clipboard&&window.isSecureContext){
-   navigator.clipboard.writeText(value).then(function(){setStatus("Online link copied. It opens the public version, not local customizations.");}).catch(function(){input.focus();input.select();setStatus(document.execCommand("copy")?"Online link copied.":"Select and copy the link manually.");});
+   navigator.clipboard.writeText(value).then(function(){setStatus("Online link copied. Saved changes update this same shared link automatically.");}).catch(function(){input.focus();input.select();setStatus(document.execCommand("copy")?"Online link copied.":"Select and copy the link manually.");});
   }else{input.focus();input.select();setStatus(document.execCommand("copy")?"Online link copied.":"Select and copy the link manually.");}
  }
  function downloadOnlineQr(){

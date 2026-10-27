@@ -143,6 +143,59 @@
     if (metadata.error) console.warn("Lovena: metadata for older media could not be removed.", metadata.error.message);
   }
 
+  function storedSnapshotKey(editorKey) {
+    return "lovenaStoredSnapshot:" + editorKey;
+  }
+
+  function preserveStoredMediaReferences(current, source) {
+    if (typeof current === "string" && typeof source === "string" &&
+        source.indexOf("lovena-media://") === 0 && /^https?:\/\//i.test(current)) {
+      return source;
+    }
+    if (Array.isArray(current) && Array.isArray(source)) {
+      return current.map(function (value, index) {
+        return index < source.length ? preserveStoredMediaReferences(value, source[index]) : value;
+      });
+    }
+    if (current && typeof current === "object" && !Array.isArray(current) &&
+        source && typeof source === "object" && !Array.isArray(source)) {
+      var result = {};
+      Object.keys(current).forEach(function (key) {
+        result[key] = Object.prototype.hasOwnProperty.call(source, key)
+          ? preserveStoredMediaReferences(current[key], source[key])
+          : current[key];
+      });
+      return result;
+    }
+    return current;
+  }
+
+  async function syncPublishedExperience(supabase, action, experienceId, snapshot) {
+    var session = await currentSession(supabase);
+    if (!session || !session.access_token) throw new Error("Sign in to edit this published experience.");
+    var payload = { action: action, experience_id: experienceId };
+    if (snapshot) payload.snapshot = snapshot;
+    var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-draft-sync", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + session.access_token
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store"
+    });
+    var body = await response.json().catch(function () { return {}; });
+    if (!response.ok) {
+      var messages = {
+        published_experience_not_found: "This published experience is not available to this account.",
+        paid_publication_required: "A confirmed payment is required to edit this published experience."
+      };
+      throw new Error(messages[body.error] || body.message || body.error || "Could not sync the published experience.");
+    }
+    return body;
+  }
+
   async function findDraft(supabase, user, editorKey) {
     var plan = planFor(editorKey);
     var idKey = remoteIdKey(editorKey);
@@ -153,6 +206,7 @@
         .eq("id", preferredId).eq("owner_id", user.id).maybeSingle();
       if (found.error) throw found.error;
       if (found.data && found.data.status === "draft" && !found.data.public_slug) return found.data;
+      if (found.data && found.data.status === "published" && found.data.public_slug && found.data.plan === plan) return found.data;
       if (!found.data) localStorage.removeItem(idKey);
     }
     var latest = await supabase.from("lovena_experiences")
@@ -191,8 +245,22 @@
     var row = await findDraft(supabase, user, editorKey);
     if (!row) return null;
     localStorage.setItem(remoteIdKey(editorKey), row.id);
-    var snapshot = await resolvePrivateMedia(row.experience_data || {}, supabase);
-    return { id: row.id, snapshot: snapshot, updatedAt: row.updated_at, plan: row.plan, user: user };
+    var storedSnapshot = row.experience_data || {};
+    if (row.status === "published") {
+      var published = await syncPublishedExperience(supabase, "load-published", row.id);
+      storedSnapshot = published.snapshot || {};
+    }
+    localStorage.setItem(storedSnapshotKey(editorKey), JSON.stringify(storedSnapshot));
+    var snapshot = await resolvePrivateMedia(storedSnapshot, supabase);
+    return {
+      id: row.id,
+      snapshot: snapshot,
+      updatedAt: row.updated_at,
+      plan: row.plan,
+      user: user,
+      published: row.status === "published",
+      publicSlug: row.public_slug || null
+    };
   }
 
   async function saveDraft(snapshot, editorKey) {
@@ -208,6 +276,26 @@
         .eq("id", experienceId).eq("owner_id", user.id).maybeSingle();
       if (lookup.error) throw lookup.error;
       existing = lookup.data;
+      if (existing && existing.status === "published" && existing.public_slug && existing.plan === planFor(editorKey)) {
+        var sourceSnapshot = null;
+        try { sourceSnapshot = JSON.parse(localStorage.getItem(storedSnapshotKey(editorKey)) || "null"); } catch (_) {}
+        var publishedSnapshot = preserveStoredMediaReferences(JSON.parse(JSON.stringify(snapshot)), sourceSnapshot || {});
+        var publishedTransformed = await convertImages(publishedSnapshot, {
+          supabase: supabase, userId: user.id, experienceId: experienceId
+        }, new Map(), { value: 0 });
+        var publishedResult = await syncPublishedExperience(supabase, "save-published", experienceId, publishedTransformed);
+        localStorage.setItem(storedSnapshotKey(editorKey), JSON.stringify(publishedTransformed));
+        await pruneUnusedMedia(supabase, experienceId, publishedTransformed);
+        return {
+          id: experienceId,
+          userId: user.id,
+          savedAt: publishedResult.updated_at || new Date().toISOString(),
+          anonymous: !!user.is_anonymous,
+          published: true,
+          publicSlug: publishedResult.public_slug,
+          plan: publishedResult.plan
+        };
+      }
       if (!existing || existing.status !== "draft" || existing.public_slug) {
         localStorage.removeItem(idKey);
         experienceId = null;
@@ -228,7 +316,9 @@
       localStorage.setItem(idKey, experienceId);
     }
 
-    var safeSnapshot = JSON.parse(JSON.stringify(snapshot));
+    var sourceSnapshot = null;
+    try { sourceSnapshot = JSON.parse(localStorage.getItem(storedSnapshotKey(editorKey)) || "null"); } catch (_) {}
+    var safeSnapshot = preserveStoredMediaReferences(JSON.parse(JSON.stringify(snapshot)), sourceSnapshot || {});
     var transformed = await convertImages(safeSnapshot, {
       supabase: supabase, userId: user.id, experienceId: experienceId
     }, new Map(), { value: 0 });
@@ -240,7 +330,8 @@
     }).eq("id", experienceId).eq("owner_id", user.id).eq("status", "draft").is("public_slug", null).select("id").single();
     if (update.error) throw update.error;
     await pruneUnusedMedia(supabase, experienceId, transformed);
-    return { id: experienceId, userId: user.id, savedAt: new Date().toISOString(), anonymous: !!user.is_anonymous };
+    localStorage.setItem(storedSnapshotKey(editorKey), JSON.stringify(transformed));
+    return { id: experienceId, userId: user.id, savedAt: new Date().toISOString(), anonymous: !!user.is_anonymous, published: false };
   }
 
   async function getPublicExperience(slug) {
@@ -391,6 +482,10 @@
     var paidShareTitle = document.createElement("strong");
     paidShareTitle.textContent = "Your link is ready to share";
     paidShareTitle.style.cssText = "display:block;font-size:12px;margin-bottom:6px";
+    var paidShareNote = document.createElement("p");
+    paidShareNote.textContent = "You can keep editing and saving this gift. The same shared link will show the latest saved version.";
+    paidShareNote.style.cssText = "font-size:12px;line-height:1.55;color:#765d50;margin:0 0 9px";
+    paidShareNote.hidden = true;
     var paidShareLink = document.createElement("a");
     paidShareLink.target = "_blank";
     paidShareLink.rel = "noopener noreferrer";
@@ -400,7 +495,7 @@
     copyPaidLinkButton.type = "button";
     copyPaidLinkButton.textContent = "Copy Share Link";
     copyPaidLinkButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:9px;padding:9px;background:#fff;color:#654739;font:600 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:8px";
-    paidSharePanel.append(paidShareTitle, paidShareLink, copyPaidLinkButton);
+    paidSharePanel.append(paidShareTitle, paidShareNote, paidShareLink, copyPaidLinkButton);
     var publishButton = document.createElement("button");
     publishButton.type = "button";
     publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
@@ -462,6 +557,7 @@
         : "Optional: pay $1.00 more to download the HTML and keep your experience offline.";
       if (onlinePaid && publicUrl) {
         paidSharePanel.hidden = false;
+        paidShareNote.hidden = false;
         paidShareLink.href = publicUrl;
         paidShareLink.textContent = publicUrl;
         try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, publicUrl); } catch (_) {}
@@ -752,9 +848,11 @@
     if (options && options.setStatus) {
       window.addEventListener("lovena:cloud-saved", function (event) {
         var result = event.detail || {};
-        notify(result.anonymous
-          ? "Cloud draft in this temporary session. Link an email to recover it on other devices."
-          : "Draft synced to the cloud.", false);
+        notify(result.published
+          ? "Published gift saved. The existing share link now shows these changes."
+          : (result.anonymous
+            ? "Cloud draft in this temporary session. Link an email to recover it on other devices."
+            : "Draft synced to the cloud."), false);
       });
     }
   }
