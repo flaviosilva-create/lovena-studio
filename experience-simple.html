@@ -1889,6 +1889,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 @media(max-width:420px){#lovenaEditor .ed-image-row{grid-template-columns:44px minmax(0,1fr)}#lovenaEditor .ed-image-thumb{width:40px;height:40px}}
 @media(prefers-reduced-motion:reduce){body.editor-mode .lovena-edit-target{transition:none}}
 </style>
+<script src="./assets/lovena-backend.js"></script>
 <script id="lovenaEditorRuntime">
 (function(){
  "use strict";
@@ -2320,7 +2321,16 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    data.images=state.images;
    localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));
    state.data=data;
-   setStatus(show?"Alterações salvas neste navegador.":"Salvo automaticamente · "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
+   setStatus(show?"Salvo neste navegador; sincronizando…":"Salvando localmente e sincronizando…");
+   if(window.LovenaBackend){
+    window.LovenaBackend.saveDraft(getSnapshot(),EDIT_KEY).then(function(result){
+     setStatus((show?"Rascunho salvo":"Salvamento automático concluído")+" · nuvem e navegador");
+     window.dispatchEvent(new CustomEvent("lovena:cloud-saved",{detail:result}));
+    }).catch(function(error){
+     console.warn("Lovena cloud sync unavailable",error);
+     setStatus("Salvo neste navegador; nuvem pendente. "+(error&&error.message?error.message:"Verifique a conexão."));
+    });
+   }
   }catch(error){setStatus("Não foi possível salvar: libere espaço no armazenamento do navegador.");}
  }
  function scheduleSave(){clearTimeout(pendingTimer);setStatus("Salvando…");pendingTimer=setTimeout(function(){saveDraft(false);},300);}
