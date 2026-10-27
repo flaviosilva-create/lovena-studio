@@ -1397,7 +1397,7 @@ body.lovena-simple-page #lovenaEditor .ed-scroll>details:nth-of-type(4){display:
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="./assets/lovena-backend.js?v=20261027f"></script>
+<script src="./assets/lovena-backend.js?v=20261027g"></script>
 <script id="lovenaEditBootstrap">
 window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
  "use strict";
@@ -1975,7 +1975,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   {key:"surpriseMessageSignature",label:"Message Closing Line",group:"Surprises",path:["surprises","message","signature"]}
  ];
  for(var i=0;i<12;i++){
-  textFields.push({key:"photoTitle"+i,label:"Photo "+(i+1)+": legenda",group:"Gallery Captions",path:["photos",i,0],selector:".gallery-caption",index:i});
+  textFields.push({key:"photoTitle"+i,label:"Photo "+(i+1)+": caption",group:"Gallery Captions",path:["photos",i,0],selector:".gallery-caption",index:i});
   textFields.push({key:"photoStory"+i,label:"Photo "+(i+1)+": description when opened",group:"Gallery Captions",path:["photos",i,1],multiline:true});
  }
  if(document.body.classList.contains("lovena-simple-page")){
@@ -2761,7 +2761,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   (data.milestones||[]).forEach(function(m,index){
    var row=document.createElement("div");row.className="ed-milestone-row";row.dataset.editorMilestoneRow=index;row.style.cssText="border:1px solid #e5d1c2;border-radius:8px;padding:10px;display:grid;gap:8px";
    var title=document.createElement("strong");title.style.cssText="font-size:10px;color:#654536";title.textContent="Milestone "+(index+1);row.appendChild(title);
-   [["0","Title"],["2","Data ou legenda"],["1","Story When Opened"]].forEach(function(spec){
+   [["0","Title"],["2","Date or caption"],["1","Story When Opened"]].forEach(function(spec){
     var wrap=document.createElement("div");wrap.className="ed-field";var label=document.createElement("label");label.textContent=spec[1];wrap.appendChild(label);
     var ctl=spec[0]==="1"?document.createElement("textarea"):document.createElement("input");if(spec[0]!=="1")ctl.type="text";ctl.value=m[Number(spec[0])]||"";
     ctl.addEventListener("input",function(){m[Number(spec[0])]=ctl.value;syncTimeline();scheduleSave();});wrap.appendChild(ctl);row.appendChild(wrap);
