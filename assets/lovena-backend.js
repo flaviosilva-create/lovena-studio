@@ -371,7 +371,7 @@
     includeHtmlLabel.append(includeHtmlCheckbox, includeHtmlText);
     var htmlPurchaseButton = document.createElement("button");
     htmlPurchaseButton.type = "button";
-    htmlPurchaseButton.textContent = "Download HTML offline · US$ 1,00 (opcional)";
+    htmlPurchaseButton.textContent = "Offline HTML download · $1.00 (optional)";
     htmlPurchaseButton.hidden = true;
     htmlPurchaseButton.disabled = true;
     htmlPurchaseButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:11px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:9px";
@@ -451,7 +451,7 @@
       htmlPurchaseButton.disabled = !showHtmlOption || htmlUnlocked;
       htmlPurchaseButton.textContent = htmlUnlocked
         ? "Download HTML desbloqueado ✓"
-        : "Download HTML offline · US$ 1,00 (opcional)";
+        : "Offline HTML download · $1.00 (optional)";
       htmlPurchaseStatus.textContent = htmlUnlocked
         ? "Additional purchase confirmed. The download button in the editor is unlocked."
         : "Optional: pay $1.00 more to download the HTML and keep your experience offline.";
