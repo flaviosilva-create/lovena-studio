@@ -2627,6 +2627,20 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 
  function guessExperienceLanguage(text){
   var value=String(text||""),lower=value.toLowerCase(),count=function(pattern){return (lower.match(pattern)||[]).length;};
+  if(/(?:t['’]estimo|amor meu.*sempre juntos|sempre junts)/i.test(value))return "ca";
+  if(/(?:të dua|te dua|dashuria ime|gjithmonë)/i.test(value))return "sq";
+  if(/(?:milujem ťa|milujem ta|moja láska)/i.test(value))return "sk";
+  if(/(?:ljubim te|ljubezen|vedno skupaj)/i.test(value))return "sl";
+  if(/(?:te saкам|те сакам|љубов моја|секогаш заедно)/i.test(value))return "mk";
+  if(/(?:səni sevirəm|seni sevirem|həmişə birlikdə)/i.test(value)||/[ə]/i.test(value))return "az";
+  if(/(?:men seni sevaman|seni sevaman|doimo birga)/i.test(value)||/[oʻgʻ]/i.test(value))return "uz";
+  if(/(?:мен сені жақсы көремін|әрқашан бірге|жаным)/i.test(value)||/[қңғұүөә]/i.test(value))return "kk";
+  if(/(?:Обичам те|сърце|винаги заедно|любов моя)/i.test(value))return "bg";
+  if(/(?:волим те|љубав моја|увек заједно)/i.test(value))return "sr";
+  if(/(?:volim te|ljubavi moja|zauvijek zajedno)/i.test(value))return "hr";
+
+  if(/[\u10a0-\u10ff\u1c90-\u1cbf]/.test(value))return "ka";
+  if(/[\u0530-\u058f]/.test(value))return "hy";
   if(/[\u3040-\u30ff]/.test(value))return "ja";
   if(/[\uac00-\ud7af]/.test(value))return "ko";
   if(/[\u4e00-\u9fff]/.test(value))return "zh-CN";
@@ -2652,9 +2666,11 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(/[\u0370-\u03ff]/.test(value))return "el";
   if(/[\u0590-\u05ff]/.test(value))return "he";
   if(/[\u0400-\u04ff]/.test(value)){
+   if(/(?:мен сені жақсы көремін|әрқашан бірге|жаным)/i.test(value)||/[қңғұүөә]/i.test(value))return "kk";
+   if(/(?:мен сени севаман|сени севаман)/i.test(value))return "uz";
    if(/[іїєґ]/i.test(value))return "uk";
+   if(/(?:те сакам|љубов моја|секогаш заедно)/i.test(value)||/[ѓќѕ]/i.test(value))return "mk";
    if(/(?:обичам|сърце|винаги|любов)/i.test(value))return "bg";
-   if(/[ѓќѕ]/i.test(value))return "mk";
    if(/[јђћџљњ]/i.test(value))return "sr";
    return "ru";
   }
