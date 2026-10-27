@@ -1957,6 +1957,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 }
 @media(prefers-reduced-motion:reduce){body.editor-mode:not(.editor-panel-open) #lovenaEditHint{animation:none}}
 #lovenaEditor .ed-field.is-editor-active{position:relative;padding:8px;margin:-8px;border:1px solid #dfb49c;border-radius:9px;background:#fff8f2;box-shadow:0 3px 12px rgba(124,73,49,.06)}
+body.editor-mode .music-card{cursor:pointer}
+body.editor-mode .music-card:hover{outline:2px dashed #c98f72;outline-offset:4px;box-shadow:0 0 0 5px rgba(201,143,114,.14)}
+body.editor-mode .music-card .player-btn{cursor:pointer}
 #lovenaEditor .ed-image-row{grid-template-columns:52px minmax(0,1fr);align-items:center}
 #lovenaEditor .ed-image-thumb{display:block;width:48px;height:48px;grid-column:1;grid-row:1;border:1px solid #e5d3c5;border-radius:7px;background-color:#f0e5db;background-position:center;background-size:cover;background-repeat:no-repeat;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 #lovenaEditor .ed-image-row>div:not(.ed-image-actions):not(.ed-photo-position){grid-column:2;min-width:0}
@@ -2533,8 +2536,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    var collageMap=collageText.matches(".memory-collage-copy span")?["lovenaCollageEyebrow","eyebrow above the title"]:collageText.matches(".memory-collage-copy strong")?["lovenaCollageTitle","collage title"]:["lovenaCollageSubtitle","subtitle below the title"];
    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();focusCollageControl(collageMap[0],collageMap[1],collageText);return;
   }
-  var musicPlayTarget=event.target.closest&&event.target.closest('.music-card [data-action="song-play"]');
-  if(musicPlayTarget){
+  var musicCardTarget=event.target.closest&&event.target.closest(".music-card");
+  var musicControlTarget=event.target.closest&&event.target.closest('.music-card [data-action="song-play"], .music-card [data-action="song-love"], .music-card #musicOpen, .music-card #musicEmbedContainer, .music-card iframe');
+  if(musicCardTarget&&!musicControlTarget){
    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
    focusSelectionWhenReady(function(){
     var input=panel.querySelector('input[data-song-prop="url"]');
@@ -2545,8 +2549,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
      if(row){row.classList.add("is-editor-active");row.scrollIntoView({behavior:"smooth",block:"center"});}
      input.focus({preventScroll:true});
     }
-    setActivePreviewElement(musicPlayTarget.closest(".music-card"));
-    updateEditorGuide("Editing: Music Link","Paste a direct song link from Apple Music, YouTube Music, or Spotify. The song title and artist update automatically when available.");
+    setActivePreviewElement(musicCardTarget);
+    updateEditorGuide("Editing: Music Link","Click the music card area to paste a direct song link from Apple Music, YouTube Music, or Spotify. The Play and favorite buttons still work normally.");
    });
    return;
   }
