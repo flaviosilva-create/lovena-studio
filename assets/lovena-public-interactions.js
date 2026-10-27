@@ -41,10 +41,16 @@
       if (options.photo) {
         var photoVisual = options.photoElement && options.photoElement.querySelector(".gallery-photo");
         var computed = photoVisual ? window.getComputedStyle(photoVisual) : null;
-        visual.style.backgroundImage = computed && computed.backgroundImage && computed.backgroundImage !== "none"
-          ? computed.backgroundImage : "var(--gallery-sprite)";
-        visual.style.backgroundSize = computed && computed.backgroundSize ? computed.backgroundSize : "300% 200%";
-        visual.style.backgroundPosition = computed && computed.backgroundPosition ? computed.backgroundPosition : "center";
+        if (typeof options.photoUrl === "string" && /^(https?:\/\/|data:image\/)/i.test(options.photoUrl)) {
+          visual.style.backgroundImage = "url(" + JSON.stringify(options.photoUrl) + ")";
+          visual.style.backgroundSize = "cover";
+          visual.style.backgroundPosition = "center";
+        } else {
+          visual.style.backgroundImage = computed && computed.backgroundImage && computed.backgroundImage !== "none"
+            ? computed.backgroundImage : "var(--gallery-sprite)";
+          visual.style.backgroundSize = computed && computed.backgroundSize ? computed.backgroundSize : "300% 200%";
+          visual.style.backgroundPosition = computed && computed.backgroundPosition ? computed.backgroundPosition : "center";
+        }
         visual.setAttribute("aria-label", title || "Photo");
       }
     }
@@ -72,10 +78,12 @@
       fallbackPhotoIndex = Math.max(0, index || 0);
     }
     var item = photos[fallbackPhotoIndex];
+    var galleryImages = data.images && Array.isArray(data.images.gallery) ? data.images.gallery : [];
+    var photoUrl = galleryImages[fallbackPhotoIndex];
     var caption = trigger && trigger.querySelector(".gallery-caption");
     var title = textFor(item, 0) || (caption && caption.textContent) || "A Special Moment";
     var copy = textFor(item, 1);
-    showModal(title, copy, "OUR MOMENTS", { photo: true, photoElement: trigger });
+    showModal(title, copy, "OUR MOMENTS", { photo: true, photoElement: trigger, photoUrl: photoUrl });
   }
 
   function handleFallback(event) {
@@ -88,6 +96,8 @@
     if (!target) return;
 
     var action = target.getAttribute("data-action") || "";
+    // Keep primary song playback and native share when its listener is active.
+    if (window.LOVENA_PUBLIC_INTERACTIONS_READY === true && (action === "song-play" || action === "share-story")) return;
     var photo = target.closest("[data-photo]");
     var milestone = target.closest("[data-milestone]");
     var surprise = target.closest("[data-surprise]");
