@@ -272,7 +272,7 @@
 
     if (experienceId) {
       var lookup = await supabase.from("lovena_experiences")
-        .select("id, owner_id, status, public_slug")
+        .select("id, owner_id, status, public_slug, plan")
         .eq("id", experienceId).eq("owner_id", user.id).maybeSingle();
       if (lookup.error) throw lookup.error;
       existing = lookup.data;
