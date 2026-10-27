@@ -64,6 +64,16 @@ jobs:
           ]:
               if required not in bridge:
                   raise SystemExit(f"Language-selector validation failed: missing {required}")
+          for public_path in ("experience.html", "experience-simple.html"):
+              public_html = Path(public_path).read_text(encoding="utf-8")
+              if re.search(r"await\s*\(\s*window\.LovenaBackend\s*\?\s*window\.LovenaBackend\.ready", public_html):
+                  raise SystemExit(f"{public_path} must not gate public interactions on Supabase auth startup")
+              if "getPublicExperience(shareSlug)" not in public_html:
+                  raise SystemExit(f"{public_path} is missing public experience loading")
+          backend = Path("assets/lovena-backend.js").read_text(encoding="utf-8")
+          if "public experiences remain interactive." not in backend:
+              raise SystemExit("Backend initialization failure must not prevent public experiences from rendering")
+
           experience = Path("experience.html").read_text(encoding="utf-8")
           experience_scripts = re.findall(r'<script(?![^>]*\bsrc=)[^>]*>\s*(.*?)\s*</script>', experience, re.S)
           if len(experience_scripts) != 3:
@@ -91,6 +101,7 @@ jobs:
           PY
           node --check /tmp/lovena-gtranslate-config.js
           node --check translation-bridge.js
+          node --check assets/lovena-backend.js
           node --check /tmp/lovena-experience-0.js
           node --check /tmp/lovena-experience-1.js
           node --check /tmp/lovena-experience-2.js
