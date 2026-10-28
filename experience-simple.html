@@ -3829,6 +3829,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
     var firstClone = null;
     var paused = false;
     var lastFrame = 0;
+    var offset = 0;
     var resumeTimer = 0;
     var rebuildTimer = 0;
     var observer = null;
@@ -3970,6 +3971,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
       }
 
       row.scrollLeft = Math.min(Math.max(0, oldScroll), Math.max(0, loopWidth - 1));
+      offset = row.scrollLeft;
       observeGallery();
       lastFrame = 0;
     }
@@ -3982,10 +3984,18 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
       }, 120);
     }
 
+    function normaliseOffset(value) {
+      if (!loopWidth) return Math.max(0, Number(value) || 0);
+      var next = (Number(value) || 0) % loopWidth;
+      return next < 0 ? next + loopWidth : next;
+    }
+
     function pauseBriefly() {
+      offset = normaliseOffset(row.scrollLeft);
       paused = true;
       if (resumeTimer) window.clearTimeout(resumeTimer);
       resumeTimer = window.setTimeout(function () {
+        offset = normaliseOffset(row.scrollLeft);
         paused = false;
         lastFrame = 0;
       }, 1500);
@@ -3993,6 +4003,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 
     function resume() {
       if (resumeTimer) window.clearTimeout(resumeTimer);
+      offset = normaliseOffset(row.scrollLeft);
       paused = false;
       lastFrame = 0;
     }
@@ -4006,9 +4017,11 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
          the promised autoplay entirely. Do not pause merely because a mouse hovers. */
       speed = reducedMotion && reducedMotion.matches ? 11 : 26;
       if (!paused && document.visibilityState !== "hidden" && loopWidth > 0) {
-        var next = row.scrollLeft + speed * elapsed / 1000;
-        if (next >= loopWidth) next = next % loopWidth;
-        row.scrollLeft = Math.floor(next);
+        /* Keep fractional progress between frames so 26 px/s still moves on iOS,
+           where scrollLeft is rounded to integer pixels. */
+        offset = normaliseOffset(offset + speed * elapsed / 1000);
+        var destination = Math.floor(offset);
+        if (row.scrollLeft !== destination) row.scrollLeft = destination;
       }
       frameId = window.requestAnimationFrame(animate);
     }
