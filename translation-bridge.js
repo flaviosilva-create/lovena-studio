@@ -566,7 +566,7 @@
 
   function handleLanguageSelection(event) {
     var target = event && event.target;
-    if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector, #lovenaLanguageSelect")) return;
+    if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector, #lovenaLanguageSelect, #lovenaExperienceLanguageSelect")) return;
     var nativePickerChanged = target.id === "lovenaLanguageSelect";
     var experiencePickerChanged = target.id === "lovenaExperienceLanguageSelect";
     var language = canonicalLanguage(target.value);
