@@ -28,7 +28,7 @@ Deno.serve(async (req: Request) => {
   const accessToken = authHeader.replace(/^Bearer\s+/i, "");
   if (!accessToken) return reply(401, { error: "authentication_required" });
 
-  let input: { experienceId?: unknown; plan?: unknown; purchaseType?: unknown };
+  let input: { experienceId?: unknown; plan?: unknown; purchaseType?: unknown; countryCode?: unknown };
   try { input = await req.json(); } catch { return reply(400, { error: "invalid_json" }); }
   const experienceId = typeof input.experienceId === "string" ? input.experienceId : "";
   const plan = input.plan === "simple" || input.plan === "premium" ? input.plan : null;
@@ -40,6 +40,11 @@ Deno.serve(async (req: Request) => {
   if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(experienceId) || !plan) {
     return reply(400, { error: "invalid_checkout_request" });
   }
+  const edgeCountry = (req.headers.get("cf-ipcountry") || req.headers.get("x-vercel-ip-country") || req.headers.get("cloudfront-viewer-country") || "").trim().toUpperCase();
+  const requestedCountry = typeof input.countryCode === "string" ? input.countryCode.trim().toUpperCase() : "";
+  const isBrazil = edgeCountry ? edgeCountry === "BR" : requestedCountry === "BR";
+  const currency = isBrazil ? "brl" : "usd";
+  const addonCents = isBrazil ? 500 : 100;
 
   try {
     const admin = createClient(supabaseUrl, serviceRoleKey, {
@@ -58,9 +63,11 @@ Deno.serve(async (req: Request) => {
     if (!experience || experience.owner_id !== user.id) return reply(404, { error: "draft_not_found" });
     if (experience.plan !== plan) return reply(409, { error: "plan_mismatch" });
 
-    const baseCents = plan === "simple" ? 499 : 999;
+    const baseCents = isBrazil ? (plan === "simple" ? 999 : 1999) : (plan === "simple" ? 499 : 999);
     let totalCents = baseCents;
-    let productName = plan === "simple" ? "Lovena Simple — link online por 1 ano" : "Lovena Premium — link online por 1 ano";
+    let productName = isBrazil
+      ? (plan === "simple" ? "Lovena Simple — página online por 1 ano" : "Lovena Premium — página online por 1 ano")
+      : (plan === "simple" ? "Lovena Simple — online page for 1 year" : "Lovena Premium — online page for 1 year");
     let includesHtmlDownload = false;
 
     if (purchaseType === "html_download") {
@@ -81,25 +88,24 @@ Deno.serve(async (req: Request) => {
       }
       const alreadyHasHtml = (orders || []).some((order: any) =>
         order.plan === plan && order.includes_html_download === true &&
-        (order.amount_total === 100 || order.amount_total >= baseCents + 100)
+        (order.amount_total === addonCents || order.amount_total >= baseCents + addonCents)
       );
       if (alreadyHasHtml) {
         return reply(409, { error: "html_download_already_purchased", message: "O download HTML desta experiência já está desbloqueado." });
       }
-      totalCents = 100;
+      totalCents = addonCents;
       includesHtmlDownload = true;
-      productName = "Lovena — arquivo HTML offline para baixar";
+      productName = isBrazil ? "Lovena — arquivo HTML offline para baixar" : "Lovena — offline HTML download";
     } else {
       if (experience.status !== "draft" || experience.public_slug) {
         return reply(409, { error: "experience_not_editable", message: "Esta experiência já foi publicada ou não está mais disponível para compra inicial." });
       }
       if (purchaseType === "online_with_html") {
-        totalCents = baseCents + 100;
+        totalCents = baseCents + addonCents;
         includesHtmlDownload = true;
       }
     }
 
-    const currency = "usd";
     const { data: order, error: orderError } = await admin
       .from("lovena_orders")
       .insert({
@@ -129,6 +135,7 @@ Deno.serve(async (req: Request) => {
       "&experience_id=" + encodeURIComponent(experienceId);
     const form = new URLSearchParams();
     form.set("mode", "payment");
+    form.set("locale", isBrazil ? "pt-BR" : "en");
     form.set("success_url", successUrl);
     form.set("cancel_url", cancelUrl);
     form.set("client_reference_id", experienceId);
@@ -145,8 +152,8 @@ Deno.serve(async (req: Request) => {
     form.set("line_items[0][quantity]", "1");
     if (purchaseType === "online_with_html") {
       form.set("line_items[1][price_data][currency]", currency);
-      form.set("line_items[1][price_data][unit_amount]", "100");
-      form.set("line_items[1][price_data][product_data][name]", "Adicional opcional — download HTML offline");
+      form.set("line_items[1][price_data][unit_amount]", String(addonCents));
+      form.set("line_items[1][price_data][product_data][name]", isBrazil ? "Adicional opcional — download HTML offline" : "Optional add-on — offline HTML download");
       form.set("line_items[1][quantity]", "1");
     }
 
