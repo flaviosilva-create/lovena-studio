@@ -79,6 +79,15 @@ jobs:
                   raise SystemExit(f"{public_path} must not gate public interactions on Supabase auth startup")
               if "getPublicExperience(shareSlug)" not in public_html:
                   raise SystemExit(f"{public_path} is missing public experience loading")
+              for marker in [
+                  'id="lovena-visual-hydration"',
+                  'html:not(.lovena-visuals-ready) #fotos .gallery-photo',
+                  'function revealPersonalizedVisualsAfterHydration()',
+                  'revealPersonalizedVisualsAfterHydration();',
+                  'root.classList.add("lovena-visuals-ready")'
+              ]:
+                  if marker not in public_html:
+                      raise SystemExit(f"{public_path} is missing photo hydration protection: {marker}")
           backend = Path("assets/lovena-backend.js").read_text(encoding="utf-8")
           if "public experiences remain interactive." not in backend:
               raise SystemExit("Backend initialization failure must not prevent public experiences from rendering")
@@ -184,8 +193,8 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Browser smoke test for public Premium interactions
         env:
-          PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-gallery-autoplay-unified-4
-          EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-preview-interactions-2
+          PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-no-photo-flash-1
+          EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-no-photo-flash-1
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
           /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium webkit
@@ -200,6 +209,7 @@ jobs:
             // Do not wait for the Supabase data request: this test must verify that public controls still work even if that request stalls.
             await page.waitForFunction(() => window.LOVENA_EDIT_DEFAULTS && document.querySelector('script[src*="lovena-public-interactions.js"]'), null, { timeout: 15000 });
             async function verifyGalleryAutoplay(targetPage, label) {
+              await targetPage.waitForFunction(() => document.documentElement.classList.contains("lovena-visuals-ready"), null, { timeout: 10000 });
               await targetPage.waitForFunction(() => document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified", null, { timeout: 10000 });
               await targetPage.locator("#galleryRow").scrollIntoViewIfNeeded();
               await targetPage.waitForTimeout(350);
