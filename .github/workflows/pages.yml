@@ -207,10 +207,19 @@ jobs:
                 maxScroll: row.scrollWidth - row.clientWidth,
                 cloneOpacity: getComputedStyle(row.querySelector('.gallery-item[data-gallery-clone="true"]')).opacity
               }));
+              if (label === "desktop") {
+                const rect = await targetPage.locator("#galleryRow").boundingBox();
+                await targetPage.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+              }
               await targetPage.waitForTimeout(1800);
               const after = await targetPage.locator("#galleryRow").evaluate(row => row.scrollLeft);
               if (!(after > before.scrollLeft)) {
                 throw new Error(`Our Moments autoplay did not advance on ${label}: scrollLeft ${before.scrollLeft} -> ${after}`);
+              }
+              await targetPage.waitForTimeout(1800);
+              const later = await targetPage.locator("#galleryRow").evaluate(row => row.scrollLeft);
+              if (!(later > after)) {
+                throw new Error(`Our Moments autoplay stalled after the first movement on ${label}: ${after} -> ${later}`);
               }
               if (before.maxScroll + 2 < before.loopWidth) {
                 throw new Error(`Our Moments loop has insufficient cloned width on ${label}: max scroll ${before.maxScroll}, loop width ${before.loopWidth}`);
@@ -227,7 +236,7 @@ jobs:
               deviceScaleFactor: 3,
               isMobile: true,
               hasTouch: true,
-              reducedMotion: "no-preference"
+              reducedMotion: "reduce"
             });
             mobilePage.on("pageerror", error => pageErrors.push(error.message));
             await mobilePage.goto(process.env.PUBLIC_EXPERIENCE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
