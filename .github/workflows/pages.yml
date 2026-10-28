@@ -91,6 +91,7 @@ jobs:
               'return selectors.find(isElementVisible) || selectors[0] || null;',
               "function clearGoogleTranslateCookies()",
               "function scheduleTranslation(delay, keepExisting)",
+              "await Promise.all([worker(), worker()]);",
               "function ensureEnglishOption(selector)",
               'english.value = SOURCE_LANGUAGE + "|" + SOURCE_LANGUAGE;',
               'if (!parts.length) return "";',
@@ -120,7 +121,7 @@ jobs:
                   'id="lovenaExperienceLanguageControl" data-editor-only hidden',
                   'id="lovenaExperienceLanguageSelect"',
                   'assets/lovena-experience-language.js?v=20261028-experience-language-3',
-                  'translation-bridge.js?v=20261028-experience-interface-3'
+                  'translation-bridge.js?v=20261028-experience-interface-4'
               ]:
                   if marker not in public_html:
                       raise SystemExit(f"{public_path} is missing editor-only interface-language support: {marker}")
