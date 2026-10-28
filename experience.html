@@ -3495,6 +3495,148 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
    loopScript.textContent="("+offlineGalleryAnimation.toString()+")();";
    cloneBody.appendChild(loopScript);
 
+   // Standalone fallback interactions: keep photos, story chapters and surprise messages
+   // working even when an optional script or an older browser fails to initialize.
+   var offlineInteractionScript=document.createElement("script");
+   offlineInteractionScript.id="lovena-offline-interaction-runtime";
+   offlineInteractionScript.textContent="("+function(){
+    (function(){
+     "use strict";
+     var data=window.LOVENA_EDIT_DATA||{};
+     var dialog=document.getElementById("detailModal");
+     if(!dialog)return;
+     var activePhoto=0;
+     function list(value){return Array.isArray(value)?value:[];}
+     function galleryImages(){return list(data.images&&data.images.gallery);}
+     function photoRecords(){return list(data.photos);}
+     function read(record,index,key){
+      if(Array.isArray(record))return record[index]==null?"":String(record[index]);
+      if(record&&typeof record==="object")return record[key]==null?"":String(record[key]);
+      return "";
+     }
+     function stop(event){
+      event.preventDefault();
+      event.stopPropagation();
+      if(event.stopImmediatePropagation)event.stopImmediatePropagation();
+     }
+     function openModal(title,copy,kicker,options){
+      options=options||{};
+      var titleNode=document.getElementById("modalTitle");
+      var kickerNode=document.getElementById("modalKicker");
+      var copyNode=document.getElementById("modalCopy");
+      var visual=document.getElementById("modalVisual");
+      var envelope=document.getElementById("modalEnvelope");
+      var extra=document.getElementById("modalExtra");
+      if(titleNode)titleNode.textContent=title||"A Little Detail Just for Us";
+      if(kickerNode)kickerNode.textContent=kicker||"A LITTLE DETAIL JUST FOR US";
+      if(copyNode)copyNode.textContent=copy||"";
+      if(visual){
+       visual.hidden=!options.photo;
+       if(options.photo){
+        var source=options.photoUrl||"";
+        if(source)visual.style.backgroundImage="url("+JSON.stringify(source)+")";
+        else if(options.photoElement){
+         var photoVisual=options.photoElement.querySelector(".gallery-photo");
+         if(photoVisual){
+          var computed=window.getComputedStyle(photoVisual);
+          visual.style.backgroundImage=computed.backgroundImage==="none"?"":computed.backgroundImage;
+          visual.style.backgroundSize=computed.backgroundSize||"cover";
+          visual.style.backgroundPosition=computed.backgroundPosition||"center";
+         }
+        }
+        visual.style.backgroundSize=source?"cover":(visual.style.backgroundSize||"cover");
+        visual.style.backgroundPosition=source?"center":(visual.style.backgroundPosition||"center");
+        visual.setAttribute("aria-label",title||"Photo");
+       }else{
+        visual.style.backgroundImage="";
+       }
+      }
+      if(envelope)envelope.hidden=!options.envelope;
+      if(extra){
+       extra.replaceChildren();
+       if(options.signature){
+        var signature=document.createElement("div");
+        signature.style.cssText="font:22px Caveat,cursive;color:#936357;margin-top:6px";
+        signature.textContent=options.signature;
+        extra.appendChild(signature);
+       }
+      }
+      dialog.dataset.type=options.type||"story";
+      if(typeof dialog.showModal==="function"){
+       if(!dialog.open)dialog.showModal();
+      }else{
+       dialog.setAttribute("open","");
+      }
+     }
+     function openPhoto(index,clicked){
+      var records=photoRecords();
+      var images=galleryImages();
+      var row=document.getElementById("galleryRow");
+      var items=row?row.querySelectorAll("[data-photo]"):[];
+      var count=Math.max(records.length,images.length,items.length,1);
+      activePhoto=((Number(index)||0)%count+count)%count;
+      var trigger=clicked||(row&&row.querySelector('[data-photo="'+activePhoto+'"]'));
+      var record=records[activePhoto];
+      var caption=trigger&&trigger.querySelector(".gallery-caption");
+      var title=read(record,0,"title")||(caption&&caption.textContent)||"A Special Moment";
+      var copy=read(record,1,"copy");
+      var source=images[activePhoto]||"";
+      openModal(title,copy,"OUR MOMENTS",{photo:true,photoUrl:source,photoElement:trigger,type:"photo"});
+     }
+     function openSurprise(kind){
+      var item=(data.surprises&&data.surprises[kind])||{};
+      if(kind==="gallery"){openPhoto(0);return;}
+      if(kind==="card"){
+       openModal(item.title||"A Note Just for You",item.copy||"",item.kicker||"OPEN WHEN YOU NEED A SMILE",{envelope:true,type:"card"});
+       return;
+      }
+      if(kind==="message"){
+       openModal(item.title||"A Message for You",item.copy||"",item.kicker||"ONE MORE THING",{signature:item.signature||"You make everything more beautiful. ♡",type:"message"});
+      }
+     }
+     function closeModal(){
+      if(typeof dialog.close==="function"&&dialog.open)dialog.close();
+      else dialog.removeAttribute("open");
+     }
+     document.addEventListener("click",function(event){
+      var target=event.target&&event.target.closest?event.target:null;
+      if(!target)return;
+      var photo=target.closest("[data-photo]");
+      if(photo){stop(event);openPhoto(photo.getAttribute("data-photo"),photo);return;}
+      var milestone=target.closest("[data-milestone]");
+      if(milestone){
+       var chapter=list(data.milestones)[Number(milestone.getAttribute("data-milestone"))];
+       if(!chapter)return;
+       stop(event);
+       openModal(read(chapter,0,"title"),read(chapter,1,"copy"),"A CHAPTER IN OUR STORY",{type:"story"});
+       return;
+      }
+      var surprise=target.closest("[data-surprise]");
+      if(surprise){
+       var kind=surprise.getAttribute("data-surprise");
+       if(kind!=="gallery"&&kind!=="card"&&kind!=="message")return;
+       stop(event);openSurprise(kind);return;
+      }
+      var action=target.closest("[data-action]");
+      if(!action)return;
+      var name=action.getAttribute("data-action");
+      if(name==="close-modal"){stop(event);closeModal();return;}
+      if(name==="modal-prev"){stop(event);openPhoto(activePhoto-1);return;}
+      if(name==="modal-next"){stop(event);openPhoto(activePhoto+1);return;}
+      if(name==="open-gallery"){
+       stop(event);
+       var row=document.getElementById("galleryRow");
+       if(row&&typeof row.scrollTo==="function")row.scrollTo({left:0,behavior:"smooth"});
+       openPhoto(0);return;
+      }
+      if(name==="close-modal")closeModal();
+     },true);
+     dialog.addEventListener("click",function(event){if(event.target===dialog)closeModal();});
+     document.addEventListener("keydown",function(event){if(event.key==="Escape"&&(dialog.open||dialog.hasAttribute("open")))closeModal();});
+    })();
+   }.toString()+")();";
+   cloneBody.appendChild(offlineInteractionScript);
+
    clone.querySelector("body").classList.remove("editor-mode","editor-panel-open","lovena-preview-mode");
    var output="<!doctype html>\n"+clone.outerHTML;
    downloadBlob(new Blob([output],{type:"text/html;charset=utf-8"}),"lovena-love-story.html");
