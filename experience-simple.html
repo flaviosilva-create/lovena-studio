@@ -309,10 +309,10 @@ body.lovena-preview-mode #lovenaEditorTrigger{display:flex}
 #lovenaEditorTrigger svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
 #lovenaEditorBackdrop{position:fixed;z-index:10002;inset:0;background:rgba(13,5,4,.63);backdrop-filter:blur(3px);opacity:0;transition:opacity .22s}
 #lovenaEditorBackdrop.is-open{opacity:1}
-#lovenaEditor{position:fixed;z-index:10003;top:0;right:0;width:min(460px,96vw);height:100dvh;overflow:hidden;display:flex;flex-direction:column;background:#f7eee5;color:#382820;box-shadow:-20px 0 55px rgba(0,0,0,.28);font-family:Manrope,Arial,sans-serif;transform:translateX(102%);transition:transform .25s ease}
+#lovenaEditor{position:fixed;z-index:10003;top:0;right:0;width:min(460px,96vw);height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column;background:#f7eee5;color:#382820;box-shadow:-20px 0 55px rgba(0,0,0,.28);font-family:Manrope,Arial,sans-serif;transform:translateX(102%);transition:transform .25s ease}
 #lovenaEditor.is-open{transform:translateX(0)}
 #lovenaEditor *{box-sizing:border-box}
-#lovenaEditor .ed-head{display:flex;align-items:flex-start;gap:14px;justify-content:space-between;padding:23px 22px 18px;background:#2b100d;color:#f9eee5;border-bottom:1px solid rgba(255,255,255,.12)}
+#lovenaEditor .ed-head{display:flex;flex:0 0 auto;align-items:flex-start;gap:14px;justify-content:space-between;padding:23px 22px 18px;background:#2b100d;color:#f9eee5;border-bottom:1px solid rgba(255,255,255,.12)}
 #lovenaEditor .ed-kicker{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#c79a89;margin:0 0 7px}
 #lovenaEditor .ed-head h2{font:400 24px/1.15 'Playfair Display',Georgia,serif;margin:0;color:#fff3e8}
 #lovenaEditor .ed-head p{font-size:10px;line-height:1.6;color:#d8c3b5;margin:7px 0 0;max-width:330px}
@@ -356,9 +356,10 @@ body.lovena-preview-mode #lovenaEditorTrigger{display:flex}
 #lovenaEditor .ed-status{min-height:14px;text-align:center;color:#7e695d;font-size:9px}
 body.editor-mode .experience{padding-bottom:28px}
 @media(max-width:480px){
- #lovenaEditor{width:100vw}
+ #lovenaEditor{width:100vw;top:max(12px,env(safe-area-inset-top,0px));height:calc(100vh - max(12px,env(safe-area-inset-top,0px)) - env(safe-area-inset-bottom,0px));height:calc(100dvh - max(12px,env(safe-area-inset-top,0px)) - env(safe-area-inset-bottom,0px))}
  #lovenaEditor .ed-head{padding:18px 17px 15px}
  #lovenaEditor .ed-head h2{font-size:22px}
+ #lovenaEditor .ed-close{flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px;display:grid;place-items:center;padding:0;touch-action:manipulation}
  #lovenaEditor .ed-scroll{padding:12px 12px 20px}
  #lovenaEditor .ed-actions{padding-inline:12px}
  #lovenaEditorTrigger{right:12px;bottom:12px;padding:11px 14px}
