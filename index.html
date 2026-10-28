@@ -2456,6 +2456,7 @@ body.lp-export-body{max-width:100%;overflow-x:clip}
   <a class="lr-button lr-button-dark lr-footer-cta" href="#pricing">Choose a plan <span aria-hidden="true">→</span></a>
 </footer>
 
+<script src="./assets/lovena-region.js?v=20261028-br-region-2"></script>
 <script>
   (function () {
     var locale = String(navigator.language || "").toLowerCase();
@@ -2502,6 +2503,16 @@ body.lp-export-body{max-width:100%;overflow-x:clip}
   };
 </script>
 <!-- One translation engine only: GTranslate, with English as the source language. -->
-<script src="./translation-bridge.js?v=20261028-br-region-1" defer></script>
-<script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
+<script src="./translation-bridge.js?v=20261028-br-region-2" defer></script>
+<script>
+  (function () {
+    function loadLovenaTranslator() {
+      var script = document.createElement("script");
+      script.src = "https://cdn.gtranslate.net/widgets/latest/dropdown.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    Promise.resolve(window.LOVENA_REGION_READY).then(loadLovenaTranslator, loadLovenaTranslator);
+  })();
+</script>
 </body></html>
