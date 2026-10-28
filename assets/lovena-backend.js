@@ -512,7 +512,39 @@
     copyPaidLinkButton.type = "button";
     copyPaidLinkButton.textContent = "Copy Share Link";
     copyPaidLinkButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:9px;padding:9px;background:#fff;color:#654739;font:600 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:8px";
-    paidSharePanel.append(paidShareTitle, paidShareNote, paidShareLink, copyPaidLinkButton);
+    var paidQrSection = document.createElement("section");
+    paidQrSection.style.cssText = "display:grid;justify-items:center;gap:9px;margin-top:14px;padding:14px 10px;border:1px solid #e6d4c6;border-radius:12px;background:#fff";
+    var paidQrTitle = document.createElement("strong");
+    paidQrTitle.textContent = "Your personal QR Code";
+    paidQrTitle.style.cssText = "font:700 15px/1.35 'Playfair Display',Georgia,serif;color:#51392f;text-align:center";
+    var paidQrCopy = document.createElement("p");
+    paidQrCopy.textContent = "This QR code opens this exact published page. Download it to print or share it with your gift.";
+    paidQrCopy.style.cssText = "font-size:10px;line-height:1.5;color:#82695a;text-align:center;margin:0";
+    var paidQrImage = document.createElement("img");
+    paidQrImage.alt = "QR code for your published Lovena experience";
+    paidQrImage.width = 220;
+    paidQrImage.height = 220;
+    paidQrImage.style.cssText = "display:block;width:min(220px,100%);height:auto;aspect-ratio:1;object-fit:contain;background:#fff;border:1px solid #eee2d8;border-radius:8px";
+    var paidQrActions = document.createElement("div");
+    paidQrActions.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%";
+    var downloadPaidQrButton = document.createElement("button");
+    downloadPaidQrButton.type = "button";
+    downloadPaidQrButton.textContent = "Download QR";
+    downloadPaidQrButton.style.cssText = "border:1px solid #dec3b0;border-radius:9px;padding:10px 7px;background:#fff;color:#654739;font:700 11px Manrope,Arial,sans-serif;cursor:pointer";
+    var printPaidQrButton = document.createElement("button");
+    printPaidQrButton.type = "button";
+    printPaidQrButton.textContent = "Print QR";
+    printPaidQrButton.style.cssText = downloadPaidQrButton.style.cssText;
+    paidQrActions.append(downloadPaidQrButton, printPaidQrButton);
+    var sharePaidQrButton = document.createElement("button");
+    sharePaidQrButton.type = "button";
+    sharePaidQrButton.textContent = "Share QR Code";
+    sharePaidQrButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:9px;padding:10px;background:#fff;color:#654739;font:700 11px Manrope,Arial,sans-serif;cursor:pointer";
+    var paidQrStatus = document.createElement("p");
+    paidQrStatus.setAttribute("role", "status");
+    paidQrStatus.style.cssText = "font-size:10px;line-height:1.45;color:#82695a;text-align:center;margin:0";
+    paidQrSection.append(paidQrTitle, paidQrCopy, paidQrImage, paidQrActions, sharePaidQrButton, paidQrStatus);
+    paidSharePanel.append(paidShareTitle, paidShareNote, paidShareLink, copyPaidLinkButton, paidQrSection);
     var publishButton = document.createElement("button");
     publishButton.type = "button";
     publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
@@ -742,11 +774,80 @@
         paidShareNote.hidden = false;
         paidShareLink.href = publicUrl;
         paidShareLink.textContent = publicUrl;
+        paidQrImage.src = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=18&format=png&data=" + encodeURIComponent(publicUrl);
+        paidQrImage.dataset.qrUrl = paidQrImage.src;
+        paidQrImage.onerror = function () { paidQrStatus.textContent = "QR code could not load. Check your connection and reopen Publish & Export."; };
         try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, publicUrl); } catch (_) {}
       } else {
         paidSharePanel.hidden = true;
+        paidQrImage.removeAttribute("src");
+        paidQrImage.removeAttribute("data-qr-url");
+        paidQrStatus.textContent = "";
       }
     }
+
+    async function getPaidQrBlob() {
+      var qrUrl = paidQrImage.dataset.qrUrl;
+      if (!qrUrl || !paidShareLink.href || paidShareLink.href === "about:blank") throw new Error("qr_not_ready");
+      var response = await fetch(qrUrl, { mode: "cors" });
+      if (!response.ok) throw new Error("qr_download_failed");
+      return await response.blob();
+    }
+    downloadPaidQrButton.addEventListener("click", async function () {
+      downloadPaidQrButton.disabled = true;
+      try {
+        var blob = await getPaidQrBlob();
+        var objectUrl = URL.createObjectURL(blob);
+        var anchor = document.createElement("a");
+        anchor.href = objectUrl;
+        anchor.download = "lovena-qr-code.png";
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        window.setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 1500);
+        paidQrStatus.textContent = "QR code downloaded. You can print the PNG or send it to someone.";
+      } catch (_) {
+        paidQrStatus.textContent = "Automatic download failed. Open the QR image, then save it from your browser.";
+      } finally {
+        downloadPaidQrButton.disabled = false;
+      }
+    });
+    printPaidQrButton.addEventListener("click", function () {
+      var imageUrl = paidQrImage.dataset.qrUrl;
+      if (!imageUrl) { paidQrStatus.textContent = "Wait for your QR code to load first."; return; }
+      var printWindow = window.open("", "_blank", "noopener,noreferrer");
+      if (!printWindow) { paidQrStatus.textContent = "Allow pop-ups to print the QR code."; return; }
+      printWindow.document.write("<!doctype html><html><head><title>Lovena QR Code</title><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>body{font-family:Arial,sans-serif;text-align:center;padding:24px;color:#51392f}img{width:min(80vw,420px);height:auto}p{font-size:14px}</style></head><body><h1>Lovena</h1><p>Scan to open this personal experience</p><img id=\"qr\" alt=\"Lovena QR Code\" src=\"" + imageUrl.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + "\"><script>document.getElementById('qr').onload=function(){setTimeout(function(){window.print()},250)};<\/script></body></html>");
+      printWindow.document.close();
+      paidQrStatus.textContent = "Print window opened.";
+    });
+    sharePaidQrButton.addEventListener("click", async function () {
+      sharePaidQrButton.disabled = true;
+      try {
+        var blob = await getPaidQrBlob();
+        if (navigator.share && navigator.canShare && typeof File !== "undefined") {
+          var file = new File([blob], "lovena-qr-code.png", { type: blob.type || "image/png" });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ title: "My Lovena experience", text: "Scan this QR code to open my Lovena gift.", files: [file] });
+            paidQrStatus.textContent = "QR code shared.";
+          } else if (navigator.share) {
+            await navigator.share({ title: "My Lovena experience", text: "Open this personal gift: " + paidShareLink.href, url: paidShareLink.href });
+            paidQrStatus.textContent = "Share sheet opened with your personal link.";
+          } else { throw new Error("share_unavailable"); }
+        } else if (navigator.share) {
+          await navigator.share({ title: "My Lovena experience", text: "Open this personal gift: " + paidShareLink.href, url: paidShareLink.href });
+          paidQrStatus.textContent = "Share sheet opened with your personal link.";
+        } else {
+          await navigator.clipboard.writeText(paidShareLink.href);
+          paidQrStatus.textContent = "Your device cannot share an image here, so the personal link was copied instead.";
+        }
+      } catch (error) {
+        if (error && error.name === "AbortError") paidQrStatus.textContent = "Sharing canceled.";
+        else paidQrStatus.textContent = "Could not share automatically. Download the QR code or copy the published link.";
+      } finally {
+        sharePaidQrButton.disabled = false;
+      }
+    });
 
     copyPaidLinkButton.addEventListener("click", async function () {
       var url = paidShareLink.href;
