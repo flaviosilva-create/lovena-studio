@@ -338,3 +338,15 @@ body>.lr-footer{display:flex!important}
   .lr-pricing .lr-plan-wrap .lr-plan{padding-inline:18px}
   .lr-pricing .lr-plan-wrap .lr-plan-badge{font-size:7px}
 }
+
+
+/* Native landing-page selectors: always available without waiting for a translation widget. */
+#lovenaPreferences{display:flex!important;visibility:visible!important;position:relative!important;z-index:29!important;width:100%!important;min-height:52px!important;align-items:center!important;justify-content:center!important;padding:7px 12px!important;background:#f6f0e8!important;border-bottom:1px solid rgba(43,36,29,.13)!important;box-sizing:border-box!important}
+#lovenaPreferences .lr-preferences-inner{display:flex!important;visibility:visible!important;align-items:center!important;justify-content:center!important;gap:10px!important;width:100%!important;max-width:1180px!important}
+#lovenaPreferences .lr-preference-control{display:inline-flex!important;visibility:visible!important;align-items:center!important;gap:8px!important;min-height:36px!important;padding:5px 12px!important;border:1px solid rgba(43,36,29,.17)!important;border-radius:999px!important;background:#fffdf9!important;color:#242228!important;box-sizing:border-box!important;white-space:nowrap!important}
+#lovenaPreferences .lr-preference-label{display:inline-block!important;visibility:visible!important;color:#65564e!important;font:800 10px/1.2 'Manrope',Arial,sans-serif!important;letter-spacing:.35px!important}
+#lovenaLanguageSelect,#lovenaCurrencySelect{display:inline-block!important;visibility:visible!important;min-height:24px!important;min-width:112px!important;max-width:180px!important;padding:3px 18px 3px 2px!important;border:0!important;background:transparent!important;color:#242228!important;font:700 11px/1.4 'Manrope',Arial,sans-serif!important;box-shadow:none!important;cursor:pointer!important}
+#lovenaPreferences select:focus-visible{outline:2px solid #9b727b!important;outline-offset:3px!important;border-radius:4px!important}
+.lr-gtranslate-engine{position:absolute!important;left:-10000px!important;top:0!important;width:1px!important;height:1px!important;max-width:1px!important;max-height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;pointer-events:none!important}
+@media(max-width:800px){#lovenaPreferences{min-height:52px!important;padding:7px 7px!important}#lovenaPreferences .lr-preferences-inner{gap:6px!important}#lovenaPreferences .lr-preference-control{gap:5px!important;min-height:35px!important;padding:5px 7px!important}#lovenaPreferences .lr-preference-label{font-size:9px!important;letter-spacing:.1px!important}#lovenaLanguageSelect,#lovenaCurrencySelect{min-width:90px!important;max-width:125px!important;font-size:10px!important}}
+@media(max-width:390px){#lovenaPreferences .lr-preferences-inner{gap:4px!important}#lovenaPreferences .lr-preference-control{gap:4px!important;padding-inline:5px!important}#lovenaPreferences .lr-preference-label{font-size:8px!important}#lovenaLanguageSelect,#lovenaCurrencySelect{min-width:82px!important;max-width:108px!important;padding-right:12px!important;font-size:9px!important}}
