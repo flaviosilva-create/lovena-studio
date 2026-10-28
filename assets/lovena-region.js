@@ -15,7 +15,20 @@
     try { var saved = localStorage.getItem(CURRENCY_KEY); if (saved === "brl" || saved === "usd" || saved === "eur") return saved; } catch (error) {}
     return "";
   }
+  function updateBRLAvailability(isBrazil) {
+    var allowed = isBrazil === true;
+    window.LOVENA_CAN_USE_BRL = allowed;
+    var selector = document.getElementById("lovenaCurrencySelect");
+    var option = selector && selector.querySelector('option[value="brl"]');
+    if (option) {
+      option.hidden = !allowed;
+      option.disabled = !allowed;
+      option.style.display = allowed ? "" : "none";
+      if (!allowed && selector.value === "brl") selector.value = "usd";
+    }
+  }
   function applyPrices(currency) {
+    if (currency === "brl" && window.LOVENA_CAN_USE_BRL !== true) currency = "usd";
     var prices = {
       brl: {
         simple: "R$ 9,99",
@@ -67,14 +80,18 @@
   }
   function setCurrencyPreference(currency) {
     var value = currency === "brl" || currency === "eur" || currency === "usd" ? currency : "usd";
+    if (value === "brl" && window.LOVENA_CAN_USE_BRL !== true) value = "usd";
     try { localStorage.setItem(CURRENCY_KEY, value); } catch (error) {}
     applyPrices(value);
     try { window.dispatchEvent(new CustomEvent("lovena:currency-changed", { detail: { currencyCode: value } })); } catch (error) {}
   }
-  function applyCountry(country) {
+  function applyCountry(country, verified) {
     var code = /^[A-Z]{2}$/.test(String(country || "").toUpperCase()) ? String(country).toUpperCase() : "US";
-    window.LOVENA_REGION_COUNTRY = code;
-    window.LOVENA_IS_BRAZIL = code === "BR";
+    var isVerifiedBrazil = verified === true && code === "BR";
+    window.LOVENA_REGION_VERIFIED = verified === true;
+    window.LOVENA_REGION_COUNTRY = verified === true ? code : "";
+    window.LOVENA_IS_BRAZIL = isVerifiedBrazil;
+    updateBRLAvailability(isVerifiedBrazil);
     var manual = "";
     var savedLanguage = "";
     try {
@@ -89,18 +106,31 @@
       languageSelector.value = language;
     }
     try { document.cookie = "googtrans=/en/" + language + ";path=/;max-age=31536000;SameSite=Lax"; } catch (error) {}
-    var currency = getCurrencyPreference() || (code === "BR" ? "brl" : "usd");
+    var savedCurrency = getCurrencyPreference();
+    var currency = isVerifiedBrazil
+      ? (savedCurrency || "brl")
+      : (savedCurrency === "eur" || savedCurrency === "usd" ? savedCurrency : "usd");
     applyPrices(currency);
-    try { window.dispatchEvent(new CustomEvent("lovena:region-detected", { detail: { countryCode: code, isBrazil: code === "BR", currencyCode: currency } })); } catch (error) {}
+    try {
+      window.dispatchEvent(new CustomEvent("lovena:region-detected", {
+        detail: {
+          countryCode: verified === true ? code : "",
+          isBrazil: isVerifiedBrazil,
+          currencyCode: currency,
+          verified: verified === true
+        }
+      }));
+    } catch (error) {}
     return code;
   }
   var fallback = browserFallbackCountry();
-  applyCountry(fallback);
+  // Fail closed: hide BRL until IP geolocation confirms the visitor is in Brazil.
+  applyCountry(fallback, false);
   var selector = document.getElementById("lovenaCurrencySelect");
   if (selector) selector.addEventListener("change", function () { setCurrencyPreference(selector.value); });
   window.LOVENA_SET_CURRENCY = setCurrencyPreference;
   window.LOVENA_REGION_READY = fetch("https://ipapi.co/json/", { cache: "no-store" })
     .then(function (response) { if (!response.ok) throw new Error("region_lookup_failed"); return response.json(); })
-    .then(function (data) { var country = String(data && (data.country_code || data.country) || "").toUpperCase(); if (!/^[A-Z]{2}$/.test(country)) throw new Error("invalid_country"); return applyCountry(country); })
-    .catch(function () { return applyCountry(fallback); });
+    .then(function (data) { var country = String(data && (data.country_code || data.country) || "").toUpperCase(); if (!/^[A-Z]{2}$/.test(country)) throw new Error("invalid_country"); return applyCountry(country, true); })
+    .catch(function () { return applyCountry(fallback, false); });
 })();
