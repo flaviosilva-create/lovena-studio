@@ -815,7 +815,7 @@
     printPaidQrButton.addEventListener("click", function () {
       var imageUrl = paidQrImage.dataset.qrUrl;
       if (!imageUrl) { paidQrStatus.textContent = "Wait for your QR code to load first."; return; }
-      var printWindow = window.open("", "_blank", "noopener,noreferrer");
+      var printWindow = window.open("", "_blank");
       if (!printWindow) { paidQrStatus.textContent = "Allow pop-ups to print the QR code."; return; }
       printWindow.document.write("<!doctype html><html><head><title>Lovena QR Code</title><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>body{font-family:Arial,sans-serif;text-align:center;padding:24px;color:#51392f}img{width:min(80vw,420px);height:auto}p{font-size:14px}</style></head><body><h1>Lovena</h1><p>Scan to open this personal experience</p><img id=\"qr\" alt=\"Lovena QR Code\" src=\"" + imageUrl.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + "\"><script>document.getElementById('qr').onload=function(){setTimeout(function(){window.print()},250)};<\/script></body></html>");
       printWindow.document.close();
