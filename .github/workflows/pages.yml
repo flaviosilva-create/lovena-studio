@@ -188,9 +188,9 @@ jobs:
           EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-gallery-autoplay-3
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
-          /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium
+          /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium webkit
           NODE_PATH=/tmp/lovena-smoke/node_modules node <<'NODE'
-          const { chromium } = require("playwright");
+          const { chromium, webkit } = require("playwright");
           (async () => {
             const browser = await chromium.launch({ headless: true });
             const page = await browser.newPage({ viewport: { width: 1365, height: 900 } });
@@ -257,22 +257,24 @@ jobs:
             await verifyGalleryAutoplay(editorPage, "editor desktop");
             await editorPage.close();
 
-            const editorMobilePage = await browser.newPage({
+            // WebKit is the closest automated engine check for the iPhone Safari issue.
+            const webkitBrowser = await webkit.launch({ headless: true });
+            const editorMobileContext = await webkitBrowser.newContext({
               viewport: { width: 390, height: 844 },
               screen: { width: 390, height: 844 },
-              deviceScaleFactor: 3,
-              isMobile: true,
+              deviceScaleFactor: 2,
               hasTouch: true,
               reducedMotion: "reduce"
             });
+            const editorMobilePage = await editorMobileContext.newPage();
             editorMobilePage.on("pageerror", error => pageErrors.push(error.message));
             await editorMobilePage.goto(process.env.EDITOR_EXPERIENCE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
             await editorMobilePage.waitForFunction(() =>
               document.body.classList.contains("editor-mode") &&
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
-            await verifyGalleryAutoplay(editorMobilePage, "editor mobile");
-            await editorMobilePage.close();
+            await verifyGalleryAutoplay(editorMobilePage, "WebKit editor mobile");
+            await editorMobileBrowser.close();
 
             await page.locator('#galleryRow .gallery-item[data-photo="0"]:not([data-gallery-clone="true"])').click({ timeout: 15000 });
             await page.locator("#detailModal[open]").waitFor({ timeout: 5000 });
