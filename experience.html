@@ -4097,11 +4097,13 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  function init(){
   var row=document.getElementById("galleryRow");
   if(!row||row.dataset.autoplayReady==="true")return;
-  var originals=Array.prototype.filter.call(row.children,function(el){return el.classList&&el.classList.contains("gallery-item")&&!el.hasAttribute("data-gallery-clone");});
+  var originals=Array.prototype.filter.call(row.children,function(el){
+   return el.classList&&el.classList.contains("gallery-item")&&!el.hasAttribute("data-gallery-clone");
+  });
   if(originals.length<2)return;
   row.dataset.autoplayReady="true";
-  var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
-  var paused=false,frame=0,last=0,halfWidth=0,initialized=false,offset=0;
+  var reduced=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):null;
+  var paused=false,last=0,loopWidth=0,frame=0,resumeTimer=0,hasMeasured=false;
   originals.forEach(function(item){item.setAttribute("data-gallery-original","true");});
   originals.forEach(function(item){
    var clone=item.cloneNode(true);
@@ -4111,45 +4113,58 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
    clone.querySelectorAll("a,button,input,select,textarea,[tabindex]").forEach(function(el){el.tabIndex=-1;});
    row.appendChild(clone);
   });
+  var firstClone=row.querySelector('.gallery-item[data-gallery-clone="true"]');
   function measure(){
-   halfWidth=0;
-   originals.forEach(function(item){halfWidth+=item.getBoundingClientRect().width;});
-   var gap=parseFloat(getComputedStyle(row).columnGap||getComputedStyle(row).gap)||0;
-   halfWidth+=gap*Math.max(0,originals.length-1);
-   if(halfWidth>0){
-    if(!initialized){row.scrollLeft=0;initialized=true;}
-    else if(offset>0)row.scrollLeft=offset%halfWidth;
+   if(!firstClone||!originals[0])return;
+   var originalRect=originals[0].getBoundingClientRect();
+   var cloneRect=firstClone.getBoundingClientRect();
+   var measured=cloneRect.left-originalRect.left;
+   if(Number.isFinite(measured)&&measured>0){
+    loopWidth=measured;
+    if(!hasMeasured){row.scrollLeft=0;hasMeasured=true;}
+    else if(row.scrollLeft>=loopWidth)row.scrollLeft=row.scrollLeft%loopWidth;
    }
   }
-  function tick(time){
-   frame=0;
-   if(!last)last=time;
-   var elapsed=Math.min(50,time-last);last=time;
-   if(!paused&&!(reduced&&reduced.matches)&&document.visibilityState!=="hidden"&&halfWidth>0){
-    row.scrollLeft+=22*elapsed/1000;
-    if(row.scrollLeft>=halfWidth){row.scrollLeft=row.scrollLeft-halfWidth;}
-    offset=row.scrollLeft;
-   }
-   frame=requestAnimationFrame(tick);
+  function resumeSoon(){
+   window.clearTimeout(resumeTimer);
+   resumeTimer=window.setTimeout(function(){paused=false;last=0;},1400);
   }
-  function start(){if(!frame){last=0;frame=requestAnimationFrame(tick);}}
   function pause(){paused=true;}
   function resume(){paused=false;last=0;}
+  function animate(timestamp){
+   if(!last)last=timestamp;
+   var elapsed=Math.min(50,timestamp-last);
+   last=timestamp;
+   if(!paused&&!(reduced&&reduced.matches)&&document.visibilityState!=="hidden"&&loopWidth>0){
+    var next=row.scrollLeft+24*elapsed/1000;
+    row.scrollLeft=next>=loopWidth?next%loopWidth:next;
+   }
+   frame=window.requestAnimationFrame(animate);
+  }
+  /* Keep browsers from snapping every animation frame back to a card boundary. */
+  row.style.setProperty("scroll-behavior","auto","important");
+  row.style.setProperty("scroll-snap-type","none","important");
+  row.style.setProperty("overflow-x","auto","important");
   row.addEventListener("mouseenter",pause);
   row.addEventListener("mouseleave",resume);
   row.addEventListener("focusin",pause);
   row.addEventListener("focusout",function(event){if(!row.contains(event.relatedTarget))resume();});
-  row.addEventListener("pointerdown",function(){pause();},{passive:true});
-  row.addEventListener("pointerup",function(){setTimeout(resume,1800);},{passive:true});
+  row.addEventListener("pointerdown",pause,{passive:true});
+  row.addEventListener("pointerup",resumeSoon,{passive:true});
+  row.addEventListener("pointercancel",resumeSoon,{passive:true});
   row.addEventListener("touchstart",pause,{passive:true});
-  row.addEventListener("touchend",function(){setTimeout(resume,1800);},{passive:true});
-  row.addEventListener("wheel",function(){pause();setTimeout(resume,1800);},{passive:true});
-  if(reduced&&typeof reduced.addEventListener==="function")reduced.addEventListener("change",function(){last=0;});
-  else if(reduced&&typeof reduced.addListener==="function")reduced.addListener(function(){last=0;});
+  row.addEventListener("touchend",resumeSoon,{passive:true});
+  row.addEventListener("touchcancel",resumeSoon,{passive:true});
+  row.addEventListener("wheel",function(){pause();resumeSoon();},{passive:true});
+  row.addEventListener("click",function(){pause();resumeSoon();});
   window.addEventListener("resize",measure,{passive:true});
+  window.addEventListener("orientationchange",function(){window.setTimeout(measure,120);},{passive:true});
   document.addEventListener("visibilitychange",function(){last=0;});
   if(typeof ResizeObserver==="function")new ResizeObserver(measure).observe(row);
-  measure();start();
+  if(reduced&&typeof reduced.addEventListener==="function")reduced.addEventListener("change",function(){last=0;});
+  else if(reduced&&typeof reduced.addListener==="function")reduced.addListener(function(){last=0;});
+  measure();
+  frame=window.requestAnimationFrame(animate);
  }
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
  else init();
