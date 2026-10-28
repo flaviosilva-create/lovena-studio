@@ -118,7 +118,7 @@ jobs:
                   'root.classList.add("lovena-visuals-ready")',
                   'id="lovenaExperienceLanguageControl" data-editor-only hidden',
                   'id="lovenaExperienceLanguageSelect"',
-                  'assets/lovena-experience-language.js?v=20261028-experience-language-2',
+                  'assets/lovena-experience-language.js?v=20261028-experience-language-3',
                   'translation-bridge.js?v=20261028-experience-interface-1'
               ]:
                   if marker not in public_html:
