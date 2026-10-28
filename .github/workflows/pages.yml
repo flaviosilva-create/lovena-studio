@@ -38,7 +38,7 @@ jobs:
               raise SystemExit("The landing page must contain only the expected translation configuration and loader scripts")
           Path("/tmp/lovena-gtranslate-config.js").write_text(config_script, encoding="utf-8")
           Path("/tmp/lovena-gtranslate-loader.js").write_text(loader_script, encoding="utf-8")
-          for marker in ['id="lovenaPreferences"', 'id="lovenaLanguageSelect"', 'id="lovenaCurrencySelect"']:
+          for marker in ['id="lovenaPreferences"', 'id="lovenaLanguageSelect"', 'id="lovenaCurrencySelect"', '<option value="eur">🇪🇺 EUR · €</option>']:
               if marker not in html:
                   raise SystemExit(f"Landing page is missing the visible language/currency control: {marker}")
           visible_preferences_css = html.split('<style id="lovena-visible-preferences">', 1)[-1].split("</style>", 1)[0]
@@ -46,7 +46,7 @@ jobs:
               if marker not in visible_preferences_css:
                   raise SystemExit(f"Landing language/currency controls lack their visibility rule: {marker}")
           region = Path("assets/lovena-region.js").read_text(encoding="utf-8")
-          for marker in ['function setCurrencyPreference(currency)', 'selector.addEventListener("change"', 'localStorage.setItem(CURRENCY_KEY, value)', 'function applyPrices(currency)']:
+          for marker in ['function setCurrencyPreference(currency)', 'selector.addEventListener("change"', 'localStorage.setItem(CURRENCY_KEY, value)', 'function applyPrices(currency)', 'eur: {', 'simple: "€ 4,99"', 'premium: "€ 9,99"', 'addon: "€ 1,00"']:
               if marker not in region:
                   raise SystemExit(f"Currency selector is missing its behavior: {marker}")
           for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
@@ -261,7 +261,24 @@ jobs:
                 document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "R$ 19,99",
                 null, { timeout: 10000 }
               );
-              console.log("Landing language/currency selectors are visible and BRL/USD price switching passed on " + label + ".");
+              await landing.locator("#lovenaCurrencySelect").selectOption("eur");
+              await landing.waitForFunction(() =>
+                window.LOVENA_CURRENCY_CODE === "eur" &&
+                localStorage.getItem("lovenaPreferredCurrency") === "eur" &&
+                document.querySelector("#plans .lr-plan-basic .lr-price")?.textContent.trim() === "€ 4,99" &&
+                document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "€ 9,99" &&
+                document.querySelector("#plans .lr-plan-basic li span.notranslate")?.textContent.trim() === "€ 1,00",
+                null, { timeout: 10000 }
+              );
+              await landing.reload({ waitUntil: "domcontentloaded" });
+              await landing.waitForFunction(() =>
+                window.LOVENA_CURRENCY_CODE === "eur" &&
+                document.getElementById("lovenaCurrencySelect")?.value === "eur" &&
+                document.querySelector("#plans .lr-plan-basic .lr-price")?.textContent.trim() === "€ 4,99" &&
+                document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "€ 9,99",
+                null, { timeout: 10000 }
+              );
+              console.log("Landing currency selectors are visible and BRL/USD/EUR pricing + saved EUR preference passed on " + label + ".");
               await landing.close();
             }
             await verifyLandingCurrency(1365, "desktop");
