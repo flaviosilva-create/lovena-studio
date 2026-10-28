@@ -28,7 +28,7 @@ Deno.serve(async (req: Request) => {
   const accessToken = authHeader.replace(/^Bearer\s+/i, "");
   if (!accessToken) return reply(401, { error: "authentication_required" });
 
-  let input: { experienceId?: unknown; plan?: unknown; purchaseType?: unknown; countryCode?: unknown };
+  let input: { experienceId?: unknown; plan?: unknown; purchaseType?: unknown; countryCode?: unknown; currencyCode?: unknown };
   try { input = await req.json(); } catch { return reply(400, { error: "invalid_json" }); }
   const experienceId = typeof input.experienceId === "string" ? input.experienceId : "";
   const plan = input.plan === "simple" || input.plan === "premium" ? input.plan : null;
@@ -60,8 +60,10 @@ Deno.serve(async (req: Request) => {
   }
   const requestedCountry = typeof input.countryCode === "string" ? input.countryCode.trim().toUpperCase() : "";
   const isBrazil = /^[A-Z]{2}$/.test(edgeCountry) ? edgeCountry === "BR" : requestedCountry === "BR";
-  const currency = isBrazil ? "brl" : "usd";
-  const addonCents = isBrazil ? 500 : 100;
+  const requestedCurrency = typeof input.currencyCode === "string" ? input.currencyCode.trim().toLowerCase() : "";
+  const currency = requestedCurrency === "brl" || requestedCurrency === "usd" ? requestedCurrency : (isBrazil ? "brl" : "usd");
+  const isBRLCurrency = currency === "brl";
+  const addonCents = isBRLCurrency ? 500 : 100;
 
   try {
     const admin = createClient(supabaseUrl, serviceRoleKey, {
@@ -80,7 +82,7 @@ Deno.serve(async (req: Request) => {
     if (!experience || experience.owner_id !== user.id) return reply(404, { error: "draft_not_found" });
     if (experience.plan !== plan) return reply(409, { error: "plan_mismatch" });
 
-    const baseCents = isBrazil ? (plan === "simple" ? 999 : 1999) : (plan === "simple" ? 499 : 999);
+    const baseCents = isBRLCurrency ? (plan === "simple" ? 999 : 1999) : (plan === "simple" ? 499 : 999);
     let totalCents = baseCents;
     let productName = isBrazil
       ? (plan === "simple" ? "Lovena Simple — página online por 1 ano" : "Lovena Premium — página online por 1 ano")
