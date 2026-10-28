@@ -4102,6 +4102,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
    return el.classList&&el.classList.contains("gallery-item")&&!el.hasAttribute("data-gallery-clone");
   });
   if(originals.length<2)return;
+  row.dataset.autoplayReady="true";
 
   var reduced=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):null;
   var paused=false,lastFrame=0,loopWidth=0,offset=0,frame=0,resumeTimer=0;
