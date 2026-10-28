@@ -14,6 +14,18 @@ body>.lr-footer{display:flex!important}
 .lr-nav-links a,.lr-footer nav a{color:inherit;text-decoration:none;transition:opacity .2s}
 .lr-nav-links a:hover,.lr-footer nav a:hover{opacity:.6}
 .lr-nav-actions{display:flex;align-items:center;gap:12px}
+/* Always-visible language and currency toolbar, separate from the responsive navigation. */
+.lr-preferences-bar{position:relative;z-index:29;display:flex!important;visibility:visible!important;width:100%;min-height:48px;align-items:center;justify-content:center;padding:7px 16px;background:#f6f0e8;border-bottom:1px solid rgba(43,36,29,.13);box-sizing:border-box}
+.lr-preferences-inner{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:1180px}
+.lr-preference-control{display:inline-flex!important;visibility:visible!important;align-items:center;gap:9px;min-height:34px;padding:5px 12px;border:1px solid rgba(43,36,29,.17);border-radius:999px;background:#fffdf9;color:#242228;box-sizing:border-box;white-space:nowrap}
+.lr-preference-label{display:inline-block!important;visibility:visible!important;color:#65564e;font:800 10px/1.2 'Manrope',Arial,sans-serif;letter-spacing:.45px}
+.lr-language-control .gtranslate_wrapper{display:inline-flex!important;visibility:visible!important;align-items:center;min-width:0}
+.lr-language-control .gtranslate_wrapper select,.lr-language-control .gt_selector{display:inline-block!important;visibility:visible!important;width:132px;min-width:100px;max-width:150px;padding:3px 16px 3px 0;border:0!important;background:transparent!important;color:#242228!important;font:600 11px/1.4 'Manrope',Arial,sans-serif!important;box-shadow:none!important;cursor:pointer}
+.lr-currency-control select{display:inline-block!important;visibility:visible!important;min-width:112px;max-width:150px;padding:3px 18px 3px 0;border:0;background:transparent;color:#242228;font:700 11px/1.4 'Manrope',Arial,sans-serif;cursor:pointer}
+.lr-preferences-bar select:focus-visible{outline:2px solid #9b727b!important;outline-offset:3px;border-radius:4px}
+@media(max-width:800px){.lr-preferences-bar{min-height:50px;padding:7px 10px}.lr-preferences-inner{gap:7px}.lr-preference-control{gap:5px;min-height:34px;padding:5px 8px}.lr-preference-label{font-size:9px;letter-spacing:.2px}.lr-language-control .gtranslate_wrapper select,.lr-language-control .gt_selector{width:105px;min-width:90px;max-width:110px;font-size:10px!important}.lr-currency-control select{min-width:98px;max-width:110px;font-size:10px}}
+@media(max-width:390px){.lr-preferences-bar{padding-inline:6px}.lr-preferences-inner{gap:5px}.lr-preference-control{gap:4px;padding-inline:6px}.lr-preference-label{font-size:8px}.lr-language-control .gtranslate_wrapper select,.lr-language-control .gt_selector{width:90px;min-width:80px;max-width:90px;font-size:9px!important}.lr-currency-control select{min-width:90px;max-width:96px;font-size:9px}}
+
 .lr-currency-picker{display:inline-flex;align-items:center;gap:5px;min-height:33px;padding:4px 9px;border:1px solid rgba(43,36,29,.13);border-radius:999px;background:rgba(255,255,255,.75);color:#27262a;white-space:nowrap;box-sizing:border-box}
 .lr-currency-picker label{font-size:9px;font-weight:800;letter-spacing:.5px;color:#77716f}
 .lr-currency-picker select{max-width:88px;border:0;background:transparent;color:#242228;font:700 10px/1.4 'Manrope',Arial,sans-serif;outline-offset:3px;cursor:pointer}
