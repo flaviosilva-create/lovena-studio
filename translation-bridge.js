@@ -63,8 +63,8 @@
   }
 
   function readSavedLanguage() {
-    try { return canonicalLanguage(localStorage.getItem("lovenaPreferredLanguage") || SOURCE_LANGUAGE); }
-    catch (error) { return SOURCE_LANGUAGE; }
+    try { return canonicalLanguage(localStorage.getItem("lovenaPreferredLanguage") || ""); }
+    catch (error) { return ""; }
   }
 
   function optionLanguage(option) {
@@ -105,7 +105,7 @@
     });
     if (!source) return;
 
-    var wantedLanguage = canonicalLanguage(nativeSelector.value) || readManualLanguage() || (isBrazilianVisitor() ? "pt" : SOURCE_LANGUAGE);
+    var wantedLanguage = readManualLanguage() || readSavedLanguage() || canonicalLanguage(nativeSelector.value) || (isBrazilianVisitor() ? "pt" : SOURCE_LANGUAGE);
     var options = [];
     var seen = new Set();
     Array.from(source.options).forEach(function (sourceOption) {
@@ -165,6 +165,8 @@
   function selectedLanguage() {
     var manualLanguage = readManualLanguage();
     if (manualLanguage) return manualLanguage;
+    var savedLanguage = readSavedLanguage();
+    if (savedLanguage) return savedLanguage;
     if (isBrazilianVisitor()) return "pt";
     var selectors = selectorElements();
     var selector = selectors.find(isElementVisible) || selectors[0];
@@ -642,12 +644,12 @@
     if (!selector) {
       attempts++;
       if (attempts < 80) window.setTimeout(initializeWidget, 250);
-      else if (readSavedLanguage() !== SOURCE_LANGUAGE) { saveLanguage(readSavedLanguage()); scheduleTranslation(200); }
+      else if (readSavedLanguage() && readSavedLanguage() !== SOURCE_LANGUAGE) { saveLanguage(readSavedLanguage()); scheduleTranslation(200); }
       return;
     }
     var saved = readSavedLanguage();
     var active = selectedLanguage() || canonicalLanguage(selector.value) || saved || SOURCE_LANGUAGE;
-    if (saved !== SOURCE_LANGUAGE && saved !== active) {
+    if (saved && saved !== active) {
       var savedMatch = Array.from(selector.options || []).find(function (option) { return optionLanguage(option) === saved; });
       if (savedMatch) {
         selector.value = savedMatch.value;
