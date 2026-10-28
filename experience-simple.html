@@ -3238,8 +3238,9 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
     event.preventDefault();
     event.stopPropagation();
     row.dataset.galleryManualNavigation="true";
-    row.style.overflowX="auto";
-    row.style.scrollBehavior="smooth";
+    row.style.setProperty("overflow-x","auto","important");
+    row.style.setProperty("scroll-behavior","auto","important");
+    row.style.setProperty("scroll-snap-type","none","important");
     var first=row.querySelector('.gallery-item:not([data-gallery-clone="true"])');
     if(!first)return;
     var style=window.getComputedStyle(row);
