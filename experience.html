@@ -3937,8 +3937,8 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
     }
 
     function removeClones() {
-      row.querySelectorAll(':scope > [data-gallery-clone="true"]').forEach(function (clone) {
-        clone.remove();
+      Array.from(row.children).forEach(function (clone) {
+        if (clone.dataset && clone.dataset.galleryClone === "true") clone.remove();
       });
       cloneGroups = [];
       firstClone = null;
