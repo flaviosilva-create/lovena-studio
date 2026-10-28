@@ -2,7 +2,12 @@
    Only runs on shared public links, and yields completely once the primary click handlers are ready. */
 (function () {
   "use strict";
-  if (!new URLSearchParams(window.location.search).has("slug")) return;
+  var query = new URLSearchParams(window.location.search);
+  var isPublicShare = query.has("slug");
+  var isEditorExperience = query.get("edit") === "1" && !isPublicShare;
+  /* The editor's Preview Experience uses this same page without a share slug.
+     Install the fallback there too, but keep it dormant until preview mode starts. */
+  if (!isPublicShare && !isEditorExperience) return;
 
   var fallbackPhotoIndex = 0;
 
@@ -87,9 +92,11 @@
   }
 
   function handleFallback(event) {
-    // Always use this capture-phase handler for public story controls. The primary
-    // listener may be registered yet still fail at runtime; a readiness flag alone
-    // is not proof that the clicked control actually worked.
+    // While the editor is actively editing, this fallback must not intercept clicks
+    // used by the editor. Enable it only on public share pages or in Preview Experience.
+    if (isEditorExperience && !document.body.classList.contains("lovena-preview-mode")) return;
+
+    // Capture story controls before a delayed or stalled editor bootstrap can leave them inert.
     var target = event.target && event.target.closest ? event.target.closest(
       "[data-scroll], [data-photo], [data-milestone], [data-surprise], [data-action]"
     ) : null;
