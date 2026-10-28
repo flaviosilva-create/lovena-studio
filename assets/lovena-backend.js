@@ -606,7 +606,7 @@
     editorExportSection.setAttribute("data-editor-only", "");
     editorExportSection.setAttribute("aria-label", "Offline HTML download");
     editorExportSection.hidden = true;
-    editorExportSection.style.cssText = "display:grid;gap:8px;margin:0 0 14px;padding:14px;border:1px solid #e2cabb;border-radius:13px;background:#fffaf6;color:#51392f;box-shadow:0 4px 12px rgba(73,33,28,.06)";
+    editorExportSection.style.cssText = "display:none;gap:8px;margin:0 0 14px;padding:14px;border:1px solid #e2cabb;border-radius:13px;background:#fffaf6;color:#51392f;box-shadow:0 4px 12px rgba(73,33,28,.06)";
     var editorExportTitle = document.createElement("strong");
     editorExportTitle.textContent = "A Digital Gift to Keep Forever";
     editorExportTitle.style.cssText = "font:700 16px/1.35 'Playfair Display',Georgia,serif;color:#51392f";
@@ -710,7 +710,9 @@
       var publicUrl = entitlements && entitlements.publicUrl;
       setHtmlExportButtons(htmlUnlocked);
       editorExportSection.hidden = !onlinePaid;
+      editorExportSection.style.display = onlinePaid ? "grid" : "none";
       publicationDock.hidden = onlinePaid;
+      publicationDock.style.display = onlinePaid ? "none" : "grid";
       publicationTrigger.textContent = onlinePaid ? "Export & Share" : "Publish & Export";
       publicationPanelCopy.textContent = onlinePaid
         ? "Your page is published. Manage sharing and the offline HTML download here."
