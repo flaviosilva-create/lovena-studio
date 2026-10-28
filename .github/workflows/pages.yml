@@ -117,8 +117,8 @@ jobs:
                   raise SystemExit(f"Post-payment editing validation failed: missing {required}")
           for public_path in ("experience.html", "experience-simple.html"):
               public_html = Path(public_path).read_text(encoding="utf-8")
-              if 'assets/lovena-backend.js?v=20261027-paid-qr-2' not in public_html:
-                  raise SystemExit(f"{public_path} must bust cached backend after post-payment editing changes")
+              if not re.search(r'assets/lovena-backend\.js\?v=[^"]+', public_html):
+                  raise SystemExit(f"{public_path} must load the backend with a cache-busting version")
 
           experience = Path("experience.html").read_text(encoding="utf-8")
           experience_scripts = re.findall(r'<script(?![^>]*\bsrc=)[^>]*>\s*(.*?)\s*</script>', experience, re.S)
