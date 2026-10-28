@@ -3456,11 +3456,15 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  function onlineExperienceUrl(){
   var url=new URL(window.location.href);url.search="";url.hash="";return url.href;
  }
+ function landingPageUrl(){
+  var url=new URL("./index.html",window.location.href);url.search="";url.hash="";return url.href;
+ }
  function showOnlineShare(){
   var panel=document.getElementById("lovenaSharePanel");
   var input=document.getElementById("lovenaShareUrl");
   var qr=document.getElementById("lovenaShareQr");
   var qrLink=document.getElementById("lovenaShareQrLink");
+  var label=document.querySelector('label[for="lovenaShareUrl"]');
   if(!panel||!input||!qr||!qrLink)return;
   panel.hidden=!panel.hidden;
   if(panel.hidden)return;
@@ -3469,8 +3473,12 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   var url=null;
   if(slug){var publicPage=new URL(window.location.href);publicPage.search="";publicPage.hash="";publicPage.searchParams.set("slug",slug);url=publicPage.href;}
   if(!url){try{url=localStorage.getItem("lovenaPublicUrl:"+EDIT_KEY);}catch(error){}}
-  if(!url){input.value="";qr.hidden=true;qrLink.removeAttribute("href");setStatus("This experience does not have a public link yet. Choose “Publish your gift online” and complete checkout.");return;}
+  var isPublishedLink=!!url;
+  if(!url)url=landingPageUrl();
   input.value=url;
+  if(label)label.textContent=isPublishedLink?"Published Experience Link":"Lovena Landing Page Link";
+  if(!isPublishedLink)setStatus("Online publishing has not been purchased yet. This link opens the Lovena landing page until checkout is completed.");
+  else setStatus("This published link opens your personalized Lovena experience.");
   var qrUrl="https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=14&format=png&data="+encodeURIComponent(url);
   qr.src=qrUrl;qr.hidden=false;qrLink.href=qrUrl;
   qr.onerror=function(){setStatus("Could not load the QR code. Check your connection and try again.");};
@@ -3478,10 +3486,17 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  function copyOnlineExperienceUrl(){
   var input=document.getElementById("lovenaShareUrl");
   if(!input)return;
-  var value=input.value||onlineExperienceUrl();
+  var value=input.value||landingPageUrl();
+  var isLandingLink=value===landingPageUrl();
+  function reportCopied(success){
+   if(!success){setStatus("Select and copy the link manually.");return;}
+   setStatus(isLandingLink
+    ?"Landing page link copied. Complete online publishing checkout to share your personalized experience."
+    :"Published experience link copied. Saved changes update this same shared link automatically.");
+  }
   if(navigator.clipboard&&window.isSecureContext){
-   navigator.clipboard.writeText(value).then(function(){setStatus("Online link copied. Saved changes update this same shared link automatically.");}).catch(function(){input.focus();input.select();setStatus(document.execCommand("copy")?"Online link copied.":"Select and copy the link manually.");});
-  }else{input.focus();input.select();setStatus(document.execCommand("copy")?"Online link copied.":"Select and copy the link manually.");}
+   navigator.clipboard.writeText(value).then(function(){reportCopied(true);}).catch(function(){input.focus();input.select();reportCopied(document.execCommand("copy"));});
+  }else{input.focus();input.select();reportCopied(document.execCommand("copy"));}
  }
  function downloadOnlineQr(){
   var qr=document.getElementById("lovenaShareQr");
