@@ -30,11 +30,25 @@ jobs:
           from pathlib import Path
           html = Path("index.html").read_text(encoding="utf-8")
           inline_scripts = re.findall(r"<script>\s*(.*?)\s*</script>", html, re.S)
-          if len(inline_scripts) != 1:
-              raise SystemExit(f"Expected one small GTranslate configuration script, found {len(inline_scripts)}")
-          if "window.gtranslateSettings" not in inline_scripts[0] or "function openStudio()" in html:
-              raise SystemExit("Only the landing page language configuration may remain inline")
-          Path("/tmp/lovena-gtranslate-config.js").write_text(inline_scripts[0], encoding="utf-8")
+          if len(inline_scripts) != 2:
+              raise SystemExit(f"Expected the GTranslate configuration and asynchronous loader scripts, found {len(inline_scripts)}")
+          config_script = next((script for script in inline_scripts if "window.gtranslateSettings" in script), "")
+          loader_script = next((script for script in inline_scripts if "function loadLovenaTranslator()" in script), "")
+          if not config_script or not loader_script or "function openStudio()" in html:
+              raise SystemExit("The landing page must contain only the expected translation configuration and loader scripts")
+          Path("/tmp/lovena-gtranslate-config.js").write_text(config_script, encoding="utf-8")
+          Path("/tmp/lovena-gtranslate-loader.js").write_text(loader_script, encoding="utf-8")
+          for marker in ['id="lovenaPreferences"', 'id="lovenaLanguageSelect"', 'id="lovenaCurrencySelect"']:
+              if marker not in html:
+                  raise SystemExit(f"Landing page is missing the visible language/currency control: {marker}")
+          visible_preferences_css = html.split('<style id="lovena-visible-preferences">', 1)[-1].split("</style>", 1)[0]
+          for marker in ["#lovenaPreferences{display:flex!important", "#lovenaCurrencySelect{display:inline-block!important"]:
+              if marker not in visible_preferences_css:
+                  raise SystemExit(f"Landing language/currency controls lack their visibility rule: {marker}")
+          region = Path("assets/lovena-region.js").read_text(encoding="utf-8")
+          for marker in ['function setCurrencyPreference(currency)', 'selector.addEventListener("change"', 'localStorage.setItem(CURRENCY_KEY, value)', 'function applyPrices(currency)']:
+              if marker not in region:
+                  raise SystemExit(f"Currency selector is missing its behavior: {marker}")
           for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
               if marker not in html:
                   raise SystemExit(f"Landing page is missing required structure: {marker}")
@@ -47,8 +61,8 @@ jobs:
                   raise SystemExit(f"Pricing must remain untranslated in USD: {price_markup}")
           if html.count('class="notranslate" translate="no" lang="en-US">$1.00</span>') != 2:
               raise SystemExit("Both optional HTML download fees must remain displayed in USD")
-          if 'href="./landing.css?v=20261026-two-tier-pricing-1"' not in html:
-              raise SystemExit("The existing landing page stylesheet must remain linked")
+          if not re.search(r'href="./landing\.css\?v=[^"]+"', html):
+              raise SystemExit("The landing page stylesheet must remain linked with a cache-busting version")
           if 'default_language: "en"' not in html:
               raise SystemExit("Lovena source language must remain English")
           if html.count("https://cdn.gtranslate.net/widgets/latest/dropdown.js") != 1:
@@ -132,6 +146,7 @@ jobs:
               Path(f"/tmp/lovena-experience-{index}.js").write_text(script, encoding="utf-8")
           PY
           node --check /tmp/lovena-gtranslate-config.js
+          node --check /tmp/lovena-gtranslate-loader.js
           node --check translation-bridge.js
           node --check assets/lovena-backend.js
           node --check assets/lovena-public-interactions.js
