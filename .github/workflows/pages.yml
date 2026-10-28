@@ -91,12 +91,15 @@ jobs:
               'return selectors.find(isElementVisible) || selectors[0] || null;',
               "function clearGoogleTranslateCookies()",
               "function scheduleTranslation(delay, keepExisting)",
-              "await Promise.all([worker(), worker()]);",
+              "function parseBatchTranslationResponse(data, expectedCount)",
+              "function createTranslationBatches(sources)",
+              "if (document.body) allRoots.push(document.body)",
+              "await Promise.all(Array.from({ length: Math.min(3, batches.length) }, worker));",
               "function ensureEnglishOption(selector)",
               'english.value = SOURCE_LANGUAGE + "|" + SOURCE_LANGUAGE;',
               'if (!parts.length) return "";',
               "if (language === SOURCE_LANGUAGE)",
-              "translate.googleapis.com/translate_a/single",
+              "translate.googleapis.com/translate_a/t",
               '#lovenaExperienceLanguageSelect',
               'lovenaExperienceLanguageControl',
               'lovenaPublicationPanel',
@@ -121,7 +124,7 @@ jobs:
                   'id="lovenaExperienceLanguageControl" data-editor-only hidden',
                   'id="lovenaExperienceLanguageSelect"',
                   'assets/lovena-experience-language.js?v=20261028-experience-language-3',
-                  'translation-bridge.js?v=20261028-experience-interface-4'
+                  'translation-bridge.js?v=20261028-batched-translator-1'
               ]:
                   if marker not in public_html:
                       raise SystemExit(f"{public_path} is missing editor-only interface-language support: {marker}")
@@ -196,17 +199,17 @@ jobs:
           }
           console.log("GTranslate language-value tests passed.");
           NODE
-      - name: Smoke test keyless dynamic translation endpoint (non-blocking)
+      - name: Smoke test keyless batch translation endpoint (non-blocking)
         continue-on-error: true
         run: |
           node <<'NODE'
           (async () => {
-            const url = new URL("https://translate.googleapis.com/translate_a/single");
+            const url = new URL("https://translate.googleapis.com/translate_a/t");
             url.searchParams.set("client", "gtx");
             url.searchParams.set("sl", "en");
             url.searchParams.set("tl", "pt");
-            url.searchParams.set("dt", "t");
-            url.searchParams.set("q", "How are you today?");
+            const batchTexts = ["How are you today?", "The story of our love"];
+            batchTexts.forEach(text => url.searchParams.append("q", text));
             try {
               const origin = "https://flaviosilva-create.github.io";
               const response = await fetch(url, { headers: { "Accept": "application/json", "Origin": origin } });
@@ -214,11 +217,11 @@ jobs:
               const allowOrigin = response.headers.get("access-control-allow-origin");
               if (allowOrigin !== "*" && allowOrigin !== origin) throw new Error("CORS does not allow the Lovena origin (header: " + allowOrigin + ")");
               const data = await response.json();
-              const translated = Array.isArray(data?.[0]) ? data[0].map(x => x?.[0] || "").join("") : "";
-              if (!translated || translated === "How are you today?") throw new Error("No translated text was returned");
-              console.log("Keyless dynamic translation endpoint passed: " + translated);
+              const translated = Array.isArray(data) ? data.map(item => Array.isArray(item) ? String(item[0] || "") : "").filter(Boolean) : [];
+              if (translated.length !== batchTexts.length || translated.some((text, index) => !text || text === batchTexts[index])) throw new Error("Batch endpoint did not translate every input: " + JSON.stringify(data));
+              console.log("Keyless batch translation endpoint passed: " + translated.join(" | "));
             } catch (error) {
-              console.log("Keyless dynamic translation endpoint failed: " + error.message);
+              console.log("Keyless batch translation endpoint failed: " + error.message);
               process.exitCode = 1;
             }
           })();
@@ -402,17 +405,17 @@ jobs:
             editorPage.on("pageerror", error => pageErrors.push(error.message));
             editorPage.on("console", message => { if (message.type() === "warning" || message.type() === "error") console.log("Editor console [" + message.type() + "]: " + message.text()); });
             let translationRequests = 0;
-            await editorPage.route(/https:\/\/translate\.googleapis\.com\/translate_a\/single.*/, async route => {
+            await editorPage.route(/https:\/\/translate\.googleapis\.com\/translate_a\/(?:single|t).*/, async route => {
               translationRequests++;
               const requestUrl = new URL(route.request().url());
               const language = requestUrl.searchParams.get("tl") || "pt";
-              const source = requestUrl.searchParams.get("q") || "";
-              const translated = language + ": " + source;
+              const sources = requestUrl.searchParams.getAll("q");
+              const payload = sources.map(source => [language + ": " + source, "en"]);
               await route.fulfill({
                 status: 200,
                 contentType: "application/json",
                 headers: { "access-control-allow-origin": "*" },
-                body: JSON.stringify([[[translated, source, null, null, 1]], null, "en"])
+                body: JSON.stringify(payload)
               });
             });
             await editorPage.addInitScript(() => localStorage.setItem("lovenaPreferredLanguage", "pt"));

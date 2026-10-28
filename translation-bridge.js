@@ -6,7 +6,8 @@
   // these roots separate prevents the bridge from blocking static translation.
   // User-authored content stays in the language its creator wrote it in.
   var SOURCE_LANGUAGE = "en";
-  var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
+  var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/t";
+  var TRANSLATE_FALLBACK_ENDPOINT = "https://clients5.google.com/translate_a/t";
   var CACHE_KEY = "lovenaDynamicTranslationCacheV3";
   var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy", "lovenaEditor", "lovenaEditHint", "lovenaEditorTrigger", "detailModal", "lovenaExperienceLanguageControl", "lovenaPublicationPanel", "lovenaPublishExportTrigger"];
   var textOriginals = new WeakMap();
@@ -225,7 +226,12 @@
   function getRoots() {
     var experienceRoot = document.getElementById("experiencia");
     var allRoots = ROOT_IDS.map(function (id) { return document.getElementById(id); }).filter(Boolean);
-    if (experienceRoot) allRoots.unshift(experienceRoot);
+    if (experienceRoot) {
+      allRoots.unshift(experienceRoot);
+      // The body catches labels, dialogs, publish controls and any visible
+      // elements not nested inside the main experience container.
+      if (document.body) allRoots.push(document.body);
+    }
     roots = Array.from(new Set(allRoots));
     roots.forEach(function (root) {
       root.classList.add("notranslate");
@@ -254,6 +260,14 @@
     return !!(element && element.closest && element.closest('[data-lovena-user-content="true"]'));
   }
 
+  function isProtectedLanguageOption(option) {
+    if (!option || option.tagName !== "OPTION") return false;
+    var select = option.closest ? option.closest("select") : option.parentElement;
+    if (!select) return false;
+    return ["lovenaExperienceLanguageSelect", "lovenaLanguageSelect", "lovenaExperienceLanguage"].includes(select.id) ||
+      select.classList.contains("gt_selector") || !!select.closest(".gtranslate_wrapper");
+  }
+
   function collectRecords(rootList) {
     var records = [];
     rootList.forEach(function (root) {
@@ -262,7 +276,7 @@
         acceptNode: function (node) {
           if (!node.parentElement) return NodeFilter.FILTER_REJECT;
           var tag = node.parentElement.tagName;
-          if (["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA"].includes(tag) || (tag === "OPTION" && !(node.parentElement.value === "other" && node.parentElement.parentElement && node.parentElement.parentElement.id === "lovenaExperienceLanguage")) ||
+          if (["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA"].includes(tag) || (tag === "OPTION" && isProtectedLanguageOption(node.parentElement)) ||
               node.parentElement.closest("textarea,[contenteditable='true']") ||
               isUserAuthoredElement(node.parentElement)) return NodeFilter.FILTER_REJECT;
           var original = originalText(node);
@@ -274,8 +288,10 @@
 
       var elements = [root].concat(Array.from(root.querySelectorAll("*")));
       elements.forEach(function (element) {
-        if (!element.isConnected || (element.tagName === "OPTION" && !(element.value === "other" && element.parentElement && element.parentElement.id === "lovenaExperienceLanguage")) || isUserAuthoredElement(element)) return;
-        ["placeholder", "title", "aria-label", "alt"].forEach(function (name) {
+        if (!element.isConnected || (element.tagName === "OPTION" && isProtectedLanguageOption(element)) || isUserAuthoredElement(element)) return;
+        var attributeNames = ["placeholder", "title", "aria-label", "aria-description", "alt"];
+        if (element.tagName === "INPUT" && /^(button|submit|reset)$/i.test(element.type || "")) attributeNames.push("value");
+        attributeNames.forEach(function (name) {
           if (!element.hasAttribute(name)) return;
           var source = rememberAttribute(element, name);
           if (meaningful(source)) records.push({ type: "attr", node: element, attribute: name, source: source });
@@ -297,68 +313,107 @@
     return new Promise(function (resolve) { window.setTimeout(resolve, ms); });
   }
 
-  async function translateOne(text, language) {
-    var url = new URL(TRANSLATE_ENDPOINT);
-    url.searchParams.set("client", "gtx");
-    url.searchParams.set("sl", SOURCE_LANGUAGE);
-    url.searchParams.set("tl", language);
-    url.searchParams.set("dt", "t");
-    url.searchParams.set("q", text);
+  function parseTranslationEntry(entry) {
+    if (typeof entry === "string") return entry;
+    if (!Array.isArray(entry)) return "";
+    if (typeof entry[0] === "string") return entry[0];
+    if (Array.isArray(entry[0])) {
+      return entry.map(function (part) {
+        return Array.isArray(part) && typeof part[0] === "string" ? part[0] : "";
+      }).join("");
+    }
+    return "";
+  }
 
-    var lastError;
-    for (var attempt = 0; attempt < 4; attempt++) {
-      if (selectedLanguage() !== language) throw new Error("Language changed during translation");
-      try {
-        var response = await fetch(url.toString(), {
-          method: "GET", mode: "cors", credentials: "omit", cache: "no-store",
-          headers: { "Accept": "application/json" }
-        });
-        if (response.status === 429 || response.status >= 500) {
-          lastError = new Error("HTTP " + response.status);
-          if (attempt < 3) {
-            await wait(response.status === 429 ? 650 * (attempt + 1) : 350 * (attempt + 1));
+  function parseBatchTranslationResponse(data, expectedCount) {
+    if (!Array.isArray(data)) throw new Error("Unexpected translation response format.");
+    if (data.length === expectedCount) {
+      var direct = data.map(parseTranslationEntry);
+      if (direct.every(function (item) { return typeof item === "string" && item.trim(); })) return direct;
+    }
+    // Compatibility with the nested response returned by /translate_a/single.
+    if (expectedCount === 1 && Array.isArray(data[0])) {
+      var segments = data[0].map(function (part) {
+        if (Array.isArray(part)) return typeof part[0] === "string" ? part[0] : "";
+        return typeof part === "string" ? part : "";
+      }).join("");
+      if (segments.trim()) return [segments];
+    }
+    throw new Error("The translation service returned " + data.length + " result(s) for " + expectedCount + " text(s).");
+  }
+
+  async function translateBatchTexts(texts, language) {
+    if (!texts.length) return [];
+    var endpoints = [
+      { url: TRANSLATE_ENDPOINT, client: "gtx" },
+      { url: TRANSLATE_FALLBACK_ENDPOINT, client: "dict-chrome-ex" }
+    ];
+    var lastError = null;
+
+    for (var endpointIndex = 0; endpointIndex < endpoints.length; endpointIndex++) {
+      var endpoint = endpoints[endpointIndex];
+      for (var attempt = 0; attempt < 2; attempt++) {
+        if (selectedLanguage() !== language) throw new Error("Language changed during translation");
+        var url = new URL(endpoint.url);
+        url.searchParams.set("client", endpoint.client);
+        url.searchParams.set("sl", SOURCE_LANGUAGE);
+        url.searchParams.set("tl", language);
+        texts.forEach(function (text) { url.searchParams.append("q", text); });
+
+        try {
+          var response = await fetch(url.toString(), {
+            method: "GET",
+            mode: "cors",
+            credentials: "omit",
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+          });
+          if (!response.ok) {
+            lastError = new Error("HTTP " + response.status + " from translation endpoint");
+            if (response.status === 403 || response.status === 429 || response.status < 500) break;
+            if (attempt < 1) await wait(180 * (attempt + 1));
             continue;
           }
-          throw lastError;
+          var data = await response.json();
+          return parseBatchTranslationResponse(data, texts.length);
+        } catch (error) {
+          lastError = error;
+          if (attempt < 1) await wait(180 * (attempt + 1));
         }
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        var data = await response.json();
-        var segments = data && data[0];
-        var translated = Array.isArray(segments) ? segments.map(function (part) { return part && part[0] || ""; }).join("") : "";
-        if (!translated) throw new Error("No translated text returned");
-        return translated;
-      } catch (error) {
-        lastError = error;
-        if (attempt < 3) await wait(300 * Math.pow(2, attempt));
       }
     }
-    throw lastError || new Error("Translation request failed");
+    throw lastError || new Error("All batch translation endpoints failed.");
+  }
+
+  async function translateOne(text, language) {
+    var translations = await translateBatchTexts([text], language);
+    if (!translations.length || !translations[0]) throw new Error("No translated text returned");
+    return translations[0];
   }
 
   async function requestBatch(texts, language, token) {
-    var results = new Array(texts.length);
-    var nextIndex = 0;
-    var failures = [];
-    async function worker() {
-      while (true) {
-        if (token !== generation || selectedLanguage() !== language) return;
-        var index = nextIndex++;
-        if (index >= texts.length) return;
-        try {
-          results[index] = await translateOne(texts[index], language);
-        } catch (error) {
-          results[index] = null;
-          failures.push({ source: texts[index], error: error });
-        }
-        await wait(120);
+    if (token !== generation || selectedLanguage() !== language) return new Array(texts.length).fill(null);
+    var translations = await translateBatchTexts(texts, language);
+    if (token !== generation || selectedLanguage() !== language) return new Array(texts.length).fill(null);
+    return translations;
+  }
+
+  function createTranslationBatches(sources) {
+    var batches = [];
+    var batch = [];
+    var characterCount = 0;
+    sources.forEach(function (source) {
+      var length = String(source).length;
+      if (batch.length && (batch.length >= 24 || characterCount + length > 1400)) {
+        batches.push(batch);
+        batch = [];
+        characterCount = 0;
       }
-    }
-    // Two concurrent requests lower bursts of HTTP 429s on mobile networks.
-    await Promise.all([worker(), worker()]);
-    if (failures.length === texts.length && texts.length) {
-      throw new Error("The free translation endpoint rejected every text request: " + failures[0].error.message);
-    }
-    return results;
+      batch.push(source);
+      characterCount += length;
+    });
+    if (batch.length) batches.push(batch);
+    return batches;
   }
 
   async function translateSources(sources, language, token) {
@@ -369,29 +424,35 @@
       if (cache.has(key)) results.set(source, cache.get(key));
       else if (missing.indexOf(source) === -1) missing.push(source);
     });
+    var batches = createTranslationBatches(missing);
+    var nextBatch = 0;
 
-    // Keep a low request rate to reduce the risk of temporary service limits.
-    for (var start = 0; start < missing.length; start += 18) {
-      if (token !== generation || selectedLanguage() !== language) return results;
-      var batch = missing.slice(start, start + 18);
-      try {
-        var translations = await requestBatch(batch, language, token);
-        batch.forEach(function (source, index) {
-          var translated = translations[index];
-          if (typeof translated === "string" && translated.trim()) {
-            results.set(source, translated);
-            if (translated !== source) cache.set(cacheKey(language, source), translated);
-          }
-        });
-        persistCache();
-      } catch (error) {
-        console.warn("Lovena dynamic translation could not process a text batch:", language, error);
+    async function worker() {
+      while (true) {
+        if (token !== generation || selectedLanguage() !== language) return;
+        var index = nextBatch++;
+        if (index >= batches.length) return;
+        var batch = batches[index];
+        try {
+          var translations = await requestBatch(batch, language, token);
+          if (token !== generation || selectedLanguage() !== language) return;
+          batch.forEach(function (source, itemIndex) {
+            var translated = translations[itemIndex];
+            if (typeof translated === "string" && translated.trim()) {
+              results.set(source, translated);
+              if (translated !== source) cache.set(cacheKey(language, source), translated);
+            }
+          });
+          persistCache();
+        } catch (error) {
+          console.warn("Lovena dynamic translation could not process a batch:", language, error);
+        }
       }
-      if (start + 18 < missing.length) await wait(180);
     }
+
+    await Promise.all(Array.from({ length: Math.min(3, batches.length) }, worker));
     return results;
   }
-
   function applyTranslatedRecords(records, translations) {
     records.forEach(function (record) {
       if (!record.node || !record.node.isConnected) return;
@@ -463,28 +524,36 @@
     }).filter(meaningful)));
     if (!sources.length) { await updateExperienceMetadata(language, token); return; }
 
-    // Apply each small batch immediately instead of waiting for every string
-    // on the whole page. The language change begins at once and the page
-    // progressively settles into the chosen language while later text loads.
-    var batchSize = 18;
-    for (var start = 0; start < sources.length; start += batchSize) {
-      if (token !== generation || selectedLanguage() !== language) return;
-      var batchSources = sources.slice(start, start + batchSize);
+    // Translate the interface controls first so the user's selection feels immediate.
+    var batchSize = 24;
+    async function translateAndApply(batchSources) {
+      if (!batchSources.length || token !== generation || selectedLanguage() !== language) return;
       var translations = await translateSources(batchSources, language, token);
       if (token !== generation || selectedLanguage() !== language) return;
-
-      var missed = batchSources.filter(function (source) {
-        return !translations.has(source);
-      });
+      var missed = batchSources.filter(function (source) { return !translations.has(source); });
       if (missed.length) {
-        await wait(350);
-        if (token !== generation || selectedLanguage() !== language) return;
         var retried = await translateSources(missed, language, token);
+        if (token !== generation || selectedLanguage() !== language) return;
         retried.forEach(function (value, key) { translations.set(key, value); });
       }
-      if (token !== generation || selectedLanguage() !== language) return;
       applyTranslatedRecords(records, translations);
     }
+
+    await translateAndApply(sources.slice(0, batchSize));
+    if (token !== generation || selectedLanguage() !== language) return;
+
+    // After the first visible UI batch, translate the remaining page in parallel.
+    var remainingBatches = createTranslationBatches(sources.slice(batchSize));
+    var nextBatch = 0;
+    async function pageWorker() {
+      while (true) {
+        if (token !== generation || selectedLanguage() !== language) return;
+        var index = nextBatch++;
+        if (index >= remainingBatches.length) return;
+        await translateAndApply(remainingBatches[index]);
+      }
+    }
+    await Promise.all(Array.from({ length: Math.min(4, remainingBatches.length) }, pageWorker));
     await updateExperienceMetadata(language, token);
   }
   function scheduleTranslation(delay, keepExisting) {
@@ -611,10 +680,10 @@
     }
 
     if (language === SOURCE_LANGUAGE) {
-      if (experiencePickerChanged) { scheduleTranslation(80); return; }
+      if (experiencePickerChanged) { scheduleTranslation(20); return; }
       returnToEnglish(); return;
     }
-    scheduleTranslation(80);
+    scheduleTranslation(20);
   }
 
   window.addEventListener("lovena:region-detected", function (event) {
@@ -706,7 +775,7 @@
       var match = Array.from(item.options || []).find(function (option) { return optionLanguage(option) === active; });
       if (match && item.value !== match.value) item.value = match.value;
     });
-    scheduleTranslation(400);
+    scheduleTranslation(40);
   }
 
   loadCache();
