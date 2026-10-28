@@ -118,7 +118,7 @@ jobs:
                   'root.classList.add("lovena-visuals-ready")',
                   'id="lovenaExperienceLanguageControl" data-editor-only hidden',
                   'id="lovenaExperienceLanguageSelect"',
-                  'assets/lovena-experience-language.js?v=20261028-experience-language-1',
+                  'assets/lovena-experience-language.js?v=20261028-experience-language-2',
                   'translation-bridge.js?v=20261028-experience-interface-1'
               ]:
                   if marker not in public_html:
@@ -339,6 +339,10 @@ jobs:
             await verifyLandingCurrency(390, "mobile-germany", "DE");
 
             await page.goto(process.env.PUBLIC_EXPERIENCE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
+            await page.waitForFunction(() => document.querySelector("#lovenaExperienceLanguageControl")?.dataset.languageControlReady === "true", null, { timeout: 15000 });
+            if (await page.locator("#lovenaExperienceLanguageControl").isVisible()) {
+              throw new Error("The interface-language selector must not appear on a shared/public experience.");
+            }
             // Do not wait for the Supabase data request: this test must verify that public controls still work even if that request stalls.
             await page.waitForFunction(() => window.LOVENA_EDIT_DEFAULTS && document.querySelector('script[src*="lovena-public-interactions.js"]'), null, { timeout: 15000 });
             async function verifyGalleryAutoplay(targetPage, label) {
@@ -392,11 +396,39 @@ jobs:
             // Reproduce the actual editor mode, where the owner sees the gallery behind the editing/publishing panel.
             const editorPage = await browser.newPage({ viewport: { width: 1365, height: 900 } });
             editorPage.on("pageerror", error => pageErrors.push(error.message));
+            await editorPage.route("https://translate.googleapis.com/**", async route => {
+              const requestUrl = new URL(route.request().url());
+              const language = requestUrl.searchParams.get("tl") || "pt";
+              const source = requestUrl.searchParams.get("q") || "";
+              const translated = language + ": " + source;
+              await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                headers: { "access-control-allow-origin": "*" },
+                body: JSON.stringify([[[translated, source, null, null, 1]], null, "en"])
+              });
+            });
+            await editorPage.addInitScript(() => localStorage.setItem("lovenaPreferredLanguage", "pt"));
             await editorPage.goto(process.env.EDITOR_EXPERIENCE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
             await editorPage.waitForFunction(() =>
               document.body.classList.contains("editor-mode") &&
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
+            await editorPage.waitForFunction(() => {
+              const control = document.querySelector("#lovenaExperienceLanguageControl");
+              const selector = document.querySelector("#lovenaExperienceLanguageSelect");
+              return control?.dataset.languageControlReady === "true" && !control.hidden && selector?.value === "pt";
+            }, null, { timeout: 15000 });
+            await editorPage.waitForFunction(() =>
+              document.querySelector("#lovenaEditor .ed-head h2")?.textContent.startsWith("pt:"),
+              null, { timeout: 20000 });
+            console.log("Experience interface inherited Portuguese and translated editor text.");
+            await editorPage.locator("#lovenaExperienceLanguageSelect").selectOption("de");
+            await editorPage.waitForFunction(() =>
+              localStorage.getItem("lovenaPreferredLanguage") === "de" &&
+              document.querySelector("#lovenaEditor .ed-head h2")?.textContent.startsWith("de:"),
+              null, { timeout: 20000 });
+            console.log("Experience language selector changed and persisted the editor interface language.");
             await verifyGalleryAutoplay(editorPage, "editor desktop");
             async function verifyPreviewInteractions(targetPage, label) {
               await targetPage.locator('[data-editor-action="view"]').scrollIntoViewIfNeeded();
