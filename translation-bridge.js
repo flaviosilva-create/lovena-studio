@@ -600,13 +600,21 @@
 
   window.addEventListener("lovena:region-detected", function (event) {
     if (!event || !event.detail || !event.detail.countryCode) return;
-    if (event.detail.countryCode === "BR" && !readManualLanguage()) {
-      saveLanguage("pt");
-      scheduleTranslation(80);
-    } else if (event.detail.countryCode !== "BR" && !readManualLanguage()) {
-      saveLanguage(SOURCE_LANGUAGE);
+    var manualLanguage = readManualLanguage();
+    var savedLanguage = readSavedLanguage();
+    var chosenLanguage = manualLanguage || savedLanguage;
+    if (!chosenLanguage) {
+      chosenLanguage = event.detail.countryCode === "BR" ? "pt" : SOURCE_LANGUAGE;
+      saveLanguage(chosenLanguage);
       scheduleTranslation(80);
     }
+    // Keep the visible experience picker synchronized with the retained user preference.
+    selectorElements().forEach(function (selector) {
+      var match = Array.from(selector.options || []).find(function (option) {
+        return optionLanguage(option) === chosenLanguage;
+      });
+      if (match && selector.value !== match.value) selector.value = match.value;
+    });
   });
 
   // The gift content locale is independent from the interface language. Only the
