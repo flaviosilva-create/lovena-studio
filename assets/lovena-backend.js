@@ -471,11 +471,15 @@
     var publicationTitle = document.createElement("strong");
     var planIsSimple = planFor(options.editorKey) === "simple";
     var brazilianVisitor = isBrazilianVisitor();
-    var currencyPrefix = brazilianVisitor ? "R$ " : "US$ ";
-    var addonCents = brazilianVisitor ? 500 : 100;
-    var basePriceCents = brazilianVisitor ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
-    var onlinePriceLabel = currencyPrefix + (basePriceCents / 100).toFixed(2).replace(".", ",");
-    function priceLabel(cents) { return currencyPrefix + (cents / 100).toFixed(2).replace(".", ","); }
+    var activeCurrency = window.LOVENA_CURRENCY_CODE === "brl" || window.LOVENA_CURRENCY_CODE === "eur" || window.LOVENA_CURRENCY_CODE === "usd"
+      ? window.LOVENA_CURRENCY_CODE
+      : (brazilianVisitor ? "brl" : "usd");
+    var currencyPrefix = activeCurrency === "brl" ? "R$ " : (activeCurrency === "eur" ? "€ " : "US$ ");
+    var priceDecimalSeparator = activeCurrency === "usd" ? "." : ",";
+    var addonCents = activeCurrency === "brl" ? 500 : 100;
+    var basePriceCents = activeCurrency === "brl" ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
+    var onlinePriceLabel = currencyPrefix + (basePriceCents / 100).toFixed(2).replace(".", priceDecimalSeparator);
+    function priceLabel(cents) { return currencyPrefix + (cents / 100).toFixed(2).replace(".", priceDecimalSeparator); }
     publicationTitle.textContent = "Publish Your Lovena Page";
     publicationTitle.style.cssText = "display:block;font-size:13px;line-height:1.3;margin:0;color:#472b23";
     var publicationCopy = document.createElement("p");
@@ -735,10 +739,13 @@
     }
     function applyRegionalPricing(isBrazil, selectedCurrency) {
       brazilianVisitor = !!isBrazil;
-      var currency = selectedCurrency === "brl" || selectedCurrency === "usd" ? selectedCurrency : (brazilianVisitor ? "brl" : "usd");
-      currencyPrefix = currency === "brl" ? "R$ " : "US$ ";
-      addonCents = currency === "brl" ? 500 : 100;
-      basePriceCents = currency === "brl" ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
+      activeCurrency = selectedCurrency === "brl" || selectedCurrency === "eur" || selectedCurrency === "usd"
+        ? selectedCurrency
+        : (brazilianVisitor ? "brl" : "usd");
+      currencyPrefix = activeCurrency === "brl" ? "R$ " : (activeCurrency === "eur" ? "€ " : "US$ ");
+      priceDecimalSeparator = activeCurrency === "usd" ? "." : ",";
+      addonCents = activeCurrency === "brl" ? 500 : 100;
+      basePriceCents = activeCurrency === "brl" ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
       includeHtmlTitle.textContent = "Add offline HTML (+" + priceLabel(addonCents) + ")";
       htmlPurchaseButton.textContent = "Offline HTML download · " + priceLabel(addonCents) + " (optional)";
       htmlPurchaseStatus.textContent = "Optional: after paying for online publishing, you can pay " + priceLabel(addonCents) + " more to download the HTML and use it offline.";
