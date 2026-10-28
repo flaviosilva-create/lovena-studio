@@ -184,7 +184,7 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Browser smoke test for public Premium interactions
         env:
-          PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-gallery-autoplay-1
+          PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-gallery-autoplay-unified-2
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
           /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium
@@ -199,7 +199,7 @@ jobs:
             // Do not wait for the Supabase data request: this test must verify that public controls still work even if that request stalls.
             await page.waitForFunction(() => window.LOVENA_EDIT_DEFAULTS && document.querySelector('script[src*="lovena-public-interactions.js"]'), null, { timeout: 15000 });
             async function verifyGalleryAutoplay(targetPage, label) {
-              await targetPage.waitForFunction(() => document.querySelector("#galleryRow")?.dataset.autoplayReady === "true", null, { timeout: 10000 });
+              await targetPage.waitForFunction(() => document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified", null, { timeout: 10000 });
               const before = await targetPage.locator("#galleryRow").evaluate(row => ({
                 scrollLeft: row.scrollLeft,
                 loopWidth: row.querySelector('.gallery-item[data-gallery-clone="true"]').getBoundingClientRect().left -
