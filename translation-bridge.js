@@ -92,9 +92,54 @@
     if (previousValue) selector.value = previousValue;
   }
 
+  function widgetSelectorElements() {
+    return Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector"))
+      .filter(function (selector) { return selector.id !== "lovenaLanguageSelect"; });
+  }
+
+  function syncNativeLanguageOptions() {
+    var nativeSelector = document.getElementById("lovenaLanguageSelect");
+    if (!nativeSelector) return;
+    var source = widgetSelectorElements().find(function (selector) {
+      return selector && selector.options && selector.options.length > 2;
+    });
+    if (!source) return;
+
+    var wantedLanguage = canonicalLanguage(nativeSelector.value) || readManualLanguage() || (isBrazilianVisitor() ? "pt" : SOURCE_LANGUAGE);
+    var options = [];
+    var seen = new Set();
+    Array.from(source.options).forEach(function (sourceOption) {
+      var language = optionLanguage(sourceOption);
+      if (!language || seen.has(language)) return;
+      seen.add(language);
+      options.push({ value: language, label: String(sourceOption.textContent || language).trim() || language });
+    });
+    if (!seen.has("en")) options.unshift({ value: "en", label: "English" });
+    if (!seen.has("pt")) options.push({ value: "pt", label: "Português" });
+
+    var unchanged = nativeSelector.options.length === options.length && options.every(function (item, index) {
+      return nativeSelector.options[index] &&
+        nativeSelector.options[index].value === item.value &&
+        nativeSelector.options[index].textContent === item.label;
+    });
+    if (unchanged) return;
+
+    nativeSelector.textContent = "";
+    options.forEach(function (item) {
+      var option = document.createElement("option");
+      option.value = item.value;
+      option.textContent = item.label;
+      nativeSelector.appendChild(option);
+    });
+    nativeSelector.value = options.some(function (item) { return item.value === wantedLanguage; })
+      ? wantedLanguage
+      : (isBrazilianVisitor() ? "pt" : SOURCE_LANGUAGE);
+  }
+
   function selectorElements() {
-    var selectors = Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector"));
+    var selectors = Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector, #lovenaLanguageSelect"));
     selectors.forEach(ensureEnglishOption);
+    syncNativeLanguageOptions();
     return selectors;
   }
 
@@ -505,16 +550,35 @@
 
   function handleLanguageSelection(event) {
     var target = event && event.target;
-    if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector")) return;
+    if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector, #lovenaLanguageSelect")) return;
+    var nativePickerChanged = target.id === "lovenaLanguageSelect";
     var language = canonicalLanguage(target.value);
     if (!language && target.options) language = optionLanguage(target.options[target.selectedIndex]);
     if (!language) return;
+
     selectorElements().forEach(function (selector) {
       var match = Array.from(selector.options || []).find(function (option) { return optionLanguage(option) === language; });
       if (match && selector.value !== match.value) selector.value = match.value;
     });
     saveLanguage(language);
     try { sessionStorage.setItem("lovenaManualLanguage", language); } catch (error) {}
+    try { document.cookie = "googtrans=/en/" + language + ";path=/;max-age=31536000;SameSite=Lax"; } catch (error) {}
+
+    // The visible native picker stays usable even when the GTranslate widget is delayed.
+    // When its hidden engine is ready, forward the same choice to trigger static-page translation.
+    if (nativePickerChanged) {
+      var widget = widgetSelectorElements().find(function (selector) {
+        return Array.from(selector.options || []).some(function (option) { return optionLanguage(option) === language; });
+      });
+      if (widget) {
+        var widgetOption = Array.from(widget.options || []).find(function (option) { return optionLanguage(option) === language; });
+        if (widgetOption) {
+          widget.value = widgetOption.value;
+          widget.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+    }
+
     if (language === SOURCE_LANGUAGE) { returnToEnglish(); return; }
     scheduleTranslation(80);
   }
@@ -557,7 +621,10 @@
 
   function observeSelectorWidgets() {
     if (selectorObserver || !document.documentElement) return;
-    selectorObserver = new MutationObserver(function () { selectorElements(); });
+    selectorObserver = new MutationObserver(function () {
+      selectorElements();
+      syncNativeLanguageOptions();
+    });
     selectorObserver.observe(document.documentElement, { childList: true, subtree: true });
   }
 
