@@ -1180,8 +1180,65 @@ html:not(.lovena-visuals-ready) #colagem-memorias .memory-collage-strip img {
   visibility: hidden !important;
 }
 </style>
+
+<style id="lovenaExperienceLanguageControlStyles">
+#lovenaExperienceLanguageControl[hidden]{display:none!important}
+#lovenaExperienceLanguageControl{position:fixed;z-index:10008;top:max(10px,env(safe-area-inset-top,0px));right:58px;display:flex;align-items:center;gap:8px;max-width:calc(100vw - 76px);box-sizing:border-box;padding:8px 11px;border:1px solid rgba(248,227,212,.25);border-radius:999px;background:rgba(43,16,13,.97);color:#fff5eb;box-shadow:0 9px 26px rgba(0,0,0,.25);font-family:Manrope,Arial,sans-serif}
+#lovenaExperienceLanguageControl label{color:#f6e7d9;font:800 10px/1.2 Manrope,Arial,sans-serif;letter-spacing:.2px;white-space:nowrap}
+#lovenaExperienceLanguageSelect{display:block;min-width:0;max-width:180px;height:29px;padding:3px 25px 3px 9px;border:1px solid rgba(248,227,212,.4);border-radius:999px;background:#fff9f3;color:#482b23;font:700 10px/1.2 Manrope,Arial,sans-serif;cursor:pointer;outline-offset:3px}
+#lovenaExperienceLanguageSelect:focus-visible{outline:2px solid #d6a17e}
+@media(max-width:600px){
+ #lovenaExperienceLanguageControl{top:max(8px,env(safe-area-inset-top,0px));right:10px;gap:6px;max-width:calc(100vw - 20px);padding:6px 8px}
+ #lovenaExperienceLanguageControl label{font-size:9px}
+ #lovenaExperienceLanguageSelect{max-width:min(180px,56vw);height:28px;padding-inline:7px;font-size:10px}
+}
+</style>
 </head>
 <body class="lovena-simple-page">
+<div id="lovenaExperienceLanguageControl" data-editor-only hidden aria-label="Experience interface language">
+  <label for="lovenaExperienceLanguageSelect">Interface language</label>
+  <select id="lovenaExperienceLanguageSelect" class="notranslate" translate="no" aria-label="Choose interface language">
+    <option value="en">🇺🇸 English</option>
+    <option value="pt">🇧🇷 Português</option>
+    <option value="es">🇪🇸 Español</option>
+    <option value="fr">🇫🇷 Français</option>
+    <option value="de">🇩🇪 Deutsch</option>
+    <option value="it">🇮🇹 Italiano</option>
+    <option value="nl">🇳🇱 Nederlands</option>
+    <option value="pl">🇵🇱 Polski</option>
+    <option value="ru">🇷🇺 Русский</option>
+    <option value="uk">🇺🇦 Українська</option>
+    <option value="tr">🇹🇷 Türkçe</option>
+    <option value="ar">🇸🇦 العربية</option>
+    <option value="he">🇮🇱 עברית</option>
+    <option value="hi">🇮🇳 हिन्दी</option>
+    <option value="bn">🇧🇩 বাংলা</option>
+    <option value="ja">🇯🇵 日本語</option>
+    <option value="ko">🇰🇷 한국어</option>
+    <option value="zh-CN">🇨🇳 中文（简体）</option>
+    <option value="zh-TW">🇹🇼 中文（繁體）</option>
+    <option value="id">🇮🇩 Bahasa Indonesia</option>
+    <option value="vi">🇻🇳 Tiếng Việt</option>
+    <option value="th">🇹🇭 ไทย</option>
+    <option value="sv">🇸🇪 Svenska</option>
+    <option value="da">🇩🇰 Dansk</option>
+    <option value="fi">🇫🇮 Suomi</option>
+    <option value="el">🇬🇷 Ελληνικά</option>
+    <option value="ro">🇷🇴 Română</option>
+    <option value="hu">🇭🇺 Magyar</option>
+    <option value="cs">🇨🇿 Čeština</option>
+    <option value="sk">🇸🇰 Slovenčina</option>
+    <option value="hr">🇭🇷 Hrvatski</option>
+    <option value="sr">🇷🇸 Српски</option>
+    <option value="ms">🇲🇾 Bahasa Melayu</option>
+    <option value="fa">🇮🇷 فارسی</option>
+    <option value="sw">🇰🇪 Kiswahili</option>
+    <option value="tl">🇵🇭 Filipino</option>
+    <option value="ta">🇮🇳 தமிழ்</option>
+    <option value="ur">🇵🇰 اردو</option>
+    <option value="no">🇳🇴 Norsk</option>
+  </select>
+</div>
 <main class="experience" id="experiencia">
  <section class="hero" id="inicio" aria-labelledby="hero-title">
   <div class="hero-photo" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
@@ -4155,7 +4212,7 @@ revealPersonalizedVisualsAfterHydration();
 
 
 <script src="./assets/lovena-public-interactions.js?v=20261028-preview-interactions-1"></script>
-<script src="./translation-bridge.js?v=20261028-language-currency-1" defer></script>
+<script src="./assets/lovena-experience-language.js?v=20261028-experience-language-1"></script><script src="./translation-bridge.js?v=20261028-experience-interface-1" defer></script>
 
 
 </body>
