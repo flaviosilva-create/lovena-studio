@@ -1,5 +1,6 @@
-/* Safety net for published gifts: core page scripts may be delayed by network/data bootstrapping.
-   Only runs on shared public links, and yields completely once the primary click handlers are ready. */
+/* Safety net for published gifts and editor Preview Experience.
+   The primary page handlers may be delayed by network/data bootstrapping; editor preview uses
+   the same interaction fallback while leaving the editor's own controls untouched. */
 (function () {
   "use strict";
   var query = new URLSearchParams(window.location.search);
