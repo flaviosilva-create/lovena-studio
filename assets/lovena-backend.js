@@ -709,6 +709,9 @@
       var htmlUnlocked = !!(entitlements && entitlements.includesHtmlDownload);
       var publicUrl = entitlements && entitlements.publicUrl;
       setHtmlExportButtons(htmlUnlocked);
+      editorExportCopy.textContent = htmlUnlocked
+        ? "Download a standalone HTML file with your photos, letter, stories, and animations, ready to keep offline."
+        : "Your page is published. The HTML download requires the optional US$ 1.00 offline add-on in Publish & Export.";
       editorExportSection.hidden = !onlinePaid;
       editorExportSection.style.display = onlinePaid ? "grid" : "none";
       publicationDock.hidden = onlinePaid;
