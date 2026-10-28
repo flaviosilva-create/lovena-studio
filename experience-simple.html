@@ -360,6 +360,7 @@ body.editor-mode .experience{padding-bottom:28px}
  #lovenaEditor{width:100vw;top:max(12px,env(safe-area-inset-top,0px));height:calc(100vh - max(12px,env(safe-area-inset-top,0px)) - env(safe-area-inset-bottom,0px));height:calc(100dvh - max(12px,env(safe-area-inset-top,0px)) - env(safe-area-inset-bottom,0px))}
  #lovenaEditor .ed-head{padding:18px 70px 15px 17px}
  #lovenaEditor .ed-head h2{font-size:22px}
+ #lovenaEditor .ed-close{display:none!important}
  #lovenaEditor .ed-scroll{padding:12px 12px 20px}
  #lovenaEditor .ed-actions{padding-inline:12px}
  #lovenaEditorTrigger{right:12px;bottom:12px;padding:11px 14px}
@@ -1441,6 +1442,8 @@ body.lovena-simple-page #lovenaEditor .ed-scroll>details:nth-of-type(4){display:
   <div class="ed-action-row"><button type="button" class="ed-secondary" data-editor-action="save">Save Changes</button><button type="button" class="ed-secondary" data-editor-action="view">Preview Experience ↗</button></div>
  </footer>
 </aside>
+<button type="button" id="lovenaEditorMobileClose" data-editor-action="close" aria-label="Close editor" hidden
+ style="display:none;position:fixed;top:calc(env(safe-area-inset-top, 0px) + 12px);right:12px;z-index:10010;width:48px;height:48px;min-width:48px;min-height:48px;align-items:center;justify-content:center;padding:0;border:1px solid rgba(255,255,255,.65);border-radius:50%;background:#49211c;color:#fff5eb;font:400 30px/1 Arial,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.38);-webkit-appearance:none;appearance:none;touch-action:manipulation">×</button>
 <dialog class="modal" id="detailModal" aria-labelledby="modalTitle">
  <div class="modal-content">
   <button class="modal-close" type="button" data-action="close-modal" aria-label="Close">×</button>
@@ -2290,6 +2293,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  var panel=document.getElementById("lovenaEditor");
  var backdrop=document.getElementById("lovenaEditorBackdrop");
  var trigger=document.getElementById("lovenaEditorTrigger");
+ var mobileClose=document.getElementById("lovenaEditorMobileClose");
  var fieldsHost=document.getElementById("lovenaEditorFields");
  var imagesHost=document.getElementById("lovenaEditorImages");
  var milestoneHost=document.getElementById("lovenaEditorMilestones");
@@ -3198,8 +3202,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    fail("Your browser could not open this photo. Try a JPG or PNG image.",error);
   });
  }
- function openEditor(){isPreviewing=false;document.body.classList.remove("lovena-preview-mode");document.body.classList.add("editor-mode","editor-panel-open");setTriggerLabel(false);trigger.hidden=false;markEditableTargets();backdrop.hidden=false;panel.hidden=false;requestAnimationFrame(function(){backdrop.classList.add("is-open");panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();});}
- function closeEditor(){document.body.classList.remove("editor-panel-open");setActivePreviewElement(null);panel.classList.remove("is-open");backdrop.classList.remove("is-open");panel.setAttribute("aria-hidden","true");setTimeout(function(){if(!panel.classList.contains("is-open")){panel.hidden=true;backdrop.hidden=true;}},260);}
+ function openEditor(){isPreviewing=false;document.body.classList.remove("lovena-preview-mode");document.body.classList.add("editor-mode","editor-panel-open");if(mobileClose){var showMobileClose=!!(window.matchMedia&&window.matchMedia("(max-width: 480px)").matches);mobileClose.hidden=!showMobileClose;mobileClose.style.display=showMobileClose?"grid":"none";}setTriggerLabel(false);trigger.hidden=false;markEditableTargets();backdrop.hidden=false;panel.hidden=false;requestAnimationFrame(function(){backdrop.classList.add("is-open");panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();});}
+ function closeEditor(){document.body.classList.remove("editor-panel-open");if(mobileClose){mobileClose.hidden=true;mobileClose.style.display="none";}setActivePreviewElement(null);panel.classList.remove("is-open");backdrop.classList.remove("is-open");panel.setAttribute("aria-hidden","true");setTimeout(function(){if(!panel.classList.contains("is-open")){panel.hidden=true;backdrop.hidden=true;}},260);}
  function setTriggerLabel(preview){var label=trigger.querySelector(".ed-trigger-label");if(label)label.textContent=preview?"Back to Editing":"Edit Experience";trigger.setAttribute("aria-label",preview?"Back to Editing":"Open experience editor");}
  function enterPreviewMode(){saveDraft(true);isPreviewing=true;closeEditor();document.body.classList.remove("editor-mode","editor-panel-open");document.body.classList.add("lovena-preview-mode");document.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});trigger.hidden=false;setTriggerLabel(true);}
  function downloadBlob(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);}
