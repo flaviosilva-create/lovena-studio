@@ -12,23 +12,61 @@
     } catch (error) { return String(navigator.language || "").toLowerCase() === "pt-br" ? "BR" : "US"; }
   }
   function getCurrencyPreference() {
-    try { var saved = localStorage.getItem(CURRENCY_KEY); if (saved === "brl" || saved === "usd") return saved; } catch (error) {}
+    try { var saved = localStorage.getItem(CURRENCY_KEY); if (saved === "brl" || saved === "usd" || saved === "eur") return saved; } catch (error) {}
     return "";
   }
   function applyPrices(currency) {
-    var isBRL = currency === "brl";
+    var prices = {
+      brl: {
+        simple: "R$ 9,99",
+        premium: "R$ 19,99",
+        addon: "R$ 5,00",
+        language: "pt-BR",
+        simpleLabel: "9 reais e 99 centavos",
+        premiumLabel: "19 reais e 99 centavos"
+      },
+      usd: {
+        simple: "US$ 4.99",
+        premium: "US$ 9.99",
+        addon: "US$ 1.00",
+        language: "en-US",
+        simpleLabel: "4.99 US dollars",
+        premiumLabel: "9.99 US dollars"
+      },
+      eur: {
+        simple: "€ 4,99",
+        premium: "€ 9,99",
+        addon: "€ 1,00",
+        language: "en-IE",
+        simpleLabel: "4 euros and 99 cents",
+        premiumLabel: "9 euros and 99 cents"
+      }
+    };
+    var selected = prices[currency] ? currency : "usd";
+    var config = prices[selected];
     var simple = document.querySelector("#plans .lr-plan-basic .lr-price");
     var premium = document.querySelector("#plans .lr-plan-featured .lr-price");
-    if (simple) { simple.textContent = isBRL ? "R$ 9,99" : "US$ 4.99"; simple.setAttribute("aria-label", isBRL ? "9 reais e 99 centavos" : "4.99 US dollars"); simple.setAttribute("lang", isBRL ? "pt-BR" : "en-US"); }
-    if (premium) { premium.textContent = isBRL ? "R$ 19,99" : "US$ 9.99"; premium.setAttribute("aria-label", isBRL ? "19 reais e 99 centavos" : "9.99 US dollars"); premium.setAttribute("lang", isBRL ? "pt-BR" : "en-US"); }
-    document.querySelectorAll("#plans .lr-plan li span.notranslate").forEach(function (item) { item.textContent = isBRL ? "R$ 5,00" : "US$ 1.00"; item.setAttribute("lang", isBRL ? "pt-BR" : "en-US"); });
+    if (simple) {
+      simple.textContent = config.simple;
+      simple.setAttribute("aria-label", config.simpleLabel);
+      simple.setAttribute("lang", config.language);
+    }
+    if (premium) {
+      premium.textContent = config.premium;
+      premium.setAttribute("aria-label", config.premiumLabel);
+      premium.setAttribute("lang", config.language);
+    }
+    document.querySelectorAll("#plans .lr-plan li span.notranslate").forEach(function (item) {
+      item.textContent = config.addon;
+      item.setAttribute("lang", config.language);
+    });
     var selector = document.getElementById("lovenaCurrencySelect");
-    if (selector && selector.value !== currency) selector.value = currency;
-    window.LOVENA_CURRENCY_CODE = currency;
-    window.LOVENA_IS_BRAZIL_CURRENCY = isBRL;
+    if (selector && selector.value !== selected) selector.value = selected;
+    window.LOVENA_CURRENCY_CODE = selected;
+    window.LOVENA_IS_BRAZIL_CURRENCY = selected === "brl";
   }
   function setCurrencyPreference(currency) {
-    var value = currency === "brl" ? "brl" : "usd";
+    var value = currency === "brl" || currency === "eur" || currency === "usd" ? currency : "usd";
     try { localStorage.setItem(CURRENCY_KEY, value); } catch (error) {}
     applyPrices(value);
     try { window.dispatchEvent(new CustomEvent("lovena:currency-changed", { detail: { currencyCode: value } })); } catch (error) {}
