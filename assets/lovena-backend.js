@@ -385,7 +385,7 @@
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
-      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type, countryCode: countryCode })
+      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type, countryCode: countryCode, currencyCode: (window.LOVENA_CURRENCY_CODE || (function () { try { return localStorage.getItem("lovenaPreferredCurrency"); } catch (_) { return ""; } })() || (countryCode === "BR" ? "brl" : "usd")) })
     });
     var body = await response.json().catch(function () { return {}; });
     if (!response.ok || !body.url) throw new Error(body.message || body.error || "Could not start checkout.");
@@ -733,28 +733,28 @@
           : "Offline HTML is optional; select the checkbox beside the price to include it.");
       publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
     }
-    function applyRegionalPricing(isBrazil) {
+    function applyRegionalPricing(isBrazil, selectedCurrency) {
       brazilianVisitor = !!isBrazil;
-      currencyPrefix = brazilianVisitor ? "R$ " : "US$ ";
-      addonCents = brazilianVisitor ? 500 : 100;
-      basePriceCents = brazilianVisitor ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
+      var currency = selectedCurrency === "brl" || selectedCurrency === "usd" ? selectedCurrency : (brazilianVisitor ? "brl" : "usd");
+      currencyPrefix = currency === "brl" ? "R$ " : "US$ ";
+      addonCents = currency === "brl" ? 500 : 100;
+      basePriceCents = currency === "brl" ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
       includeHtmlTitle.textContent = "Add offline HTML (+" + priceLabel(addonCents) + ")";
       htmlPurchaseButton.textContent = "Offline HTML download · " + priceLabel(addonCents) + " (optional)";
       htmlPurchaseStatus.textContent = "Optional: after paying for online publishing, you can pay " + priceLabel(addonCents) + " more to download the HTML and use it offline.";
       updatePublicationPrice();
-      htmlExportButtons.forEach(function (button) {
-        if (button.disabled) button.textContent = "HTML offline bloqueado · " + priceLabel(addonCents);
-      });
+      htmlExportButtons.forEach(function (button) { if (button.disabled) button.textContent = "HTML offline bloqueado · " + priceLabel(addonCents); });
     }
     includeHtmlCheckbox.addEventListener("change", updatePublicationPrice);
     updatePublicationPrice();
     window.addEventListener("lovena:region-detected", function (event) {
       var country = event && event.detail && event.detail.countryCode;
-      if (country) applyRegionalPricing(country === "BR");
+      if (country) applyRegionalPricing(country === "BR", event.detail && event.detail.currencyCode);
     });
     if (window.LOVENA_REGION_READY) {
-      window.LOVENA_REGION_READY.then(function (country) { applyRegionalPricing(country === "BR"); }).catch(function () {});
+      window.LOVENA_REGION_READY.then(function (country) { applyRegionalPricing(country === "BR", window.LOVENA_CURRENCY_CODE); }).catch(function () {});
     }
+    window.addEventListener("lovena:currency-changed", function (event) { applyRegionalPricing(window.LOVENA_IS_BRAZIL, event.detail && event.detail.currencyCode); });
 
     var htmlExportButtons = Array.from(document.querySelectorAll('[data-editor-action="export"]'));
     var originalExportText = htmlExportButtons.find(function (button) {
