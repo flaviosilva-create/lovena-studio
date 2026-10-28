@@ -3534,6 +3534,100 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
        openModal(item.title||"A Message for You",item.copy||"",item.kicker||"ONE MORE THING",{signature:item.signature||"You make everything more beautiful. ♡",type:"message"});
       }
      }
+     function musicEmbedFor(song){
+      song=song||{};
+      var raw=String(song.url||"").trim();
+      if(!raw)return null;
+      var parsed;
+      try{parsed=new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)?raw:"https://"+raw);}catch(error){return null;}
+      if(parsed.protocol!=="https:")return null;
+      var host=parsed.hostname.toLowerCase();
+      var parts=parsed.pathname.split("/").filter(Boolean);
+      var normalized=String(song.platform||"").toLowerCase().replace(/[\s_-]/g,"");
+      var platform=normalized==="spotify"||host==="open.spotify.com"||host==="spotify.com"||host.endsWith(".spotify.com")?"spotify":
+       normalized==="apple"||normalized==="applemusic"||host==="music.apple.com"||host==="embed.music.apple.com"?"apple":
+       host==="youtu.be"||host==="youtube.com"||host.endsWith(".youtube.com")?"youtube":"";
+      if(platform==="spotify"){
+       if(host!=="open.spotify.com")return null;
+       var trackIndex=parts.findIndex(function(part){return part.toLowerCase()==="track";});
+       if(trackIndex<0||!parts[trackIndex+1]||!/^[A-Za-z0-9]+$/.test(parts[trackIndex+1]))return null;
+       return {url:"https://open.spotify.com/embed/track/"+parts[trackIndex+1]+"?utm_source=generator&theme=0",platform:platform,height:152};
+      }
+      if(platform==="apple"){
+       if(parts.map(function(part){return part.toLowerCase();}).indexOf("song")<0)return null;
+       parsed.hostname="embed.music.apple.com";
+       parsed.searchParams.delete("itscg");
+       parsed.searchParams.delete("itsct");
+       return {url:parsed.href,platform:platform,height:175};
+      }
+      if(platform==="youtube"){
+       var videoId=parsed.searchParams.get("v")||"";
+       if(!videoId&&host==="youtu.be")videoId=parts[0]||"";
+       if(!videoId){
+        var videoMatch=parsed.pathname.match(/\/(?:embed|shorts|live)\/([A-Za-z0-9_-]{11})/);
+        if(videoMatch)videoId=videoMatch[1];
+       }
+       var listId=parsed.searchParams.get("list")||"";
+       if(/^[A-Za-z0-9_-]{11}$/.test(videoId)){
+        var videoUrl=new URL("https://www.youtube.com/embed/"+videoId);
+        videoUrl.searchParams.set("playsinline","1");
+        videoUrl.searchParams.set("rel","0");
+        if(listId)videoUrl.searchParams.set("list",listId);
+        videoUrl.searchParams.set("autoplay","1");
+        return {url:videoUrl.href,platform:platform,height:225};
+       }
+       if(listId){
+        var playlistUrl=new URL("https://www.youtube.com/embed/videoseries");
+        playlistUrl.searchParams.set("list",listId);
+        playlistUrl.searchParams.set("playsinline","1");
+        playlistUrl.searchParams.set("autoplay","1");
+        return {url:playlistUrl.href,platform:platform,height:225};
+       }
+      }
+      return null;
+     }
+     function playMusic(){
+      var songs=list(data.songs);
+      var song=songs[0]||{};
+      var container=document.getElementById("musicEmbedContainer");
+      var card=document.querySelector(".music-card");
+      if(!container||!card)return;
+      container.replaceChildren();
+      container.hidden=false;
+      card.classList.add("is-embedded");
+      var embed=musicEmbedFor(song);
+      if(embed){
+       var frame=document.createElement("iframe");
+       frame.className="music-embed-frame music-embed-"+embed.platform;
+       frame.src=embed.url;
+       frame.title="Music player: "+(song.title||"selected song");
+       frame.loading="eager";
+       frame.referrerPolicy="strict-origin-when-cross-origin";
+       frame.allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+       frame.allowFullscreen=embed.platform==="youtube";
+       frame.style.width="100%";
+       frame.style.height=embed.height+"px";
+       frame.style.border="0";
+       frame.style.borderRadius="8px";
+       container.appendChild(frame);
+       try{container.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(error){}
+       return;
+      }
+      var note=document.createElement("p");
+      note.className="music-embed-note";
+      note.textContent="This link does not identify a playable song or playlist. Use the music link below, or update it to a direct YouTube video/playlist, Spotify track, or Apple Music song link.";
+      var link=document.getElementById("musicOpen");
+      if(link){
+       var service=document.createElement("a");
+       service.className="music-embed-service-link";
+       service.href=link.href||"https://music.youtube.com/";
+       service.target="_blank";
+       service.rel="noopener noreferrer";
+       service.textContent="Open music service ↗";
+       container.append(note,service);
+      }else container.appendChild(note);
+      try{container.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(error){}
+     }
      function closeModal(){
       if(typeof dialog.close==="function"&&dialog.open)dialog.close();
       else dialog.removeAttribute("open");
@@ -3560,6 +3654,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
       var action=target.closest("[data-action]");
       if(!action)return;
       var name=action.getAttribute("data-action");
+      if(name==="song-play"){stop(event);playMusic();return;}
       if(name==="close-modal"){stop(event);closeModal();return;}
       if(name==="modal-prev"){stop(event);openPhoto(activePhoto-1);return;}
       if(name==="modal-next"){stop(event);openPhoto(activePhoto+1);return;}
