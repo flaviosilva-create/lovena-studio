@@ -119,10 +119,7 @@
   function selectedLanguage() {
     var manualLanguage = readManualLanguage();
     if (manualLanguage) return manualLanguage;
-    var isExperience = !!document.getElementById("experiencia");
-    var isEditorPage = false;
-    try { isEditorPage = new URLSearchParams(window.location.search).has("edit"); } catch (error) {}
-    if (isBrazilianVisitor() && (!isExperience || !isEditorPage)) return "pt";
+    if (isBrazilianVisitor()) return "pt";
     var selectors = selectorElements();
     var selector = selectors.find(isElementVisible) || selectors[0];
     if (selector && String(selector.value || "").trim()) {
