@@ -108,8 +108,10 @@ Deno.serve(async (req: Request) => {
             });
             if (response.ok) {
               const session = await response.json().catch(() => ({}));
+              const orderCurrency = String(selectedOrder.currency || "usd").toLowerCase();
+              const orderAddonCents = orderCurrency === "brl" ? 500 : 100;
               const expectedPurchaseType = selectedOrder.includes_html_download
-                ? (selectedOrder.amount_total === 100 ? "html_download" : "online_with_html")
+                ? (selectedOrder.amount_total === orderAddonCents ? "html_download" : "online_with_html")
                 : "online";
               const sessionMatchesOrder =
                 session.id === sessionId &&
@@ -157,14 +159,18 @@ Deno.serve(async (req: Request) => {
     if (refreshedExperienceError) throw refreshedExperienceError;
     if (!experience || experience.owner_id !== user.id) return reply(404, { error: "experience_not_found" });
 
-    const baseCents = experience.plan === "simple" ? 499 : 999;
-    const onlinePaid = matchingOrders.some((order: any) =>
-      order.plan === experience.plan && order.payment_status === "paid" && order.amount_total >= baseCents
-    );
-    const includesHtmlDownload = matchingOrders.some((order: any) =>
-      order.plan === experience.plan && order.payment_status === "paid" && order.includes_html_download === true &&
-      (order.amount_total === 100 || order.amount_total >= baseCents + 100)
-    );
+    const onlinePaid = matchingOrders.some((order: any) => {
+      const currency = String(order.currency || "usd").toLowerCase();
+      const baseCents = currency === "brl" ? (order.plan === "simple" ? 999 : 1999) : (order.plan === "simple" ? 499 : 999);
+      return order.plan === experience.plan && order.payment_status === "paid" && order.amount_total >= baseCents;
+    });
+    const includesHtmlDownload = matchingOrders.some((order: any) => {
+      const currency = String(order.currency || "usd").toLowerCase();
+      const baseCents = currency === "brl" ? (order.plan === "simple" ? 999 : 1999) : (order.plan === "simple" ? 499 : 999);
+      const addonCents = currency === "brl" ? 500 : 100;
+      return order.plan === experience.plan && order.payment_status === "paid" && order.includes_html_download === true &&
+        (order.amount_total === addonCents || order.amount_total >= baseCents + addonCents);
+    });
     const publicPage = experience.plan === "simple" ? "experience-simple.html" : "experience.html";
     const publicUrl = onlinePaid && experience.status === "published" && experience.public_slug
       ? "https://flaviosilva-create.github.io/lovena-studio/" + publicPage + "?slug=" + encodeURIComponent(experience.public_slug)
@@ -180,8 +186,9 @@ Deno.serve(async (req: Request) => {
 
     const order = matchingOrders.find((item: any) => item.stripe_checkout_session_id === sessionId);
     if (!order) return reply(404, { error: "checkout_not_found" });
+    const orderAddonCents = String(order.currency || "usd").toLowerCase() === "brl" ? 500 : 100;
     const purchaseType = order.includes_html_download
-      ? (order.amount_total === 100 ? "html_download" : "online_with_html")
+      ? (order.amount_total === orderAddonCents ? "html_download" : "online_with_html")
       : "online";
     return reply(200, {
       status: order.payment_status,
