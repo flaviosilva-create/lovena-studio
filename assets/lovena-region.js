@@ -38,10 +38,18 @@
     window.LOVENA_REGION_COUNTRY = code;
     window.LOVENA_IS_BRAZIL = code === "BR";
     var manual = "";
-    try { manual = sessionStorage.getItem("lovenaManualLanguage") || ""; } catch (error) {}
-    var language = manual || (code === "BR" ? "pt" : "en");
+    var savedLanguage = "";
+    try {
+      manual = sessionStorage.getItem("lovenaManualLanguage") || "";
+      savedLanguage = localStorage.getItem("lovenaPreferredLanguage") || "";
+    } catch (error) {}
+    var language = manual || savedLanguage || (code === "BR" ? "pt" : "en");
     document.documentElement.setAttribute("lang", language === "pt" ? "pt-BR" : language);
     document.documentElement.setAttribute("data-lovena-language", language);
+    var languageSelector = document.getElementById("lovenaLanguageSelect");
+    if (languageSelector && Array.from(languageSelector.options).some(function (option) { return option.value === language; })) {
+      languageSelector.value = language;
+    }
     try { document.cookie = "googtrans=/en/" + language + ";path=/;max-age=31536000;SameSite=Lax"; } catch (error) {}
     var currency = getCurrencyPreference() || (code === "BR" ? "brl" : "usd");
     applyPrices(currency);
