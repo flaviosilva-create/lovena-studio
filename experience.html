@@ -3987,7 +3987,8 @@ revealPersonalizedVisualsAfterHydration();
     var rebuildTimer = 0;
     var observer = null;
     var frameId = 0;
-    var speed = 26;\n    var iosAppleTouchDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var speed = 26;
+    var iosAppleTouchDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
     /* scroll-behavior:smooth and scroll-snap fight per-frame scrollLeft updates,
        especially in mobile Safari. Manual arrow controls still call scrollTo(). */
