@@ -398,7 +398,10 @@ jobs:
             // Reproduce the actual editor mode, where the owner sees the gallery behind the editing/publishing panel.
             const editorPage = await browser.newPage({ viewport: { width: 1365, height: 900 } });
             editorPage.on("pageerror", error => pageErrors.push(error.message));
+            editorPage.on("console", message => { if (message.type() === "warning" || message.type() === "error") console.log("Editor console [" + message.type() + "]: " + message.text()); });
+            let translationRequests = 0;
             await editorPage.route(/https:\/\/translate\.googleapis\.com\/translate_a\/single.*/, async route => {
+              translationRequests++;
               const requestUrl = new URL(route.request().url());
               const language = requestUrl.searchParams.get("tl") || "pt";
               const source = requestUrl.searchParams.get("q") || "";
@@ -435,9 +438,32 @@ jobs:
               editor.insertBefore(probe, editor.firstChild);
               window.LovenaTranslationBridge.refresh();
             });
-            await editorPage.waitForFunction(() =>
-              document.querySelector("#lovenaInterfaceLanguageProbe")?.textContent === "pt: Interface language translation probe",
-              null, { timeout: 20000 });
+            try {
+              await editorPage.waitForFunction(() =>
+                document.querySelector("#lovenaInterfaceLanguageProbe")?.textContent === "pt: Interface language translation probe",
+                null, { timeout: 20000 });
+            } catch (error) {
+              const diagnostic = await editorPage.evaluate(() => {
+                const probe = document.querySelector("#lovenaInterfaceLanguageProbe");
+                const editor = document.querySelector("#lovenaEditor");
+                const selector = document.querySelector("#lovenaExperienceLanguageSelect");
+                return {
+                  probeExists: !!probe,
+                  probeText: probe?.textContent || null,
+                  probeParent: probe?.parentElement?.tagName || null,
+                  probeUserAuthored: !!probe?.closest('[data-lovena-user-content="true"]'),
+                  editorConnected: !!editor?.isConnected,
+                  editorHidden: !!editor?.hidden,
+                  editorAriaHidden: editor?.getAttribute("aria-hidden") || null,
+                  firstEditorText: editor?.firstElementChild?.textContent?.trim()?.slice(0, 100) || null,
+                  selectorValue: selector?.value || null,
+                  bridgeLanguage: window.LovenaTranslationBridge?.language() || null,
+                  activeLanguage: document.documentElement.lang || null
+                };
+              });
+              console.error("Interface translation diagnostics:", JSON.stringify({ ...diagnostic, translationRequests }));
+              throw error;
+            }
             console.log("Experience interface inherited Portuguese and translated editor content.");
             await editorPage.locator("#lovenaExperienceLanguageSelect").selectOption("de");
             await editorPage.waitForFunction(() =>
