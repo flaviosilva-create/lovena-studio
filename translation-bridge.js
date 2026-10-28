@@ -46,6 +46,21 @@
     return low;
   }
 
+  function isBrazilianVisitor() {
+    try {
+      var locale = String(navigator.language || "").toLowerCase();
+      var languages = Array.isArray(navigator.languages) ? navigator.languages.map(function (item) { return String(item).toLowerCase(); }) : [];
+      var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      var brazilianTimezones = "|America/Sao_Paulo|America/Fortaleza|America/Recife|America/Manaus|America/Belem|America/Bahia|America/Campo_Grande|America/Cuiaba|America/Porto_Velho|America/Boa_Vista|America/Rio_Branco|America/Noronha|America/Maceio|America/Araguaina|America/Santarem|";
+      return locale === "pt-br" || languages.indexOf("pt-br") !== -1 || brazilianTimezones.indexOf("|" + timezone + "|") !== -1;
+    } catch (error) { return String(navigator.language || "").toLowerCase() === "pt-br"; }
+  }
+
+  function readManualLanguage() {
+    try { return canonicalLanguage(sessionStorage.getItem("lovenaManualLanguage") || ""); }
+    catch (error) { return ""; }
+  }
+
   function readSavedLanguage() {
     try { return canonicalLanguage(localStorage.getItem("lovenaPreferredLanguage") || SOURCE_LANGUAGE); }
     catch (error) { return SOURCE_LANGUAGE; }
@@ -102,6 +117,12 @@
   }
 
   function selectedLanguage() {
+    var manualLanguage = readManualLanguage();
+    if (manualLanguage) return manualLanguage;
+    var isExperience = !!document.getElementById("experiencia");
+    var isEditorPage = false;
+    try { isEditorPage = new URLSearchParams(window.location.search).has("edit"); } catch (error) {}
+    if (isBrazilianVisitor() && (!isExperience || !isEditorPage)) return "pt";
     var selectors = selectorElements();
     var selector = selectors.find(isElementVisible) || selectors[0];
     if (selector && String(selector.value || "").trim()) {
@@ -495,6 +516,7 @@
       if (match && selector.value !== match.value) selector.value = match.value;
     });
     saveLanguage(language);
+    try { sessionStorage.setItem("lovenaManualLanguage", language); } catch (error) {}
     if (language === SOURCE_LANGUAGE) { returnToEnglish(); return; }
     scheduleTranslation(80);
   }
