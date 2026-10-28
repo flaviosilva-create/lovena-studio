@@ -6,47 +6,31 @@
 
   var CONTROL_ID = "lovenaExperienceLanguageControl";
   var SELECT_ID = "lovenaExperienceLanguageSelect";
-  var LANGUAGES = [
-    ["en", "🇺🇸 English"],
-    ["pt", "🇧🇷 Português"],
-    ["es", "🇪🇸 Español"],
-    ["fr", "🇫🇷 Français"],
-    ["de", "🇩🇪 Deutsch"],
-    ["it", "🇮🇹 Italiano"],
-    ["nl", "🇳🇱 Nederlands"],
-    ["pl", "🇵🇱 Polski"],
-    ["ru", "🇷🇺 Русский"],
-    ["uk", "🇺🇦 Українська"],
-    ["tr", "🇹🇷 Türkçe"],
-    ["ar", "🇸🇦 العربية"],
-    ["he", "🇮🇱 עברית"],
-    ["hi", "🇮🇳 हिन्दी"],
-    ["bn", "🇧🇩 বাংলা"],
-    ["ja", "🇯🇵 日本語"],
-    ["ko", "🇰🇷 한국어"],
-    ["zh-CN", "🇨🇳 中文（简体）"],
-    ["zh-TW", "🇹🇼 中文（繁體）"],
-    ["id", "🇮🇩 Bahasa Indonesia"],
-    ["vi", "🇻🇳 Tiếng Việt"],
-    ["th", "🇹🇭 ไทย"],
-    ["sv", "🇸🇪 Svenska"],
-    ["da", "🇩🇰 Dansk"],
-    ["fi", "🇫🇮 Suomi"],
-    ["el", "🇬🇷 Ελληνικά"],
-    ["ro", "🇷🇴 Română"],
-    ["hu", "🇭🇺 Magyar"],
-    ["cs", "🇨🇿 Čeština"],
-    ["sk", "🇸🇰 Slovenčina"],
-    ["hr", "🇭🇷 Hrvatski"],
-    ["sr", "🇷🇸 Српски"],
-    ["ms", "🇲🇾 Bahasa Melayu"],
-    ["fa", "🇮🇷 فارسی"],
-    ["sw", "🇰🇪 Kiswahili"],
-    ["tl", "🇵🇭 Filipino"],
-    ["ta", "🇮🇳 தமிழ்"],
-    ["ur", "🇵🇰 اردو"],
-    ["no", "🇳🇴 Norsk"]
-  ];
+  // Keep this list aligned with the landing-page GTranslate language options.
+  var LANGUAGE_CODES = ["en","pt","es","fr","de","it","nl","sv","da","no","fi","is","pl","cs","sk","sl","hr","sr","bs","bg","ro","hu","el","ru","uk","tr","ar","he","fa","ur","hi","bn","ta","te","ml","mr","gu","pa","ne","si","th","vi","id","ms","tl","sw","am","ha","yo","ig","zu","xh","af","so","ps","ku","az","hy","ka","kk","uz","mn","my","km","lo","ja","ko","zh-CN","zh-TW","jv","su","ceb","mi","sm","haw","ht","la","eo","et","lv","lt","ga","cy","gd","eu","gl","ca","sq","mk","be","lb","mt","fy","yi","ny","sn","sd","tg","ky","tk","tt","ug","or","as","doi","sat","gom","mai","lus","nso","ts","wo","kok","sa","ckb","qu","pap","co","ilo","war","bho","ace","ban","bug","min","rom","sah","ti","oc","br","rn","rw","ak","bm","ee","kab","kri","st","tn","tiv","xmf"];
+  var LANGUAGE_NAMES = {
+    en:"🇺🇸 English",pt:"🇧🇷 Português",es:"🇪🇸 Español",fr:"🇫🇷 Français",de:"🇩🇪 Deutsch",it:"🇮🇹 Italiano",
+    nl:"🇳🇱 Nederlands",sv:"🇸🇪 Svenska",da:"🇩🇰 Dansk",no:"🇳🇴 Norsk",fi:"🇫🇮 Suomi",is:"Íslenska",
+    pl:"🇵🇱 Polski",cs:"🇨🇿 Čeština",sk:"🇸🇰 Slovenčina",sl:"Slovenščina",hr:"🇭🇷 Hrvatski",sr:"🇷🇸 Српски",
+    bs:"Bosanski",bg:"Български",ro:"🇷🇴 Română",hu:"Magyar",el:"🇬🇷 Ελληνικά",ru:"🇷🇺 Русский",uk:"🇺🇦 Українська",
+    tr:"🇹🇷 Türkçe",ar:"🇸🇦 العربية",he:"🇮🇱 עברית",fa:"🇮🇷 فارسی",ur:"🇵🇰 اردو",hi:"🇮🇳 हिन्दी",bn:"🇧🇩 বাংলা",
+    ta:"🇮🇳 தமிழ்",te:"తెలుగు",ml:"മലയാളം",mr:"मराठी",gu:"ગુજરાતી",pa:"ਪੰਜਾਬੀ",ne:"नेपाली",si:"සිංහල",
+    th:"🇹🇭 ไทย",vi:"🇻🇳 Tiếng Việt",id:"🇮🇩 Bahasa Indonesia",ms:"🇲🇾 Bahasa Melayu",tl:"🇵🇭 Filipino",
+    ja:"🇯🇵 日本語",ko:"🇰🇷 한국어","zh-CN":"🇨🇳 中文（简体）","zh-TW":"🇹🇼 中文（繁體）",
+    af:"Afrikaans",am:"አማርኛ",ha:"Hausa",yo:"Yorùbá",ig:"Igbo",zu:"isiZulu",xh:"isiXhosa",so:"Soomaali",
+    ps:"پښتو",ku:"Kurdî",az:"Azərbaycanca",hy:"Հայերեն",ka:"ქართული",kk:"Қазақша",uz:"Oʻzbekcha",
+    mn:"Монгол",my:"မြန်မာ",km:"ខ្មែរ",lo:"ລາວ",jv:"Basa Jawa",su:"Basa Sunda",ceb:"Cebuano",mi:"Māori",
+    sm:"Gagana Sāmoa",haw:"ʻŌlelo Hawaiʻi",ht:"Kreyòl ayisyen",la:"Latina",eo:"Esperanto",et:"Eesti",
+    lv:"Latviešu",lt:"Lietuvių",ga:"Gaeilge",cy:"Cymraeg",gd:"Gàidhlig",eu:"Euskara",gl:"Galego",ca:"Català",
+    sq:"Shqip",mk:"Македонски",be:"Беларуская",lb:"Lëtzebuergesch",mt:"Malti",fy:"Frysk",yi:"ייִדיש",
+    ny:"Chichewa",sn:"chiShona",sd:"سنڌي",tg:"Тоҷикӣ",ky:"Кыргызча",tk:"Türkmençe",tt:"Татарча",ug:"ئۇيغۇرچە",
+    or:"ଓଡ଼ିଆ",as:"অসমীয়া",doi:"डोगरी",sat:"ᱥᱟᱱᱛᱟᱲᱤ",gom:"कोंकणी",mai:"मैथिली",lus:"Mizo",nso:"Sesotho sa Leboa",
+    ts:"Xitsonga",wo:"Wolof",kok:"कोंकणी",sa:"संस्कृतम्",ckb:"کوردیی ناوەندی",qu:"Runasimi",pap:"Papiamentu",
+    co:"Corsu",ilo:"Ilokano",war:"Waray",bho:"भोजपुरी",ace:"Bahsa Acèh",ban:"Basa Bali",bug:"Basa Bugis",
+    min:"Baso Minangkabau",rom:"Romani",sah:"Саха тыла",ti:"ትግርኛ",oc:"Occitan",br:"Brezhoneg",
+    rn:"Ikirundi",rw:"Ikinyarwanda",ak:"Akan",bm:"Bamanankan",ee:"Eʋegbe",kab:"Taqbaylit",kri:"Krio",
+    st:"Sesotho",tn:"Setswana",tiv:"Tiv",xmf:"მარგალური"
+  };
 
   function canonicalLanguage(value) {
     var language = String(value || "").trim().split("|").pop().toLowerCase();
@@ -80,14 +64,38 @@
     return "en";
   }
 
+  function languageLabel(code) {
+    if (LANGUAGE_NAMES[code]) return LANGUAGE_NAMES[code];
+    try {
+      if (typeof Intl !== "undefined" && typeof Intl.DisplayNames === "function") {
+        var displayName = new Intl.DisplayNames([code], { type: "language" }).of(code);
+        if (displayName && displayName.toLowerCase() !== code.toLowerCase()) return displayName;
+      }
+    } catch (error) {}
+    return code.toUpperCase();
+  }
+
   function ensureOption(selector, code) {
     if (!code || Array.from(selector.options).some(function (option) {
       return canonicalLanguage(option.value) === code;
     })) return;
     var option = document.createElement("option");
     option.value = code;
-    option.textContent = code.toUpperCase();
+    option.textContent = languageLabel(code);
     selector.appendChild(option);
+  }
+
+  function populateLanguageOptions(selector) {
+    LANGUAGE_CODES.forEach(function (code) {
+      var canonical = canonicalLanguage(code);
+      if (!canonical || Array.from(selector.options).some(function (option) {
+        return canonicalLanguage(option.value) === canonical;
+      })) return;
+      var option = document.createElement("option");
+      option.value = code;
+      option.textContent = languageLabel(code);
+      selector.appendChild(option);
+    });
   }
 
   function init() {
@@ -101,6 +109,7 @@
     control.dataset.languageControlReady = "true";
     if (!isEditing) return;
 
+    populateLanguageOptions(selector);
     var language = getSavedLanguage() || defaultLanguage();
     ensureOption(selector, language);
     selector.value = language;
