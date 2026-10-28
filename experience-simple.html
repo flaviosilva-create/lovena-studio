@@ -3283,8 +3283,8 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  async function exportPage(){
   saveDraft(false);
   setStatus("Preparing the offline file and embedding photos…");
-  var exportButton=document.querySelector('[data-editor-action="export"]');
-  if(exportButton)exportButton.disabled=true;
+  var exportButtons=Array.from(document.querySelectorAll('[data-editor-action="export"]'));
+  exportButtons.forEach(function(button){button.disabled=true;});
   try{
    var offlineData=JSON.parse(JSON.stringify(data));
    offlineData.images=Object.assign({hero:null,gallery:[]},offlineData.images||{});
@@ -3378,7 +3378,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    console.error("Lovena offline export failed:",error);
    setStatus(error&&error.message?error.message:"Could not prepare the offline gift. Please try again.");
   }finally{
-   if(exportButton)exportButton.disabled=false;
+   exportButtons.forEach(function(button){button.disabled=button.getAttribute("aria-disabled")==="true";});
   }
  }
  function backup(){saveDraft(true);downloadBlob(new Blob([JSON.stringify(getSnapshot(),null,2)],{type:"application/json"}),"lovena-draft.json");}
