@@ -184,8 +184,8 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Browser smoke test for public Premium interactions
         env:
-          PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-gallery-autoplay-unified-3
-          EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-gallery-autoplay-3
+          PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-gallery-autoplay-unified-4
+          EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-gallery-autoplay-final4
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
           /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium webkit
