@@ -270,6 +270,8 @@
 
   function collectRecords(rootList) {
     var records = [];
+    var seenTextNodes = new Set();
+    var seenAttributes = new WeakMap();
     rootList.forEach(function (root) {
       if (!root || !root.isConnected) return;
       var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -284,7 +286,11 @@
         }
       });
       var node;
-      while ((node = walker.nextNode())) records.push({ type: "text", node: node, source: originalText(node) });
+      while ((node = walker.nextNode())) {
+        if (seenTextNodes.has(node)) continue;
+        seenTextNodes.add(node);
+        records.push({ type: "text", node: node, source: originalText(node) });
+      }
 
       var elements = [root].concat(Array.from(root.querySelectorAll("*")));
       elements.forEach(function (element) {
@@ -293,6 +299,10 @@
         if (element.tagName === "INPUT" && /^(button|submit|reset)$/i.test(element.type || "")) attributeNames.push("value");
         attributeNames.forEach(function (name) {
           if (!element.hasAttribute(name)) return;
+          var seenNames = seenAttributes.get(element);
+          if (!seenNames) { seenNames = new Set(); seenAttributes.set(element, seenNames); }
+          if (seenNames.has(name)) return;
+          seenNames.add(name);
           var source = rememberAttribute(element, name);
           if (meaningful(source)) records.push({ type: "attr", node: element, attribute: name, source: source });
         });
