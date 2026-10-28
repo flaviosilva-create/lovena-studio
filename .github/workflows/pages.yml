@@ -38,7 +38,7 @@ jobs:
               raise SystemExit("The landing page must contain only the expected translation configuration and loader scripts")
           Path("/tmp/lovena-gtranslate-config.js").write_text(config_script, encoding="utf-8")
           Path("/tmp/lovena-gtranslate-loader.js").write_text(loader_script, encoding="utf-8")
-          for marker in ['id="lovenaPreferences"', 'id="lovenaLanguageSelect"', 'id="lovenaCurrencySelect"', '<option value="eur">🇪🇺 EUR · €</option>']:
+          for marker in ['id="lovenaPreferences"', 'id="lovenaLanguageSelect"', 'id="lovenaCurrencySelect"', '<option value="brl" hidden disabled style="display:none">🇧🇷 BRL · R$</option>', '<option value="eur">🇪🇺 EUR · €</option>']:
               if marker not in html:
                   raise SystemExit(f"Landing page is missing the visible language/currency control: {marker}")
           visible_preferences_css = html.split('<style id="lovena-visible-preferences">', 1)[-1].split("</style>", 1)[0]
