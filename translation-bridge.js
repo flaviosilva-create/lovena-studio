@@ -353,7 +353,8 @@
         await wait(120);
       }
     }
-    // Two concurrent requests lower bursts of HTTP 429s on mobile networks.\n    await Promise.all([worker(), worker()]);
+    // Two concurrent requests lower bursts of HTTP 429s on mobile networks.
+    await Promise.all([worker(), worker()]);
     if (failures.length === texts.length && texts.length) {
       throw new Error("The free translation endpoint rejected every text request: " + failures[0].error.message);
     }
