@@ -1882,7 +1882,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
     var cycle=track.querySelector(".memory-collage-cycle:not(.memory-collage-cycle-copy)")||track.querySelector(".memory-collage-cycle");
     if(!cycle)return;
     var mobile=window.matchMedia?window.matchMedia("(max-width:850px)"):null;
-    var reduced=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):null;
+    var reduced=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):null;var iosAppleTouchDevice=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
     var frame=0,last=0,offset=0,cycleHeight=0,pausedUntil=0;
     function measure(){
      var next=cycle.getBoundingClientRect().height;
@@ -1897,7 +1897,7 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
      if(!last)last=time;
      var elapsed=Math.min(50,time-last);last=time;
      if(document.visibilityState!=="hidden"&&time>=pausedUntil&&cycleHeight>0){
-      offset=(offset+(reduced&&reduced.matches?12:28)*elapsed/1000)%cycleHeight;
+      var verticalSpeed=reduced&&reduced.matches?(iosAppleTouchDevice?16:12):(iosAppleTouchDevice?31:28);offset=(offset+verticalSpeed*elapsed/1000)%cycleHeight;
       track.style.transform="translate3d(0,-"+offset.toFixed(2)+"px,0)";
      }
      frame=requestAnimationFrame(animate);
@@ -3987,7 +3987,7 @@ revealPersonalizedVisualsAfterHydration();
     var rebuildTimer = 0;
     var observer = null;
     var frameId = 0;
-    var speed = 26;
+    var speed = 26;\n    var iosAppleTouchDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
     /* scroll-behavior:smooth and scroll-snap fight per-frame scrollLeft updates,
        especially in mobile Safari. Manual arrow controls still call scrollTo(). */
@@ -4143,7 +4143,7 @@ revealPersonalizedVisualsAfterHydration();
 
       /* Honor reduced-motion preferences by moving more slowly, not by disabling
          the promised autoplay entirely. Do not pause merely because a mouse hovers. */
-      speed = reducedMotion && reducedMotion.matches ? 11 : 26;
+      speed = reducedMotion && reducedMotion.matches ? (iosAppleTouchDevice ? 15 : 11) : (iosAppleTouchDevice ? 29 : 26);
       if (!paused && document.visibilityState !== "hidden" && loopWidth > 0) {
         /* Keep fractional progress between frames so 26 px/s still moves on iOS,
            where scrollLeft is rounded to integer pixels. */
