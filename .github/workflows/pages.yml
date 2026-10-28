@@ -255,6 +255,23 @@ jobs:
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
             await verifyGalleryAutoplay(editorPage, "editor desktop");
+            async function verifyAutoplayBehindPublishPanel(targetPage, label) {
+              await targetPage.locator("#lovenaPublishExportTrigger").waitFor({ state: "visible", timeout: 20000 });
+              await targetPage.locator("#lovenaPublishExportTrigger").click();
+              await targetPage.waitForFunction(() => {
+                const panel = document.querySelector("#lovenaPublicationPanel");
+                return panel && !panel.hidden && panel.getAttribute("aria-hidden") === "false";
+              }, null, { timeout: 10000 });
+              await targetPage.waitForTimeout(350);
+              const before = await targetPage.locator("#galleryRow").evaluate(row => row.scrollLeft);
+              await targetPage.waitForTimeout(1800);
+              const after = await targetPage.locator("#galleryRow").evaluate(row => row.scrollLeft);
+              if (!(after > before)) {
+                throw new Error(`Our Moments stopped behind Publish & Pay on ${label}: scrollLeft ${before} -> ${after}`);
+              }
+              console.log(`Our Moments continued behind Publish & Pay on ${label}: ${before} -> ${after}px`);
+            }
+            await verifyAutoplayBehindPublishPanel(editorPage, "desktop");
             await editorPage.close();
 
             // WebKit is the closest automated engine check for the iPhone Safari issue.
@@ -274,6 +291,7 @@ jobs:
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
             await verifyGalleryAutoplay(editorMobilePage, "WebKit editor mobile");
+            await verifyAutoplayBehindPublishPanel(editorMobilePage, "WebKit iPhone-sized viewport");
             await webkitBrowser.close();
 
             await page.locator('#galleryRow .gallery-item[data-photo="0"]:not([data-gallery-clone="true"])').click({ timeout: 15000 });
