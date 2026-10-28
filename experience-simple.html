@@ -3816,86 +3816,104 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  if(editMode){document.body.classList.add("editor-mode");markEditableTargets();trigger.hidden=false;openEditor();}
 
 
-  // Continuous scrapbook gallery motion (kept inside the existing editor script for deployment validation).
+  // One controller owns automatic gallery movement on desktop and mobile.
   (function () {
     "use strict";
     var row = document.getElementById("galleryRow");
-    if (!row) return;
-  
+    if (!row || row.dataset.galleryAutoplayController === "unified") return;
+    row.dataset.galleryAutoplayController = "unified";
+
     var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
-    var clones = [];
+    var cloneGroups = [];
     var loopWidth = 0;
+    var firstClone = null;
     var paused = false;
     var lastFrame = 0;
     var resumeTimer = 0;
     var rebuildTimer = 0;
     var observer = null;
-    var speed = 22; // pixels per second: subtle, continuous movement
-  
+    var frameId = 0;
+    var speed = 26;
+
+    /* scroll-behavior:smooth and scroll-snap fight per-frame scrollLeft updates,
+       especially in mobile Safari. Manual arrow controls still call scrollTo(). */
+    row.style.setProperty("scroll-behavior", "auto", "important");
+    row.style.setProperty("scroll-snap-type", "none", "important");
+    row.style.setProperty("overflow-x", "auto", "important");
+    row.style.setProperty("overflow-y", "hidden", "important");
+
+    function originals() {
+      return Array.from(row.children).filter(function (el) {
+        return el.classList && el.classList.contains("gallery-item") &&
+          el.dataset.galleryClone !== "true";
+      });
+    }
+
     function isCloneElement(el) {
       return !!(el && el.closest && el.closest('[data-gallery-clone="true"]'));
     }
-  
-    function originals() {
-      return Array.from(row.children).filter(function (el) {
-        return el.dataset.galleryClone !== "true";
+
+    function stripRevealState(el) {
+      el.classList.remove("reveal-ready", "is-visible", "lovena-edit-target", "lovena-edit-selected");
+      el.querySelectorAll(".reveal-ready,.is-visible,.lovena-edit-target,.lovena-edit-selected").forEach(function (child) {
+        child.classList.remove("reveal-ready", "is-visible", "lovena-edit-target", "lovena-edit-selected");
       });
     }
-  
+
     function removeClones() {
-      row.querySelectorAll('[data-gallery-clone="true"]').forEach(function (el) {
-        el.remove();
+      row.querySelectorAll(':scope > [data-gallery-clone="true"]').forEach(function (clone) {
+        clone.remove();
       });
-      clones = [];
+      cloneGroups = [];
+      firstClone = null;
       loopWidth = 0;
     }
-  
-    function rebuildLoop() {
-      if (!row.isConnected) return;
-      var oldWidth = loopWidth;
-      var oldScroll = row.scrollLeft;
-      if (oldWidth > 0) oldScroll = oldScroll % oldWidth;
-  
-      if (observer) observer.disconnect();
-      removeClones();
-      var items = originals();
-  
-      if (reducedMotion && reducedMotion.matches) {
-        row.scrollLeft = Math.min(oldScroll, row.scrollWidth);
-        if (observer) observeGallery();
-        return;
-      }
-  
-      if (items.length < 2) {
-        row.scrollLeft = 0;
-        if (observer) observeGallery();
-        return;
-      }
-  
-      items.forEach(function (item) {
+
+    function appendCloneGroup(items) {
+      var group = [];
+      items.forEach(function (item, index) {
         var clone = item.cloneNode(true);
         clone.dataset.galleryClone = "true";
+        clone.dataset.galleryCloneIndex = String(index);
         clone.setAttribute("aria-hidden", "true");
         clone.tabIndex = -1;
-        clone.querySelectorAll("a, button, input, select, textarea, [tabindex]").forEach(function (control) {
+        stripRevealState(clone);
+        clone.querySelectorAll("a,button,input,select,textarea,[tabindex]").forEach(function (control) {
           control.tabIndex = -1;
           control.setAttribute("aria-hidden", "true");
         });
         row.appendChild(clone);
-        clones.push(clone);
+        group.push(clone);
       });
-  
-      requestAnimationFrame(function () {
-        if (!row.isConnected || !clones.length) return;
-        var first = items[0].getBoundingClientRect();
-        var cloneFirst = clones[0].getBoundingClientRect();
-        loopWidth = cloneFirst.left - first.left;
-        if (!Number.isFinite(loopWidth) || loopWidth <= 0) loopWidth = 0;
-        row.scrollLeft = loopWidth > 0 ? oldScroll % loopWidth : 0;
-        if (observer) observeGallery();
+      cloneGroups.push(group);
+      if (!firstClone && group.length) firstClone = group[0];
+    }
+
+    function syncClone(source, clone, index) {
+      if (!source || !clone) return;
+      clone.className = source.className;
+      clone.classList.remove("reveal-ready", "is-visible", "lovena-edit-target", "lovena-edit-selected");
+      Array.from(clone.attributes).forEach(function (attr) {
+        if (attr.name !== "class" && attr.name !== "data-gallery-clone" &&
+            attr.name !== "data-gallery-clone-index" && attr.name !== "aria-hidden" && attr.name !== "tabindex") {
+          clone.removeAttribute(attr.name);
+        }
+      });
+      Array.from(source.attributes).forEach(function (attr) {
+        if (attr.name !== "data-gallery-clone") clone.setAttribute(attr.name, attr.value);
+      });
+      clone.innerHTML = source.innerHTML;
+      clone.dataset.galleryClone = "true";
+      clone.dataset.galleryCloneIndex = String(index);
+      clone.setAttribute("aria-hidden", "true");
+      clone.tabIndex = -1;
+      stripRevealState(clone);
+      clone.querySelectorAll("a,button,input,select,textarea,[tabindex]").forEach(function (control) {
+        control.tabIndex = -1;
+        control.setAttribute("aria-hidden", "true");
       });
     }
-  
+
     function observeGallery() {
       if (!observer) return;
       observer.observe(row, {
@@ -3903,18 +3921,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
         subtree: true,
         characterData: true,
         attributes: true,
-        attributeFilter: ["style", "aria-label"]
+        attributeFilter: ["style", "aria-label", "src", "class"]
       });
     }
-  
-    function queueRebuild() {
-      if (rebuildTimer) window.clearTimeout(rebuildTimer);
-      rebuildTimer = window.setTimeout(function () {
-        rebuildTimer = 0;
-        rebuildLoop();
-      }, 70);
-    }
-  
+
     function isRelevantMutation(mutation) {
       if (isCloneElement(mutation.target)) return false;
       if (mutation.type === "childList" && mutation.target === row) {
@@ -3925,57 +3935,123 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
       }
       return true;
     }
-  
-    observer = new MutationObserver(function (mutations) {
-      if (mutations.some(isRelevantMutation)) queueRebuild();
-    });
-  
+
+    function rebuildLoop() {
+      if (!row.isConnected) return;
+      var oldScroll = row.scrollLeft;
+      if (loopWidth > 0) oldScroll = oldScroll % loopWidth;
+      if (observer) observer.disconnect();
+      removeClones();
+
+      var items = originals();
+      if (items.length < 2) {
+        row.scrollLeft = 0;
+        observeGallery();
+        return;
+      }
+
+      appendCloneGroup(items);
+      var firstRect = items[0].getBoundingClientRect();
+      var cloneRect = firstClone.getBoundingClientRect();
+      loopWidth = cloneRect.left - firstRect.left;
+      if (!Number.isFinite(loopWidth) || loopWidth <= 0) {
+        loopWidth = 0;
+        observeGallery();
+        window.requestAnimationFrame(rebuildLoop);
+        return;
+      }
+
+      /* The viewport may be wider than one set of photos. Add enough duplicate
+         sets so a complete cycle can always scroll beyond the visible area. */
+      var attempts = 0;
+      while (row.scrollWidth < loopWidth + row.clientWidth + 4 && attempts < 8) {
+        appendCloneGroup(items);
+        attempts += 1;
+      }
+
+      row.scrollLeft = Math.min(Math.max(0, oldScroll), Math.max(0, loopWidth - 1));
+      observeGallery();
+      lastFrame = 0;
+    }
+
+    function queueRebuild() {
+      if (rebuildTimer) window.clearTimeout(rebuildTimer);
+      rebuildTimer = window.setTimeout(function () {
+        rebuildTimer = 0;
+        rebuildLoop();
+      }, 120);
+    }
+
     function pauseBriefly() {
       paused = true;
       if (resumeTimer) window.clearTimeout(resumeTimer);
       resumeTimer = window.setTimeout(function () {
         paused = false;
         lastFrame = 0;
-      }, 1800);
+      }, 1500);
     }
-  
-    row.addEventListener("pointerenter", function (event) {
-      if (event.pointerType === "mouse") paused = true;
-    });
-    row.addEventListener("pointerleave", function () {
+
+    function resume() {
+      if (resumeTimer) window.clearTimeout(resumeTimer);
       paused = false;
       lastFrame = 0;
-    });
-    row.addEventListener("touchstart", pauseBriefly, { passive: true });
-    row.addEventListener("touchend", pauseBriefly, { passive: true });
-    row.addEventListener("wheel", pauseBriefly, { passive: true });
-    row.addEventListener("focusin", function () { paused = true; });
-    row.addEventListener("focusout", function (event) {
-      if (!row.contains(event.relatedTarget)) {
-        paused = false;
-        lastFrame = 0;
-      }
-    });
-    row.addEventListener("click", pauseBriefly);
-  
-    if (reducedMotion && typeof reducedMotion.addEventListener === "function") {
-      reducedMotion.addEventListener("change", rebuildLoop);
     }
-  
+
     function animate(timestamp) {
       if (!lastFrame) lastFrame = timestamp;
-      var elapsed = Math.min(50, timestamp - lastFrame);
+      var elapsed = Math.min(50, Math.max(0, timestamp - lastFrame));
       lastFrame = timestamp;
-      if (!paused && row.dataset.galleryManualNavigation !== "true" && !(reducedMotion && reducedMotion.matches) &&
-          document.visibilityState !== "hidden" && loopWidth > 0) {
-        row.scrollLeft += speed * elapsed / 1000;
-        if (row.scrollLeft >= loopWidth) row.scrollLeft = row.scrollLeft % loopWidth;
+
+      /* Honor reduced-motion preferences by moving more slowly, not by disabling
+         the promised autoplay entirely. Do not pause merely because a mouse hovers. */
+      speed = reducedMotion && reducedMotion.matches ? 11 : 26;
+      if (!paused && document.visibilityState !== "hidden" && loopWidth > 0) {
+        var next = row.scrollLeft + speed * elapsed / 1000;
+        if (next >= loopWidth) next = next % loopWidth;
+        row.scrollLeft = Math.floor(next);
       }
-      requestAnimationFrame(animate);
+      frameId = window.requestAnimationFrame(animate);
     }
-  
+
+    row.addEventListener("pointerdown", pauseBriefly, { passive: true });
+    row.addEventListener("pointerup", pauseBriefly, { passive: true });
+    row.addEventListener("touchstart", pauseBriefly, { passive: true });
+    row.addEventListener("touchend", pauseBriefly, { passive: true });
+    row.addEventListener("touchcancel", pauseBriefly, { passive: true });
+    row.addEventListener("wheel", pauseBriefly, { passive: true });
+    row.addEventListener("click", pauseBriefly);
+    row.addEventListener("focusin", function () { paused = true; });
+    row.addEventListener("focusout", function (event) {
+      if (!row.contains(event.relatedTarget)) resume();
+    });
+
+    document.querySelectorAll('#fotos .gallery-arrows button[data-action="gallery-left"],#fotos .gallery-arrows button[data-action="gallery-right"]').forEach(function (button) {
+      button.addEventListener("click", pauseBriefly);
+    });
+
+    if (reducedMotion && typeof reducedMotion.addEventListener === "function") {
+      reducedMotion.addEventListener("change", function () { lastFrame = 0; });
+    } else if (reducedMotion && typeof reducedMotion.addListener === "function") {
+      reducedMotion.addListener(function () { lastFrame = 0; });
+    }
+
+    observer = new MutationObserver(function (mutations) {
+      if (mutations.some(isRelevantMutation)) queueRebuild();
+      else {
+        cloneGroups.forEach(function (group) {
+          group.forEach(function (clone, index) { syncClone(originals()[index], clone, index); });
+        });
+      }
+    });
+
+    window.addEventListener("resize", queueRebuild, { passive: true });
+    window.addEventListener("orientationchange", function () {
+      window.setTimeout(queueRebuild, 150);
+    }, { passive: true });
+    document.addEventListener("visibilitychange", function () { lastFrame = 0; });
+
     rebuildLoop();
-    requestAnimationFrame(animate);
+    frameId = window.requestAnimationFrame(animate);
   })();
   function bindGalleryArrowNavigation(row){
   if(!row||row.dataset.galleryArrowsReady==="true")return;
@@ -4016,146 +4092,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 <script src="./assets/lovena-public-interactions.js?v=20261027-public-fallback-3"></script>
 <script src="./translation-bridge.js?v=20261027-experience-language-4" defer></script>
 
-<script id="lovena-gallery-autoplay">
-(function(){
- "use strict";
- function init(){
-  var row=document.getElementById("galleryRow");
-  if(!row||row.dataset.autoplayReady==="true")return;
-  Array.from(row.querySelectorAll(':scope > .gallery-item[data-gallery-clone="true"]')).forEach(function(el){el.remove();});
-  var originals=Array.prototype.filter.call(row.children,function(el){
-   return el.classList&&el.classList.contains("gallery-item")&&!el.hasAttribute("data-gallery-clone");
-  });
-  if(originals.length<2)return;
-  row.dataset.autoplayReady="true";
 
-  var reduced=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):null;
-  var paused=false,lastFrame=0,loopWidth=0,offset=0,frame=0,resumeTimer=0;
-  var firstClone=null,cloneGroups=[];
-  row.style.setProperty("scroll-behavior","auto","important");
-  row.style.setProperty("scroll-snap-type","none","important");
-  row.style.setProperty("overflow-x","auto","important");
-  row.style.setProperty("overflow-y","hidden","important");
-
-  function makeClone(source,index){
-   var clone=source.cloneNode(true);
-   clone.setAttribute("data-gallery-clone","true");
-   clone.setAttribute("data-gallery-clone-index",String(index));
-   clone.setAttribute("aria-hidden","true");
-   clone.tabIndex=-1;
-   clone.classList.remove("reveal-ready","is-visible","lovena-edit-target","lovena-edit-selected");
-   clone.querySelectorAll(".reveal-ready").forEach(function(el){el.classList.remove("reveal-ready","is-visible");});
-   clone.querySelectorAll("a,button,input,select,textarea,[tabindex]").forEach(function(el){el.tabIndex=-1;});
-   return clone;
-  }
-  function appendCloneGroup(){
-   var group=[];
-   originals.forEach(function(source,index){
-    var clone=makeClone(source,index);
-    row.appendChild(clone);
-    group.push(clone);
-   });
-   cloneGroups.push(group);
-   if(!firstClone)firstClone=group[0];
-  }
-  function syncClone(source,clone){
-   if(!source||!clone)return;
-   Array.from(clone.attributes).forEach(function(attr){
-    if(attr.name!=="data-gallery-clone"&&attr.name!=="data-gallery-clone-index"&&attr.name!=="aria-hidden"&&attr.name!=="tabindex")clone.removeAttribute(attr.name);
-   });
-   Array.from(source.attributes).forEach(function(attr){if(attr.name!=="data-gallery-clone")clone.setAttribute(attr.name,attr.value);});
-   clone.innerHTML=source.innerHTML;
-   clone.classList.remove("reveal-ready","is-visible","lovena-edit-target","lovena-edit-selected");
-   clone.setAttribute("data-gallery-clone","true");
-   clone.setAttribute("data-gallery-clone-index",String(originals.indexOf(source)));
-   clone.setAttribute("aria-hidden","true");
-   clone.tabIndex=-1;
-   clone.querySelectorAll(".reveal-ready").forEach(function(el){el.classList.remove("reveal-ready","is-visible");});
-   clone.querySelectorAll("a,button,input,select,textarea,[tabindex]").forEach(function(el){el.tabIndex=-1;});
-  }
-  appendCloneGroup();
-
-  function normalise(value){
-   if(!loopWidth)return Math.max(0,value||0);
-   var next=(Number(value)||0)%loopWidth;
-   return next<0?next+loopWidth:next;
-  }
-  function measure(){
-   if(!originals.length||!firstClone)return;
-   var before=originals[0].getBoundingClientRect();
-   var after=firstClone.getBoundingClientRect();
-   var measured=after.left-before.left;
-   if(!Number.isFinite(measured)||measured<=0)return;
-   var previousWidth=loopWidth;
-   loopWidth=measured;
-   if(previousWidth>0&&previousWidth!==loopWidth)offset=offset/previousWidth*loopWidth;
-   offset=normalise(offset);
-   var maxSets=8;
-   while(row.scrollWidth<loopWidth+row.clientWidth+4&&cloneGroups.length<maxSets)appendCloneGroup();
-   if(row.scrollLeft>row.scrollWidth-row.clientWidth)row.scrollLeft=Math.max(0,row.scrollWidth-row.clientWidth);
-   row.scrollLeft=Math.floor(offset);
-  }
-  function pause(){
-   paused=true;
-   if(loopWidth>0)offset=normalise(row.scrollLeft);
-  }
-  function resumeSoon(){
-   window.clearTimeout(resumeTimer);
-   resumeTimer=window.setTimeout(function(){
-    if(loopWidth>0)offset=normalise(row.scrollLeft);
-    paused=false;
-    lastFrame=0;
-   },1800);
-  }
-  function resume(){
-   if(loopWidth>0)offset=normalise(row.scrollLeft);
-   paused=false;
-   lastFrame=0;
-  }
-  function animate(timestamp){
-   if(!lastFrame)lastFrame=timestamp;
-   var elapsed=Math.min(50,Math.max(0,timestamp-lastFrame));
-   lastFrame=timestamp;
-   /* Keep fractional pixels in offset; several mobile browsers round scrollLeft assignments to whole pixels. */
-   if(!paused&&document.visibilityState!=="hidden"&&loopWidth>0){
-    var speed=(reduced&&reduced.matches)?12:30;
-    offset+=speed*elapsed/1000;
-    if(offset>=loopWidth)offset=offset%loopWidth;
-    var destination=Math.floor(offset);
-    if(row.scrollLeft!==destination)row.scrollLeft=destination;
-   }
-   frame=window.requestAnimationFrame(animate);
-  }
-  row.addEventListener("pointerdown",pause,{passive:true});
-  row.addEventListener("pointerup",resumeSoon,{passive:true});
-  row.addEventListener("pointercancel",resumeSoon,{passive:true});
-  row.addEventListener("touchstart",pause,{passive:true});
-  row.addEventListener("touchend",resumeSoon,{passive:true});
-  row.addEventListener("touchcancel",resumeSoon,{passive:true});
-  row.addEventListener("wheel",function(){pause();resumeSoon();},{passive:true});
-  row.addEventListener("click",function(){pause();resumeSoon();});
-  row.addEventListener("focusin",pause);
-  row.addEventListener("focusout",function(event){if(!row.contains(event.relatedTarget))resume();});
-  document.querySelectorAll('#fotos .gallery-arrows button[data-action="gallery-left"],#fotos .gallery-arrows button[data-action="gallery-right"]').forEach(function(button){
-   button.addEventListener("click",function(){pause();resumeSoon();});
-  });
-  window.addEventListener("resize",measure,{passive:true});
-  window.addEventListener("orientationchange",function(){window.setTimeout(measure,120);},{passive:true});
-  document.addEventListener("visibilitychange",function(){lastFrame=0;});
-  if(typeof ResizeObserver==="function")new ResizeObserver(measure).observe(row);
-  if(typeof MutationObserver==="function"){
-   var observer=new MutationObserver(function(){
-    cloneGroups.forEach(function(group){group.forEach(function(clone,index){syncClone(originals[index],clone);});});
-    measure();
-   });
-   originals.forEach(function(source){observer.observe(source,{attributes:true,childList:true,characterData:true,subtree:true});});
-  }
-  measure();
-  frame=window.requestAnimationFrame(animate);
- }
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
- else init();
-})();
-</script>
 </body>
 </html>
