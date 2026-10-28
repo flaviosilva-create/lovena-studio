@@ -3202,7 +3202,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
      group.appendChild(range);crop.appendChild(group);
     });
     var center=document.createElement("button");center.type="button";center.className="ed-mini-button";center.textContent="Center Photo";
-    center.addEventListener("click",function(){state.heroPosition.x=50;state.heroPosition.y=47;crop.querySelectorAll('input[type="range"]').forEach(function(range,index){range.value=index===0?50:47;});var vals=crop.querySelectorAll("span");if(vals[0])vals[0].textContent="50%";if(vals[1])vals[1].textContent="47%";applyImages();scheduleSave();});
+    center.addEventListener("click",function(){state.heroPosition.x=50;state.heroPosition.y=47;crop.querySelectorAll('input[type="range"]').forEach(function(range,index){if(index<2)range.value=index===0?50:47;});var vals=crop.querySelectorAll("span");if(vals[0])vals[0].textContent="50%";if(vals[1])vals[1].textContent="47%";applyImages();scheduleSave();});
     var sizeGroup=document.createElement("div");sizeGroup.style.cssText="display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center";
     var sizeLabel=document.createElement("label");sizeLabel.textContent="Photo size";sizeLabel.style.cssText="font-size:9px;font-weight:800;color:#654437";sizeGroup.appendChild(sizeLabel);
     var sizeValue=document.createElement("span");sizeValue.textContent=state.heroScale+"%";sizeValue.style.cssText="font-size:9px;color:#927466;text-align:right";sizeGroup.appendChild(sizeValue);
