@@ -61,7 +61,7 @@ Deno.serve(async (req: Request) => {
   const requestedCountry = typeof input.countryCode === "string" ? input.countryCode.trim().toUpperCase() : "";
   const isBrazil = /^[A-Z]{2}$/.test(edgeCountry) ? edgeCountry === "BR" : requestedCountry === "BR";
   const requestedCurrency = typeof input.currencyCode === "string" ? input.currencyCode.trim().toLowerCase() : "";
-  const currency = requestedCurrency === "brl" || requestedCurrency === "usd" ? requestedCurrency : (isBrazil ? "brl" : "usd");
+  const currency = requestedCurrency === "brl" || requestedCurrency === "usd" || requestedCurrency === "eur" ? requestedCurrency : (isBrazil ? "brl" : "usd");
   const isBRLCurrency = currency === "brl";
   const addonCents = isBRLCurrency ? 500 : 100;
 
