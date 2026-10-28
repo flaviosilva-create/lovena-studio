@@ -526,7 +526,7 @@
       scheduleTranslation(80);
     } else if (event.detail.countryCode !== "BR" && !readManualLanguage()) {
       saveLanguage(SOURCE_LANGUAGE);
-      returnToEnglish();
+      scheduleTranslation(80);
     }
   });
 
