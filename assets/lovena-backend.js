@@ -599,6 +599,34 @@
     publication.append(htmlPurchaseButton, htmlPurchaseStatus, paidSharePanel);
     publicationPanelScroll.append(publicationDock, publication);
     if (actionFooter) publicationPanelScroll.appendChild(actionFooter);
+
+    // After online publishing, expose an HTML-download entry inside the normal editing panel too.
+    var editorExportSection = document.createElement("section");
+    editorExportSection.className = "lovena-editor-offline-export";
+    editorExportSection.setAttribute("data-editor-only", "");
+    editorExportSection.setAttribute("aria-label", "Offline HTML download");
+    editorExportSection.hidden = true;
+    editorExportSection.style.cssText = "display:grid;gap:8px;margin:0 0 14px;padding:14px;border:1px solid #e2cabb;border-radius:13px;background:#fffaf6;color:#51392f;box-shadow:0 4px 12px rgba(73,33,28,.06)";
+    var editorExportTitle = document.createElement("strong");
+    editorExportTitle.textContent = "A Digital Gift to Keep Forever";
+    editorExportTitle.style.cssText = "font:700 16px/1.35 'Playfair Display',Georgia,serif;color:#51392f";
+    var editorExportCopy = document.createElement("p");
+    editorExportCopy.textContent = "Your page is published. Download a standalone HTML file with your photos, letter, stories, and animations.";
+    editorExportCopy.style.cssText = "font-size:10px;line-height:1.55;color:#82695a;margin:0";
+    var editorExportButton = document.createElement("button");
+    editorExportButton.type = "button";
+    editorExportButton.className = "ed-primary";
+    editorExportButton.setAttribute("data-editor-action", "export");
+    editorExportButton.textContent = "HTML offline bloqueado · US$ 1,00";
+    editorExportButton.disabled = true;
+    editorExportButton.setAttribute("aria-disabled", "true");
+    editorExportButton.title = "Pay the additional $1.00 to unlock the offline HTML download.";
+    editorExportButton.style.cssText = "width:100%;box-sizing:border-box";
+    editorExportSection.append(editorExportTitle, editorExportCopy, editorExportButton);
+    var editorNotice = scroll.querySelector(".ed-notice");
+    if (editorNotice) editorNotice.insertAdjacentElement("afterend", editorExportSection);
+    else scroll.insertBefore(editorExportSection, scroll.firstChild);
+
     document.body.append(publicationBackdrop, publicationPanel, publicationTrigger);
 
     function closePublicationPanel() {
@@ -659,25 +687,34 @@
     includeHtmlCheckbox.addEventListener("change", updatePublicationPrice);
     updatePublicationPrice();
 
-    var htmlExportButton = document.querySelector('[data-editor-action="export"]');
-    var originalExportText = htmlExportButton ? htmlExportButton.textContent.trim() : "Download Complete Gift (.html)";
-    if (htmlExportButton) {
-      htmlExportButton.disabled = true;
-      htmlExportButton.textContent = "HTML offline bloqueado · US$ 1,00";
-      htmlExportButton.title = "Pay the additional $1.00 after publishing your online link to unlock this file.";
-      htmlExportButton.setAttribute("aria-disabled", "true");
+    var htmlExportButtons = Array.from(document.querySelectorAll('[data-editor-action="export"]'));
+    var originalExportText = htmlExportButtons.find(function (button) {
+      return button !== editorExportButton;
+    })?.textContent.trim() || "Download Complete Gift (.html)";
+    function setHtmlExportButtons(htmlUnlocked) {
+      htmlExportButtons = Array.from(document.querySelectorAll('[data-editor-action="export"]'));
+      htmlExportButtons.forEach(function (button) {
+        button.disabled = !htmlUnlocked;
+        button.textContent = htmlUnlocked ? originalExportText : "HTML offline bloqueado · US$ 1,00";
+        button.title = htmlUnlocked
+          ? "HTML download unlocked for this experience."
+          : "Pay the additional $1.00 after publishing your online link to unlock this file.";
+        button.setAttribute("aria-disabled", htmlUnlocked ? "false" : "true");
+      });
     }
+    setHtmlExportButtons(false);
 
     function applyPurchaseEntitlements(entitlements) {
       var onlinePaid = !!(entitlements && entitlements.onlinePaid);
       var htmlUnlocked = !!(entitlements && entitlements.includesHtmlDownload);
       var publicUrl = entitlements && entitlements.publicUrl;
-      if (htmlExportButton) {
-        htmlExportButton.disabled = !htmlUnlocked;
-        htmlExportButton.textContent = htmlUnlocked ? originalExportText : "HTML offline bloqueado · US$ 1,00";
-        htmlExportButton.title = htmlUnlocked ? "HTML download unlocked for this experience." : "Pay the additional $1.00 after publishing your online link to unlock this file.";
-        htmlExportButton.setAttribute("aria-disabled", htmlUnlocked ? "false" : "true");
-      }
+      setHtmlExportButtons(htmlUnlocked);
+      editorExportSection.hidden = !onlinePaid;
+      publicationDock.hidden = onlinePaid;
+      publicationTrigger.textContent = onlinePaid ? "Export & Share" : "Publish & Export";
+      publicationPanelCopy.textContent = onlinePaid
+        ? "Your page is published. Manage sharing and the offline HTML download here."
+        : "Manage online publishing and your downloadable gift here, separately from the editing tools.";
       if (htmlUnlocked) includeHtmlCheckbox.checked = true;
       includeHtmlCheckbox.disabled = onlinePaid;
       updatePublicationPrice();
