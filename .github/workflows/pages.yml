@@ -46,7 +46,7 @@ jobs:
               if marker not in visible_preferences_css:
                   raise SystemExit(f"Landing language/currency controls lack their visibility rule: {marker}")
           region = Path("assets/lovena-region.js").read_text(encoding="utf-8")
-          for marker in ['function setCurrencyPreference(currency)', 'selector.addEventListener("change"', 'localStorage.setItem(CURRENCY_KEY, value)', 'function applyPrices(currency)', 'eur: {', 'simple: "€ 4,99"', 'premium: "€ 9,99"', 'addon: "€ 1,00"']:
+          for marker in ['function setCurrencyPreference(currency)', 'selector.addEventListener("change"', 'localStorage.setItem(CURRENCY_KEY, value)', 'function applyPrices(currency)', 'function updateBRLAvailability(isBrazil)', 'LOVENA_CAN_USE_BRL', 'applyCountry(country, true)', 'eur: {', 'simple: "€ 4,99"', 'premium: "€ 9,99"', 'addon: "€ 1,00"']:
               if marker not in region:
                   raise SystemExit(f"Currency selector is missing its behavior: {marker}")
           for marker in ['id="lr-main"', 'id="lr-footer"', 'class="lr-hero"', 'id="top"']:
@@ -221,44 +221,70 @@ jobs:
             const pageErrors = [];
             page.on("pageerror", error => pageErrors.push(error.message));
             // Validate the actual deployed landing page in desktop and mobile viewports.
-            async function verifyLandingCurrency(width, label) {
+            async function verifyLandingCurrency(width, label, countryCode) {
               const landing = await browser.newPage({ viewport: { width, height: width <= 500 ? 844 : 900 } });
               landing.on("pageerror", error => pageErrors.push(error.message));
+              // Isolate geolocation so the test proves the policy for Brazil and for another country.
+              await landing.route("https://ipapi.co/json/", route => route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                headers: { "access-control-allow-origin": "*" },
+                body: JSON.stringify({ country_code: countryCode })
+              }));
+              if (countryCode !== "BR") {
+                await landing.addInitScript(() => {
+                  if (!sessionStorage.getItem("__lovena_currency_seeded")) {
+                    localStorage.setItem("lovenaPreferredCurrency", "brl");
+                    sessionStorage.setItem("__lovena_currency_seeded", "1");
+                  }
+                });
+              }
               await landing.goto("https://flaviosilva-create.github.io/lovena-studio/?currency-smoke=" + label, {
                 waitUntil: "domcontentloaded",
                 timeout: 60000
               });
-              const visibleControls = await landing.evaluate(() => {
-                function isVisible(id) {
-                  const element = document.getElementById(id);
-                  if (!element) return false;
-                  const rect = element.getBoundingClientRect();
-                  const style = getComputedStyle(element);
-                  return rect.width > 0 && rect.height > 0 && style.display !== "none" &&
-                    style.visibility !== "hidden" && Number(style.opacity) > 0 &&
-                    rect.bottom > 0 && rect.top < window.innerHeight;
-                }
+              await landing.waitForFunction(country => window.LOVENA_REGION_VERIFIED === true &&
+                window.LOVENA_REGION_COUNTRY === country, countryCode, { timeout: 15000 });
+              const state = await landing.evaluate(() => {
+                const option = document.querySelector('#lovenaCurrencySelect option[value="brl"]');
                 return {
-                  bar: isVisible("lovenaPreferences"),
-                  language: isVisible("lovenaLanguageSelect"),
-                  currency: isVisible("lovenaCurrencySelect")
+                  barVisible: !!document.getElementById("lovenaPreferences") &&
+                    getComputedStyle(document.getElementById("lovenaPreferences")).display !== "none",
+                  optionExists: !!option,
+                  optionHidden: !!option?.hidden || getComputedStyle(option).display === "none",
+                  optionDisabled: !!option?.disabled,
+                  canUseBRL: window.LOVENA_CAN_USE_BRL === true,
+                  currency: document.getElementById("lovenaCurrencySelect")?.value,
+                  saved: localStorage.getItem("lovenaPreferredCurrency")
                 };
               });
-              if (!visibleControls.bar || !visibleControls.language || !visibleControls.currency) {
-                throw new Error("Landing language/currency selector is not visible on " + label + ": " + JSON.stringify(visibleControls));
+              if (!state.barVisible || !state.optionExists) {
+                throw new Error("Landing currency controls are not available on " + label + ": " + JSON.stringify(state));
+              }
+              if (countryCode === "BR") {
+                if (state.optionHidden || state.optionDisabled || !state.canUseBRL || state.currency !== "brl") {
+                  throw new Error("Brazil should see BRL selected and available on " + label + ": " + JSON.stringify(state));
+                }
+                await landing.waitForFunction(() =>
+                  document.querySelector("#plans .lr-plan-basic .lr-price")?.textContent.trim() === "R$ 9,99" &&
+                  document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "R$ 19,99",
+                  null, { timeout: 10000 }
+                );
+              } else {
+                if (!state.optionHidden || !state.optionDisabled || state.canUseBRL || state.currency === "brl") {
+                  throw new Error("BRL must be hidden for non-Brazil visitors even with an old saved BRL preference on " + label + ": " + JSON.stringify(state));
+                }
+                await landing.waitForFunction(() =>
+                  document.querySelector("#plans .lr-plan-basic .lr-price")?.textContent.trim() === "US$ 4.99" &&
+                  document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "US$ 9.99",
+                  null, { timeout: 10000 }
+                );
               }
               await landing.locator("#lovenaCurrencySelect").selectOption("usd");
               await landing.waitForFunction(() =>
                 window.LOVENA_CURRENCY_CODE === "usd" &&
                 document.querySelector("#plans .lr-plan-basic .lr-price")?.textContent.trim() === "US$ 4.99" &&
                 document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "US$ 9.99",
-                null, { timeout: 10000 }
-              );
-              await landing.locator("#lovenaCurrencySelect").selectOption("brl");
-              await landing.waitForFunction(() =>
-                window.LOVENA_CURRENCY_CODE === "brl" &&
-                document.querySelector("#plans .lr-plan-basic .lr-price")?.textContent.trim() === "R$ 9,99" &&
-                document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "R$ 19,99",
                 null, { timeout: 10000 }
               );
               await landing.locator("#lovenaCurrencySelect").selectOption("eur");
@@ -271,18 +297,23 @@ jobs:
                 null, { timeout: 10000 }
               );
               await landing.reload({ waitUntil: "domcontentloaded" });
-              await landing.waitForFunction(() =>
+              await landing.waitForFunction(country => window.LOVENA_REGION_VERIFIED === true &&
+                window.LOVENA_REGION_COUNTRY === country &&
                 window.LOVENA_CURRENCY_CODE === "eur" &&
                 document.getElementById("lovenaCurrencySelect")?.value === "eur" &&
                 document.querySelector("#plans .lr-plan-basic .lr-price")?.textContent.trim() === "€ 4,99" &&
-                document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "€ 9,99",
-                null, { timeout: 10000 }
+                document.querySelector("#plans .lr-plan-featured .lr-price")?.textContent.trim() === "€ 9,99" &&
+                (country === "BR" ||
+                  (document.querySelector('#lovenaCurrencySelect option[value="brl"]')?.hidden === true &&
+                   document.querySelector('#lovenaCurrencySelect option[value="brl"]')?.disabled === true)),
+                countryCode, { timeout: 15000 }
               );
-              console.log("Landing currency selectors are visible and BRL/USD/EUR pricing + saved EUR preference passed on " + label + ".");
+              console.log("BRL is " + (countryCode === "BR" ? "available only in Brazil" : "hidden outside Brazil") +
+                "; USD/EUR pricing and saved EUR preference passed on " + label + ".");
               await landing.close();
             }
-            await verifyLandingCurrency(1365, "desktop");
-            await verifyLandingCurrency(390, "mobile");
+            await verifyLandingCurrency(1365, "desktop-brazil", "BR");
+            await verifyLandingCurrency(390, "mobile-germany", "DE");
 
             await page.goto(process.env.PUBLIC_EXPERIENCE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
             // Do not wait for the Supabase data request: this test must verify that public controls still work even if that request stalls.
