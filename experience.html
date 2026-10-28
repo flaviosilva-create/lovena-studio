@@ -3965,31 +3965,6 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
       if (!firstClone && group.length) firstClone = group[0];
     }
 
-    function syncClone(source, clone, index) {
-      if (!source || !clone) return;
-      clone.className = source.className;
-      clone.classList.remove("reveal-ready", "is-visible", "lovena-edit-target", "lovena-edit-selected");
-      Array.from(clone.attributes).forEach(function (attr) {
-        if (attr.name !== "class" && attr.name !== "data-gallery-clone" &&
-            attr.name !== "data-gallery-clone-index" && attr.name !== "aria-hidden" && attr.name !== "tabindex") {
-          clone.removeAttribute(attr.name);
-        }
-      });
-      Array.from(source.attributes).forEach(function (attr) {
-        if (attr.name !== "data-gallery-clone") clone.setAttribute(attr.name, attr.value);
-      });
-      clone.innerHTML = source.innerHTML;
-      clone.dataset.galleryClone = "true";
-      clone.dataset.galleryCloneIndex = String(index);
-      clone.setAttribute("aria-hidden", "true");
-      clone.tabIndex = -1;
-      stripRevealState(clone);
-      clone.querySelectorAll("a,button,input,select,textarea,[tabindex]").forEach(function (control) {
-        control.tabIndex = -1;
-        control.setAttribute("aria-hidden", "true");
-      });
-    }
-
     function observeGallery() {
       if (!observer) return;
       observer.observe(row, {
@@ -4124,12 +4099,9 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
     }
 
     observer = new MutationObserver(function (mutations) {
+      /* Clone creation/removal is deliberately ignored to avoid observer feedback loops.
+         Any real source-photo or caption edit rebuilds all duplicate sets from the originals. */
       if (mutations.some(isRelevantMutation)) queueRebuild();
-      else {
-        cloneGroups.forEach(function (group) {
-          group.forEach(function (clone, index) { syncClone(originals()[index], clone, index); });
-        });
-      }
     });
 
     window.addEventListener("resize", queueRebuild, { passive: true });
