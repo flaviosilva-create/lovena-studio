@@ -125,6 +125,8 @@ jobs:
                       raise SystemExit(f"{public_path} is missing editor-only interface-language support: {marker}")
               if 'clone.querySelectorAll("[data-editor-only]' not in public_html:
                   raise SystemExit(f"{public_path} must remove the interface-language selector from downloaded HTML exports")
+              if "script[src*='lovena-experience-language.js']" not in public_html:
+                  raise SystemExit(f"{public_path} must remove the interface-language script from downloaded HTML exports")
           backend = Path("assets/lovena-backend.js").read_text(encoding="utf-8")
           if "public experiences remain interactive." not in backend:
               raise SystemExit("Backend initialization failure must not prevent public experiences from rendering")
