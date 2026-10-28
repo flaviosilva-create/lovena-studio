@@ -3438,7 +3438,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
    var cloneHead=clone.querySelector("head");
    var cloneBody=clone.querySelector("body");
    if(!cloneHead||!cloneBody)throw new Error("Could not prepare the offline file structure.");
-   clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaDynamicEditingStyles,#lovenaEditorRuntime,#lovenaEditBootstrap,script[src*='lovena-backend.js'],script[src*='lovena-public-interactions.js'],script[src*='translation-bridge.js']").forEach(function(el){el.remove();});
+   clone.querySelectorAll("[data-editor-only],#lovenaEditor,#lovenaEditorBackdrop,#lovenaEditorTrigger,#lovenaEditorStyles,#lovenaDynamicEditingStyles,#lovenaEditorRuntime,#lovenaEditBootstrap,script[src*='lovena-backend.js'],script[src*='lovena-public-interactions.js'],script[src*='translation-bridge.js'],script[src*='lovena-experience-language.js']").forEach(function(el){el.remove();});
    clone.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});
    clone.querySelectorAll('[data-gallery-clone="true"]').forEach(function(el){el.remove();});
    clone.querySelectorAll('link[rel="preconnect"][href*="fonts.googleapis.com"],link[rel="preconnect"][href*="fonts.gstatic.com"],link[rel="stylesheet"][href*="fonts.googleapis.com"]').forEach(function(el){el.remove();});
