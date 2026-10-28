@@ -486,8 +486,13 @@
     }
     await updateExperienceMetadata(language, token);
   }
-  function scheduleTranslation(delay) {
-    if (scheduledTimer) window.clearTimeout(scheduledTimer);
+  function scheduleTranslation(delay, keepExisting) {
+    // DOM observers can fire repeatedly while the editor is rendering. Keep the
+    // first pending timer instead of postponing translation forever.
+    if (scheduledTimer) {
+      if (keepExisting) return;
+      window.clearTimeout(scheduledTimer);
+    }
     scheduledTimer = window.setTimeout(function () {
       scheduledTimer = 0;
       generation++;
@@ -517,7 +522,10 @@
         var hasNewNodes = mutations.some(function (mutation) {
           return mutation.type === "childList" && (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0);
         });
-        if (hasNewNodes && activeLanguage !== SOURCE_LANGUAGE) scheduleTranslation(180);
+        if (hasNewNodes && activeLanguage !== SOURCE_LANGUAGE) {
+          if (running) pending = true;
+          else scheduleTranslation(180, true);
+        }
       });
     }
     roots.forEach(function (root) {
@@ -657,7 +665,10 @@
       var addedNodes = mutations.some(function (mutation) {
         return mutation.type === "childList" && mutation.addedNodes && mutation.addedNodes.length > 0;
       });
-      if (addedNodes && activeLanguage !== SOURCE_LANGUAGE) scheduleTranslation(120);
+      if (addedNodes && activeLanguage !== SOURCE_LANGUAGE) {
+        if (running) pending = true;
+        else scheduleTranslation(120, true);
+      }
     });
     selectorObserver.observe(document.documentElement, { childList: true, subtree: true });
   }
