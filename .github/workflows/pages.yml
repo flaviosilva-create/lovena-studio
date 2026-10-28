@@ -119,7 +119,7 @@ jobs:
                   'id="lovenaExperienceLanguageControl" data-editor-only hidden',
                   'id="lovenaExperienceLanguageSelect"',
                   'assets/lovena-experience-language.js?v=20261028-experience-language-3',
-                  'translation-bridge.js?v=20261028-experience-interface-1'
+                  'translation-bridge.js?v=20261028-experience-interface-2'
               ]:
                   if marker not in public_html:
                       raise SystemExit(f"{public_path} is missing editor-only interface-language support: {marker}")
@@ -432,7 +432,7 @@ jobs:
               probe.setAttribute("data-editor-only", "");
               probe.style.display = "none";
               probe.textContent = "Interface language translation probe";
-              editor.appendChild(probe);
+              editor.insertBefore(probe, editor.firstChild);
               window.LovenaTranslationBridge.refresh();
             });
             await editorPage.waitForFunction(() =>
