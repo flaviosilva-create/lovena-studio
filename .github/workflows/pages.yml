@@ -74,6 +74,18 @@ jobs:
           if 'id="studioOverlay"' in html or 'id="readerOverlay"' in html or "function openStudio()" in html:
               raise SystemExit("The removed creator/recipient experience must not be reintroduced")
           bridge = Path("translation-bridge.js").read_text(encoding="utf-8")
+          if 'window.addEventListener("lovena:experience-language-changed"' in bridge:
+              raise SystemExit("Gift content locale must not override the selected interface language")
+          language_ui = Path("assets/lovena-experience-language.js").read_text(encoding="utf-8")
+          for required_ui in [
+              'lovenaPreferredLanguage',
+              'lovenaManualLanguage',
+              'query.get("edit") === "1" && !query.get("slug")',
+              'control.hidden = !isEditing',
+              'lovena:interface-language-changed'
+          ]:
+              if required_ui not in language_ui:
+                  raise SystemExit(f"Experience interface-language selector is missing behavior: {required_ui}")
           for required in [
               'var CACHE_KEY = "lovenaDynamicTranslationCacheV3";',
               'return selectors.find(isElementVisible) || selectors[0] || null;',
@@ -83,6 +95,11 @@ jobs:
               'if (!parts.length) return "";',
               "if (language === SOURCE_LANGUAGE)",
               "translate.googleapis.com/translate_a/single",
+              '#lovenaExperienceLanguageSelect',
+              'lovenaExperienceLanguageControl',
+              'lovenaPublicationPanel',
+              'experiencePickerChanged',
+              'persistentUiRoots',
               'if (first === SOURCE_LANGUAGE.toLowerCase()) lang = parts[parts.length - 1];'
           ]:
               if required not in bridge:
@@ -98,10 +115,16 @@ jobs:
                   'html:not(.lovena-visuals-ready) #fotos .gallery-photo',
                   'function revealPersonalizedVisualsAfterHydration()',
                   'revealPersonalizedVisualsAfterHydration();',
-                  'root.classList.add("lovena-visuals-ready")'
+                  'root.classList.add("lovena-visuals-ready")',
+                  'id="lovenaExperienceLanguageControl" data-editor-only hidden',
+                  'id="lovenaExperienceLanguageSelect"',
+                  'assets/lovena-experience-language.js?v=20261028-experience-language-1',
+                  'translation-bridge.js?v=20261028-experience-interface-1'
               ]:
                   if marker not in public_html:
-                      raise SystemExit(f"{public_path} is missing photo hydration protection: {marker}")
+                      raise SystemExit(f"{public_path} is missing editor-only interface-language support: {marker}")
+              if 'clone.querySelectorAll("[data-editor-only]' not in public_html:
+                  raise SystemExit(f"{public_path} must remove the interface-language selector from downloaded HTML exports")
           backend = Path("assets/lovena-backend.js").read_text(encoding="utf-8")
           if "public experiences remain interactive." not in backend:
               raise SystemExit("Backend initialization failure must not prevent public experiences from rendering")
@@ -150,6 +173,7 @@ jobs:
           node --check translation-bridge.js
           node --check assets/lovena-backend.js
           node --check assets/lovena-public-interactions.js
+          node --check assets/lovena-experience-language.js
           node --check /tmp/lovena-experience-0.js
           node --check /tmp/lovena-experience-1.js
           node --check /tmp/lovena-experience-2.js
