@@ -441,6 +441,16 @@
     var rootList = language === SOURCE_LANGUAGE ? allRoots : allRoots.filter(function (root) {
       return isElementVisible(root) || persistentUiRoots.has(root.id);
     });
+    // Apply translations to the selector and editor controls first so the interface
+    // reacts immediately; translate the gift's decorative/story content afterward.
+    var uiPriority = ["lovenaExperienceLanguageControl", "lovenaEditor", "lovenaPublicationPanel", "lovenaPublishExportTrigger", "lovenaEditHint", "lovenaEditorTrigger"];
+    rootList.sort(function (a, b) {
+      var ai = uiPriority.indexOf(a.id);
+      var bi = uiPriority.indexOf(b.id);
+      if (ai < 0) ai = uiPriority.length;
+      if (bi < 0) bi = uiPriority.length;
+      return ai - bi;
+    });
     var records = collectRecords(rootList);
     if (language === SOURCE_LANGUAGE) {
       restoreEnglish(records);
