@@ -2298,7 +2298,7 @@ body.lp-export-body{max-width:100%;overflow-x:clip}
 
 </style>
 
-<link rel="stylesheet" href="./landing.css?v=20261026-two-tier-pricing-1">
+<link rel="stylesheet" href="./landing.css?v=20261028-language-currency-1">
 </head>
 <body>
 <header class="lr-nav" id="top">
@@ -2459,40 +2459,7 @@ body.lp-export-body{max-width:100%;overflow-x:clip}
 
 <script src="./assets/lovena-region.js?v=20261028-language-currency-1"></script>
 <script>
-  (function () {
-    var locale = String(navigator.language || "").toLowerCase();
-    var languages = Array.isArray(navigator.languages) ? navigator.languages.map(function (item) { return String(item).toLowerCase(); }) : [];
-    var timezone = "";
-    try { timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (error) {}
-    var brazilianTimezones = "|America/Sao_Paulo|America/Fortaleza|America/Recife|America/Manaus|America/Belem|America/Bahia|America/Campo_Grande|America/Cuiaba|America/Porto_Velho|America/Boa_Vista|America/Rio_Branco|America/Noronha|America/Maceio|America/Araguaina|America/Santarem|";
-    var brazilianVisitor = locale === "pt-br" || languages.indexOf("pt-br") !== -1 || brazilianTimezones.indexOf("|" + timezone + "|") !== -1;
-    var manualLanguage = "";
-    try { manualLanguage = sessionStorage.getItem("lovenaManualLanguage") || ""; } catch (error) {}
-    var targetLanguage = manualLanguage || (brazilianVisitor ? "pt" : "en");
-    window.LOVENA_IS_BRAZIL = brazilianVisitor;
-    document.documentElement.setAttribute("lang", targetLanguage === "pt" ? "pt-BR" : targetLanguage);
-    document.documentElement.setAttribute("data-lovena-language", targetLanguage);
-    try {
-      document.cookie = "googtrans=/en/" + targetLanguage + ";path=/;max-age=31536000;SameSite=Lax";
-    } catch (error) {}
-    var simplePrice = document.querySelector("#plans .lr-plan-basic .lr-price");
-    var premiumPrice = document.querySelector("#plans .lr-plan-featured .lr-price");
-    var htmlAddons = document.querySelectorAll("#plans .lr-plan li span.notranslate");
-    if (simplePrice) {
-      simplePrice.textContent = brazilianVisitor ? "R$ 9,99" : "$4.99";
-      simplePrice.setAttribute("aria-label", brazilianVisitor ? "9 reais e 99 centavos" : "4.99 US dollars");
-      simplePrice.setAttribute("lang", brazilianVisitor ? "pt-BR" : "en-US");
-    }
-    if (premiumPrice) {
-      premiumPrice.textContent = brazilianVisitor ? "R$ 19,99" : "$9.99";
-      premiumPrice.setAttribute("aria-label", brazilianVisitor ? "19 reais e 99 centavos" : "9.99 US dollars");
-      premiumPrice.setAttribute("lang", brazilianVisitor ? "pt-BR" : "en-US");
-    }
-    htmlAddons.forEach(function (item) {
-      item.textContent = brazilianVisitor ? "R$ 5,00" : "$1.00";
-      item.setAttribute("lang", brazilianVisitor ? "pt-BR" : "en-US");
-    });
-  })();
+
   window.gtranslateSettings = {
     default_language: "en",
     languages: [
