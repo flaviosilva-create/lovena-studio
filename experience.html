@@ -31,7 +31,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 .ed-live-guide small{font-size:10px;line-height:1.5;color:#8b7162;margin-top:3px}
 .lovena-edit-target{outline:2px solid #d49c79!important;outline-offset:4px!important;border-radius:3px;cursor:pointer!important}
 .hero{height:100vh;height:100svh;min-height:600px;max-height:none;position:relative;isolation:isolate;background:#130807;overflow:hidden}
-.hero-photo{position:absolute;z-index:-3;inset:0;width:100%;height:100%;background-image:none;background-size:cover;background-position:center 47%;background-repeat:no-repeat;filter:none}.hero-photo::before{content:"";position:absolute;inset:0;background-image:var(--hero-photo-image,var(--hero-photo));background-size:cover;background-position:var(--hero-photo-position,center 47%);background-repeat:no-repeat;filter:saturate(.92);transform:scale(var(--hero-photo-scale,1));transform-origin:var(--hero-photo-origin,50% 47%);will-change:transform}
+.hero-photo{position:absolute;z-index:-3;inset:0;width:100%;height:100%;background-image:none;background-size:cover;background-position:center 47%;background-repeat:no-repeat;filter:none}.hero-photo::after{content:"";position:absolute;z-index:0;inset:-14px;background-image:var(--hero-photo-image,var(--hero-photo));background-size:cover;background-position:var(--hero-photo-position,center 47%);background-repeat:no-repeat;filter:blur(16px) brightness(.62) saturate(.82);transform:scale(1.04)}.hero-photo::before{content:"";position:absolute;z-index:1;inset:0;background-image:var(--hero-photo-image,var(--hero-photo));background-size:cover;background-position:var(--hero-photo-position,center 47%);background-repeat:no-repeat;filter:saturate(.92);transform:scale(var(--hero-photo-scale,.88));transform-origin:var(--hero-photo-origin,50% 47%);will-change:transform}
 .hero-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,#160807 0%,rgba(22,8,7,.95) 14%,rgba(22,8,7,.73) 29%,rgba(22,8,7,.12) 57%,rgba(22,8,7,.12) 100%),linear-gradient(0deg,rgba(17,7,6,.23),transparent 35%,rgba(18,7,6,.1))}
 .experience-nav{height:70px;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(26px,9.1vw,100px);color:#f6eee7}
 .logo-lockup{display:flex;align-items:center;gap:12px;flex-shrink:0}
@@ -2054,7 +2054,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  }
 
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
- var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47},heroScale:100,locale:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.locale)||data.locale||document.documentElement.lang||"en",localeMode:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.localeMode)||"auto"},window.LOVENA_EDIT_DRAFT||{});
+ var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47},heroScale:88,heroFramingVersion:2,locale:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.locale)||data.locale||document.documentElement.lang||"en",localeMode:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.localeMode)||"auto"},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
  if(!state.texts.brand||/^(?:lovena|lovena studio)$/i.test(String(state.texts.brand).trim()))state.texts.brand="Alice & James";
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
@@ -2063,7 +2063,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  state.images.gallery=state.images.gallery.slice(0,12);
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
- var initialHeroScale=Number(state.heroScale);state.heroScale=isFinite(initialHeroScale)?Math.max(50,Math.min(160,initialHeroScale)):100;
+ if(Number(state.heroFramingVersion||0)<2){state.heroScale=88;state.heroFramingVersion=2;}var initialHeroScale=Number(state.heroScale);state.heroScale=isFinite(initialHeroScale)?Math.max(50,Math.min(160,initialHeroScale)):88;
  state.collage=Object.assign({title:"Birthday",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you",background:null,mainPhoto:null,photos:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
   if(state.collage.title==="ANNIVERSARY")state.collage.title="Birthday";
  function migrateLegacyEnglishDemo(){
@@ -2752,7 +2752,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   window.dispatchEvent(new Event("lovena:music-updated"));
  }
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
- function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;savedData.locale=state.locale||"en";savedData.language=state.locale||"en";return {version:2,sampleAssetsVersion:2,locale:state.locale||"en",localeMode:state.localeMode||"auto",texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,heroScale:state.heroScale,collage:state.collage,data:savedData};}
+ function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;savedData.locale=state.locale||"en";savedData.language=state.locale||"en";return {version:2,sampleAssetsVersion:2,locale:state.locale||"en",localeMode:state.localeMode||"auto",texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,heroScale:state.heroScale,heroFramingVersion:2,collage:state.collage,data:savedData};}
  
  function normalizeExperienceLanguage(value){
   var lang=String(value||"en").trim().replace(/_/g,"-").toLowerCase();
