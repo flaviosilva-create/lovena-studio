@@ -40,9 +40,26 @@ Deno.serve(async (req: Request) => {
   if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(experienceId) || !plan) {
     return reply(400, { error: "invalid_checkout_request" });
   }
-  const edgeCountry = (req.headers.get("cf-ipcountry") || req.headers.get("x-vercel-ip-country") || req.headers.get("cloudfront-viewer-country") || "").trim().toUpperCase();
+  let edgeCountry = (req.headers.get("cf-ipcountry") || req.headers.get("x-vercel-ip-country") || req.headers.get("cloudfront-viewer-country") || "").trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(edgeCountry)) {
+    const clientIp = (req.headers.get("cf-connecting-ip") || req.headers.get("x-real-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0] || "").trim();
+    if (clientIp && /^[0-9a-f:.]+$/i.test(clientIp)) {
+      try {
+        const geoResponse = await fetch("https://ipapi.co/" + encodeURIComponent(clientIp) + "/country/", {
+          headers: { "Accept": "text/plain" },
+          signal: AbortSignal.timeout(1500),
+        });
+        if (geoResponse.ok) {
+          const geoCountry = (await geoResponse.text()).trim().toUpperCase();
+          if (/^[A-Z]{2}$/.test(geoCountry)) edgeCountry = geoCountry;
+        }
+      } catch (geoError) {
+        console.warn("Checkout IP country lookup unavailable; using browser region fallback.");
+      }
+    }
+  }
   const requestedCountry = typeof input.countryCode === "string" ? input.countryCode.trim().toUpperCase() : "";
-  const isBrazil = edgeCountry ? edgeCountry === "BR" : requestedCountry === "BR";
+  const isBrazil = /^[A-Z]{2}$/.test(edgeCountry) ? edgeCountry === "BR" : requestedCountry === "BR";
   const currency = isBrazil ? "brl" : "usd";
   const addonCents = isBrazil ? 500 : 100;
 
