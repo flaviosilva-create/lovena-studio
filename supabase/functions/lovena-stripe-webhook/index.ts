@@ -79,14 +79,15 @@ Deno.serve(async (req: Request) => {
       const paymentIntent = payload.payment_intent;
       if (typeof paymentIntent !== "string") return reply(200, { received: true, ignored: true });
       const { data: order, error: orderError } = await admin.from("lovena_orders")
-        .select("id, experience_id, payment_status, amount_total, plan")
+        .select("id, experience_id, payment_status, amount_total, currency, plan")
         .eq("stripe_payment_intent_id", paymentIntent)
         .maybeSingle();
       if (orderError) throw orderError;
       if (!order) return reply(200, { received: true, ignored: true });
 
       const now = new Date().toISOString();
-      const baseCents = order.plan === "simple" ? 499 : 999;
+      const orderCurrency = String(order.currency || "usd").toLowerCase();
+      const baseCents = orderCurrency === "brl" ? (order.plan === "simple" ? 999 : 1999) : (order.plan === "simple" ? 499 : 999);
       const includesOnlinePublication = order.amount_total >= baseCents;
       if (eventType === "charge.refunded") {
         const { error } = await admin.from("lovena_orders")
@@ -161,8 +162,10 @@ Deno.serve(async (req: Request) => {
       console.error("No order for Stripe checkout session", session.id);
       return reply(500, { error: "order_not_found" });
     }
+    const orderCurrency = String(order.currency || "usd").toLowerCase();
+    const orderAddonCents = orderCurrency === "brl" ? 500 : 100;
     const expectedPurchaseType = order.includes_html_download
-      ? (order.amount_total === 100 ? "html_download" : "online_with_html")
+      ? (order.amount_total === orderAddonCents ? "html_download" : "online_with_html")
       : "online";
     if (session.metadata?.experience_id !== order.experience_id ||
         session.metadata?.order_id !== order.id ||
