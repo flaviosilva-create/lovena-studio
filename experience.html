@@ -108,7 +108,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 .gallery-link{border:0;background:transparent;color:#564437;font-size:8px;padding:5px 0 3px;white-space:nowrap}
 .gallery-link span{font-size:13px;margin-left:6px}
 .gallery-row-wrap{position:relative;padding-right:49px}
-.gallery-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:15px;overflow:hidden}
+.gallery-row{display:flex;grid-template-columns:none;gap:15px;overflow:hidden;overscroll-behavior-x:contain;scrollbar-width:none}.gallery-row::-webkit-scrollbar{display:none}.gallery-row>.gallery-item{flex:0 0 calc((100% - 75px)/6);width:calc((100% - 75px)/6)}
 .gallery-item{appearance:none;min-width:0;border:0;background:#fffaf4;padding:5px 5px 4px;box-shadow:0 3px 7px rgba(51,34,22,.16);cursor:zoom-in;transition:transform .25s,box-shadow .25s}
 .gallery-item:nth-child(2){transform:rotate(-1deg)}.gallery-item:nth-child(3){transform:rotate(1.2deg)}.gallery-item:nth-child(5){transform:rotate(-.7deg)}
 .gallery-item:hover{transform:translateY(-4px) rotate(0);box-shadow:0 8px 17px rgba(51,34,22,.2)}
@@ -4090,5 +4090,70 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
 
 <script src="./assets/lovena-public-interactions.js?v=20261027-public-fallback-3"></script>
 <script src="./translation-bridge.js?v=20261027-experience-language-4" defer></script>
+
+<script id="lovena-gallery-autoplay">
+(function(){
+ "use strict";
+ function init(){
+  var row=document.getElementById("galleryRow");
+  if(!row||row.dataset.autoplayReady==="true")return;
+  var originals=Array.prototype.filter.call(row.children,function(el){return el.classList&&el.classList.contains("gallery-item")&&!el.hasAttribute("data-gallery-clone");});
+  if(originals.length<2)return;
+  row.dataset.autoplayReady="true";
+  var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
+  var paused=false,frame=0,last=0,halfWidth=0,initialized=false,offset=0;
+  originals.forEach(function(item){item.setAttribute("data-gallery-original","true");});
+  originals.forEach(function(item){
+   var clone=item.cloneNode(true);
+   clone.setAttribute("data-gallery-clone","true");
+   clone.setAttribute("aria-hidden","true");
+   clone.tabIndex=-1;
+   clone.querySelectorAll("a,button,input,select,textarea,[tabindex]").forEach(function(el){el.tabIndex=-1;});
+   row.appendChild(clone);
+  });
+  function measure(){
+   halfWidth=0;
+   originals.forEach(function(item){halfWidth+=item.getBoundingClientRect().width;});
+   var gap=parseFloat(getComputedStyle(row).columnGap||getComputedStyle(row).gap)||0;
+   halfWidth+=gap*Math.max(0,originals.length-1);
+   if(halfWidth>0){
+    if(!initialized){row.scrollLeft=0;initialized=true;}
+    else if(offset>0)row.scrollLeft=offset%halfWidth;
+   }
+  }
+  function tick(time){
+   frame=0;
+   if(!last)last=time;
+   var elapsed=Math.min(50,time-last);last=time;
+   if(!paused&&!(reduced&&reduced.matches)&&document.visibilityState!=="hidden"&&halfWidth>0){
+    row.scrollLeft+=22*elapsed/1000;
+    if(row.scrollLeft>=halfWidth){row.scrollLeft=row.scrollLeft-halfWidth;}
+    offset=row.scrollLeft;
+   }
+   frame=requestAnimationFrame(tick);
+  }
+  function start(){if(!frame){last=0;frame=requestAnimationFrame(tick);}}
+  function pause(){paused=true;}
+  function resume(){paused=false;last=0;}
+  row.addEventListener("mouseenter",pause);
+  row.addEventListener("mouseleave",resume);
+  row.addEventListener("focusin",pause);
+  row.addEventListener("focusout",function(event){if(!row.contains(event.relatedTarget))resume();});
+  row.addEventListener("pointerdown",function(){pause();},{passive:true});
+  row.addEventListener("pointerup",function(){setTimeout(resume,1800);},{passive:true});
+  row.addEventListener("touchstart",pause,{passive:true});
+  row.addEventListener("touchend",function(){setTimeout(resume,1800);},{passive:true});
+  row.addEventListener("wheel",function(){pause();setTimeout(resume,1800);},{passive:true});
+  if(reduced&&typeof reduced.addEventListener==="function")reduced.addEventListener("change",function(){last=0;});
+  else if(reduced&&typeof reduced.addListener==="function")reduced.addListener(function(){last=0;});
+  window.addEventListener("resize",measure,{passive:true});
+  document.addEventListener("visibilitychange",function(){last=0;});
+  if(typeof ResizeObserver==="function")new ResizeObserver(measure).observe(row);
+  measure();start();
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
+ else init();
+})();
+</script>
 </body>
 </html>
