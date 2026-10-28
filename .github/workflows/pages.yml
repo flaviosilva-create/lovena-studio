@@ -274,7 +274,7 @@ jobs:
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
             await verifyGalleryAutoplay(editorMobilePage, "WebKit editor mobile");
-            await editorMobileBrowser.close();
+            await webkitBrowser.close();
 
             await page.locator('#galleryRow .gallery-item[data-photo="0"]:not([data-gallery-clone="true"])').click({ timeout: 15000 });
             await page.locator("#detailModal[open]").waitFor({ timeout: 5000 });
