@@ -8,7 +8,7 @@
   var SOURCE_LANGUAGE = "en";
   var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
   var CACHE_KEY = "lovenaDynamicTranslationCacheV3";
-  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy", "lovenaEditor", "lovenaEditHint", "lovenaEditorTrigger", "detailModal"];
+  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy", "lovenaEditor", "lovenaEditHint", "lovenaEditorTrigger", "detailModal", "lovenaExperienceLanguageControl", "lovenaPublicationPanel", "lovenaPublishExportTrigger"];
   var textOriginals = new WeakMap();
   var attrOriginals = new WeakMap();
   var cache = new Map();
@@ -137,7 +137,7 @@
   }
 
   function selectorElements() {
-    var selectors = Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector, #lovenaLanguageSelect"));
+    var selectors = Array.from(document.querySelectorAll(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector, #lovenaLanguageSelect, #lovenaExperienceLanguageSelect"));
     selectors.forEach(ensureEnglishOption);
     syncNativeLanguageOptions();
     return selectors;
@@ -436,7 +436,11 @@
     // Closed creator/reader overlays are skipped. If an overlay is open, its
     // text is deliberately collected first so the most relevant UI translates
     // before the rest of the landing page.
-    var rootList = language === SOURCE_LANGUAGE ? allRoots : allRoots.filter(isElementVisible);
+    // Translate editor controls even while their drawer is closed so the UI is ready when opened.
+    var persistentUiRoots = new Set(["lovenaEditor", "lovenaExperienceLanguageControl", "lovenaPublicationPanel", "lovenaPublishExportTrigger"]);
+    var rootList = language === SOURCE_LANGUAGE ? allRoots : allRoots.filter(function (root) {
+      return isElementVisible(root) || persistentUiRoots.has(root.id);
+    });
     var records = collectRecords(rootList);
     if (language === SOURCE_LANGUAGE) {
       restoreEnglish(records);
@@ -554,6 +558,7 @@
     var target = event && event.target;
     if (!target || !target.matches || !target.matches(".gtranslate_wrapper select, .gtranslate_wrapper .gt_selector, .gt_selector, #lovenaLanguageSelect")) return;
     var nativePickerChanged = target.id === "lovenaLanguageSelect";
+    var experiencePickerChanged = target.id === "lovenaExperienceLanguageSelect";
     var language = canonicalLanguage(target.value);
     if (!language && target.options) language = optionLanguage(target.options[target.selectedIndex]);
     if (!language) return;
@@ -564,6 +569,11 @@
     });
     saveLanguage(language);
     try { sessionStorage.setItem("lovenaManualLanguage", language); } catch (error) {}
+    // The experience selector changes the interface preference, not the personalized gift language.
+    if (experiencePickerChanged) {
+      try { localStorage.setItem("lovenaPreferredLanguage", language); } catch (error) {}
+      window.LOVENA_INTERFACE_LANGUAGE_MANUAL = true;
+    }
     try { document.cookie = "googtrans=/en/" + language + ";path=/;max-age=31536000;SameSite=Lax"; } catch (error) {}
 
     // The visible native picker stays usable even when the GTranslate widget is delayed.
@@ -581,7 +591,10 @@
       }
     }
 
-    if (language === SOURCE_LANGUAGE) { returnToEnglish(); return; }
+    if (language === SOURCE_LANGUAGE) {
+      if (experiencePickerChanged) { scheduleTranslation(80); return; }
+      returnToEnglish(); return;
+    }
     scheduleTranslation(80);
   }
 
@@ -596,13 +609,8 @@
     }
   });
 
-  window.addEventListener("lovena:experience-language-changed", function (event) {
-    if (!document.getElementById("experiencia")) return;
-    var language = canonicalLanguage(event && event.detail && event.detail.locale);
-    if (!language) return;
-    saveLanguage(language);
-    scheduleTranslation(60);
-  });
+  // The gift content locale is independent from the interface language. Only the
+  // visible interface-language selector changes the UI translation on experience pages.
   document.addEventListener("change", handleLanguageSelection, true);
   document.addEventListener("input", handleLanguageSelection, true);
 
@@ -623,9 +631,15 @@
 
   function observeSelectorWidgets() {
     if (selectorObserver || !document.documentElement) return;
-    selectorObserver = new MutationObserver(function () {
+    selectorObserver = new MutationObserver(function (mutations) {
       selectorElements();
       syncNativeLanguageOptions();
+      // Runtime-created editor and checkout panels must join the translation roots.
+      observeRoots();
+      var addedNodes = mutations.some(function (mutation) {
+        return mutation.type === "childList" && mutation.addedNodes && mutation.addedNodes.length > 0;
+      });
+      if (addedNodes && activeLanguage !== SOURCE_LANGUAGE) scheduleTranslation(120);
     });
     selectorObserver.observe(document.documentElement, { childList: true, subtree: true });
   }
