@@ -55,6 +55,14 @@
     return await signInPromise;
   }
 
+  function isBrazilianVisitor() {
+    try {
+      var locale = String(navigator.language || "").toLowerCase();
+      var languages = Array.isArray(navigator.languages) ? navigator.languages.map(function (item) { return String(item).toLowerCase(); }) : [];
+      var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      return locale === "pt-br" || languages.indexOf("pt-br") !== -1 || timezone === "America/Sao_Paulo" || timezone === "America/Fortaleza" || timezone === "America/Recife" || timezone === "America/Manaus" || timezone === "America/Belem" || timezone === "America/Bahia" || timezone === "America/Campo_Grande" || timezone === "America/Cuiaba" || timezone === "America/Porto_Velho" || timezone === "America/Boa_Vista" || timezone === "America/Rio_Branco" || timezone === "America/Noronha" || timezone === "America/Maceio" || timezone === "America/Araguaina" || timezone === "America/Santarem" || timezone === "America/Paramaribo";
+    } catch (error) { return String(navigator.language || "").toLowerCase() === "pt-br"; }
+  }
   function planFor(editorKey) {
     return editorKey === "lovenaSimpleExperienceDraftV1" ? "simple" : "premium";
   }
@@ -371,7 +379,7 @@
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
-      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type })
+      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type, countryCode: isBrazilianVisitor() ? "BR" : "US" })
     });
     var body = await response.json().catch(function () { return {}; });
     if (!response.ok || !body.url) throw new Error(body.message || body.error || "Could not start checkout.");
@@ -456,9 +464,12 @@
     publication.style.cssText = "position:relative;margin:0 0 18px;padding:18px;border:2px solid #b78367;border-radius:16px;background:linear-gradient(145deg,#fff8f1,#fff);color:#51392f;box-shadow:0 8px 22px rgba(97,63,46,.10)";
     var publicationTitle = document.createElement("strong");
     var planIsSimple = planFor(options.editorKey) === "simple";
-    var basePriceCents = planIsSimple ? 499 : 999;
-    var onlinePriceLabel = planIsSimple ? "US$ 4,99" : "US$ 9,99";
-    function priceLabel(cents) { return "US$ " + (cents / 100).toFixed(2).replace(".", ","); }
+    var brazilianVisitor = isBrazilianVisitor();
+    var currencyPrefix = brazilianVisitor ? "R$ " : "US$ ";
+    var addonCents = brazilianVisitor ? 500 : 100;
+    var basePriceCents = brazilianVisitor ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
+    var onlinePriceLabel = currencyPrefix + (basePriceCents / 100).toFixed(2).replace(".", ",");
+    function priceLabel(cents) { return currencyPrefix + (cents / 100).toFixed(2).replace(".", ","); }
     publicationTitle.textContent = "Publish Your Lovena Page";
     publicationTitle.style.cssText = "display:block;font-size:13px;line-height:1.3;margin:0;color:#472b23";
     var publicationCopy = document.createElement("p");
@@ -475,7 +486,7 @@
     var includeHtmlText = document.createElement("span");
     includeHtmlText.style.cssText = "display:grid;gap:2px;font-size:11px;line-height:1.3;color:#51392f";
     var includeHtmlTitle = document.createElement("strong");
-    includeHtmlTitle.textContent = "Add offline HTML (+$1.00)";
+    includeHtmlTitle.textContent = "Add offline HTML (+" + currencyPrefix + (addonCents / 100).toFixed(2).replace(".", ",") + ")";
     includeHtmlTitle.style.cssText = "font-size:11px";
     var includeHtmlHelp = document.createElement("span");
     includeHtmlHelp.textContent = "Also get an HTML file to download and keep offline. Optional.";
@@ -484,13 +495,13 @@
     includeHtmlLabel.append(includeHtmlCheckbox, includeHtmlText);
     var htmlPurchaseButton = document.createElement("button");
     htmlPurchaseButton.type = "button";
-    htmlPurchaseButton.textContent = "Offline HTML download · $1.00 (optional)";
+    htmlPurchaseButton.textContent = "Offline HTML download · " + priceLabel(addonCents) + " (optional)";
     htmlPurchaseButton.hidden = true;
     htmlPurchaseButton.disabled = true;
     htmlPurchaseButton.style.cssText = "width:100%;border:1px solid #dec3b0;border-radius:10px;padding:11px;background:#fff;color:#654739;font:700 12px Manrope,Arial,sans-serif;cursor:pointer;margin-top:9px";
     var htmlPurchaseStatus = document.createElement("p");
     htmlPurchaseStatus.style.cssText = "font-size:12px;line-height:1.5;margin:7px 0 0;color:#82695a";
-    htmlPurchaseStatus.textContent = "Optional: after paying for online publishing, you can pay $1.00 more to download the HTML and use it offline.";
+    htmlPurchaseStatus.textContent = "Optional: after paying for online publishing, you can pay " + priceLabel(addonCents) + " more to download the HTML and use it offline.";
     htmlPurchaseStatus.hidden = true;
 
     var paidSharePanel = document.createElement("div");
@@ -707,12 +718,12 @@
 
 
     function updatePublicationPrice() {
-      var total = basePriceCents + (includeHtmlCheckbox.checked ? 100 : 0);
+      var total = basePriceCents + (includeHtmlCheckbox.checked ? addonCents : 0);
       onlinePriceLabel = priceLabel(total);
       publicationTotal.textContent = "Total: " + onlinePriceLabel;
       publicationCopy.textContent = (planIsSimple ? "Lovena Simple" : "Lovena Premium") + " · online publication for 1 year. " +
         (includeHtmlCheckbox.checked
-          ? "Also includes the offline HTML download (+$1.00)."
+          ? "Also includes the offline HTML download (+" + priceLabel(addonCents) + ")."
           : "Offline HTML is optional; select the checkbox beside the price to include it.");
       publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
     }
@@ -727,10 +738,10 @@
       htmlExportButtons = Array.from(document.querySelectorAll('[data-editor-action="export"]'));
       htmlExportButtons.forEach(function (button) {
         button.disabled = !htmlUnlocked;
-        button.textContent = htmlUnlocked ? originalExportText : "HTML offline bloqueado · US$ 1,00";
+        button.textContent = htmlUnlocked ? originalExportText : "HTML offline bloqueado · " + priceLabel(addonCents);
         button.title = htmlUnlocked
           ? "HTML download unlocked for this experience."
-          : "Pay the additional $1.00 after publishing your online link to unlock this file.";
+          : "Pay the additional " + priceLabel(addonCents) + " after publishing your online link to unlock this file.";
         button.setAttribute("aria-disabled", htmlUnlocked ? "false" : "true");
       });
     }
@@ -743,7 +754,7 @@
       setHtmlExportButtons(htmlUnlocked);
       editorExportCopy.textContent = htmlUnlocked
         ? "Download a standalone HTML file with your photos, letter, stories, and animations, ready to keep offline."
-        : "Your page is published. The HTML download requires the optional US$ 1.00 offline add-on in Publish & Export.";
+        : "Your page is published. The HTML download requires the optional " + priceLabel(addonCents) + " offline add-on in Publish & Export.";
       editorExportSection.hidden = !onlinePaid;
       editorExportSection.style.display = onlinePaid ? "grid" : "none";
       publicationDock.hidden = onlinePaid;
@@ -899,7 +910,7 @@
       htmlPurchaseButton.textContent = "Preparing HTML checkout…";
       try {
         var checkout = await createCheckout(experienceId, options.editorKey, "html_download");
-        htmlPurchaseStatus.textContent = "Abrindo o checkout seguro da Stripe para o adicional de US$ 1,00…";
+        htmlPurchaseStatus.textContent = "Abrindo o checkout seguro da Stripe para o adicional de " + priceLabel(addonCents) + "…";
         window.location.assign(checkout.url);
       } catch (error) {
         htmlPurchaseStatus.textContent = error.message || "Could not start the offline HTML purchase.";
