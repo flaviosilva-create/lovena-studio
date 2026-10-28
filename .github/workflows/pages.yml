@@ -185,7 +185,7 @@ jobs:
       - name: Browser smoke test for public Premium interactions
         env:
           PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-gallery-autoplay-unified-4
-          EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-gallery-autoplay-final4
+          EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-preview-interactions-2
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
           /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium webkit
@@ -255,6 +255,32 @@ jobs:
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
             await verifyGalleryAutoplay(editorPage, "editor desktop");
+            async function verifyPreviewInteractions(targetPage, label) {
+              await targetPage.locator('[data-editor-action="view"]').scrollIntoViewIfNeeded();
+              await targetPage.locator('[data-editor-action="view"]').click();
+              await targetPage.waitForFunction(() => document.body.classList.contains("lovena-preview-mode"), null, { timeout: 10000 });
+
+              await targetPage.locator('#galleryRow .gallery-item[data-photo="0"]:not([data-gallery-clone="true"])').click({ timeout: 10000 });
+              await targetPage.locator("#detailModal[open]").waitFor({ timeout: 5000 });
+              await targetPage.locator('[data-action="close-modal"]').click();
+
+              for (const kind of ["card", "message"]) {
+                await targetPage.locator('[data-surprise="' + kind + '"]').click({ timeout: 10000 });
+                await targetPage.locator("#detailModal[open]").waitFor({ timeout: 5000 });
+                await targetPage.locator('[data-action="close-modal"]').click();
+              }
+
+              await targetPage.locator('[data-milestone="0"]').click({ timeout: 10000 });
+              await targetPage.locator("#detailModal[open]").waitFor({ timeout: 5000 });
+              await targetPage.locator('[data-action="close-modal"]').click();
+
+              await targetPage.locator("#lovenaEditorTrigger").click();
+              await targetPage.waitForFunction(() => document.body.classList.contains("editor-mode") &&
+                document.body.classList.contains("editor-panel-open"), null, { timeout: 10000 });
+              console.log("Preview interactions passed on " + label + ": photo, card, message, story milestone.");
+            }
+            await verifyPreviewInteractions(editorPage, "desktop");
+
             async function verifyAutoplayBehindPublishPanel(targetPage, label) {
               await targetPage.locator("#lovenaPublishExportTrigger").waitFor({ state: "visible", timeout: 20000 });
               await targetPage.locator("#lovenaPublishExportTrigger").click();
@@ -291,6 +317,7 @@ jobs:
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
             await verifyGalleryAutoplay(editorMobilePage, "WebKit editor mobile");
+            await verifyPreviewInteractions(editorMobilePage, "WebKit iPhone-sized viewport");
             await verifyAutoplayBehindPublishPanel(editorMobilePage, "WebKit iPhone-sized viewport");
             await webkitBrowser.close();
 
