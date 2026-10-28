@@ -76,20 +76,25 @@ Deno.serve(async (req: Request) => {
       }
       const { data: orders, error: ordersError } = await admin
         .from("lovena_orders")
-        .select("plan, payment_status, amount_total, includes_html_download")
+        .select("plan, payment_status, amount_total, currency, includes_html_download")
         .eq("experience_id", experienceId)
         .eq("payment_status", "paid");
       if (ordersError) throw ordersError;
-      const hasOnlinePurchase = (orders || []).some((order: any) =>
-        order.plan === plan && order.amount_total >= baseCents
-      );
+      const hasOnlinePurchase = (orders || []).some((order: any) => {
+        const orderCurrency = String(order.currency || "usd").toLowerCase();
+        const orderBaseCents = orderCurrency === "brl" ? (plan === "simple" ? 999 : 1999) : (plan === "simple" ? 499 : 999);
+        return order.plan === plan && order.amount_total >= orderBaseCents;
+      });
       if (!hasOnlinePurchase) {
         return reply(402, { error: "online_purchase_required", message: "É necessário ter o link online pago antes de comprar o HTML offline." });
       }
-      const alreadyHasHtml = (orders || []).some((order: any) =>
-        order.plan === plan && order.includes_html_download === true &&
-        (order.amount_total === addonCents || order.amount_total >= baseCents + addonCents)
-      );
+      const alreadyHasHtml = (orders || []).some((order: any) => {
+        const orderCurrency = String(order.currency || "usd").toLowerCase();
+        const orderBaseCents = orderCurrency === "brl" ? (plan === "simple" ? 999 : 1999) : (plan === "simple" ? 499 : 999);
+        const orderAddonCents = orderCurrency === "brl" ? 500 : 100;
+        return order.plan === plan && order.includes_html_download === true &&
+          (order.amount_total === orderAddonCents || order.amount_total >= orderBaseCents + orderAddonCents);
+      });
       if (alreadyHasHtml) {
         return reply(409, { error: "html_download_already_purchased", message: "O download HTML desta experiência já está desbloqueado." });
       }
