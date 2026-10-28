@@ -56,11 +56,13 @@
   }
 
   function isBrazilianVisitor() {
+    if (window.LOVENA_REGION_COUNTRY) return window.LOVENA_REGION_COUNTRY === "BR";
     try {
       var locale = String(navigator.language || "").toLowerCase();
       var languages = Array.isArray(navigator.languages) ? navigator.languages.map(function (item) { return String(item).toLowerCase(); }) : [];
       var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
-      return locale === "pt-br" || languages.indexOf("pt-br") !== -1 || timezone === "America/Sao_Paulo" || timezone === "America/Fortaleza" || timezone === "America/Recife" || timezone === "America/Manaus" || timezone === "America/Belem" || timezone === "America/Bahia" || timezone === "America/Campo_Grande" || timezone === "America/Cuiaba" || timezone === "America/Porto_Velho" || timezone === "America/Boa_Vista" || timezone === "America/Rio_Branco" || timezone === "America/Noronha" || timezone === "America/Maceio" || timezone === "America/Araguaina" || timezone === "America/Santarem" || timezone === "America/Paramaribo";
+      var zones = "|America/Sao_Paulo|America/Fortaleza|America/Recife|America/Manaus|America/Belem|America/Bahia|America/Campo_Grande|America/Cuiaba|America/Porto_Velho|America/Boa_Vista|America/Rio_Branco|America/Noronha|America/Maceio|America/Araguaina|America/Santarem|";
+      return locale === "pt-br" || languages.indexOf("pt-br") !== -1 || zones.indexOf("|" + timezone + "|") !== -1;
     } catch (error) { return String(navigator.language || "").toLowerCase() === "pt-br"; }
   }
   function planFor(editorKey) {
@@ -376,10 +378,14 @@
     var session = await currentSession(supabase);
     if (!session || !session.access_token) throw new Error("Could not start your Lovena session. Refresh the page and try again.");
     var type = purchaseType === "html_download" ? "html_download" : (purchaseType === "online_with_html" ? "online_with_html" : "online");
+    if (window.LOVENA_REGION_READY) {
+      try { await window.LOVENA_REGION_READY; } catch (regionError) {}
+    }
+    var countryCode = window.LOVENA_REGION_COUNTRY || (isBrazilianVisitor() ? "BR" : "US");
     var response = await fetch(SUPABASE_URL + "/functions/v1/lovena-create-checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token },
-      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type, countryCode: isBrazilianVisitor() ? "BR" : "US" })
+      body: JSON.stringify({ experienceId: experienceId, plan: planFor(editorKey), purchaseType: type, countryCode: countryCode })
     });
     var body = await response.json().catch(function () { return {}; });
     if (!response.ok || !body.url) throw new Error(body.message || body.error || "Could not start checkout.");
@@ -727,8 +733,28 @@
           : "Offline HTML is optional; select the checkbox beside the price to include it.");
       publishButton.textContent = "Publish Page & Pay " + onlinePriceLabel;
     }
+    function applyRegionalPricing(isBrazil) {
+      brazilianVisitor = !!isBrazil;
+      currencyPrefix = brazilianVisitor ? "R$ " : "US$ ";
+      addonCents = brazilianVisitor ? 500 : 100;
+      basePriceCents = brazilianVisitor ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
+      includeHtmlTitle.textContent = "Add offline HTML (+" + priceLabel(addonCents) + ")";
+      htmlPurchaseButton.textContent = "Offline HTML download · " + priceLabel(addonCents) + " (optional)";
+      htmlPurchaseStatus.textContent = "Optional: after paying for online publishing, you can pay " + priceLabel(addonCents) + " more to download the HTML and use it offline.";
+      updatePublicationPrice();
+      htmlExportButtons.forEach(function (button) {
+        if (button.disabled) button.textContent = "HTML offline bloqueado · " + priceLabel(addonCents);
+      });
+    }
     includeHtmlCheckbox.addEventListener("change", updatePublicationPrice);
     updatePublicationPrice();
+    window.addEventListener("lovena:region-detected", function (event) {
+      var country = event && event.detail && event.detail.countryCode;
+      if (country) applyRegionalPricing(country === "BR");
+    });
+    if (window.LOVENA_REGION_READY) {
+      window.LOVENA_REGION_READY.then(function (country) { applyRegionalPricing(country === "BR"); }).catch(function () {});
+    }
 
     var htmlExportButtons = Array.from(document.querySelectorAll('[data-editor-action="export"]'));
     var originalExportText = htmlExportButtons.find(function (button) {
