@@ -94,7 +94,7 @@ jobs:
                   raise SystemExit(f"Post-payment editing validation failed: missing {required}")
           for public_path in ("experience.html", "experience-simple.html"):
               public_html = Path(public_path).read_text(encoding="utf-8")
-              if 'assets/lovena-backend.js?v=20261027-post-payment-export-1' not in public_html:
+              if 'assets/lovena-backend.js?v=20261027-post-payment-export-2' not in public_html:
                   raise SystemExit(f"{public_path} must bust cached backend after post-payment editing changes")
 
           experience = Path("experience.html").read_text(encoding="utf-8")
