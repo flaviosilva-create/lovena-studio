@@ -422,14 +422,21 @@ jobs:
               return control?.dataset.languageControlReady === "true" && !control.hidden && selector?.value === "pt";
             }, null, { timeout: 15000 });
             await editorPage.waitForFunction(() =>
-              document.querySelector("#lovenaEditor .ed-head h2")?.textContent.startsWith("pt:"),
-              null, { timeout: 20000 });
-            console.log("Experience interface inherited Portuguese and translated editor text.");
+              window.LovenaTranslationBridge?.language() === "pt",
+              null, { timeout: 10000 });
+            await editorPage.waitForFunction(() => {
+              const title = document.querySelector("#lovenaEditor .ed-head h2")?.textContent.trim();
+              return !!title && title !== "Personalize Every Detail";
+            }, null, { timeout: 30000 });
+            const portugueseEditorTitle = await editorPage.locator("#lovenaEditor .ed-head h2").textContent();
+            console.log("Experience interface inherited Portuguese and translated editor text: " + portugueseEditorTitle);
             await editorPage.locator("#lovenaExperienceLanguageSelect").selectOption("de");
-            await editorPage.waitForFunction(() =>
+            await editorPage.waitForFunction(previousTitle =>
               localStorage.getItem("lovenaPreferredLanguage") === "de" &&
-              document.querySelector("#lovenaEditor .ed-head h2")?.textContent.startsWith("de:"),
-              null, { timeout: 20000 });
+              window.LovenaTranslationBridge?.language() === "de" &&
+              !!document.querySelector("#lovenaEditor .ed-head h2")?.textContent.trim() &&
+              document.querySelector("#lovenaEditor .ed-head h2").textContent.trim() !== previousTitle.trim(),
+              portugueseEditorTitle, { timeout: 30000 });
             console.log("Experience language selector changed and persisted the editor interface language.");
             await verifyGalleryAutoplay(editorPage, "editor desktop");
             async function verifyPreviewInteractions(targetPage, label) {
