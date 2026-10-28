@@ -200,6 +200,8 @@ jobs:
             await page.waitForFunction(() => window.LOVENA_EDIT_DEFAULTS && document.querySelector('script[src*="lovena-public-interactions.js"]'), null, { timeout: 15000 });
             async function verifyGalleryAutoplay(targetPage, label) {
               await targetPage.waitForFunction(() => document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified", null, { timeout: 10000 });
+              await targetPage.locator("#galleryRow").scrollIntoViewIfNeeded();
+              await targetPage.waitForTimeout(350);
               const before = await targetPage.locator("#galleryRow").evaluate(row => ({
                 scrollLeft: row.scrollLeft,
                 loopWidth: row.querySelector('.gallery-item[data-gallery-clone="true"]').getBoundingClientRect().left -
