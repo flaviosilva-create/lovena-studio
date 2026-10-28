@@ -1116,6 +1116,26 @@ body.editor-mode .memory-collage-floating-words span{pointer-events:auto;cursor:
  #fotos .gallery-row>.gallery-item{flex-basis:105px!important;width:105px!important;min-width:105px!important}
 }
 </style>
+<style id="lovena-visual-hydration">
+/* Prevent the starter-photo placeholders from flashing before the saved experience has hydrated. */
+html:not(.lovena-visuals-ready) .hero-photo,
+html:not(.lovena-visuals-ready) .pinned-photo-photo,
+html:not(.lovena-visuals-ready) #fotos .gallery-photo,
+html:not(.lovena-visuals-ready) #colagem-memorias .memory-collage-backdrop,
+html:not(.lovena-visuals-ready) #colagem-memorias .memory-collage-main-photo img,
+html:not(.lovena-visuals-ready) #colagem-memorias .memory-collage-strip img {
+  opacity: 0 !important;
+  transition: opacity .22s ease !important;
+}
+html.lovena-visuals-ready .hero-photo,
+html.lovena-visuals-ready .pinned-photo-photo,
+html.lovena-visuals-ready #fotos .gallery-photo,
+html.lovena-visuals-ready #colagem-memorias .memory-collage-backdrop,
+html.lovena-visuals-ready #colagem-memorias .memory-collage-main-photo img,
+html.lovena-visuals-ready #colagem-memorias .memory-collage-strip img {
+  transition: opacity .22s ease;
+}
+</style>
 </head>
 <body>
 <main class="experience" id="experiencia">
@@ -3865,6 +3885,62 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  if(editMode)window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
  var defaultTextBaseline={};textFields.forEach(function(def){var element=targetFor(def);if(element)defaultTextBaseline[def.key]=readElement(element,def.multiline);});
  applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();markSavedUserContent();if(state.localeMode==="auto")scheduleExperienceLanguageDetection();renderCollagePhotoControls();
+
+function revealPersonalizedVisualsAfterHydration(){
+  var root=document.documentElement;
+  var targets=Array.prototype.slice.call(document.querySelectorAll(
+    ".hero-photo,.pinned-photo-photo,#fotos .gallery-photo,#colagem-memorias .memory-collage-backdrop,#colagem-memorias .memory-collage-main-photo img,#colagem-memorias .memory-collage-strip img"
+  ));
+  var sources=[];
+  var seen=Object.create(null);
+  function addSource(src){
+    src=String(src||"").trim();
+    if(!src||src==="none"||seen[src])return;
+    seen[src]=true;sources.push(src);
+  }
+  targets.forEach(function(target){
+    if(target.tagName==="IMG"){
+      addSource(target.currentSrc||target.src);
+      return;
+    }
+    var background=window.getComputedStyle(target).backgroundImage||"";
+    var re=/url\((?:"([^"]+)"|'([^']+)'|([^)]*))\)/g,match;
+    while((match=re.exec(background))){
+      addSource(match[1]||match[2]||match[3]);
+    }
+  });
+  function waitForSource(src){
+    return new Promise(function(resolve){
+      var image=new Image(),finished=false;
+      var timer=window.setTimeout(finish,1800);
+      function finish(){
+        if(finished)return;
+        finished=true;
+        window.clearTimeout(timer);
+        image.onload=null;image.onerror=null;
+        resolve();
+      }
+      image.onload=finish;
+      image.onerror=finish;
+      try{
+        image.src=src;
+        if(image.complete&&image.naturalWidth>0)finish();
+        else if(typeof image.decode==="function")image.decode().then(finish, function(){});
+      }catch(error){finish();}
+    });
+  }
+  Promise.all(sources.map(waitForSource)).then(function(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        root.classList.add("lovena-visuals-ready");
+      });
+    });
+  }).catch(function(){
+    root.classList.add("lovena-visuals-ready");
+  });
+}
+
+revealPersonalizedVisualsAfterHydration();
 
  if(editMode){
   function showPublicationLoadNotice(message){
