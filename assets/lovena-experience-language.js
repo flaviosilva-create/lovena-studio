@@ -98,6 +98,7 @@
     var query = new URLSearchParams(window.location.search);
     var isEditing = query.get("edit") === "1" && !query.get("slug");
     control.hidden = !isEditing;
+    control.dataset.languageControlReady = "true";
     if (!isEditing) return;
 
     var language = getSavedLanguage() || defaultLanguage();
