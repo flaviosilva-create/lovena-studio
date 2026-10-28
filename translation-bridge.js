@@ -47,6 +47,7 @@
   }
 
   function isBrazilianVisitor() {
+    if (window.LOVENA_REGION_COUNTRY) return window.LOVENA_REGION_COUNTRY === "BR";
     try {
       var locale = String(navigator.language || "").toLowerCase();
       var languages = Array.isArray(navigator.languages) ? navigator.languages.map(function (item) { return String(item).toLowerCase(); }) : [];
@@ -517,6 +518,17 @@
     if (language === SOURCE_LANGUAGE) { returnToEnglish(); return; }
     scheduleTranslation(80);
   }
+
+  window.addEventListener("lovena:region-detected", function (event) {
+    if (!event || !event.detail || !event.detail.countryCode) return;
+    if (event.detail.countryCode === "BR" && !readManualLanguage()) {
+      saveLanguage("pt");
+      scheduleTranslation(80);
+    } else if (event.detail.countryCode !== "BR" && !readManualLanguage()) {
+      saveLanguage(SOURCE_LANGUAGE);
+      returnToEnglish();
+    }
+  });
 
   window.addEventListener("lovena:experience-language-changed", function (event) {
     if (!document.getElementById("experiencia")) return;
