@@ -31,8 +31,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 .ed-live-guide small{font-size:10px;line-height:1.5;color:#8b7162;margin-top:3px}
 .lovena-edit-target{outline:2px solid #d49c79!important;outline-offset:4px!important;border-radius:3px;cursor:pointer!important}
 .hero{height:100vh;height:100svh;min-height:600px;max-height:none;position:relative;isolation:isolate;background:#130807;overflow:hidden}
-.hero-photo{position:absolute;z-index:-3;inset:0;width:100%;height:100%;background-image:none;background-size:cover;background-position:center 47%;background-repeat:no-repeat;filter:none}.hero-photo::after{content:"";position:absolute;z-index:0;inset:-14px;background-image:var(--hero-photo-image,var(--hero-photo));background-size:cover;background-position:var(--hero-photo-position,center 47%);background-repeat:no-repeat;filter:blur(16px) brightness(.62) saturate(.82);transform:scale(1.04)}.hero-photo::before{content:"";position:absolute;z-index:1;inset:0;background-image:var(--hero-photo-image,var(--hero-photo));background-size:contain;background-position:var(--hero-photo-position,center 47%);background-repeat:no-repeat;filter:saturate(.96);-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,1) 73%,rgba(0,0,0,.94) 82%,rgba(0,0,0,.65) 92%,rgba(0,0,0,0) 100%);mask-image:radial-gradient(ellipse at center,rgba(0,0,0,1) 73%,rgba(0,0,0,.94) 82%,rgba(0,0,0,.65) 92%,rgba(0,0,0,0) 100%);transform:scale(var(--hero-photo-scale,1));transform-origin:var(--hero-photo-origin,50% 47%);will-change:transform}
-.hero-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,#160807 0%,rgba(22,8,7,.95) 14%,rgba(22,8,7,.73) 29%,rgba(22,8,7,.12) 57%,rgba(22,8,7,.12) 100%),linear-gradient(0deg,rgba(17,7,6,.23),transparent 35%,rgba(18,7,6,.1))}
+.hero-photo{position:absolute;z-index:-3;inset:0;width:100%;height:100%;background-image:none;background-size:cover;background-position:center 47%;background-repeat:no-repeat;filter:none}.hero-photo::after{content:"";position:absolute;z-index:0;inset:-14px;background-image:var(--hero-photo-image,var(--hero-photo));background-size:cover;background-position:var(--hero-photo-position,center 47%);background-repeat:no-repeat;filter:blur(16px) brightness(.62) saturate(.82);transform:scale(1.04)}.hero-photo::before{content:"";position:absolute;z-index:1;inset:0;background-image:var(--hero-photo-image,var(--hero-photo));background-size:cover;background-position:var(--hero-photo-position,center 47%);background-repeat:no-repeat;filter:saturate(1.02);transform:scale(var(--hero-photo-scale,1));transform-origin:var(--hero-photo-origin,50% 47%);will-change:transform}
+.hero-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,rgba(22,8,7,.42) 0%,rgba(22,8,7,.36) 14%,rgba(22,8,7,.20) 29%,rgba(22,8,7,.06) 57%,rgba(22,8,7,.03) 100%),linear-gradient(0deg,rgba(17,7,6,.16),transparent 35%,rgba(18,7,6,.04))}
 .experience-nav{height:70px;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(26px,9.1vw,100px);color:#f6eee7}
 .logo-lockup{display:flex;align-items:center;gap:12px;flex-shrink:0}
 .logo-mark{width:28px;height:31px;display:block;overflow:visible}
@@ -43,7 +43,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 .nav-love{display:flex;align-items:center;gap:10px;white-space:nowrap;background:none;color:#f6e9df;border:0;font-size:8px;padding:8px 0}
 .nav-love svg{width:16px;height:16px;fill:none;stroke:#e4c7b9;stroke-width:1.6}
 .nav-love.is-loved svg{fill:#c58d8a;stroke:#c58d8a}
-.hero-copy{position:absolute;left:clamp(30px,9.1vw,104px);top:124px;max-width:385px;width:42%;color:#fbf2e9}
+.hero-copy{position:absolute;left:clamp(30px,9.1vw,104px);top:124px;max-width:385px;width:42%;color:#fbf2e9;text-shadow:0 2px 12px rgba(0,0,0,.52)}
 .hero-eyebrow{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:#d0a99a;margin:0 0 20px}
 .hero h1{font-family:'Playfair Display',Georgia,serif;font-weight:400;font-size:clamp(42px,4.6vw,51px);line-height:.99;letter-spacing:-1.6px;margin:0 0 18px;max-width:390px;text-wrap:balance}
 .hero-intro{font-family:'Playfair Display',Georgia,serif;font-size:13px;line-height:1.55;max-width:308px;margin:0;color:#f0e0d3}
@@ -176,7 +176,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 @media(max-width:850px){
  .hero{height:100vh;height:100svh;min-height:560px;max-height:none}
  .hero-photo{width:100%;background-position:center center}
- .hero-shade{background:linear-gradient(90deg,#160807 0%,rgba(22,8,7,.92) 18%,rgba(22,8,7,.6) 42%,rgba(22,8,7,.08) 78%),linear-gradient(0deg,rgba(17,7,6,.38),transparent 38%,rgba(18,7,6,.08))}
+ .hero-shade{background:linear-gradient(90deg,rgba(22,8,7,.42) 0%,rgba(22,8,7,.34) 18%,rgba(22,8,7,.18) 42%,rgba(22,8,7,.04) 78%),linear-gradient(0deg,rgba(17,7,6,.22),transparent 38%,rgba(18,7,6,.04))}
  .experience-nav{height:67px;padding:0 25px;gap:12px}
  .experience-nav-links{display:none}
  .nav-love{margin-left:auto;font-size:8px}
@@ -208,7 +208,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
 @media(max-width:580px){
  .hero{height:100vh;height:100svh;min-height:520px;max-height:none}
  .hero-photo{width:100%;background-position:center center}
- .hero-shade{background:linear-gradient(90deg,rgba(18,7,6,.95) 0%,rgba(18,7,6,.73) 44%,rgba(18,7,6,.23) 100%),linear-gradient(0deg,rgba(18,7,6,.58),transparent 47%,rgba(18,7,6,.2))}
+ .hero-shade{background:linear-gradient(90deg,rgba(18,7,6,.48) 0%,rgba(18,7,6,.34) 44%,rgba(18,7,6,.10) 100%),linear-gradient(0deg,rgba(18,7,6,.28),transparent 47%,rgba(18,7,6,.06))}
  .experience-nav{height:63px;padding:0 18px}
  .logo-mark{width:23px;height:27px}
  .logo-word{font-size:19px;letter-spacing:2.7px}
@@ -395,8 +395,8 @@ body.editor-mode .experience{padding-bottom:28px}
   .hero-photo { background-position: 58% center; }
   .hero-shade {
     background:
-      linear-gradient(90deg, rgba(18,7,6,.94) 0%, rgba(18,7,6,.78) 48%, rgba(18,7,6,.30) 100%),
-      linear-gradient(0deg, rgba(17,7,6,.62), transparent 48%, rgba(18,7,6,.16));
+      linear-gradient(90deg, rgba(18,7,6,.48) 0%, rgba(18,7,6,.33) 48%, rgba(18,7,6,.10) 100%),
+      linear-gradient(0deg, rgba(17,7,6,.26), transparent 48%, rgba(18,7,6,.05));
   }
   .experience-nav { height: 66px; padding: 0 20px; }
   .logo-lockup { gap: 9px; }
@@ -640,8 +640,8 @@ body.editor-mode .experience{padding-bottom:28px}
   .hero-photo { background-position: center center; }
   .hero-shade {
     background:
-      linear-gradient(90deg, rgba(18,7,6,.96) 0%, rgba(18,7,6,.83) 39%, rgba(18,7,6,.28) 100%),
-      linear-gradient(0deg, rgba(17,7,6,.52), transparent 46%, rgba(18,7,6,.12));
+      linear-gradient(90deg, rgba(18,7,6,.52) 0%, rgba(18,7,6,.36) 39%, rgba(18,7,6,.12) 100%),
+      linear-gradient(0deg, rgba(17,7,6,.28), transparent 46%, rgba(18,7,6,.06));
   }
   .hero-copy {
     top: clamp(132px, 19svh, 158px);
@@ -2105,12 +2105,12 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  }
 
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
- var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47},heroScale:100,heroFramingVersion:3,locale:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.locale)||data.locale||document.documentElement.lang||"en",localeMode:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.localeMode)||"auto"},window.LOVENA_EDIT_DRAFT||{});
+ var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47},heroScale:100,heroFramingVersion:4,locale:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.locale)||data.locale||document.documentElement.lang||"en",localeMode:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.localeMode)||"auto"},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
- if(Number(state.heroFramingVersion||0)<3){state.heroScale=100;state.heroFramingVersion=3;}var initialHeroScale=Number(state.heroScale);state.heroScale=isFinite(initialHeroScale)?Math.max(50,Math.min(160,initialHeroScale)):100;
+ if(Number(state.heroFramingVersion||0)<4){state.heroScale=100;state.heroFramingVersion=4;}var initialHeroScale=Number(state.heroScale);state.heroScale=isFinite(initialHeroScale)?Math.max(50,Math.min(160,initialHeroScale)):100;
  state.collage=Object.assign({title:"ANNIVERSARY",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you",background:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
  function migrateLegacyEnglishDemo(){
   if(!editMode)return;
@@ -2745,7 +2745,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   window.dispatchEvent(new Event("lovena:music-updated"));
  }
  function setStatus(value){if(statusNode)statusNode.textContent=value;}
- function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;savedData.locale=state.locale||"en";savedData.language=state.locale||"en";return {version:2,sampleAssetsVersion:2,locale:state.locale||"en",localeMode:state.localeMode||"auto",texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,heroScale:state.heroScale,heroFramingVersion:3,collage:state.collage,data:savedData};}
+ function getSnapshot(){var savedData=Object.assign({},data);delete savedData.images;savedData.locale=state.locale||"en";savedData.language=state.locale||"en";return {version:2,sampleAssetsVersion:2,locale:state.locale||"en",localeMode:state.localeMode||"auto",texts:state.texts,images:state.images,colors:state.colors,heroPosition:state.heroPosition,heroScale:state.heroScale,heroFramingVersion:4,collage:state.collage,data:savedData};}
  
  function normalizeExperienceLanguage(value){
   var lang=String(value||"en").trim().replace(/_/g,"-").toLowerCase();
