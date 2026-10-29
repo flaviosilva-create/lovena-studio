@@ -60,7 +60,19 @@
           visual.style.backgroundSize = computed && computed.backgroundSize ? computed.backgroundSize : "300% 200%";
           visual.style.backgroundPosition = computed && computed.backgroundPosition ? computed.backgroundPosition : "center";
         }
+        visual.style.position = "relative";
         visual.setAttribute("aria-label", title || "Photo");
+        var galleryData = window.LOVENA_EDIT_DATA || {};
+        var galleryRow = document.getElementById("galleryRow");
+        var originals = galleryRow ? galleryRow.querySelectorAll('.gallery-item:not([data-gallery-clone="true"])').length : 0;
+        var totalPhotos = Math.max(1, Array.isArray(galleryData.photos) && galleryData.photos.length ? galleryData.photos.length : originals);
+        visual.innerHTML =
+          '<button type="button" class="modal-photo-arrow modal-photo-prev" data-action="modal-prev" aria-label="Previous photo">‹</button>' +
+          '<span class="modal-photo-count" aria-live="polite">' + (fallbackPhotoIndex + 1) + ' / ' + totalPhotos + '</span>' +
+          '<button type="button" class="modal-photo-arrow modal-photo-next" data-action="modal-next" aria-label="Next photo">›</button>';
+      } else {
+        visual.replaceChildren();
+        visual.removeAttribute("aria-label");
       }
     }
     if (envelope) envelope.hidden = !options.envelope;
@@ -94,6 +106,47 @@
     var copy = textFor(item, 1);
     showModal(title, copy, "OUR MOMENTS", { photo: true, photoElement: trigger, photoUrl: photoUrl });
   }
+
+  // Allow swiping between photos in the fallback lightbox, including mobile Safari.
+  (function bindFallbackPhotoGestures() {
+    var visual = document.getElementById("modalVisual");
+    var modal = document.getElementById("detailModal");
+    if (!visual || visual.dataset.galleryGesturesReady === "true") return;
+    visual.dataset.galleryGesturesReady = "true";
+    var touchStart = null;
+    visual.addEventListener("touchstart", function (event) {
+      if (!modal || !modal.open || visual.hidden || !event.touches || event.touches.length !== 1) {
+        touchStart = null;
+        return;
+      }
+      touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    }, { passive: true });
+    visual.addEventListener("touchend", function (event) {
+      if (!touchStart || !modal || !modal.open || !event.changedTouches || !event.changedTouches.length) return;
+      var dx = event.changedTouches[0].clientX - touchStart.x;
+      var dy = event.changedTouches[0].clientY - touchStart.y;
+      touchStart = null;
+      if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+        showPhoto(fallbackPhotoIndex + (dx < 0 ? 1 : -1));
+      }
+    }, { passive: true });
+    var mouseStart = null;
+    visual.addEventListener("pointerdown", function (event) {
+      if (event.pointerType !== "mouse" || event.button !== 0 || !modal || !modal.open || visual.hidden ||
+          (event.target && event.target.closest && event.target.closest(".modal-photo-arrow"))) return;
+      mouseStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    });
+    visual.addEventListener("pointerup", function (event) {
+      if (event.pointerType !== "mouse" || !mouseStart || event.pointerId !== mouseStart.id) return;
+      var dx = event.clientX - mouseStart.x;
+      var dy = event.clientY - mouseStart.y;
+      mouseStart = null;
+      if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+        showPhoto(fallbackPhotoIndex + (dx < 0 ? 1 : -1));
+      }
+    });
+    visual.addEventListener("pointercancel", function () { mouseStart = null; });
+  })();
 
   function handleFallback(event) {
     // While the editor is actively editing, this fallback must not intercept clicks
