@@ -1537,7 +1537,8 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
  window.LOVENA_EDIT_DATA=defaults;
  window.LOVENA_EDIT_DRAFT={};
  var draft=null;
- try{draft=JSON.parse(localStorage.getItem("lovenaSimpleExperienceDraftV1")||"null");}catch(error){}
+ var demoPreview=new URLSearchParams(location.search).get("demo")==="1";
+ try{if(!demoPreview)draft=JSON.parse(localStorage.getItem("lovenaSimpleExperienceDraftV1")||"null");}catch(error){}
  var shareSlug=new URLSearchParams(location.search).get("slug");
  var lovenaEditMode=new URLSearchParams(location.search).get("edit")==="1";
  if(!shareSlug&&lovenaEditMode&&window.LovenaBackend){
