@@ -6,9 +6,12 @@
   var query = new URLSearchParams(window.location.search);
   var isPublicShare = query.has("slug");
   var isEditorExperience = query.get("edit") === "1" && !isPublicShare;
+  var isDemoPreview = query.get("demo") === "1";
   /* The editor's Preview Experience uses this same page without a share slug.
      Install the fallback there too, but keep it dormant until preview mode starts. */
-  if (!isPublicShare && !isEditorExperience) return;
+  // Public landing-page examples must also receive the fallback handlers.
+  // Their primary boot sequence can fail independently of the demo markup.
+  if (!isPublicShare && !isEditorExperience && !isDemoPreview) return;
 
   var fallbackPhotoIndex = 0;
 
