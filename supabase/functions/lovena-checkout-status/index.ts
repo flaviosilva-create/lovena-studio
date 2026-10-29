@@ -18,6 +18,18 @@ function makeSlug() {
   return crypto.randomUUID().replaceAll("-", "").slice(0, 20);
 }
 
+function isOnlinePublicationOrder(order: any): boolean {
+  const currency = String(order.currency || "usd").toLowerCase();
+  const baseCents = currency === "brl"
+    ? (order.plan === "simple" ? 999 : 1999)
+    : (order.plan === "simple" ? 499 : 999);
+  const addonCents = currency === "brl" ? 500 : 100;
+  // An HTML-only order must not publish an online experience by itself.
+  return order.includes_html_download === true
+    ? order.amount_total >= baseCents + addonCents
+    : order.amount_total >= baseCents;
+}
+
 async function ensurePublished(admin: any, experienceId: string, plan: string) {
   const { data: current, error: currentError } = await admin
     .from("lovena_experiences")
@@ -96,8 +108,10 @@ Deno.serve(async (req: Request) => {
       if (!selectedOrder) return reply(404, { error: "checkout_not_found" });
 
       if (selectedOrder.payment_status === "paid") {
-        // Recover from a prior webhook that marked the order paid but failed before publication.
-        await ensurePublished(admin, experienceId, selectedOrder.plan);
+        // Recover a publication only for a paid online-plan order, never an HTML-only add-on.
+        if (isOnlinePublicationOrder(selectedOrder)) {
+          await ensurePublished(admin, experienceId, selectedOrder.plan);
+        }
       } else if (!["refunded", "disputed"].includes(selectedOrder.payment_status)) {
         const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
         if (stripeKey) {
@@ -113,6 +127,14 @@ Deno.serve(async (req: Request) => {
               const expectedPurchaseType = selectedOrder.includes_html_download
                 ? (selectedOrder.amount_total === orderAddonCents ? "html_download" : "online_with_html")
                 : "online";
+              const actualPurchaseType = session.metadata?.purchase_type;
+              // Safely accept the existing HTML add-on session created with the legacy
+              // online_with_html metadata label, only when its amount is exactly the add-on price.
+              const isHtmlAddonMetadataAlias =
+                selectedOrder.includes_html_download === true &&
+                selectedOrder.amount_total === orderAddonCents &&
+                expectedPurchaseType === "html_download" &&
+                actualPurchaseType === "online_with_html";
               const sessionMatchesOrder =
                 session.id === sessionId &&
                 session.status === "complete" &&
@@ -122,7 +144,7 @@ Deno.serve(async (req: Request) => {
                 session.metadata?.experience_id === experienceId &&
                 session.metadata?.owner_id === experienceInitial.owner_id &&
                 session.metadata?.plan === selectedOrder.plan &&
-                session.metadata?.purchase_type === expectedPurchaseType &&
+                (actualPurchaseType === expectedPurchaseType || isHtmlAddonMetadataAlias) &&
                 session.amount_total === selectedOrder.amount_total &&
                 String(session.currency).toLowerCase() === String(selectedOrder.currency).toLowerCase();
 
@@ -136,7 +158,9 @@ Deno.serve(async (req: Request) => {
                   updated_at: now,
                 }).eq("id", selectedOrder.id).in("payment_status", ["pending", "failed"]);
                 if (paymentUpdateError) throw paymentUpdateError;
-                await ensurePublished(admin, experienceId, selectedOrder.plan);
+                if (isOnlinePublicationOrder(selectedOrder)) {
+                  await ensurePublished(admin, experienceId, selectedOrder.plan);
+                }
               } else if (session.id === sessionId && session.payment_status === "paid") {
                 console.error("Stripe checkout reconciliation did not match the Lovena order", sessionId);
               }
@@ -173,7 +197,7 @@ Deno.serve(async (req: Request) => {
     });
     const publicPage = experience.plan === "simple" ? "experience-simple.html" : "experience.html";
     const publicUrl = onlinePaid && experience.status === "published" && experience.public_slug
-      ? "https://flaviosilva-create.github.io/lovena-studio/" + publicPage + "?slug=" + encodeURIComponent(experience.public_slug)
+      ? "https://lovenastudio.com/" + publicPage + "?slug=" + encodeURIComponent(experience.public_slug)
       : null;
     const entitlements = {
       onlinePaid,
