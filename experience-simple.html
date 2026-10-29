@@ -300,6 +300,44 @@ button:focus-visible,a:focus-visible{outline:2px solid #d6a49c;outline-offset:4p
  .timeline-item:last-child span:not(.timeline-node){font-size:11px}
 }
 
+
+/* Reliable horizontal carousel layout for Our Moments on desktop and mobile. */
+#fotos .gallery-row {
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  grid-template-columns:none!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:thin;
+  -webkit-overflow-scrolling:touch;
+}
+#fotos .gallery-row>.gallery-item {
+  flex:0 0 calc((100% - 45px)/4)!important;
+  width:auto!important;
+}
+@media(max-width:760px) {
+  #fotos .gallery-row-wrap {padding-right:42px!important}
+  #fotos .gallery-row {gap:13px!important;padding:4px 3px 14px!important}
+  #fotos .gallery-row>.gallery-item {
+    flex:0 0 min(62vw,220px)!important;
+    width:min(62vw,220px)!important;
+  }
+  #fotos .gallery-arrows {
+    display:flex!important;
+    right:4px!important;
+    top:50%!important;
+    z-index:8!important;
+  }
+  #fotos .gallery-arrows button {
+    width:32px!important;
+    height:32px!important;
+    background:rgba(229,211,195,.98)!important;
+    color:#542720!important;
+    box-shadow:0 3px 10px rgba(36,16,12,.2);
+    font-size:20px!important;
+  }
+}
+
 </style>
 <style id="lovenaEditorStyles">
 #lovenaEditorTrigger[hidden],#lovenaEditorBackdrop[hidden],#lovenaEditor[hidden]{display:none!important}
@@ -4398,7 +4436,8 @@ revealPersonalizedVisualsAfterHydration();
       mouseGalleryDrag.pointerId = event.pointerId;
       mouseGalleryDrag.startX = event.clientX;
       mouseGalleryDrag.startScroll = row.scrollLeft;
-      try { row.setPointerCapture(event.pointerId); } catch (error) {}
+      // Do not capture the pointer on pointerdown: that retargets an ordinary
+      // click to the row and prevents the clicked photo from opening.
       pauseBriefly();
     });
     row.addEventListener("pointermove", function (event) {
@@ -4407,6 +4446,8 @@ revealPersonalizedVisualsAfterHydration();
       if (Math.abs(dx) > 5 && !mouseGalleryDrag.moved) {
         mouseGalleryDrag.moved = true;
         row.dataset.mouseDragging = "true";
+        // Capture only after the gesture becomes a drag, never for a normal click.
+        try { row.setPointerCapture(event.pointerId); } catch (error) {}
       }
       if (mouseGalleryDrag.moved) {
         event.preventDefault();
@@ -4457,43 +4498,12 @@ revealPersonalizedVisualsAfterHydration();
     rebuildLoop();
     frameId = window.requestAnimationFrame(animate);
   })();
-  function bindGalleryArrowNavigation(row){
-  if(!row||row.dataset.galleryArrowsReady==="true")return;
-  row.dataset.galleryArrowsReady="true";
-  var buttons=document.querySelectorAll('#fotos .gallery-arrows button[data-action="gallery-left"],#fotos .gallery-arrows button[data-action="gallery-right"]');
-  buttons.forEach(function(button){
-   button.addEventListener("click",function(event){
-    event.preventDefault();
-    event.stopPropagation();
-    row.dataset.galleryManualNavigation="true";
-    row.style.overflowX="auto";
-    row.style.scrollBehavior="smooth";
-    var first=row.querySelector('.gallery-item:not([data-gallery-clone="true"])');
-    if(!first)return;
-    var style=window.getComputedStyle(row);
-    var gap=parseFloat(style.columnGap||style.gap)||0;
-    var itemWidth=first.getBoundingClientRect().width;
-    var max=Math.max(0,row.scrollWidth-row.clientWidth);
-    if(max<=2)return;
-    var unit=itemWidth+gap;
-    var step=Math.max(unit,Math.min(row.clientWidth*.68,max));
-    var direction=button.dataset.action==="gallery-right"?1:-1;
-    var current=row.scrollLeft;
-    var target;
-    if(direction>0&&current>=max-3)target=0;
-    else if(direction<0&&current<=3)target=max;
-    else target=Math.max(0,Math.min(max,current+direction*step));
-    row.scrollTo({left:target,behavior:"smooth"});
-   },true);
-  });
- }
-  bindGalleryArrowNavigation(document.getElementById("galleryRow"));
 })();
 </script>
 
 
 
-<script src="./assets/lovena-public-interactions.js?v=20261029-demo-click-fix-1"></script>
+<script src="./assets/lovena-public-interactions.js?v=20261029-modal-gallery-nav-v1"></script>
 <script src="./assets/lovena-experience-language.js?v=20261028-experience-language-3"></script><script src="./translation-bridge.js?v=20261029-pt-headline-1" defer></script>
 
 
