@@ -6,7 +6,7 @@
   var SUPABASE_URL = "https://cjlbiohykewwizbdtgvw.supabase.co";
   var SUPABASE_KEY = "sb_publishable_aW937JX-8n2NaDkohgjmfg_Q5sO9IxL";
   var CLIENT_VERSION = "2.49.1";
-  var SITE_BASE = "https://flaviosilva-create.github.io/lovena-studio/";
+  var SITE_BASE = window.location.origin + "/";
   var clientPromise = null;
   var signInPromise = null;
   var mounted = false;
