@@ -2166,6 +2166,30 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  var colorDefaults={night:"#1b0908",paper:"#f3e4d3",accent:"#b7837f",ink:"#39271f"};
  var state=Object.assign({version:1,texts:{},images:{hero:null,gallery:[]},colors:colorDefaults,heroPosition:{x:50,y:47},heroScale:100,heroFramingVersion:4,locale:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.locale)||data.locale||document.documentElement.lang||"en",localeMode:(window.LOVENA_EDIT_DRAFT&&window.LOVENA_EDIT_DRAFT.localeMode)||"auto"},window.LOVENA_EDIT_DRAFT||{});
  state.texts=state.texts||{};
+ // Migrate only the exact built-in Portuguese letter sample in older saved drafts.
+ // Real customer-written messages are left untouched.
+ function normalizeDefaultLetter(value){
+  return String(value==null?"":value).normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,"");
+ }
+ var defaultLetterEnglish="Sometimes words aren't enough to express how special you are to me. You have a unique way of making everything more beautiful: your smile brightens my days, your presence warms my heart, and even the simplest moments become unforgettable when you're by my side.\n\nI wish you could see yourself through my eyes and recognize the beauty you carry in your soul and the joy you bring to everyone lucky enough to know you. Never doubt your worth. You deserve a gentle, sincere love filled with care. I'm grateful to have you in my life, and I hope to always remind you, through words and actions, how rare, important, and loved you are. You are one of the most beautiful chapters of my story.";
+ var defaultPortugueseLetter="Às vezes faltam palavras para explicar o quanto você é especial para mim. Você tem um jeito único de deixar tudo mais bonito: seu sorriso ilumina meus dias, sua presença aquece meu coração e até mesmo os momentos simples se tornam inesquecíveis quando você está por perto.\n\nQueria que pudesse se enxergar pelos meus olhos, para perceber a beleza que carrega na alma e o bem que faz a quem tem a sorte de conhecer você. Nunca duvide do seu valor. Você merece um amor leve, sincero e cheio de cuidado. Sou grato por ter você na minha vida e espero sempre lembrar, em palavras e atitudes, o quanto você é raro, importante e amado. Você é um dos capítulos mais bonitos da minha história.";
+ var previousPortugueseLetter="Eu sempre fui do tipo que acredita que as coisas mais lindas da vida não são planejadas. E foi exatamente assim que você chegou: de forma inesperada, no momento certo, para fazer tudo fazer mais sentido.\n\nCom você, até os dias comuns se tornam especiais. Você é o meu lugar seguro, o meu maior incentivo, a minha melhor companhia e o meu maior amor.\n\nEu amo tudo em você. Seu sorriso, sua forma de pensar, seu jeito único de ver o mundo. E eu amo ainda mais tudo o que estamos construindo juntos.\n\nObrigada por existir, por ser exatamente como é e por me escolher todos os dias.";
+ var normalizedCurrentLetter=normalizeDefaultLetter(state.texts.letterBody);
+ var knownDefaultLetterBodies=[defaultPortugueseLetter,previousPortugueseLetter].map(normalizeDefaultLetter);
+ if(normalizedCurrentLetter&&knownDefaultLetterBodies.indexOf(normalizedCurrentLetter)!==-1){
+  state.texts.letterBody=defaultLetterEnglish;
+  ["letterCopy0","letterCopy1","letterCopy2","letterCopy3"].forEach(function(key){delete state.texts[key];});
+ }
+ var legacyDefaultLetterKeys=["letterCopy0","letterCopy1","letterCopy2","letterCopy3"];
+ var legacyDefaultLetterBody=legacyDefaultLetterKeys.map(function(key){return state.texts[key]||"";}).filter(Boolean).join("\\n");
+ if(!state.texts.letterBody&&legacyDefaultLetterBody&&knownDefaultLetterBodies.indexOf(normalizeDefaultLetter(legacyDefaultLetterBody))!==-1){
+  state.texts.letterBody=defaultLetterEnglish;
+  legacyDefaultLetterKeys.forEach(function(key){delete state.texts[key];});
+ }
+ var savedLetterTitle=normalizeDefaultLetter(state.texts.letterTitle);
+ if(["meuamor","minhacartaparavoce","minhacartaparati","minhacartapravocê"].indexOf(savedLetterTitle)!==-1){
+  state.texts.letterTitle="My love, ❤️";
+ }
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
@@ -4328,7 +4352,7 @@ revealPersonalizedVisualsAfterHydration();
 
 
 <script src="./assets/lovena-public-interactions.js?v=20261029-demo-click-fix-1"></script>
-<script src="./assets/lovena-experience-language.js?v=20261028-experience-language-3"></script><script src="./translation-bridge.js?v=20261029-letter-copy-2" defer></script>
+<script src="./assets/lovena-experience-language.js?v=20261028-experience-language-3"></script><script src="./translation-bridge.js?v=20261029-editor-letter-default-1" defer></script>
 
 
 </body>
