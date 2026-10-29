@@ -1524,6 +1524,12 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
  }
  if(hasCurrentImageDraft&&draft.images)data.images=draft.images;
  if(!Array.isArray(data.songs)||!data.songs.length)data.songs=defaults.songs.slice(0,1);else data.songs=data.songs.slice(0,1);
+ // The landing-page demo uses the exact YouTube Music video supplied for the example.
+ // Keep this override demo-only: it must not change a customer's own draft or the editor template.
+ if(demoPreview){
+  data.songs=[{title:"Our song",artist:"YouTube Music",query:"Our song",url:"https://music.youtube.com/watch?v=GnUW4AF1LZo&si=cXH4oVPVMthEjVJQ",platform:"youtube"}];
+  data.musicLinkLabel="Listen on YouTube Music ↗";
+ }
  if(data.surprises)delete data.surprises.playlist;
  if(data.images)delete data.images.album;
  // Older browser drafts kept their photographs only in that browser. Use the shared GitHub sample assets instead.
