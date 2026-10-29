@@ -2121,10 +2121,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   {key:"pinnedCaption",label:"Caption on the Tilted Photo",group:"Header & Opening",selector:".pinned-photo figcaption"},
   {key:"scrollCue",label:"Scroll Prompt",group:"Header & Opening",selector:".scroll-cue span",multiline:true},
   {key:"letterTitle",label:"Letter Title",group:"Love Letter",selector:".letter-title"},
-  {key:"letterCopy0",label:"Paragraph 1",group:"Love Letter",selector:".letter-copy",index:0,multiline:true},
-  {key:"letterCopy1",label:"Paragraph 2",group:"Love Letter",selector:".letter-copy",index:1,multiline:true},
-  {key:"letterCopy2",label:"Paragraph 3",group:"Love Letter",selector:".letter-copy",index:2,multiline:true},
-  {key:"letterCopy3",label:"Paragraph 4",group:"Love Letter",selector:".letter-copy",index:3,multiline:true},
+  {key:"letterBody",label:"Letter Text",group:"Love Letter",selector:".letter-copy",index:0,multiline:true},
   {key:"letterEnding",label:"Letter Closing Line",group:"Love Letter",selector:".letter-ending"},
   {key:"letterTo",label:"Signature on the Letter",group:"Love Letter",selector:".letter-to"},
   {key:"musicHeading",label:"Player Title",group:"Music",selector:".music-heading h2"},
@@ -2390,15 +2387,45 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    value.split("\n").forEach(function(line,index){if(index)el.appendChild(document.createElement("br"));el.appendChild(document.createTextNode(line));});
   }else el.textContent=value;
  }
+ function readLetterBodyFromDom(){
+  return Array.from(document.querySelectorAll(".letter-copy")).map(function(el){return readElement(el,true);}).join("\n\n").trim();
+ }
+ function readLetterBodyFromLegacyState(){
+  var keys=["letterCopy0","letterCopy1","letterCopy2","letterCopy3"];
+  var hasLegacy=keys.some(function(key){return Object.prototype.hasOwnProperty.call(state.texts,key);});
+  if(!hasLegacy)return readLetterBodyFromDom();
+  var paragraphs=Array.from(document.querySelectorAll(".letter-copy"));
+  return paragraphs.map(function(el,index){
+   var key=keys[index];
+   return key&&Object.prototype.hasOwnProperty.call(state.texts,key)?String(state.texts[key]||""):readElement(el,true);
+  }).join("\n\n").trim();
+ }
+ function setLetterBody(value,userAuthored){
+  var paper=q(".letter-paper");if(!paper)return;
+  Array.from(paper.querySelectorAll(".letter-copy")).forEach(function(el){el.remove();});
+  var anchor=paper.querySelector(".letter-ending")||paper.querySelector(".letter-to");
+  String(value==null?"":value).replace(/\r\n?/g,"\n").split("\n").forEach(function(line){
+   if(!line.trim())return;
+   var paragraph=document.createElement("p");paragraph.className="letter-copy";paragraph.textContent=line;
+   paragraph.classList.add("lovena-edit-target");
+   if(userAuthored)markLovenaUserText(paragraph);
+   if(anchor)paper.insertBefore(paragraph,anchor);else paper.appendChild(paragraph);
+  });
+ }
  function fieldValue(def){
   if(def.path){var val=getPath(data,def.path);return val==null?"":String(val);}
+  if(def.key==="letterBody")return Object.prototype.hasOwnProperty.call(state.texts,"letterBody")?String(state.texts.letterBody):readLetterBodyFromLegacyState();
   if(Object.prototype.hasOwnProperty.call(state.texts,def.key))return String(state.texts[def.key]);
   return readElement(targetFor(def),def.multiline);
  }
  function applyField(def,value){
   if(def.path)setPath(data,def.path,value);
   else state.texts[def.key]=String(value);
-  if(def.selector){markLovenaUserText(targetFor(def));setElement(targetFor(def),value,def.multiline);}
+  if(def.key==="letterBody"){
+   ["letterCopy0","letterCopy1","letterCopy2","letterCopy3"].forEach(function(key){delete state.texts[key];});
+   setLetterBody(value,true);
+   setActivePreviewElement(q(".letter-copy"));
+  }else if(def.selector){markLovenaUserText(targetFor(def));setElement(targetFor(def),value,def.multiline);}
   if(def.key==="musicLinkLabel"){
    var link=document.getElementById("musicOpen");if(link)link.textContent=value;
    window.dispatchEvent(new Event("lovena:music-updated"));
@@ -2487,6 +2514,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   if(!el)return null;
   var current=el;
   while(current&&current!==document.body&&current!==document.documentElement){
+   if(current.matches&&current.matches(".letter-copy")){
+    var letterBodyDef=textFields.find(function(def){return def.key==="letterBody";});
+    if(letterBodyDef)return letterBodyDef;
+   }
    for(var i=0;i<textFields.length;i++){var def=textFields[i];if(def.selector&&targetFor(def)===current)return def;}
    current=current.parentElement;
   }
@@ -2495,6 +2526,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  function markEditableTargets(){
   var targets=[];
   textFields.forEach(function(def){var target=targetFor(def);if(target&&targets.indexOf(target)===-1)targets.push(target);});
+  document.querySelectorAll(".letter-copy").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
   document.querySelectorAll(".timeline-item,.hero-photo,.pinned-photo,.gallery-photo").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
   document.querySelectorAll("#colagem-memorias .memory-collage-backdrop,#colagem-memorias .memory-collage-main-photo img,#colagem-memorias .memory-collage-strip img,#colagem-memorias .memory-collage-copy span,#colagem-memorias .memory-collage-copy strong,#colagem-memorias .memory-collage-copy small,#colagem-memorias .memory-collage-floating-words span:not(.memory-collage-word-hidden)").forEach(function(target){if(targets.indexOf(target)===-1)targets.push(target);});
   targets.forEach(function(target){target.classList.add("lovena-edit-target");});
@@ -2519,9 +2551,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
     var id="ed_"+def.key;
     var label=document.createElement("label");label.htmlFor=id;label.textContent=def.label;row.appendChild(label);
     var ctl;
-    if(def.multiline){ctl=document.createElement("textarea");ctl.rows=3;}
+    if(def.multiline){ctl=document.createElement("textarea");ctl.rows=def.key==="letterBody"?10:3;}
     else{ctl=document.createElement("input");ctl.type="text";}
     ctl.id=id;ctl.dataset.editorField=def.key;ctl.value=fieldValue(def);ctl.autocomplete="off";
+    if(def.key==="letterBody"){ctl.style.minHeight="190px";ctl.style.resize="vertical";}
     if(def.key==="brand")ctl.placeholder="Alice & James";
 
     ctl.addEventListener("input",function(){
@@ -2977,7 +3010,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    var saved=def.path?getPath(data,def.path):(state.texts&&Object.prototype.hasOwnProperty.call(state.texts,def.key)?state.texts[def.key]:undefined);
    var original=def.path?getPath(baseline,def.path):defaultTextBaseline[def.key];
    var changed=saved!=null&&String(saved)!==String(original==null?"":original);
-   if(changed)markLovenaUserText(targetFor(def));
+   if(changed){
+    if(def.key==="letterBody")document.querySelectorAll(".letter-copy").forEach(markLovenaUserText);
+    else markLovenaUserText(targetFor(def));
+   }
   });
   var collageDefaults={title:"ANNIVERSARY",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you"};
   var selectors={title:"#colagem-memorias .memory-collage-copy strong",eyebrow:"#colagem-memorias .memory-collage-copy span",subtitle:"#colagem-memorias .memory-collage-copy small",floatingWord:"#colagem-memorias .memory-collage-floating-words span:not(.memory-collage-word-hidden)"};
@@ -3158,13 +3194,21 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  }
  function setFromPath(def,value){if(def.path)setPath(data,def.path,value);else state.texts[def.key]=value;if(def.selector)setElement(targetFor(def),value,def.multiline);}
  function applySavedSnapshot(){
+  var legacyLetterKeys=["letterCopy0","letterCopy1","letterCopy2","letterCopy3"];
+  if(!Object.prototype.hasOwnProperty.call(state.texts,"letterBody")&&legacyLetterKeys.some(function(key){return Object.prototype.hasOwnProperty.call(state.texts,key);})){
+   state.texts.letterBody=readLetterBodyFromLegacyState();
+   legacyLetterKeys.forEach(function(key){delete state.texts[key];});
+  }
   textFields.forEach(function(def){
    var pm=def.key.match(/^photo(?:Title|Story)(\\d+)$/);
    var mm=def.key.match(/^milestone(?:Title|Story|Date)(\\d+)$/);
    if(pm&&Number(pm[1])>=(data.photos||[]).length)return;
    if(mm&&Number(mm[1])>=(data.milestones||[]).length)return;
    if(def.path){var value=getPath(data,def.path);if(value!==undefined&&value!==null&&def.selector)setElement(targetFor(def),String(value),def.multiline);}
-   else if(Object.prototype.hasOwnProperty.call(state.texts,def.key)){setElement(targetFor(def),state.texts[def.key],def.multiline);}
+   else if(Object.prototype.hasOwnProperty.call(state.texts,def.key)){
+    if(def.key==="letterBody")setLetterBody(state.texts[def.key],false);
+    else setElement(targetFor(def),state.texts[def.key],def.multiline);
+   }
   });
   var song=data.songs&&data.songs[0];if(song){document.getElementById("trackTitle").textContent=song.title||"";document.getElementById("trackArtist").textContent=song.artist||"";document.getElementById("musicOpen").href=getSongUrl(song);}
   document.getElementById("musicOpen").textContent=data.musicLinkLabel||"Listen on YouTube Music ↗";
@@ -3871,7 +3915,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(reader.result);if(!obj||!obj.data||!Array.isArray(obj.data.photos)||!Array.isArray(obj.data.milestones))throw new Error("This file does not appear to be a Lovena backup.");localStorage.setItem(EDIT_KEY,JSON.stringify(obj));location.reload();}catch(err){setStatus("Could not import: "+err.message);}};reader.readAsText(file);event.target.value="";
  });
  if(editMode)window.addEventListener("beforeunload",function(){try{localStorage.setItem(EDIT_KEY,JSON.stringify(getSnapshot()));}catch(error){}});
- var defaultTextBaseline={};textFields.forEach(function(def){var element=targetFor(def);if(element)defaultTextBaseline[def.key]=readElement(element,def.multiline);});
+ var defaultTextBaseline={};textFields.forEach(function(def){var element=targetFor(def);if(def.key==="letterBody")defaultTextBaseline[def.key]=readLetterBodyFromDom();else if(element)defaultTextBaseline[def.key]=readElement(element,def.multiline);});
  applySavedSnapshot();buildTextFields();imageControls();renderMilestones();bindCollageControls();applyCollage();markSavedUserContent();if(state.localeMode==="auto")scheduleExperienceLanguageDetection();
 
 function revealPersonalizedVisualsAfterHydration(){
