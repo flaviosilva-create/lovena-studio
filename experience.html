@@ -1572,7 +1572,8 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   toastTimer=setTimeout(function(){toastNode.classList.remove("show");},2700);
  }
  function closeModal(){if(modal.open)modal.close();}
- function openModal(title,copy,kicker,options){markLovenaUserText(document.getElementById("modalTitle"));markLovenaUserText(document.getElementById("modalCopy"));
+ function markModalContentAsUserAuthored(){[modalTitle,modalCopy].forEach(function(element){if(element&&element.setAttribute)element.setAttribute("data-lovena-user-content","true");});}
+ function openModal(title,copy,kicker,options){markModalContentAsUserAuthored();
   options=options||{};
   modalTitle.textContent=title;
   modalCopy.textContent=copy;
