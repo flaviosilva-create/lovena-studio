@@ -1144,8 +1144,8 @@ body.lovena-simple-page #lovenaEditor .ed-scroll>details:nth-of-type(4){display:
  -webkit-overflow-scrolling:touch;
  scrollbar-width:thin;
 }
-#fotos .gallery-row.is-mouse-dragging{cursor:grabbing!important;scroll-snap-type:none!important;user-select:none!important}
-#fotos .gallery-row.is-mouse-dragging .gallery-item{pointer-events:none}
+#fotos .gallery-row[data-mouse-dragging="true"]{cursor:grabbing!important;scroll-snap-type:none!important;user-select:none!important}
+#fotos .gallery-row[data-mouse-dragging="true"] .gallery-item{pointer-events:none}
 .modal-visual{position:relative!important;overflow:hidden;touch-action:pan-y;user-select:none}
 .modal-photo-arrow{
  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
@@ -4399,7 +4399,7 @@ revealPersonalizedVisualsAfterHydration();
       mouseGalleryDrag.startX = event.clientX;
       mouseGalleryDrag.startScroll = row.scrollLeft;
       try { row.setPointerCapture(event.pointerId); } catch (error) {}
-      row.classList.add("is-mouse-dragging");
+      row.dataset.mouseDragging = "true";
       pauseBriefly();
     });
     row.addEventListener("pointermove", function (event) {
@@ -4417,7 +4417,7 @@ revealPersonalizedVisualsAfterHydration();
       var dragged = mouseGalleryDrag.moved;
       mouseGalleryDrag.active = false;
       mouseGalleryDrag.pointerId = null;
-      row.classList.remove("is-mouse-dragging");
+      row.dataset.mouseDragging = "false";
       if (dragged) {
         row.dataset.ignoreGalleryClick = "true";
         window.setTimeout(function () { row.dataset.ignoreGalleryClick = "false"; }, 250);
