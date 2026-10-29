@@ -225,7 +225,7 @@ jobs:
             const batchTexts = ["How are you today?", "The story of our love"];
             batchTexts.forEach(text => url.searchParams.append("q", text));
             try {
-              const origin = "https://flaviosilva-create.github.io";
+              const origin = "https://lovenastudio.com";
               const response = await fetch(url, { headers: { "Accept": "application/json", "Origin": origin } });
               if (!response.ok) throw new Error("HTTP " + response.status);
               const allowOrigin = response.headers.get("access-control-allow-origin");
@@ -253,11 +253,11 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Browser smoke test for public Premium interactions
         env:
-          PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-no-photo-flash-1
-          EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-no-photo-flash-1
-          EDITOR_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?edit=1&ui=20261029-letter-limit-1
-          DEMO_PREMIUM_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?demo=1&v=20261029-modal-gallery-nav-v1
-          DEMO_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?demo=1&v=20261029-modal-gallery-nav-v1
+          PUBLIC_EXPERIENCE_URL: https://lovenastudio.com/experience.html?slug=774245ba57f646788158&v=20261028-no-photo-flash-1
+          EDITOR_EXPERIENCE_URL: https://lovenastudio.com/experience.html?edit=1&ui=20261028-no-photo-flash-1
+          EDITOR_SIMPLE_URL: https://lovenastudio.com/experience-simple.html?edit=1&ui=20261029-letter-limit-1
+          DEMO_PREMIUM_URL: https://lovenastudio.com/experience.html?demo=1&v=20261029-modal-gallery-nav-v1
+          DEMO_SIMPLE_URL: https://lovenastudio.com/experience-simple.html?demo=1&v=20261029-modal-gallery-nav-v1
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
           /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium webkit
@@ -279,7 +279,7 @@ jobs:
                 headers: { "access-control-allow-origin": "*" },
                 body: JSON.stringify({ country_code: countryCode })
               }));
-              await landing.goto("https://flaviosilva-create.github.io/lovena-studio/?currency-smoke=" + label, {
+              await landing.goto("https://lovenastudio.com/?currency-smoke=" + label, {
                 waitUntil: "domcontentloaded",
                 timeout: 60000
               });
