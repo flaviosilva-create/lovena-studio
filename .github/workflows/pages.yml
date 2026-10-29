@@ -255,6 +255,7 @@ jobs:
         env:
           PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-no-photo-flash-1
           EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-no-photo-flash-1
+          EDITOR_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?edit=1&ui=20261029-letter-limit-1
           DEMO_PREMIUM_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?demo=1&v=20261029-demo-music-1
           DEMO_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?demo=1&v=20261029-demo-music-1
         run: |
@@ -489,6 +490,45 @@ jobs:
               document.body.classList.contains("editor-mode") &&
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
+
+            async function verifyLetterLimit(targetPage, label) {
+              const field = targetPage.locator('[data-editor-field="letterBody"]');
+              await targetPage.waitForFunction(() => {
+                const input = document.querySelector('[data-editor-field="letterBody"]');
+                return input instanceof HTMLTextAreaElement && input.maxLength === 1500 &&
+                  document.querySelector(".ed-letter-meta output") !== null;
+              }, null, { timeout: 15000 });
+              const original = (await field.inputValue()).slice(0, 1500);
+              await field.fill("a".repeat(1499));
+              await targetPage.waitForFunction(() =>
+                document.querySelector('[data-editor-field="letterBody"]')?.value.length === 1499 &&
+                document.querySelector(".ed-letter-meta output")?.textContent.trim() === "1499 / 1500",
+                null, { timeout: 10000 });
+              await field.fill("b".repeat(1800));
+              await targetPage.waitForFunction(() =>
+                document.querySelector('[data-editor-field="letterBody"]')?.value.length === 1500 &&
+                document.querySelector(".ed-letter-meta output")?.textContent.trim() === "1500 / 1500",
+                null, { timeout: 10000 });
+              await field.fill(original);
+              await targetPage.waitForFunction(() => {
+                const input = document.querySelector('[data-editor-field="letterBody"]');
+                return input && input.value.length <= 1500 &&
+                  document.querySelector(".ed-letter-meta output")?.textContent.trim() === input.value.length + " / 1500";
+              }, null, { timeout: 10000 });
+              console.log("Letter character limit and counter passed on " + label + ".");
+            }
+            await verifyLetterLimit(editorPage, "Premium");
+
+            const simpleContext = await browser.newContext({ viewport: { width: 1365, height: 900 } });
+            const simpleEditorPage = await simpleContext.newPage();
+            simpleEditorPage.on("pageerror", error => pageErrors.push("Simple editor: " + error.message));
+            await simpleEditorPage.goto(process.env.EDITOR_SIMPLE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
+            await simpleEditorPage.waitForFunction(() =>
+              document.body.classList.contains("editor-mode") &&
+              document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
+              null, { timeout: 20000 });
+            await verifyLetterLimit(simpleEditorPage, "Simple");
+            await simpleContext.close();
 
             async function verifyEditorCloseButton(targetPage, label) {
               const close = targetPage.locator("#lovenaEditorMobileClose");
