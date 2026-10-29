@@ -542,14 +542,43 @@ jobs:
             async function verifyEditorCloseButton(targetPage, label) {
               const close = targetPage.locator("#lovenaEditorMobileClose");
               async function waitForVisibleClose() {
-                await targetPage.waitForFunction(() => {
-                  const button = document.querySelector("#lovenaEditorMobileClose");
-                  if (!button || button.hidden || !document.body.classList.contains("editor-panel-open")) return false;
-                  const style = getComputedStyle(button);
-                  const rect = button.getBoundingClientRect();
-                  return style.display !== "none" && style.visibility === "visible" &&
-                    Number(style.opacity) > 0 && rect.width >= 44 && rect.height >= 44;
-                }, null, { timeout: 10000 });
+                try {
+                  await targetPage.waitForFunction(() => {
+                    const button = document.querySelector("#lovenaEditorMobileClose");
+                    if (!button || button.hidden || !document.body.classList.contains("editor-panel-open")) return false;
+                    const style = getComputedStyle(button);
+                    const rect = button.getBoundingClientRect();
+                    return style.display !== "none" && style.visibility === "visible" &&
+                      Number(style.opacity) > 0 && rect.width >= 44 && rect.height >= 44;
+                  }, null, { timeout: 10000 });
+                } catch (error) {
+                  const diagnostic = await targetPage.evaluate(() => {
+                    const button = document.querySelector("#lovenaEditorMobileClose");
+                    const panel = document.querySelector("#lovenaEditor");
+                    const trigger = document.querySelector("#lovenaEditorTrigger");
+                    const backdrop = document.querySelector("#lovenaEditorBackdrop");
+                    const style = button ? getComputedStyle(button) : null;
+                    const rect = button ? button.getBoundingClientRect() : null;
+                    return {
+                      bodyClass: document.body.className,
+                      buttonExists: !!button,
+                      buttonHiddenProperty: button ? button.hidden : null,
+                      buttonHasHiddenAttribute: button ? button.hasAttribute("hidden") : null,
+                      buttonDisplay: style ? style.display : null,
+                      buttonVisibility: style ? style.visibility : null,
+                      buttonOpacity: style ? style.opacity : null,
+                      buttonPointerEvents: style ? style.pointerEvents : null,
+                      buttonRect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null,
+                      panelHidden: panel ? panel.hidden : null,
+                      panelClass: panel ? panel.className : null,
+                      panelAriaHidden: panel ? panel.getAttribute("aria-hidden") : null,
+                      triggerHidden: trigger ? trigger.hidden : null,
+                      backdropHidden: backdrop ? backdrop.hidden : null
+                    };
+                  });
+                  console.error("Editor close-button diagnostic (" + label + "): " + JSON.stringify(diagnostic));
+                  throw error;
+                }
               }
               await waitForVisibleClose();
               await close.click();
