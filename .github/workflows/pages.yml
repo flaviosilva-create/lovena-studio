@@ -477,6 +477,37 @@ jobs:
               document.body.classList.contains("editor-mode") &&
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
+
+            async function verifyEditorCloseButton(targetPage, label) {
+              const close = targetPage.locator("#lovenaEditorMobileClose");
+              async function waitForVisibleClose() {
+                await targetPage.waitForFunction(() => {
+                  const button = document.querySelector("#lovenaEditorMobileClose");
+                  if (!button || button.hidden || !document.body.classList.contains("editor-panel-open")) return false;
+                  const style = getComputedStyle(button);
+                  const rect = button.getBoundingClientRect();
+                  return style.display !== "none" && style.visibility === "visible" &&
+                    Number(style.opacity) > 0 && rect.width >= 44 && rect.height >= 44;
+                }, null, { timeout: 10000 });
+              }
+              await waitForVisibleClose();
+              await close.click();
+              await targetPage.waitForFunction(() => {
+                const button = document.querySelector("#lovenaEditorMobileClose");
+                return button && button.hidden && !document.body.classList.contains("editor-panel-open");
+              }, null, { timeout: 10000 });
+              await targetPage.locator("#lovenaEditorTrigger").click({ force: true });
+              await waitForVisibleClose();
+              if (label === "desktop") {
+                const viewport = targetPage.viewportSize();
+                await targetPage.setViewportSize({ width: 520, height: viewport.height });
+                await waitForVisibleClose();
+                await targetPage.setViewportSize(viewport);
+                await waitForVisibleClose();
+              }
+              console.log("Editor close X remained visible and closed/reopened the panel on " + label + ".");
+            }
+            await verifyEditorCloseButton(editorPage, "desktop");
             await editorPage.waitForFunction(() => {
               const control = document.querySelector("#lovenaExperienceLanguageControl");
               const selector = document.querySelector("#lovenaExperienceLanguageSelect");
@@ -601,6 +632,7 @@ jobs:
               document.body.classList.contains("editor-mode") &&
               document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
               null, { timeout: 20000 });
+            await verifyEditorCloseButton(editorMobilePage, "WebKit iPhone-sized viewport");
             await verifyGalleryAutoplay(editorMobilePage, "WebKit editor mobile");
             await verifyPreviewInteractions(editorMobilePage, "WebKit iPhone-sized viewport");
             await verifyAutoplayBehindPublishPanel(editorMobilePage, "WebKit iPhone-sized viewport");
