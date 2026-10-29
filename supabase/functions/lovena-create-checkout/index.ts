@@ -95,14 +95,14 @@ Deno.serve(async (req: Request) => {
       }
       const { data: orders, error: ordersError } = await admin
         .from("lovena_orders")
-        .select("plan, payment_status, amount_total, currency, includes_html_download")
+        .select("plan, payment_status, amount_total, currency, includes_html_download, purchase_type")
         .eq("experience_id", experienceId)
         .eq("payment_status", "paid");
       if (ordersError) throw ordersError;
       const hasOnlinePurchase = (orders || []).some((order: any) => {
         const orderCurrency = String(order.currency || "usd").toLowerCase();
         const orderBaseCents = orderCurrency === "brl" ? (plan === "simple" ? 999 : 1999) : (plan === "simple" ? 499 : 999);
-        return order.plan === plan && order.amount_total >= orderBaseCents;
+        return order.plan === plan && (order.purchase_type ? ["online", "online_with_html"].includes(order.purchase_type) : order.amount_total >= orderBaseCents);
       });
       if (!hasOnlinePurchase) {
         return reply(402, { error: "online_purchase_required", message: "É necessário ter o link online pago antes de comprar o HTML offline." });
@@ -111,8 +111,9 @@ Deno.serve(async (req: Request) => {
         const orderCurrency = String(order.currency || "usd").toLowerCase();
         const orderBaseCents = orderCurrency === "brl" ? (plan === "simple" ? 999 : 1999) : (plan === "simple" ? 499 : 999);
         const orderAddonCents = orderCurrency === "brl" ? 500 : 100;
-        return order.plan === plan && order.includes_html_download === true &&
-          (order.amount_total === orderAddonCents || order.amount_total >= orderBaseCents + orderAddonCents);
+        return order.plan === plan && order.includes_html_download === true && (order.purchase_type
+          ? ["html_download", "online_with_html"].includes(order.purchase_type)
+          : (order.amount_total === orderAddonCents || order.amount_total >= orderBaseCents + orderAddonCents));
       });
       if (alreadyHasHtml) {
         return reply(409, { error: "html_download_already_purchased", message: "O download HTML desta experiência já está desbloqueado." });
@@ -140,6 +141,7 @@ Deno.serve(async (req: Request) => {
         payment_status: "pending",
         online_term: "one_year",
         includes_html_download: includesHtmlDownload,
+        purchase_type: purchaseType,
       })
       .select("id")
       .single();
