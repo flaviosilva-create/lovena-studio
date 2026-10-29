@@ -1940,6 +1940,9 @@ window.LOVENA_BOOTSTRAP_PROMISE=(async function(){
   var mouseStart=null;
   modalVisual.addEventListener("pointerdown",function(event){
    if(event.pointerType!=="mouse"||event.button!==0||!modal.open||modalVisual.hidden)return;
+   // Do not steal pointer events from the previous/next buttons; their click must reach
+   // the button instead of being retargeted to the photo surface.
+   if(event.target&&event.target.closest&&event.target.closest(".modal-photo-arrow"))return;
    mouseStart={id:event.pointerId,x:event.clientX,y:event.clientY};
    try{modalVisual.setPointerCapture(event.pointerId);}catch(error){}
   });
