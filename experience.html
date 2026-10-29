@@ -2350,7 +2350,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  var imagesHost=document.getElementById("lovenaEditorImages");
  var milestoneHost=document.getElementById("lovenaEditorMilestones");
  var statusNode=document.getElementById("lovenaEditorStatus");
- var pendingTimer=0;
+ var pendingTimer=0;var editorPanelCloseTimer=0;
  var customPalette=document.getElementById("lovenaEditorPalette");
  var defaultHeroImage=getComputedStyle(document.documentElement).getPropertyValue("--hero-photo").trim();
  function q(sel,idx){var nodes=document.querySelectorAll(sel);return idx==null?nodes[0]||null:nodes[idx]||null;}
@@ -3426,9 +3426,38 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
    fail("Your browser could not open this photo. Try a JPG or PNG image.",error);
   });
  }
- function syncEditorCloseButton(){if(!mobileClose)return;var visible=document.body.classList.contains("editor-panel-open");mobileClose.hidden=!visible;mobileClose.style.setProperty("display",visible?"grid":"none","important");mobileClose.style.setProperty("visibility",visible?"visible":"hidden","important");mobileClose.style.setProperty("opacity",visible?"1":"0","important");mobileClose.style.setProperty("pointer-events",visible?"auto":"none","important");}
- function openEditor(){isPreviewing=false;document.body.classList.remove("lovena-preview-mode");document.body.classList.add("editor-mode","editor-panel-open");syncEditorCloseButton();setTriggerLabel(false);trigger.hidden=false;markEditableTargets();backdrop.hidden=false;panel.hidden=false;requestAnimationFrame(function(){backdrop.classList.add("is-open");panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");syncEditorCloseButton();if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();});}
- function closeEditor(){document.body.classList.remove("editor-panel-open");syncEditorCloseButton();setActivePreviewElement(null);panel.classList.remove("is-open");backdrop.classList.remove("is-open");panel.setAttribute("aria-hidden","true");setTimeout(function(){if(!panel.classList.contains("is-open")){panel.hidden=true;backdrop.hidden=true;}},260);}
+ function syncEditorCloseButton(){
+  if(!mobileClose)return;
+  var visible=document.body.classList.contains("editor-panel-open");
+  if(visible)mobileClose.removeAttribute("hidden");else mobileClose.setAttribute("hidden","");
+  mobileClose.style.setProperty("display",visible?"grid":"none","important");
+  mobileClose.style.setProperty("visibility",visible?"visible":"hidden","important");
+  mobileClose.style.setProperty("opacity",visible?"1":"0","important");
+  mobileClose.style.setProperty("pointer-events",visible?"auto":"none","important");
+ }
+ function openEditor(){
+  clearTimeout(editorPanelCloseTimer);editorPanelCloseTimer=0;
+  isPreviewing=false;document.body.classList.remove("lovena-preview-mode");
+  document.body.classList.add("editor-mode","editor-panel-open");
+  setTriggerLabel(false);trigger.hidden=false;markEditableTargets();
+  backdrop.hidden=false;panel.hidden=false;syncEditorCloseButton();
+  requestAnimationFrame(function(){
+   backdrop.classList.add("is-open");panel.classList.add("is-open");
+   panel.setAttribute("aria-hidden","false");syncEditorCloseButton();
+   if(window.LovenaTranslationBridge&&typeof window.LovenaTranslationBridge.refresh==="function")window.LovenaTranslationBridge.refresh();
+  });
+  window.setTimeout(syncEditorCloseButton,320);
+ }
+ function closeEditor(){
+  document.body.classList.remove("editor-panel-open");syncEditorCloseButton();
+  clearTimeout(editorPanelCloseTimer);setActivePreviewElement(null);
+  panel.classList.remove("is-open");backdrop.classList.remove("is-open");
+  panel.setAttribute("aria-hidden","true");
+  editorPanelCloseTimer=window.setTimeout(function(){
+   if(!panel.classList.contains("is-open")&&!document.body.classList.contains("editor-panel-open")){panel.hidden=true;backdrop.hidden=true;}
+   editorPanelCloseTimer=0;
+  },260);
+ }
  function setTriggerLabel(preview){var label=trigger.querySelector(".ed-trigger-label");if(label)label.textContent=preview?"Back to Editing":"Edit Experience";trigger.setAttribute("aria-label",preview?"Back to Editing":"Open experience editor");}
  function enterPreviewMode(){saveDraft(true);isPreviewing=true;closeEditor();document.body.classList.remove("editor-mode","editor-panel-open");document.body.classList.add("lovena-preview-mode");document.querySelectorAll(".lovena-edit-target,.lovena-edit-selected").forEach(function(el){el.classList.remove("lovena-edit-target","lovena-edit-selected");});trigger.hidden=false;setTriggerLabel(true);}
  function downloadBlob(blob,name){var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);}
@@ -3986,7 +4015,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   if(!confirm("Restore the original experience? This will delete the draft saved in this browser."))return;
   localStorage.removeItem(EDIT_KEY);location.href=location.pathname+"?edit=1&reset="+Date.now();
  }
- window.addEventListener("resize",syncEditorCloseButton,{passive:true});window.addEventListener("orientationchange",syncEditorCloseButton,{passive:true});
+ var editorCloseClassObserver=new MutationObserver(syncEditorCloseButton);editorCloseClassObserver.observe(document.body,{attributes:true,attributeFilter:["class"]});syncEditorCloseButton();window.addEventListener("resize",syncEditorCloseButton,{passive:true});window.addEventListener("orientationchange",syncEditorCloseButton,{passive:true});
  trigger.addEventListener("click",openEditor);backdrop.addEventListener("click",closeEditor);
  document.addEventListener("click",function(event){
   var action=event.target.closest("[data-editor-action]");
