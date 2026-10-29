@@ -473,7 +473,10 @@
       var portugueseOverrides = {
         "You make": "Você torna",
         "everything more beautiful": "tudo mais bonito",
-        "You make everything more beautiful": "Você torna tudo mais bonito"
+        "You make everything more beautiful": "Você torna tudo mais bonito",
+        "My love, ❤️": "Meu amor, ❤️",
+        "Sometimes words fall short of explaining how special you are to me. You have a unique way of making everything more beautiful: your smile lights up my days, your presence warms my heart, and even simple moments become unforgettable when you're close.": "Às vezes faltam palavras para explicar o quanto você é especial para mim. Você tem um jeito único de deixar tudo mais bonito: seu sorriso ilumina meus dias, sua presença aquece meu coração e até mesmo os momentos simples se tornam inesquecíveis quando você está por perto.",
+        "I wish you could see yourself through my eyes, to recognize the beauty you carry in your soul and the good you bring to those lucky enough to know you. Never doubt your worth. You deserve a love that is gentle, sincere, and full of care. I am grateful to have you in my life and hope to always remind you, through words and actions, how rare, important, and loved you are. You are one of the most beautiful chapters of my story.": "Queria que pudesse se enxergar pelos meus olhos, para perceber a beleza que carrega na alma e o bem que faz a quem tem a sorte de conhecer você. Nunca duvide do seu valor. Você merece um amor leve, sincero e cheio de cuidado. Sou grato por ter você na minha vida e espero sempre lembrar, em palavras e atitudes, o quanto você é raro, importante e amado. Você é um dos capítulos mais bonitos da minha história."
       };
       sources.forEach(function (source) {
         var key = String(source || "").trim();
