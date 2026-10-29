@@ -3383,7 +3383,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   isPreviewing=false;document.body.classList.remove("lovena-preview-mode");
   document.body.classList.add("editor-mode","editor-panel-open");
   setTriggerLabel(false);trigger.hidden=false;markEditableTargets();
-  backdrop.hidden=false;panel.hidden=false;syncEditorCloseButton();
+  backdrop.hidden=false;panel.hidden=false;backdrop.style.pointerEvents="auto";syncEditorCloseButton();
   requestAnimationFrame(function(){
    backdrop.classList.add("is-open");panel.classList.add("is-open");
    panel.setAttribute("aria-hidden","false");syncEditorCloseButton();
@@ -3392,7 +3392,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   window.setTimeout(syncEditorCloseButton,320);
  }
  function closeEditor(){
-  document.body.classList.remove("editor-panel-open");syncEditorCloseButton();
+  document.body.classList.remove("editor-panel-open");backdrop.style.pointerEvents="none";syncEditorCloseButton();
   clearTimeout(editorPanelCloseTimer);setActivePreviewElement(null);
   panel.classList.remove("is-open");backdrop.classList.remove("is-open");
   panel.setAttribute("aria-hidden","true");
