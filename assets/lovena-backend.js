@@ -1120,15 +1120,19 @@
         var retry = false;
         try {
           var result = await getCheckoutStatus(checkoutSessionId, checkoutExperienceId);
-          if (result.status === "paid" && result.publicUrl) {
+          if (result.status === "paid" && (result.publicUrl || result.includesHtmlDownload)) {
             paymentConfirmed = true;
             applyPurchaseEntitlements(result);
-            checkoutReturnStatus.textContent = result.includesHtmlDownload
-              ? "Payment confirmed! Your page is published and the HTML download is unlocked."
-              : "Payment confirmed! Your page is published and ready to share.";
+            if (result.publicUrl) {
+              checkoutReturnStatus.textContent = result.includesHtmlDownload
+                ? "Payment confirmed! Your page is published and the HTML download is unlocked."
+                : "Payment confirmed! Your page is published and ready to share.";
+              try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, result.publicUrl); } catch (_) {}
+            } else {
+              checkoutReturnStatus.textContent = "Payment confirmed! The offline HTML download is unlocked. The online plan has not been confirmed as paid.";
+            }
             publishStatus.textContent = checkoutReturnStatus.textContent;
             verifyButton.hidden = true;
-            try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, result.publicUrl); } catch (_) {}
           } else if (result.status === "failed" || result.status === "refunded" || result.status === "disputed") {
             paymentStopped = true;
             publishButton.disabled = result.status !== "failed";
