@@ -1327,7 +1327,7 @@ html:not(.lovena-visuals-ready) #colagem-memorias .memory-collage-strip img {
  <section class="lovena-memory-collage" id="colagem-memorias" aria-label="Couple’s photo collage">
   <div class="memory-collage-backdrop" aria-hidden="true"></div>
   <div class="memory-collage-copy" aria-hidden="true"><span>Happy</span><strong>ANNIVERSARY</strong><small>MY LOVE</small></div>
-  <div class="memory-collage-main-photo"><img data-memory-collage-photo="0" data-memory-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="Main couple photo"></div>
+  <div class="memory-collage-main-photo"><img data-memory-collage-photo="0" data-memory-collage-default="assets/lovena-collage-main-hq.jpg" src="assets/lovena-collage-main-hq.jpg" alt="Main couple photo"></div>
   <div class="memory-collage-strip" aria-label="More moments together">
    <figure><img data-memory-collage-photo="1" data-memory-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Couple memory"></figure>
    <figure><img data-memory-collage-photo="2" data-memory-collage-default="assets/lovena-sample-photo-03.jpg" src="assets/lovena-sample-photo-03.jpg" alt="Couple memory"></figure>
@@ -2199,8 +2199,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
  if(Number(state.heroFramingVersion||0)<4){state.heroScale=100;state.heroFramingVersion=4;}var initialHeroScale=Number(state.heroScale);state.heroScale=isFinite(initialHeroScale)?Math.max(50,Math.min(160,initialHeroScale)):100;
  state.collage=Object.assign({title:"ANNIVERSARY",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you",background:"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-background-hq.jpg",mainPhoto:"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg",mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
  var oldSampleCollageUrl="assets/lovena-sample-hero.jpg";
+ var oldSampleMainPhotoUrl="assets/lovena-sample-photo-01.jpg";
+ var oldSampleMainPhotoUrlFull="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-01.jpg";
  if(!state.collage.background||state.collage.background===oldSampleCollageUrl||state.collage.background===oldSampleHeroUrl)state.collage.background="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-background-hq.jpg";
- if(!state.collage.mainPhoto)state.collage.mainPhoto="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg";
+ if(!state.collage.mainPhoto||state.collage.mainPhoto===oldSampleMainPhotoUrl||state.collage.mainPhoto===oldSampleMainPhotoUrlFull)state.collage.mainPhoto="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg";
  function migrateLegacyEnglishDemo(){
   if(!editMode)return;
   function normalized(value){return String(value||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
@@ -3227,7 +3229,10 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   var cfg=state.collage||{},section=document.getElementById("colagem-memorias");
   if(!section)return;
   setupCollageAutoScroll(section);
-  var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),floatingWords=section.querySelectorAll(".memory-collage-floating-words span:not(.memory-collage-word-hidden)"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),strip=section.querySelector(".memory-collage-strip");
+  var eyebrow=section.querySelector(".memory-collage-copy span"),title=section.querySelector(".memory-collage-copy strong"),subtitle=section.querySelector(".memory-collage-copy small"),floatingWords=section.querySelectorAll(".memory-collage-floating-words span:not(.memory-collage-word-hidden)"),bg=section.querySelector(".memory-collage-backdrop"),main=section.querySelector(".memory-collage-main-photo"),mainImage=section.querySelector(".memory-collage-main-photo img[data-memory-collage-photo=\"0\"]"),strip=section.querySelector(".memory-collage-strip");
+  var collagePhotos=Array.isArray(cfg.photos)?cfg.photos.slice(0,10):[];
+  if(mainImage){var mainFallback=mainImage.getAttribute("data-memory-collage-default");var firstPhoto=collagePhotos[0];if(!firstPhoto||firstPhoto==="assets/lovena-sample-photo-01.jpg"||firstPhoto==="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-01.jpg")firstPhoto=cfg.mainPhoto||mainFallback;mainImage.src=firstPhoto||mainImage.src;}
+  if(strip){strip.querySelectorAll("img[data-memory-collage-photo]").forEach(function(image){var index=Number(image.getAttribute("data-memory-collage-photo"));var fallback=image.getAttribute("data-memory-collage-default");var photo=collagePhotos[index];image.src=photo&&photo!==fallback?photo:(fallback||image.src);});}
   if(eyebrow)eyebrow.textContent=cfg.eyebrow==null?"Happy":cfg.eyebrow;
   if(title)title.textContent=cfg.title==null?"ANNIVERSARY":cfg.title;
   if(subtitle)subtitle.textContent=cfg.subtitle==null?"MY LOVE":cfg.subtitle;
