@@ -466,6 +466,24 @@
     }
 
     await Promise.all(Array.from({ length: Math.min(3, batches.length) }, worker));
+
+    // Keep Lovena's Portuguese hero headline precise and consistent.
+    // The headline is split into two text nodes by its intentional line break.
+    if (language === "pt") {
+      var portugueseOverrides = {
+        "You make": "Você torna",
+        "everything more beautiful": "tudo mais bonito",
+        "You make everything more beautiful": "Você torna tudo mais bonito"
+      };
+      sources.forEach(function (source) {
+        var key = String(source || "").trim();
+        if (!Object.prototype.hasOwnProperty.call(portugueseOverrides, key)) return;
+        var translated = portugueseOverrides[key];
+        results.set(source, translated);
+        cache.set(cacheKey(language, source), translated);
+      });
+      persistCache();
+    }
     return results;
   }
   function applyTranslatedRecords(records, translations) {
