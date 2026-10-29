@@ -256,8 +256,8 @@ jobs:
           PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-no-photo-flash-1
           EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-no-photo-flash-1
           EDITOR_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?edit=1&ui=20261029-letter-limit-1
-          DEMO_PREMIUM_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?demo=1&v=20261029-demo-music-1
-          DEMO_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?demo=1&v=20261029-demo-music-1
+          DEMO_PREMIUM_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?demo=1&v=20261029-modal-gallery-nav-v1
+          DEMO_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?demo=1&v=20261029-modal-gallery-nav-v1
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
           /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium webkit
@@ -382,7 +382,33 @@ jobs:
                 throw new Error(label + " did not load as a clean, interactive sample: " + JSON.stringify(state));
               }
               await demoPage.locator('#galleryRow .gallery-item[data-photo="0"]:not([data-gallery-clone="true"])').click({ timeout: 10000 });
-              await demoPage.locator("#detailModal[open]").waitFor({ timeout: 5000 });
+              try {
+                await demoPage.locator("#detailModal[open]").waitFor({ timeout: 7000 });
+              } catch (error) {
+                const diagnostics = await demoPage.evaluate(() => ({
+                  modalExists: !!document.querySelector("#detailModal"),
+                  modalOpen: !!document.querySelector("#detailModal")?.open,
+                  modalVisualHidden: !!document.querySelector("#modalVisual")?.hidden,
+                  photoCount: document.querySelectorAll('#galleryRow .gallery-item:not([data-gallery-clone="true"])').length,
+                  galleryLayout: getComputedStyle(document.querySelector("#galleryRow")).display,
+                  galleryScrollWidth: document.querySelector("#galleryRow")?.scrollWidth,
+                  galleryClientWidth: document.querySelector("#galleryRow")?.clientWidth,
+                  mouseDragging: document.querySelector("#galleryRow")?.dataset.mouseDragging,
+                  demoErrors: window.__lovenaSmokeErrors || []
+                }));
+                throw new Error(label + " clicked a gallery photo but modal did not open: " + JSON.stringify(diagnostics) + "; " + error.message);
+              }
+              const modalPrevious = demoPage.locator('#modalVisual [data-action="modal-prev"]');
+              const modalNext = demoPage.locator('#modalVisual [data-action="modal-next"]');
+              if (await modalPrevious.count() !== 1 || await modalNext.count() !== 1) {
+                throw new Error(label + " photo viewer is missing visible previous/next controls.");
+              }
+              const countBeforeNext = await demoPage.locator("#modalVisual .modal-photo-count").textContent();
+              await modalNext.click();
+              await demoPage.waitForFunction(previous => {
+                const count = document.querySelector("#modalVisual .modal-photo-count")?.textContent;
+                return !!count && count !== previous;
+              }, countBeforeNext, { timeout: 5000 });
               await demoPage.locator('[data-action="close-modal"]').click();
 
               if (expectMusic) {
