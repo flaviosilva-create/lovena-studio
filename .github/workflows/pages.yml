@@ -99,6 +99,8 @@ jobs:
               'english.value = SOURCE_LANGUAGE + "|" + SOURCE_LANGUAGE;',
               'if (!parts.length) return "";',
               "if (language === SOURCE_LANGUAGE)",
+              '"You make": "Você torna"',
+              '"everything more beautiful": "tudo mais bonito"',
               "translate.googleapis.com/translate_a/t",
               '#lovenaExperienceLanguageSelect',
               'lovenaExperienceLanguageControl',
@@ -124,7 +126,7 @@ jobs:
                   'id="lovenaExperienceLanguageControl" data-editor-only hidden',
                   'id="lovenaExperienceLanguageSelect"',
                   'assets/lovena-experience-language.js?v=20261028-experience-language-3',
-                  'translation-bridge.js?v=20261028-gift-locale-priority-1'
+                  'translation-bridge.js?v=20261029-pt-headline-1'
               ]:
                   if marker not in public_html:
                       raise SystemExit(f"{public_path} is missing editor-only interface-language support: {marker}")
