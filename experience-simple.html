@@ -2575,7 +2575,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
      ctl.setAttribute("maxlength",String(LETTER_BODY_MAX_CHARS));
      var letterMeta=document.createElement("div");letterMeta.className="ed-letter-meta";
      var letterMetaLabel=document.createElement("span");letterMetaLabel.className="ed-letter-meta-label";letterMetaLabel.textContent="Characters";
-     var letterCounter=document.createElement("output");letterCounter.setAttribute("aria-label","Letter character count");
+     var letterCounter=document.createElement("output");letterCounter.setAttribute("aria-label","Letter character count");letterCounter.setAttribute("data-lovena-user-content","true");
      var letterCountText=document.createTextNode("0 / "+LETTER_BODY_MAX_CHARS);letterCounter.appendChild(letterCountText);
      letterMeta.appendChild(letterMetaLabel);letterMeta.appendChild(letterCounter);row.appendChild(letterMeta);
      updateLetterCounter=function(value){
@@ -2583,7 +2583,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
       letterCountText.nodeValue=length+" / "+LETTER_BODY_MAX_CHARS;
       letterMeta.classList.toggle("is-near-limit",length>=Math.floor(LETTER_BODY_MAX_CHARS*.9)&&length<LETTER_BODY_MAX_CHARS);
       letterMeta.classList.toggle("is-at-limit",length>=LETTER_BODY_MAX_CHARS);
-      letterCounter.setAttribute("aria-label","Letter character count: "+length+" of "+LETTER_BODY_MAX_CHARS);
      };
      updateLetterCounter(ctl.value);
     }
