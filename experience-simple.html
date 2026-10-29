@@ -4399,13 +4399,15 @@ revealPersonalizedVisualsAfterHydration();
       mouseGalleryDrag.startX = event.clientX;
       mouseGalleryDrag.startScroll = row.scrollLeft;
       try { row.setPointerCapture(event.pointerId); } catch (error) {}
-      row.dataset.mouseDragging = "true";
       pauseBriefly();
     });
     row.addEventListener("pointermove", function (event) {
       if (!mouseGalleryDrag.active || event.pointerId !== mouseGalleryDrag.pointerId) return;
       var dx = event.clientX - mouseGalleryDrag.startX;
-      if (Math.abs(dx) > 5) mouseGalleryDrag.moved = true;
+      if (Math.abs(dx) > 5 && !mouseGalleryDrag.moved) {
+        mouseGalleryDrag.moved = true;
+        row.dataset.mouseDragging = "true";
+      }
       if (mouseGalleryDrag.moved) {
         event.preventDefault();
         row.scrollLeft = mouseGalleryDrag.startScroll - dx;
