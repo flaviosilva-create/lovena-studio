@@ -523,6 +523,11 @@ jobs:
               throw error;
             }
             console.log("Experience interface inherited Portuguese and translated editor content.");
+            await editorPage.waitForFunction(() => {
+              const heading = document.querySelector("#hero-title");
+              return heading && heading.innerText.replace(/\\s+/g, " ").trim() === "Você torna tudo mais bonito";
+            }, null, { timeout: 20000 });
+            console.log("Portuguese headline override passed: Você torna tudo mais bonito.");
             await editorPage.locator("#lovenaExperienceLanguageSelect").selectOption("de");
             await editorPage.waitForFunction(() =>
               localStorage.getItem("lovenaPreferredLanguage") === "de" &&
