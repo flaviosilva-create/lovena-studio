@@ -498,10 +498,14 @@ jobs:
                 return input instanceof HTMLTextAreaElement && input.maxLength === 1500 &&
                   document.querySelector(".ed-letter-meta output") !== null;
               }, null, { timeout: 15000 });
-              if (!(await field.isVisible())) {
+              if (!document.body.classList.contains("editor-panel-open")) {
                 await targetPage.locator("#lovenaEditorTrigger").click({ force: true });
                 await targetPage.waitForFunction(() => document.body.classList.contains("editor-panel-open"), null, { timeout: 10000 });
               }
+              await targetPage.locator('[data-editor-field-row="letterBody"]').evaluate(row => {
+                const section = row.closest("details");
+                if (section) section.open = true;
+              });
               await field.waitFor({ state: "visible", timeout: 10000 });
               const original = (await field.inputValue()).slice(0, 1500);
               await field.fill("a".repeat(1499));
