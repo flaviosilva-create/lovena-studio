@@ -2148,7 +2148,12 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  state.images=Object.assign({hero:null,gallery:[]},state.images||{});delete state.images.album;
  var oldSampleHeroUrl="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-hero.jpg";
  var newSampleHeroUrl="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-experience-hero-hq.jpg";
- if(!state.images.hero||state.images.hero===oldSampleHeroUrl||state.images.hero==="assets/lovena-sample-hero.jpg")state.images.hero=newSampleHeroUrl;
+ function isLegacyLovenaPhoto(source,filename){
+  var value=String(source||"").trim().split("?")[0].split("#")[0];
+  value=value.replace("https://flaviosilva-create.github.io/lovena-studio/","").replace("https://flaviosilva-create.github.io/","").replace("./","");
+  return value===filename||value==="assets/"+filename||value.endsWith("/"+filename);
+ }
+ if(!state.images.hero||isLegacyLovenaPhoto(state.images.hero,"lovena-sample-hero.jpg"))state.images.hero=newSampleHeroUrl;
  if(!Array.isArray(data.photos))data.photos=[];
  data.photos=data.photos.slice(0,12);
  state.images.gallery=state.images.gallery.slice(0,12);
@@ -2159,8 +2164,10 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  var oldSampleCollageUrl="assets/lovena-sample-hero.jpg";
  var oldSampleMainPhotoUrl="assets/lovena-sample-photo-01.jpg";
  var oldSampleMainPhotoUrlFull="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-01.jpg";
- if(!state.collage.background||state.collage.background===oldSampleCollageUrl||state.collage.background===oldSampleHeroUrl)state.collage.background="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-background-hq.jpg";
- if(!state.collage.mainPhoto||state.collage.mainPhoto===oldSampleMainPhotoUrl||state.collage.mainPhoto===oldSampleMainPhotoUrlFull)state.collage.mainPhoto="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg";
+ var newCollageBackgroundUrl="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-background-hq.jpg";
+ var newCollageMainPhotoUrl="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg";
+ if(!state.collage.background||isLegacyLovenaPhoto(state.collage.background,"lovena-sample-hero.jpg"))state.collage.background=newCollageBackgroundUrl;
+ if(!state.collage.mainPhoto||isLegacyLovenaPhoto(state.collage.mainPhoto,"lovena-sample-photo-01.jpg"))state.collage.mainPhoto=newCollageMainPhotoUrl;
   if(state.collage.title==="ANNIVERSARY")state.collage.title="Birthday";
  function migrateLegacyEnglishDemo(){
   if(!editMode)return;
@@ -2362,6 +2369,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   }
  }
  migrateLegacyEnglishDemo();
+ if(new URLSearchParams(location.search).get("demo")==="1"){state.images.hero=newSampleHeroUrl;state.collage.background=newCollageBackgroundUrl;state.collage.mainPhoto=newCollageMainPhotoUrl;}
  if(!Array.isArray(state.collage.photos))state.collage.photos=Array.from({length:6},function(){return null;});
  state.collage.photos=state.collage.photos.slice(0,10);
  if(!Object.prototype.hasOwnProperty.call(state.collage,"mainPhoto"))state.collage.mainPhoto=null;
