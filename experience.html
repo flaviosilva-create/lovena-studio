@@ -333,6 +333,11 @@ body.lovena-preview-mode #lovenaEditorTrigger{display:flex}
 #lovenaEditor .ed-field textarea{resize:vertical;min-height:74px}
 #lovenaEditor .ed-field input:focus,#lovenaEditor .ed-field textarea:focus{border-color:#a97769;box-shadow:0 0 0 2px #a9776924}
 #lovenaEditor .ed-help{font-size:9px;line-height:1.5;color:#8a6c5e}
+#lovenaEditor .ed-letter-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:1px}
+#lovenaEditor .ed-letter-meta-label{font-size:9px;line-height:1.4;color:#8a6c5e}
+#lovenaEditor .ed-letter-meta output{font:700 10px/1.4 Manrope,Arial,sans-serif;font-variant-numeric:tabular-nums;color:#7b5344}
+#lovenaEditor .ed-letter-meta.is-near-limit output{color:#9a6c24}
+#lovenaEditor .ed-letter-meta.is-at-limit output{color:#b14436}
 #lovenaEditor .ed-color-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 13px 14px}
 #lovenaEditor .ed-color{display:flex;align-items:center;gap:9px;border:1px solid #e4d0c0;border-radius:8px;padding:8px;background:#fffaf5;font-size:10px;font-weight:700}
 #lovenaEditor .ed-color input{width:32px;height:32px;padding:0;border:0;background:transparent;cursor:pointer}
@@ -2365,8 +2370,16 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
    value.split("\n").forEach(function(line,index){if(index)el.appendChild(document.createElement("br"));el.appendChild(document.createTextNode(line));});
   }else el.textContent=value;
  }
+ var LETTER_BODY_MAX_CHARS=1500;
+ function limitLetterBody(value){
+  var text=String(value==null?"":value);
+  if(text.length<=LETTER_BODY_MAX_CHARS)return text;
+  text=text.slice(0,LETTER_BODY_MAX_CHARS);
+  if(/[\uD800-\uDBFF]$/.test(text))text=text.slice(0,-1);
+  return text;
+ }
  function readLetterBodyFromDom(){
-  return Array.from(document.querySelectorAll(".letter-copy")).map(function(el){return readElement(el,true);}).join("\n\n").trim();
+  return Array.from(document.querySelectorAll(".letter-copy")).map(function(el){return readElement(el,true);}).join("\n").trim();
  }
  function readLetterBodyFromLegacyState(){
   var keys=["letterCopy0","letterCopy1","letterCopy2","letterCopy3"];
@@ -2376,7 +2389,7 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   return paragraphs.map(function(el,index){
    var key=keys[index];
    return key&&Object.prototype.hasOwnProperty.call(state.texts,key)?String(state.texts[key]||""):readElement(el,true);
-  }).join("\n\n").trim();
+  }).join("\n").trim();
  }
  function setLetterBody(value,userAuthored){
   var paper=q(".letter-paper");if(!paper)return;
@@ -2392,11 +2405,12 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  }
  function fieldValue(def){
   if(def.path){var val=getPath(data,def.path);return val==null?"":String(val);}
-  if(def.key==="letterBody")return Object.prototype.hasOwnProperty.call(state.texts,"letterBody")?String(state.texts.letterBody):readLetterBodyFromLegacyState();
+  if(def.key==="letterBody")return limitLetterBody(Object.prototype.hasOwnProperty.call(state.texts,"letterBody")?state.texts.letterBody:readLetterBodyFromLegacyState());
   if(Object.prototype.hasOwnProperty.call(state.texts,def.key))return String(state.texts[def.key]);
   return readElement(targetFor(def),def.multiline);
  }
  function applyField(def,value){
+  if(def.key==="letterBody")value=limitLetterBody(value);
   if(def.path)setPath(data,def.path,value);
   else state.texts[def.key]=String(value);
   if(def.key==="letterBody"){
@@ -2548,10 +2562,36 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
     if(def.multiline){ctl=document.createElement("textarea");ctl.rows=def.key==="letterBody"?10:3;}
     else{ctl=document.createElement("input");ctl.type="text";}
     ctl.id=id;ctl.dataset.editorField=def.key;ctl.value=fieldValue(def);ctl.autocomplete="off";
-    if(def.key==="letterBody"){ctl.style.minHeight="190px";ctl.style.resize="vertical";}
+    var updateLetterCounter=null;
+    if(def.key==="letterBody"){
+     ctl.style.minHeight="190px";ctl.style.resize="vertical";
+     ctl.maxLength=LETTER_BODY_MAX_CHARS;
+     ctl.setAttribute("maxlength",String(LETTER_BODY_MAX_CHARS));
+     var letterMeta=document.createElement("div");letterMeta.className="ed-letter-meta";
+     var letterMetaLabel=document.createElement("span");letterMetaLabel.className="ed-letter-meta-label";letterMetaLabel.textContent="Characters";
+     var letterCounter=document.createElement("output");letterCounter.setAttribute("aria-label","Letter character count");
+     var letterCountText=document.createTextNode("0 / "+LETTER_BODY_MAX_CHARS);letterCounter.appendChild(letterCountText);
+     letterMeta.appendChild(letterMetaLabel);letterMeta.appendChild(letterCounter);row.appendChild(letterMeta);
+     updateLetterCounter=function(value){
+      var length=String(value==null?"":value).length;
+      letterCountText.nodeValue=length+" / "+LETTER_BODY_MAX_CHARS;
+      letterMeta.classList.toggle("is-near-limit",length>=Math.floor(LETTER_BODY_MAX_CHARS*.9)&&length<LETTER_BODY_MAX_CHARS);
+      letterMeta.classList.toggle("is-at-limit",length>=LETTER_BODY_MAX_CHARS);
+      letterCounter.setAttribute("aria-label","Letter character count: "+length+" of "+LETTER_BODY_MAX_CHARS);
+     };
+     updateLetterCounter(ctl.value);
+    }
     if(def.key==="brand")ctl.placeholder="Alice & James";
 
     ctl.addEventListener("input",function(){
+     if(def.key==="letterBody"){
+      var bounded=limitLetterBody(ctl.value);
+      if(bounded!==ctl.value){
+       var cursor=ctl.selectionStart;ctl.value=bounded;
+       try{ctl.setSelectionRange(Math.min(cursor,bounded.length),Math.min(cursor,bounded.length));}catch(ignore){}
+      }
+      if(updateLetterCounter)updateLetterCounter(ctl.value);
+     }
      applyField(def,ctl.value);
      if(def.path&&def.path[0]==="songs"&&def.path[1]===0){
       var song=data.songs[0]||{};document.getElementById("trackTitle").textContent=song.title||"";document.getElementById("trackArtist").textContent=song.artist||"";
@@ -3247,8 +3287,10 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   var legacyLetterKeys=["letterCopy0","letterCopy1","letterCopy2","letterCopy3"];
   if(!Object.prototype.hasOwnProperty.call(state.texts,"letterBody")&&legacyLetterKeys.some(function(key){return Object.prototype.hasOwnProperty.call(state.texts,key);})){
    state.texts.letterBody=readLetterBodyFromLegacyState();
-   legacyLetterKeys.forEach(function(key){delete state.texts[key];});
   }
+  legacyLetterKeys.forEach(function(key){delete state.texts[key];});
+  var bodySource=Object.prototype.hasOwnProperty.call(state.texts,"letterBody")?state.texts.letterBody:readLetterBodyFromDom();
+  state.texts.letterBody=limitLetterBody(bodySource);
   textFields.forEach(function(def){
    var pm=def.key.match(/^photo(?:Title|Story)(\\d+)$/);
    var mm=def.key.match(/^milestone(?:Title|Story|Date)(\\d+)$/);
