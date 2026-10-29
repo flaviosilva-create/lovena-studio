@@ -498,7 +498,7 @@ jobs:
                 return input instanceof HTMLTextAreaElement && input.maxLength === 1500 &&
                   document.querySelector(".ed-letter-meta output") !== null;
               }, null, { timeout: 15000 });
-              if (!document.body.classList.contains("editor-panel-open")) {
+              if (!(await targetPage.locator("body").evaluate(body => body.classList.contains("editor-panel-open")))) {
                 await targetPage.locator("#lovenaEditorTrigger").click({ force: true });
                 await targetPage.waitForFunction(() => document.body.classList.contains("editor-panel-open"), null, { timeout: 10000 });
               }
