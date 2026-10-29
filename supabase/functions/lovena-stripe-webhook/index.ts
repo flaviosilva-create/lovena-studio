@@ -167,10 +167,17 @@ Deno.serve(async (req: Request) => {
     const expectedPurchaseType = order.includes_html_download
       ? (order.amount_total === orderAddonCents ? "html_download" : "online_with_html")
       : "online";
+    // Narrow compatibility for a legacy HTML add-on session labeled online_with_html:
+    // accept only when the recorded and Stripe amounts equal the standalone add-on price.
+    const isHtmlAddonMetadataAlias =
+      order.includes_html_download === true &&
+      order.amount_total === orderAddonCents &&
+      expectedPurchaseType === "html_download" &&
+      session.metadata?.purchase_type === "online_with_html";
     if (session.metadata?.experience_id !== order.experience_id ||
         session.metadata?.order_id !== order.id ||
         session.metadata?.plan !== order.plan ||
-        session.metadata?.purchase_type !== expectedPurchaseType ||
+        (session.metadata?.purchase_type !== expectedPurchaseType && !isHtmlAddonMetadataAlias) ||
         session.client_reference_id !== order.experience_id ||
         session.mode !== "payment" ||
         session.amount_total !== order.amount_total ||
@@ -201,6 +208,23 @@ Deno.serve(async (req: Request) => {
     if (experienceError) throw experienceError;
     if (!experience) throw new Error("Paid order's experience is missing.");
 
+    const onlineBaseCents = orderCurrency === "brl"
+      ? (order.plan === "simple" ? 999 : 1999)
+      : (order.plan === "simple" ? 499 : 999);
+    const includesOnlinePublication = order.includes_html_download === true
+      ? order.amount_total >= onlineBaseCents + orderAddonCents
+      : order.amount_total >= onlineBaseCents;
+
+    if (!includesOnlinePublication) {
+      // An HTML-only payment unlocks the file, but never publishes an unpaid online plan.
+      return reply(200, {
+        received: true,
+        published: experience.status === "published" && !!experience.public_slug,
+        htmlDownloadUnlocked: order.includes_html_download === true,
+        onlinePlanPaid: false,
+      });
+    }
+
     if (experience.status === "draft" && !experience.public_slug) {
       const now = new Date();
       const expires = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
@@ -214,11 +238,11 @@ Deno.serve(async (req: Request) => {
       }).eq("id", experience.id).eq("status", "draft").is("public_slug", null);
       if (publishError) throw publishError;
     } else if (experience.status !== "published" || !experience.public_slug) {
-      console.error("Paid experience has an unexpected state", experience.id, experience.status);
+      console.error("Paid online-plan experience has an unexpected state", experience.id, experience.status);
       return reply(409, { error: "experience_not_publishable" });
     }
 
-    return reply(200, { received: true, published: true });
+    return reply(200, { received: true, published: true, onlinePlanPaid: true });
   } catch (error) {
     console.error("Stripe webhook processing failed", error instanceof Error ? error.message : error);
     return reply(500, { error: "webhook_processing_failed" });
