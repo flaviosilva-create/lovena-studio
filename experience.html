@@ -1272,7 +1272,7 @@ html:not(.lovena-visuals-ready) #colagem-memorias .memory-collage-strip img {
  <section class="lovena-memory-collage" id="colagem-memorias" aria-label="Couple’s photo collage">
   <div class="memory-collage-backdrop" aria-hidden="true"></div>
   <div class="memory-collage-copy" aria-hidden="true"><span>Happy</span><strong>Birthday</strong><small>MY LOVE</small></div>
-  <div class="memory-collage-main-photo"><img data-memory-collage-main-photo data-memory-collage-default="assets/lovena-sample-photo-01.jpg" src="assets/lovena-sample-photo-01.jpg" alt="Main photo independent of the collage"></div>
+  <div class="memory-collage-main-photo"><img data-memory-collage-main-photo data-memory-collage-default="assets/lovena-collage-main-hq.jpg" src="assets/lovena-collage-main-hq.jpg" alt="Main photo independent of the collage"></div>
   <div class="memory-collage-strip" aria-label="Up to 10 separate photos in a vertical scrolling strip">
    <figure><img data-memory-collage-photo="0" data-memory-collage-default="assets/lovena-sample-photo-02.jpg" src="assets/lovena-sample-photo-02.jpg" alt="Scrolling collage photo 1"></figure>
    <figure><img data-memory-collage-photo="1" data-memory-collage-default="assets/lovena-sample-photo-03.jpg" src="assets/lovena-sample-photo-03.jpg" alt="Scrolling collage photo 2"></figure>
@@ -2155,10 +2155,12 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
  state.colors=Object.assign({},colorDefaults,state.colors||{});
  state.heroPosition=Object.assign({x:50,y:47},state.heroPosition||{});
  if(Number(state.heroFramingVersion||0)<4){state.heroScale=100;state.heroFramingVersion=4;}var initialHeroScale=Number(state.heroScale);state.heroScale=isFinite(initialHeroScale)?Math.max(50,Math.min(160,initialHeroScale)):100;
- state.collage=Object.assign({title:"Birthday",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you",background:"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-background-hq.jpg",mainPhoto:"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg",mainPhoto:null,photos:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
+ state.collage=Object.assign({title:"Birthday",eyebrow:"Happy",subtitle:"MY LOVE",floatingWord:"I love you",background:"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-background-hq.jpg",mainPhoto:"https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg",photos:null,mainWidth:56,mainHeight:55,mainX:2,mainY:-2,stripWidth:40,titleY:35},state.collage||{});
  var oldSampleCollageUrl="assets/lovena-sample-hero.jpg";
+ var oldSampleMainPhotoUrl="assets/lovena-sample-photo-01.jpg";
+ var oldSampleMainPhotoUrlFull="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-sample-photo-01.jpg";
  if(!state.collage.background||state.collage.background===oldSampleCollageUrl||state.collage.background===oldSampleHeroUrl)state.collage.background="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-background-hq.jpg";
- if(!state.collage.mainPhoto)state.collage.mainPhoto="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg";
+ if(!state.collage.mainPhoto||state.collage.mainPhoto===oldSampleMainPhotoUrl||state.collage.mainPhoto===oldSampleMainPhotoUrlFull)state.collage.mainPhoto="https://flaviosilva-create.github.io/lovena-studio/assets/lovena-collage-main-hq.jpg";
   if(state.collage.title==="ANNIVERSARY")state.collage.title="Birthday";
  function migrateLegacyEnglishDemo(){
   if(!editMode)return;
