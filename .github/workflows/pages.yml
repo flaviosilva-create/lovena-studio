@@ -241,6 +241,8 @@ jobs:
         env:
           PUBLIC_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?slug=774245ba57f646788158&v=20261028-no-photo-flash-1
           EDITOR_EXPERIENCE_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?edit=1&ui=20261028-no-photo-flash-1
+          DEMO_PREMIUM_URL: https://flaviosilva-create.github.io/lovena-studio/experience.html?demo=1&v=20261029-demo-music-1
+          DEMO_SIMPLE_URL: https://flaviosilva-create.github.io/lovena-studio/experience-simple.html?demo=1&v=20261029-demo-music-1
         run: |
           npm install --prefix /tmp/lovena-smoke playwright
           /tmp/lovena-smoke/node_modules/.bin/playwright install --with-deps chromium webkit
@@ -344,6 +346,55 @@ jobs:
             }
             await verifyLandingCurrency(1365, "desktop-brazil", "BR");
             await verifyLandingCurrency(390, "mobile-germany", "DE");
+
+            // Test the two live examples separately from the editor and customer's saved draft.
+            async function verifyLiveDemo(url, label, expectMusic) {
+              const demoPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
+              const demoErrors = [];
+              demoPage.on("pageerror", error => demoErrors.push(error.message));
+              await demoPage.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+              await demoPage.waitForFunction(() =>
+                window.LOVENA_EDIT_DATA &&
+                document.querySelector("#galleryRow")?.dataset.galleryAutoplayController === "unified",
+                null, { timeout: 20000 });
+              const state = await demoPage.evaluate(() => ({
+                editorMode: document.body.classList.contains("editor-mode"),
+                hasPhotos: Array.isArray(window.LOVENA_EDIT_DATA?.photos) && window.LOVENA_EDIT_DATA.photos.length > 0,
+                hasTitle: !!document.querySelector(".hero-title, .hero h1, h1"),
+                hasEditPanel: !!document.querySelector("#lovenaEditor.is-open")
+              }));
+              if (state.editorMode || state.hasEditPanel || !state.hasPhotos || !state.hasTitle) {
+                throw new Error(label + " did not load as a clean, interactive sample: " + JSON.stringify(state));
+              }
+              await demoPage.locator('#galleryRow .gallery-item[data-photo="0"]:not([data-gallery-clone="true"])').click({ timeout: 10000 });
+              await demoPage.locator("#detailModal[open]").waitFor({ timeout: 5000 });
+              await demoPage.locator('[data-action="close-modal"]').click();
+
+              if (expectMusic) {
+                await demoPage.waitForFunction(() =>
+                  window.LOVENA_EDIT_DATA?.songs?.[0]?.url?.includes("GnUW4AF1LZo"),
+                  null, { timeout: 10000 });
+                await demoPage.locator('[data-action="song-play"]').click({ timeout: 10000 });
+                const frame = demoPage.locator("#musicEmbedContainer iframe");
+                await frame.waitFor({ state: "attached", timeout: 10000 });
+                const playerSrc = await frame.getAttribute("src");
+                if (!playerSrc || !playerSrc.includes("/embed/GnUW4AF1LZo")) {
+                  throw new Error("Premium demo player did not embed the requested YouTube Music video: " + playerSrc);
+                }
+                for (const selector of ['[data-surprise="card"]', '[data-surprise="message"]', '[data-milestone="0"]']) {
+                  await demoPage.locator(selector).click({ timeout: 10000 });
+                  await demoPage.locator("#detailModal[open]").waitFor({ timeout: 5000 });
+                  await demoPage.locator('[data-action="close-modal"]').click();
+                }
+                console.log("Premium live demo passed: gallery, story, surprises, and in-page YouTube player.");
+              } else {
+                console.log("Simple live demo passed: gallery photo opens and closes.");
+              }
+              if (demoErrors.length) throw new Error(label + " JavaScript errors: " + demoErrors.join(" | "));
+              await demoPage.close();
+            }
+            await verifyLiveDemo(process.env.DEMO_SIMPLE_URL, "Simple demo", false);
+            await verifyLiveDemo(process.env.DEMO_PREMIUM_URL, "Premium demo", true);
 
             await page.goto(process.env.PUBLIC_EXPERIENCE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
             await page.waitForFunction(() => document.querySelector("#lovenaExperienceLanguageControl")?.dataset.languageControlReady === "true", null, { timeout: 15000 });
