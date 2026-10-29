@@ -19,6 +19,8 @@ function makeSlug() {
 }
 
 function isOnlinePublicationOrder(order: any): boolean {
+  if (order.purchase_type === "online" || order.purchase_type === "online_with_html") return true;
+  if (order.purchase_type === "html_download") return false;
   const currency = String(order.currency || "usd").toLowerCase();
   const baseCents = currency === "brl"
     ? (order.plan === "simple" ? 999 : 1999)
@@ -96,7 +98,7 @@ Deno.serve(async (req: Request) => {
     const fetchOrders = async () => {
       const { data, error } = await admin
         .from("lovena_orders")
-        .select("id, experience_id, stripe_checkout_session_id, stripe_payment_intent_id, payment_status, amount_total, currency, plan, includes_html_download")
+        .select("id, experience_id, stripe_checkout_session_id, stripe_payment_intent_id, payment_status, amount_total, currency, plan, includes_html_download, purchase_type")
         .eq("experience_id", experienceId);
       if (error) throw error;
       return data || [];
@@ -124,13 +126,14 @@ Deno.serve(async (req: Request) => {
               const session = await response.json().catch(() => ({}));
               const orderCurrency = String(selectedOrder.currency || "usd").toLowerCase();
               const orderAddonCents = orderCurrency === "brl" ? 500 : 100;
-              const expectedPurchaseType = selectedOrder.includes_html_download
+              const expectedPurchaseType = selectedOrder.purchase_type || (selectedOrder.includes_html_download
                 ? (selectedOrder.amount_total === orderAddonCents ? "html_download" : "online_with_html")
-                : "online";
+                : "online");
               const actualPurchaseType = session.metadata?.purchase_type;
               // Safely accept the existing HTML add-on session created with the legacy
               // online_with_html metadata label, only when its amount is exactly the add-on price.
               const isHtmlAddonMetadataAlias =
+                !selectedOrder.purchase_type &&
                 selectedOrder.includes_html_download === true &&
                 selectedOrder.amount_total === orderAddonCents &&
                 expectedPurchaseType === "html_download" &&
@@ -153,6 +156,7 @@ Deno.serve(async (req: Request) => {
                 const { error: paymentUpdateError } = await admin.from("lovena_orders").update({
                   payment_status: "paid",
                   stripe_payment_intent_id: typeof session.payment_intent === "string" ? session.payment_intent : null,
+                  purchase_type: selectedOrder.purchase_type || (isHtmlAddonMetadataAlias ? "html_download" : session.metadata?.purchase_type),
                   customer_email: typeof session.customer_details?.email === "string" ? session.customer_details.email : null,
                   paid_at: now,
                   updated_at: now,
@@ -186,14 +190,19 @@ Deno.serve(async (req: Request) => {
     const onlinePaid = matchingOrders.some((order: any) => {
       const currency = String(order.currency || "usd").toLowerCase();
       const baseCents = currency === "brl" ? (order.plan === "simple" ? 999 : 1999) : (order.plan === "simple" ? 499 : 999);
-      return order.plan === experience.plan && order.payment_status === "paid" && order.amount_total >= baseCents;
+      const hasOnlineEntitlement = order.purchase_type
+        ? ["online", "online_with_html"].includes(order.purchase_type)
+        : order.amount_total >= baseCents;
+      return order.plan === experience.plan && order.payment_status === "paid" && hasOnlineEntitlement;
     });
     const includesHtmlDownload = matchingOrders.some((order: any) => {
       const currency = String(order.currency || "usd").toLowerCase();
       const baseCents = currency === "brl" ? (order.plan === "simple" ? 999 : 1999) : (order.plan === "simple" ? 499 : 999);
       const addonCents = currency === "brl" ? 500 : 100;
-      return order.plan === experience.plan && order.payment_status === "paid" && order.includes_html_download === true &&
-        (order.amount_total === addonCents || order.amount_total >= baseCents + addonCents);
+      const hasHtmlEntitlement = order.purchase_type
+        ? ["html_download", "online_with_html"].includes(order.purchase_type)
+        : (order.amount_total === addonCents || order.amount_total >= baseCents + addonCents);
+      return order.plan === experience.plan && order.payment_status === "paid" && order.includes_html_download === true && hasHtmlEntitlement;
     });
     const publicPage = experience.plan === "simple" ? "experience-simple.html" : "experience.html";
     const publicUrl = onlinePaid && experience.status === "published" && experience.public_slug
@@ -211,9 +220,9 @@ Deno.serve(async (req: Request) => {
     const order = matchingOrders.find((item: any) => item.stripe_checkout_session_id === sessionId);
     if (!order) return reply(404, { error: "checkout_not_found" });
     const orderAddonCents = String(order.currency || "usd").toLowerCase() === "brl" ? 500 : 100;
-    const purchaseType = order.includes_html_download
+    const purchaseType = order.purchase_type || (order.includes_html_download
       ? (order.amount_total === orderAddonCents ? "html_download" : "online_with_html")
-      : "online";
+      : "online");
     return reply(200, {
       status: order.payment_status,
       experienceStatus: experience.status,
