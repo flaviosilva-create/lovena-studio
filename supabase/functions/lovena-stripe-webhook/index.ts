@@ -38,6 +38,15 @@ function makeSlug() {
   return crypto.randomUUID().replaceAll("-", "").slice(0, 20);
 }
 
+function isOnlinePublicationOrder(order: any): boolean {
+  if (order.purchase_type === "online" || order.purchase_type === "online_with_html") return true;
+  if (order.purchase_type === "html_download") return false;
+  const currency = String(order.currency || "usd").toLowerCase();
+  const baseCents = currency === "brl" ? (order.plan === "simple" ? 999 : 1999) : (order.plan === "simple" ? 499 : 999);
+  const addonCents = currency === "brl" ? 500 : 100;
+  return order.includes_html_download === true ? order.amount_total >= baseCents + addonCents : order.amount_total >= baseCents;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return reply(405, { error: "method_not_allowed" });
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
@@ -79,16 +88,14 @@ Deno.serve(async (req: Request) => {
       const paymentIntent = payload.payment_intent;
       if (typeof paymentIntent !== "string") return reply(200, { received: true, ignored: true });
       const { data: order, error: orderError } = await admin.from("lovena_orders")
-        .select("id, experience_id, payment_status, amount_total, currency, plan")
+        .select("id, experience_id, payment_status, amount_total, currency, plan, includes_html_download, purchase_type")
         .eq("stripe_payment_intent_id", paymentIntent)
         .maybeSingle();
       if (orderError) throw orderError;
       if (!order) return reply(200, { received: true, ignored: true });
 
       const now = new Date().toISOString();
-      const orderCurrency = String(order.currency || "usd").toLowerCase();
-      const baseCents = orderCurrency === "brl" ? (order.plan === "simple" ? 999 : 1999) : (order.plan === "simple" ? 499 : 999);
-      const includesOnlinePublication = order.amount_total >= baseCents;
+      const includesOnlinePublication = isOnlinePublicationOrder(order);
       if (eventType === "charge.refunded") {
         const { error } = await admin.from("lovena_orders")
           .update({ payment_status: "refunded", updated_at: now })
@@ -155,7 +162,7 @@ Deno.serve(async (req: Request) => {
     if (session.payment_status !== "paid") return reply(200, { received: true, paymentPending: true });
 
     const { data: order, error: orderError } = await admin.from("lovena_orders")
-      .select("id, experience_id, stripe_checkout_session_id, payment_status, amount_total, currency, plan, includes_html_download")
+      .select("id, experience_id, stripe_checkout_session_id, payment_status, amount_total, currency, plan, includes_html_download, purchase_type")
       .eq("stripe_checkout_session_id", session.id).maybeSingle();
     if (orderError) throw orderError;
     if (!order) {
@@ -164,12 +171,13 @@ Deno.serve(async (req: Request) => {
     }
     const orderCurrency = String(order.currency || "usd").toLowerCase();
     const orderAddonCents = orderCurrency === "brl" ? 500 : 100;
-    const expectedPurchaseType = order.includes_html_download
+    const expectedPurchaseType = order.purchase_type || (order.includes_html_download
       ? (order.amount_total === orderAddonCents ? "html_download" : "online_with_html")
-      : "online";
+      : "online");
     // Narrow compatibility for a legacy HTML add-on session labeled online_with_html:
     // accept only when the recorded and Stripe amounts equal the standalone add-on price.
     const isHtmlAddonMetadataAlias =
+      !order.purchase_type &&
       order.includes_html_download === true &&
       order.amount_total === orderAddonCents &&
       expectedPurchaseType === "html_download" &&
@@ -194,6 +202,7 @@ Deno.serve(async (req: Request) => {
         .update({
           payment_status: "paid",
           stripe_payment_intent_id: typeof session.payment_intent === "string" ? session.payment_intent : null,
+          purchase_type: order.purchase_type || (isHtmlAddonMetadataAlias ? "html_download" : session.metadata?.purchase_type),
           paid_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -208,12 +217,8 @@ Deno.serve(async (req: Request) => {
     if (experienceError) throw experienceError;
     if (!experience) throw new Error("Paid order's experience is missing.");
 
-    const onlineBaseCents = orderCurrency === "brl"
-      ? (order.plan === "simple" ? 999 : 1999)
-      : (order.plan === "simple" ? 499 : 999);
-    const includesOnlinePublication = order.includes_html_download === true
-      ? order.amount_total >= onlineBaseCents + orderAddonCents
-      : order.amount_total >= onlineBaseCents;
+    const effectiveOrder = { ...order, purchase_type: order.purchase_type || (isHtmlAddonMetadataAlias ? "html_download" : session.metadata?.purchase_type) };
+    const includesOnlinePublication = isOnlinePublicationOrder(effectiveOrder);
 
     if (!includesOnlinePublication) {
       // An HTML-only payment unlocks the file, but never publishes an unpaid online plan.
