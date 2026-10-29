@@ -164,23 +164,28 @@
   }
 
   function selectedLanguage() {
+    // A published gift must always use the locale saved with that gift.
+    // The recipient's browser language, localStorage preference, and Google
+    // Translate cookie must never override the creator's chosen experience locale.
+    var isExperiencePage = !!document.getElementById("experiencia");
+    var htmlLanguage = document.documentElement.getAttribute("data-lovena-language");
+    if (isExperiencePage && htmlLanguage) {
+      var explicitPageLanguage = canonicalLanguage(htmlLanguage);
+      if (explicitPageLanguage) return explicitPageLanguage;
+    }
+
     var manualLanguage = readManualLanguage();
     if (manualLanguage) return manualLanguage;
     var savedLanguage = readSavedLanguage();
     if (savedLanguage) return savedLanguage;
-    if (isBrazilianVisitor()) return "pt";
+
     var selectors = selectorElements();
     var selector = selectors.find(isElementVisible) || selectors[0];
     if (selector && String(selector.value || "").trim()) {
       var selected = canonicalLanguage(selector.value);
       if (selected) return selected;
     }
-    // Experience locale belongs to the gift, not to the viewer's landing-page preference.
-    var htmlLanguage = document.documentElement.getAttribute("data-lovena-language");
-    if (htmlLanguage && document.getElementById("experiencia")) {
-      var explicitPageLanguage = canonicalLanguage(htmlLanguage);
-      if (explicitPageLanguage) return explicitPageLanguage;
-    }
+    if (isBrazilianVisitor()) return "pt";
     try {
       var cookie = document.cookie.split(";").map(function (item) { return item.trim(); })
         .find(function (item) { return item.indexOf("googtrans=") === 0; });
@@ -191,7 +196,7 @@
       }
     } catch (error) {}
     if (htmlLanguage) { var htmlLang = canonicalLanguage(htmlLanguage); if (htmlLang) return htmlLang; }
-    return readSavedLanguage() || SOURCE_LANGUAGE;
+    return SOURCE_LANGUAGE;
   }
 
   function saveLanguage(language) {
@@ -697,6 +702,8 @@
   }
 
   window.addEventListener("lovena:region-detected", function (event) {
+    // Region-based defaults apply to the storefront only, never to a personalized gift.
+    if (document.getElementById("experiencia")) return;
     if (!event || !event.detail || !event.detail.countryCode) return;
     var manualLanguage = readManualLanguage();
     var savedLanguage = readSavedLanguage();
@@ -772,7 +779,7 @@
     }
     var saved = readSavedLanguage();
     var active = selectedLanguage() || canonicalLanguage(selector.value) || saved || SOURCE_LANGUAGE;
-    if (saved && saved !== active) {
+    if (!document.getElementById("experiencia") && saved && saved !== active) {
       var savedMatch = Array.from(selector.options || []).find(function (option) { return optionLanguage(option) === saved; });
       if (savedMatch) {
         selector.value = savedMatch.value;
