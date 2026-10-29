@@ -124,7 +124,7 @@ jobs:
                   'id="lovenaExperienceLanguageControl" data-editor-only hidden',
                   'id="lovenaExperienceLanguageSelect"',
                   'assets/lovena-experience-language.js?v=20261028-experience-language-3',
-                  'translation-bridge.js?v=20261028-batched-translator-1'
+                  'translation-bridge.js?v=20261028-gift-locale-priority-1'
               ]:
                   if marker not in public_html:
                       raise SystemExit(f"{public_path} is missing editor-only interface-language support: {marker}")
