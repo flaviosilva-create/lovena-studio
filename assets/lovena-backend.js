@@ -406,6 +406,37 @@
     return body;
   }
 
+  function reportGoogleAdsPurchase(conversion) {
+    if (!conversion || conversion.status !== "paid") return;
+
+    var transactionId = String(conversion.transactionId || "").trim();
+    var amountMinor = Number(conversion.amountTotal);
+    var currency = String(conversion.currency || "").toUpperCase();
+
+    if (!transactionId || transactionId.length > 64 ||
+        !Number.isFinite(amountMinor) || amountMinor <= 0 ||
+        !/^[A-Z]{3}$/.test(currency) ||
+        typeof window.gtag !== "function") {
+      return;
+    }
+
+    var storageKey = "lovenaGoogleAdsPurchaseSent:" + transactionId;
+    try {
+      if (window.localStorage.getItem(storageKey) === "sent") return;
+    } catch (_) {}
+
+    window.gtag("event", "conversion", {
+      send_to: "AW-18513830218/Wrb4CJvWhJ4dEMrCivxE",
+      transaction_id: transactionId,
+      value: Math.round(amountMinor) / 100,
+      currency: currency
+    });
+
+    try {
+      window.localStorage.setItem(storageKey, "sent");
+    } catch (_) {}
+  }
+
   async function getPurchaseEntitlements(experienceId) {
     var supabase = await client();
     var session = await currentSession(supabase);
@@ -1122,6 +1153,7 @@
           var result = await getCheckoutStatus(checkoutSessionId, checkoutExperienceId);
           if (result.status === "paid" && (result.publicUrl || result.includesHtmlDownload)) {
             paymentConfirmed = true;
+            reportGoogleAdsPurchase(result);
             applyPurchaseEntitlements(result);
             if (result.publicUrl) {
               checkoutReturnStatus.textContent = result.includesHtmlDownload
