@@ -58,10 +58,18 @@ Deno.serve(async (req: Request) => {
       }
     }
   }
-  const requestedCountry = typeof input.countryCode === "string" ? input.countryCode.trim().toUpperCase() : "";
-  const isBrazil = /^[A-Z]{2}$/.test(edgeCountry) ? edgeCountry === "BR" : requestedCountry === "BR";
+  // Only server-observed IP country may authorize BRL. Never trust countryCode from the browser.
+  const isCountryVerified = /^[A-Z]{2}$/.test(edgeCountry);
+  const isBrazil = isCountryVerified && edgeCountry === "BR";
   const requestedCurrency = typeof input.currencyCode === "string" ? input.currencyCode.trim().toLowerCase() : "";
-  const currency = requestedCurrency === "brl" || requestedCurrency === "usd" || requestedCurrency === "eur" ? requestedCurrency : (isBrazil ? "brl" : "usd");
+  if (!["brl", "usd", "eur", ""].includes(requestedCurrency)) {
+    return reply(400, { error: "unsupported_currency" });
+  }
+  if (requestedCurrency === "brl" && !isBrazil) {
+    return reply(403, { error: "brl_not_available_in_region", message: "O real brasileiro só pode ser usado quando a localização no Brasil é confirmada. Selecione USD ou EUR." });
+  }
+  // If region lookup is unavailable, fail safely to USD rather than trusting browser country.
+  const currency = requestedCurrency || (isBrazil ? "brl" : "usd");
   const isBRLCurrency = currency === "brl";
   const addonCents = isBRLCurrency ? 500 : 100;
 
@@ -153,10 +161,10 @@ Deno.serve(async (req: Request) => {
       : purchaseType === "online_with_html"
         ? "&purchase=online_with_html"
         : "&purchase=online";
-    const successUrl = "https://flaviosilva-create.github.io/lovena-studio/" + editorPage +
+    const successUrl = "https://lovenastudio.com/" + editorPage +
       "?edit=1&checkout=success" + purchaseQuery +
       "&session_id={CHECKOUT_SESSION_ID}&experience_id=" + encodeURIComponent(experienceId);
-    const cancelUrl = "https://flaviosilva-create.github.io/lovena-studio/" + editorPage +
+    const cancelUrl = "https://lovenastudio.com/" + editorPage +
       "?edit=1&checkout=cancelled" + purchaseQuery +
       "&experience_id=" + encodeURIComponent(experienceId);
     const form = new URLSearchParams();
