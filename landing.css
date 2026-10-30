@@ -423,58 +423,28 @@ body>.lr-footer{display:flex!important}
 @media(prefers-reduced-motion:reduce){.lr-example-card,.lr-preview-sheet,.lr-example-action,.lr-example-open-hint{transition:none}}
 
 
-/* Lovena demo video — replaces the decorative phone mockup */
-.lr-how-art.lr-how-video-wrap{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  width:100%;
-  min-width:0;
-  min-height:330px;
-  height:100%;
-  padding:12px 0;
-  box-sizing:border-box;
+/* Lovena product demo playing inside the original phone mockup */
+.lr-phone-screen{
+  padding:0;
+  background:#171417;
+  overflow:hidden;
 }
-.lr-how-art.lr-how-video-wrap:before{
-  inset:4% 0;
-  background:radial-gradient(ellipse at center,rgba(208,190,169,.28),transparent 68%);
-}
-.lr-how-video{
+.lr-phone-demo-video{
   display:block;
   width:100%;
-  max-width:860px;
-  height:auto;
-  aspect-ratio:16 / 9;
-  object-fit:contain;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
   background:#171417;
-  border:1px solid rgba(71,53,42,.14);
-  border-radius:18px;
-  box-shadow:0 18px 38px rgba(45,32,29,.18),0 3px 9px rgba(45,32,29,.08);
+  border:0;
+  border-radius:inherit;
 }
-.lr-how-video-caption{
-  margin:0;
-  color:#75645b;
-  font-family:'Manrope',Arial,sans-serif;
-  font-size:10px;
-  font-weight:600;
-  letter-spacing:.15px;
-  line-height:1.4;
-  text-align:center;
+.lr-phone-demo-video::-webkit-media-controls-panel{
+  background:linear-gradient(transparent,rgba(0,0,0,.58));
 }
 @media(max-width:800px){
-  .lr-how-art.lr-how-video-wrap{
-    min-height:0;
-    height:auto;
-    margin-top:4px;
-    padding:8px 0 2px;
-    gap:8px;
-  }
-  .lr-how-video{
+  .lr-phone-demo-video{
     width:100%;
-    max-width:100%;
-    border-radius:13px;
+    height:100%;
   }
-  .lr-how-video-caption{font-size:9px}
 }
