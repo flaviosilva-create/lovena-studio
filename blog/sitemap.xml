@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/</loc></url>
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/about.html</loc></url>
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/editorial-policy.html</loc></url>
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/contact.html</loc></url>
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/privacy.html</loc></url>
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/thoughtful-gifts-for-someone-who-has-everything.html</loc></url>
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/meaningful-birthday-ideas-for-your-partner.html</loc></url>
-<url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/how-to-write-a-heartfelt-love-letter.html</loc></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/about.html</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/editorial-policy.html</loc><lastmod>2026-10-30</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/contact.html</loc><lastmod>2026-10-30</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/privacy.html</loc><lastmod>2026-10-30</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/thoughtful-gifts-for-someone-who-has-everything.html</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/meaningful-birthday-ideas-for-your-partner.html</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://flaviosilva-create.github.io/lovena-studio/blog/how-to-write-a-heartfelt-love-letter.html</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
