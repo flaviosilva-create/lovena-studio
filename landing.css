@@ -448,3 +448,41 @@ body>.lr-footer{display:flex!important}
     height:100%;
   }
 }
+
+
+/* Lovena customer support email in the landing-page footer */
+.lr-footer-email{
+  color:#755e54;
+  font-family:'Manrope',Arial,sans-serif;
+  font-size:8px;
+  font-weight:700;
+  line-height:1.4;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:color .2s,opacity .2s;
+}
+.lr-footer-email:hover{
+  color:#302421;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+@media(max-width:800px){
+  .lr-footer-email{
+    grid-column:1/-1;
+    grid-row:2;
+    justify-self:start;
+    font-size:9px;
+  }
+  .lr-footer nav{
+    grid-row:3;
+  }
+  .lr-footer .lr-language-picker,
+  .lr-footer-cta{
+    grid-row:4;
+  }
+}
+@media(max-width:420px){
+  .lr-footer-email{
+    font-size:8.5px;
+  }
+}
