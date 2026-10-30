@@ -421,3 +421,60 @@ body>.lr-footer{display:flex!important}
 @media(max-width:900px){.lr-examples-intro{align-items:flex-start;flex-direction:column;gap:17px}.lr-examples-grid{gap:16px}.lr-example-stage{height:315px;padding:16px 16px 0}.lr-preview-sheet{height:299px}.lr-preview-simple-copy{padding:18px 13px 12px}.lr-preview-simple-copy h3{font-size:22px}.lr-preview-mini-gallery{height:61px;margin-top:12px}.lr-preview-premium-hero{padding:19px}.lr-preview-premium-hero strong{font-size:29px}.lr-preview-premium-details{padding:12px 14px;gap:8px 12px}.lr-example-card-copy{padding:21px 19px;align-items:flex-start;flex-direction:column}.lr-example-action{width:100%}}
 @media(max-width:650px){.lr-examples{padding:68px 16px}.lr-examples-heading h2{font-size:36px;letter-spacing:-1.1px}.lr-examples-heading p{font-size:12px}.lr-examples-note{font-size:8px}.lr-examples-grid{grid-template-columns:1fr;gap:18px}.lr-example-stage{height:315px;padding:16px 16px 0}.lr-preview-sheet{height:299px;max-width:500px}.lr-preview-simple-copy h3{font-size:clamp(22px,6vw,29px)}.lr-preview-simple-copy p{font-size:10px}.lr-preview-premium-hero strong{font-size:clamp(28px,8vw,36px)}.lr-example-card-copy{padding:22px}.lr-example-action{min-height:45px}.lr-example-open-hint{opacity:1;transform:none;font-size:9px}.lr-examples-footnote{text-align:left;margin-top:17px}}
 @media(prefers-reduced-motion:reduce){.lr-example-card,.lr-preview-sheet,.lr-example-action,.lr-example-open-hint{transition:none}}
+
+
+/* Lovena demo video — replaces the decorative phone mockup */
+.lr-how-art.lr-how-video-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+  min-width:0;
+  min-height:330px;
+  height:100%;
+  padding:12px 0;
+  box-sizing:border-box;
+}
+.lr-how-art.lr-how-video-wrap:before{
+  inset:4% 0;
+  background:radial-gradient(ellipse at center,rgba(208,190,169,.28),transparent 68%);
+}
+.lr-how-video{
+  display:block;
+  width:100%;
+  max-width:860px;
+  height:auto;
+  aspect-ratio:16 / 9;
+  object-fit:contain;
+  background:#171417;
+  border:1px solid rgba(71,53,42,.14);
+  border-radius:18px;
+  box-shadow:0 18px 38px rgba(45,32,29,.18),0 3px 9px rgba(45,32,29,.08);
+}
+.lr-how-video-caption{
+  margin:0;
+  color:#75645b;
+  font-family:'Manrope',Arial,sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.15px;
+  line-height:1.4;
+  text-align:center;
+}
+@media(max-width:800px){
+  .lr-how-art.lr-how-video-wrap{
+    min-height:0;
+    height:auto;
+    margin-top:4px;
+    padding:8px 0 2px;
+    gap:8px;
+  }
+  .lr-how-video{
+    width:100%;
+    max-width:100%;
+    border-radius:13px;
+  }
+  .lr-how-video-caption{font-size:9px}
+}
