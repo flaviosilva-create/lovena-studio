@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://flaviosilva-create.github.io/lovena-studio/blog/sitemap.xml
