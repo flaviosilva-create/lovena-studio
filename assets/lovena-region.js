@@ -121,7 +121,9 @@
     } catch (error) {}
     return code;
   }
-  var fallback = browserFallbackCountry();
+  // Start in English until IP geolocation confirms the visitor is in Brazil.
+  // Browser locale/timezone can still be Brazilian while a VPN routes traffic elsewhere.
+  var fallback = "US";
   // Fail closed: hide BRL until IP geolocation confirms the visitor is in Brazil.
   applyCountry(fallback, false);
   var selector = document.getElementById("lovenaCurrencySelect");
