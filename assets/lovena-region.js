@@ -93,12 +93,10 @@
     window.LOVENA_IS_BRAZIL = isVerifiedBrazil;
     updateBRLAvailability(isVerifiedBrazil);
     var manual = "";
-    var savedLanguage = "";
-    try {
-      manual = sessionStorage.getItem("lovenaManualLanguage") || "";
-      savedLanguage = localStorage.getItem("lovenaPreferredLanguage") || "";
-    } catch (error) {}
-    var language = manual || savedLanguage || (code === "BR" ? "pt" : "en");
+    try { manual = sessionStorage.getItem("lovenaManualLanguage") || ""; } catch (error) {}
+    // Use the detected country for automatic defaults. Old saved values may
+    // have been generated automatically in a previous country or VPN session.
+    var language = manual || (code === "BR" ? "pt" : "en");
     document.documentElement.setAttribute("lang", language === "pt" ? "pt-BR" : language);
     document.documentElement.setAttribute("data-lovena-language", language);
     var languageSelector = document.getElementById("lovenaLanguageSelect");
