@@ -9,7 +9,7 @@
   var TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/t";
   var TRANSLATE_FALLBACK_ENDPOINT = "https://clients5.google.com/translate_a/t";
   var CACHE_KEY = "lovenaDynamicTranslationCacheV3";
-  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "loveWorldHeadingCopy", "lovenaEditor", "lovenaEditHint", "lovenaEditorTrigger", "detailModal", "lovenaExperienceLanguageControl", "lovenaPublicationPanel", "lovenaPublishExportTrigger"];
+  var ROOT_IDS = ["studioOverlay", "readerOverlay", "studioToast", "lovenaEditor", "lovenaEditHint", "lovenaEditorTrigger", "detailModal", "lovenaExperienceLanguageControl", "lovenaPublicationPanel", "lovenaPublishExportTrigger"];
   var textOriginals = new WeakMap();
   var attrOriginals = new WeakMap();
   var cache = new Map();
