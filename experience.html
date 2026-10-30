@@ -4154,9 +4154,12 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   localStorage.removeItem(EDIT_KEY);location.href=location.pathname+"?edit=1&reset="+Date.now();
  }
  var editorCloseClassObserver=new MutationObserver(syncEditorCloseButton);editorCloseClassObserver.observe(document.body,{attributes:true,attributeFilter:["class"]});syncEditorCloseButton();window.addEventListener("resize",syncEditorCloseButton,{passive:true});window.addEventListener("orientationchange",syncEditorCloseButton,{passive:true});
- trigger.addEventListener("click",openEditor);backdrop.addEventListener("click",closeEditor);
+ backdrop.addEventListener("click",closeEditor);
  document.addEventListener("click",function(event){
-  var action=event.target.closest("[data-editor-action]");
+  var target=event.target instanceof Element?event.target:event.target&&event.target.parentElement;
+  var openTrigger=target&&target.closest("#lovenaEditorTrigger");
+  if(openTrigger){event.preventDefault();openEditor();return;}
+  var action=target&&target.closest("[data-editor-action]");
   if(action){
    var name=action.dataset.editorAction;
    if(name==="close"){closeEditor();return;}
