@@ -14,6 +14,19 @@ function jsonResponse(status: number, body: Record<string, unknown>) {
   });
 }
 
+function isOnlinePublicationOrder(order: any): boolean {
+  if (order.purchase_type === "online" || order.purchase_type === "online_with_html") return true;
+  if (order.purchase_type === "html_download") return false;
+  const currency = String(order.currency || "usd").toLowerCase();
+  const baseCents = currency === "brl"
+    ? (order.plan === "simple" ? 999 : 1999)
+    : (order.plan === "simple" ? 499 : 999);
+  const addonCents = currency === "brl" ? 500 : 100;
+  return order.includes_html_download === true
+    ? order.amount_total >= baseCents + addonCents
+    : order.amount_total >= baseCents;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return jsonResponse(405, { error: "method_not_allowed" });
@@ -57,15 +70,15 @@ Deno.serve(async (req: Request) => {
     if (!experience) return jsonResponse(404, { error: "experience_not_found" });
     if (experience.status !== "draft" || experience.public_slug) return jsonResponse(409, { error: "experience_not_publishable" });
 
-    const { data: paidOrder, error: orderError } = await admin
+    const { data: paidOrders, error: orderError } = await admin
       .from("lovena_orders")
-      .select("id, online_term, payment_status")
+      .select("id, online_term, payment_status, amount_total, currency, plan, includes_html_download, purchase_type")
       .eq("experience_id", experienceId)
       .eq("payment_status", "paid")
       .eq("plan", experience.plan)
-      .order("paid_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .order("paid_at", { ascending: false });
+
+    const paidOrder = (paidOrders || []).find((order: any) => isOnlinePublicationOrder(order));
 
     if (orderError) {
       console.error("Order lookup failed", orderError.message);
@@ -100,7 +113,7 @@ Deno.serve(async (req: Request) => {
 
     return jsonResponse(200, {
       slug,
-      url: "https://flaviosilva-create.github.io/lovena-studio/" + (experience.plan === "simple" ? "experience-simple.html" : "experience.html") + "?slug=" + slug,
+      url: "https://lovenastudio.com/" + (experience.plan === "simple" ? "experience-simple.html" : "experience.html") + "?slug=" + slug,
       expires_at: expiresAt,
     });
   } catch (error) {
