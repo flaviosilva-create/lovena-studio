@@ -106,7 +106,7 @@
     });
     if (!source) return;
 
-    var wantedLanguage = readManualLanguage() || readSavedLanguage() || canonicalLanguage(nativeSelector.value) || (isBrazilianVisitor() ? "pt" : SOURCE_LANGUAGE);
+    var wantedLanguage = readManualLanguage() || canonicalLanguage(nativeSelector.value) || (isBrazilianVisitor() ? "pt" : SOURCE_LANGUAGE);
     var options = [];
     var seen = new Set();
     Array.from(source.options).forEach(function (sourceOption) {
@@ -176,8 +176,12 @@
 
     var manualLanguage = readManualLanguage();
     if (manualLanguage) return manualLanguage;
-    var savedLanguage = readSavedLanguage();
-    if (savedLanguage) return savedLanguage;
+    // Saved storefront language may be an old country-derived default. Let the
+    // current region choose the default; retain saved preferences for gift pages.
+    if (isExperiencePage) {
+      var savedLanguage = readSavedLanguage();
+      if (savedLanguage) return savedLanguage;
+    }
 
     var selectors = selectorElements();
     var selector = selectors.find(isElementVisible) || selectors[0];
@@ -727,10 +731,8 @@
     if (document.getElementById("experiencia")) return;
     if (!event || !event.detail || !event.detail.countryCode) return;
     var manualLanguage = readManualLanguage();
-    var savedLanguage = readSavedLanguage();
-    var chosenLanguage = manualLanguage || savedLanguage;
-    if (!chosenLanguage) {
-      chosenLanguage = event.detail.countryCode === "BR" ? "pt" : SOURCE_LANGUAGE;
+    var chosenLanguage = manualLanguage || (event.detail.countryCode === "BR" ? "pt" : SOURCE_LANGUAGE);
+    if (!manualLanguage) {
       saveLanguage(chosenLanguage);
       scheduleTranslation(80);
     }
@@ -798,16 +800,9 @@
       else if (readSavedLanguage() && readSavedLanguage() !== SOURCE_LANGUAGE) { saveLanguage(readSavedLanguage()); scheduleTranslation(200); }
       return;
     }
-    var saved = readSavedLanguage();
+    var isExperiencePage = !!document.getElementById("experiencia");
+    var saved = isExperiencePage ? readSavedLanguage() : "";
     var active = selectedLanguage() || canonicalLanguage(selector.value) || saved || SOURCE_LANGUAGE;
-    if (!document.getElementById("experiencia") && saved && saved !== active) {
-      var savedMatch = Array.from(selector.options || []).find(function (option) { return optionLanguage(option) === saved; });
-      if (savedMatch) {
-        selector.value = savedMatch.value;
-        selector.dispatchEvent(new Event("change", { bubbles: true }));
-        saveLanguage(saved); scheduleTranslation(300); return;
-      }
-    }
     saveLanguage(active);
     selectorElements().forEach(function (item) {
       var match = Array.from(item.options || []).find(function (option) { return optionLanguage(option) === active; });
