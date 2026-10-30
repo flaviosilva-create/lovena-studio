@@ -88,16 +88,36 @@
     if (!modal.open) modal.showModal();
   }
 
+  function visibleGalleryIndexes(row) {
+    if (!row) return [];
+    return Array.from(row.querySelectorAll('.gallery-item:not([data-gallery-clone="true"])'))
+      .filter(function (item) { return !item.hidden; })
+      .map(function (item) { return Number(item.getAttribute("data-photo")); });
+  }
+
+  function stepVisiblePhoto(step) {
+    var row = document.getElementById("galleryRow");
+    var visible = visibleGalleryIndexes(row);
+    if (!visible.length) return;
+    var current = visible.indexOf(fallbackPhotoIndex);
+    if (current < 0) current = 0;
+    showPhoto(visible[(current + step + visible.length) % visible.length]);
+  }
+
   function showPhoto(index, clickedElement) {
     var data = window.LOVENA_EDIT_DATA || {};
     var photos = Array.isArray(data.photos) ? data.photos : [];
     var row = document.getElementById("galleryRow");
-    var trigger = clickedElement || (row && row.querySelector('[data-photo="' + index + '"]'));
-    if (photos.length) {
-      fallbackPhotoIndex = ((index % photos.length) + photos.length) % photos.length;
-    } else {
-      fallbackPhotoIndex = Math.max(0, index || 0);
+    var visible = visibleGalleryIndexes(row);
+    if (!visible.length) return;
+    var requested = Number(index) || 0;
+    var position = visible.indexOf(requested);
+    if (position < 0) {
+      position = visible.findIndex(function (slot) { return slot >= requested; });
+      if (position < 0) position = 0;
     }
+    fallbackPhotoIndex = visible[position];
+    var trigger = clickedElement || (row && row.querySelector('[data-photo="' + fallbackPhotoIndex + '"]'));
     var item = photos[fallbackPhotoIndex];
     var galleryImages = data.images && Array.isArray(data.images.gallery) ? data.images.gallery : [];
     var photoUrl = galleryImages[fallbackPhotoIndex];
@@ -105,6 +125,9 @@
     var title = textFor(item, 0) || (caption && caption.textContent) || "A Special Moment";
     var copy = textFor(item, 1);
     showModal(title, copy, "OUR MOMENTS", { photo: true, photoElement: trigger, photoUrl: photoUrl });
+    var visual = document.getElementById("modalVisual");
+    var counter = visual && visual.querySelector(".modal-photo-count");
+    if (counter) counter.textContent = (position + 1) + " / " + visible.length;
   }
 
   // Allow swiping between photos in the fallback lightbox, including mobile Safari.
@@ -127,7 +150,7 @@
       var dy = event.changedTouches[0].clientY - touchStart.y;
       touchStart = null;
       if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-        showPhoto(fallbackPhotoIndex + (dx < 0 ? 1 : -1));
+        stepVisiblePhoto(dx < 0 ? 1 : -1);
       }
     }, { passive: true });
     var mouseStart = null;
@@ -142,7 +165,7 @@
       var dy = event.clientY - mouseStart.y;
       mouseStart = null;
       if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-        showPhoto(fallbackPhotoIndex + (dx < 0 ? 1 : -1));
+        stepVisiblePhoto(dx < 0 ? 1 : -1);
       }
     });
     visual.addEventListener("pointercancel", function () { mouseStart = null; });
@@ -234,9 +257,14 @@
       event.preventDefault();
       event.stopPropagation();
       var galleryRow = document.getElementById("galleryRow");
-      if (action === "open-gallery" && galleryRow) galleryRow.scrollTo({ left: 0, behavior: "smooth" });
-      var step = action === "modal-prev" ? -1 : (action === "modal-next" ? 1 : 0);
-      showPhoto(fallbackPhotoIndex + step);
+      var visible = visibleGalleryIndexes(galleryRow);
+      if (!visible.length) return;
+      if (action === "open-gallery") {
+        if (galleryRow) galleryRow.scrollTo({ left: 0, behavior: "smooth" });
+        showPhoto(visible[0]);
+      } else {
+        stepVisiblePhoto(action === "modal-prev" ? -1 : 1);
+      }
       return;
     }
 
