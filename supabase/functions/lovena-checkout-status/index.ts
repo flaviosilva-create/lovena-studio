@@ -225,6 +225,7 @@ Deno.serve(async (req: Request) => {
       : "online");
     return reply(200, {
       status: order.payment_status,
+      transactionId: order.id,
       experienceStatus: experience.status,
       publicUrl,
       amountTotal: order.amount_total,
