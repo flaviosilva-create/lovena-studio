@@ -184,6 +184,8 @@
     .ce-actions{display:grid;gap:8px;padding:11px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #ddd8d3;background:#fff}
     .ce-status{min-height:15px;color:#69625c;text-align:center;font-size:9px}
     .ce-photo-row.is-selected{margin-inline:-6px;padding-inline:6px;border-radius:7px;background:#fff0e9;outline:2px solid #e50914}
+    .ce-editable-target{cursor:pointer}
+    body.cinema-edit-mode .ce-editable-target:hover{outline:1px dashed rgba(229,9,20,.85);outline-offset:3px}
     .ce-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .ce-button.primary{background:#111;color:#fff;border-color:#111}
     .ce-button.accent{background:#e50914;color:#fff;border-color:#e50914}
@@ -324,20 +326,20 @@
         </div>
       </header>
       <nav class="category-nav" aria-label="Browse story">
-        <a href="#" data-command="profile">Our Story</a>
-        <a href="#memories">Memories</a>
-        <a href="#" data-command="list">My List</a>
+        <a href="#" data-command="profile" data-ce-field="ceNavStory">Our Story</a>
+        <a href="#memories" data-ce-field="ceNavMemories">Memories</a>
+        <a href="#" data-command="list" data-ce-field="ceNavList">My List</a>
       </nav>
       <div class="hero-copy">
         <p class="eyebrow" id="heroEyebrow">A LOVENA ORIGINAL</p>
         <h1 id="heroTitle">You are my favourite story.</h1>
         <p class="hero-description" id="heroDescription">A world made of the moments, smiles and little memories that belong only to us.</p>
         <div class="hero-controls">
-          <button class="action-stack" type="button" id="myListToggle" aria-pressed="false">
+          <button class="action-stack" type="button" id="myListToggle" aria-pressed="false" data-ce-field="ceActionMyList">
             <span class="action-symbol" id="myListIcon" aria-hidden="true">＋</span><span class="action-label" id="myListLabel">My List</span>
           </button>
-          <button class="play-button" type="button" id="playStory"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg><span id="playLabel">Play</span></button>
-          <button class="action-stack" type="button" data-command="description" aria-label="Open description" title="Description">
+          <button class="play-button" type="button" id="playStory" data-ce-field="ceActionPlay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg><span id="playLabel">Play</span></button>
+          <button class="action-stack" type="button" data-command="description" aria-label="Open description" title="Description" data-ce-field="ceActionDescription">
             <span class="action-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><span class="action-label" id="descriptionLabel">Description</span>
           </button>
           <button class="soundless-action" type="button" data-command="share" aria-label="Share this story" title="Share"><svg viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5"/><path d="M5 13v7h14v-7"/></svg></button>
@@ -347,28 +349,28 @@
 
     <section class="shelf" id="memories" aria-labelledby="memoriesTitle">
       <div class="shelf-inner">
-        <div class="shelf-heading"><h2 id="memoriesTitle">MY MEMORY</h2><button class="shelf-more" type="button" id="viewAllMemories">View all <span aria-hidden="true">→</span></button></div>
+        <div class="shelf-heading"><h2 id="memoriesTitle">MY MEMORY</h2><button class="shelf-more" type="button" id="viewAllMemories" data-ce-field="ceViewAll">View all <span aria-hidden="true">→</span></button></div>
         <div class="rail-wrap"><div class="rail" id="memoryRail" aria-label="Photo memories"></div></div>
       </div>
     </section>
 
     <section class="shelf my-list-shelf" id="my-list" aria-labelledby="myListTitle">
       <div class="shelf-inner">
-        <div class="shelf-heading"><h2 id="myListTitle">MY LIST</h2></div>
+        <div class="shelf-heading"><h2 id="myListTitle" data-ce-field="ceMyListHeading">MY LIST</h2></div>
         <div class="rail" id="savedRail"></div>
-        <div class="empty-state" id="emptyList">Save a memory with the plus button to keep it here.</div>
+        <div class="empty-state" id="emptyList" data-ce-field="ceEmptyList">Save a memory with the plus button to keep it here.</div>
       </div>
     </section>
 
-    <footer class="site-footer">A PRIVATE WORLD, MADE WITH LOVE · LOVENA</footer>
+    <footer class="site-footer" data-ce-field="ceFooter">A PRIVATE WORLD, MADE WITH LOVE · LOVENA</footer>
   </main>
 
   <nav class="bottom-nav" aria-label="Main navigation">
-    <button type="button" data-destination="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Home</span></button>
-    <button type="button" data-destination="memories"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span>Memories</span></button>
-    <button type="button" data-destination="my-list"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg><span>My List</span></button>
-    <button type="button" data-command="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg><span>Search</span></button>
-    <button type="button" data-command="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6.8 19a5.8 5.8 0 0 1 10.4 0"/></svg><span>About</span></button>
+    <button type="button" data-destination="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span data-ce-field="ceBottomHome">Home</span></button>
+    <button type="button" data-destination="memories"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span data-ce-field="ceBottomMemories">Memories</span></button>
+    <button type="button" data-destination="my-list"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg><span data-ce-field="ceBottomList">My List</span></button>
+    <button type="button" data-command="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg><span data-ce-field="ceBottomSearch">Search</span></button>
+    <button type="button" data-command="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6.8 19a5.8 5.8 0 0 1 10.4 0"/></svg><span data-ce-field="ceBottomAbout">About</span></button>
   </nav>
 
   <section class="overlay" id="dialog" hidden aria-modal="true" role="dialog" aria-labelledby="dialogTitle">
@@ -410,6 +412,24 @@
         <div class="ce-field"><label for="ceDescBody">Description text</label><textarea id="ceDescBody" maxlength="5000"></textarea></div>
         <div class="ce-field"><label for="ceDescEnding">Closing line</label><input id="ceDescEnding" maxlength="180"></div>
         <div class="ce-field"><label for="ceDescSign">Signature</label><input id="ceDescSign" maxlength="100"></div>
+      </div></details>
+      <details class="ce-section"><summary>Page text & navigation</summary><div class="ce-fields">
+        <div class="ce-field"><label for="ceNavStory">Top menu · Our Story</label><input id="ceNavStory" maxlength="60"></div>
+        <div class="ce-field"><label for="ceNavMemories">Top menu · Memories</label><input id="ceNavMemories" maxlength="60"></div>
+        <div class="ce-field"><label for="ceNavList">Top menu · My List</label><input id="ceNavList" maxlength="60"></div>
+        <div class="ce-field"><label for="ceActionMyList">Hero action · My List / Saved</label><input id="ceActionMyList" maxlength="60"></div>
+        <div class="ce-field"><label for="ceActionPlay">Hero action · Play</label><input id="ceActionPlay" maxlength="60"></div>
+        <div class="ce-field"><label for="ceActionDescription">Hero action · Description</label><input id="ceActionDescription" maxlength="60"></div>
+        <div class="ce-field"><label for="ceViewAll">Gallery action · View all</label><input id="ceViewAll" maxlength="60"></div>
+        <div class="ce-field"><label for="ceMyListHeading">My List section title</label><input id="ceMyListHeading" maxlength="60"></div>
+        <div class="ce-field"><label for="ceEmptyList">My List empty message</label><textarea id="ceEmptyList" maxlength="240"></textarea></div>
+        <div class="ce-field"><label for="ceNoPhotos">Empty gallery message</label><input id="ceNoPhotos" maxlength="180"></div>
+        <div class="ce-field"><label for="ceFooter">Footer text</label><input id="ceFooter" maxlength="160"></div>
+        <div class="ce-field"><label for="ceBottomHome">Bottom menu · Home</label><input id="ceBottomHome" maxlength="60"></div>
+        <div class="ce-field"><label for="ceBottomMemories">Bottom menu · Memories</label><input id="ceBottomMemories" maxlength="60"></div>
+        <div class="ce-field"><label for="ceBottomList">Bottom menu · My List</label><input id="ceBottomList" maxlength="60"></div>
+        <div class="ce-field"><label for="ceBottomSearch">Bottom menu · Search</label><input id="ceBottomSearch" maxlength="60"></div>
+        <div class="ce-field"><label for="ceBottomAbout">Bottom menu · About</label><input id="ceBottomAbout" maxlength="60"></div>
       </div></details>
       <details class="ce-section"><summary>Page language</summary><div class="ce-fields"><div class="ce-field"><label for="ceLanguage">Language</label><select id="ceLanguage"><option value="en">English</option><option value="pt-BR">Português</option><option value="es">Español</option></select><small class="ce-help">Only interface labels change. The text you write stays as entered.</small></div></div></details>
       <details class="ce-section" open><summary>Memory photos</summary><div class="ce-fields">
@@ -545,6 +565,7 @@
     }
     function openDialog(kicker,title,copy,extra){
       var dialog=document.getElementById("dialog");
+      dialog.dataset.cinemaDialogKind="";dialog.dataset.cinemaMemoryIndex="";
       dialog.classList.remove("is-description");
       setText("dialogKicker",kicker||"LOVENA");setText("dialogTitle",title||"Our story");setText("dialogCopy",copy||"");
       document.getElementById("dialogCopy").hidden=!copy;
@@ -558,7 +579,8 @@
     }
     function openMemory(memory){
       openDialog(t("memories"),memory.title,memory.description||"");
-      var extra=document.createElement("div");extra.style.cssText="height:min(52vh,440px);margin-top:17px;border-radius:8px;background:#171717 center/contain no-repeat";
+      var dialog=document.getElementById("dialog");dialog.dataset.cinemaDialogKind="memory";dialog.dataset.cinemaMemoryIndex=String(memory.index);
+      var extra=document.createElement("div");extra.dataset.cinemaMemoryIndex=String(memory.index);extra.style.cssText="height:min(52vh,440px);margin-top:17px;border-radius:8px;background:#171717 center/contain no-repeat";
       extra.style.backgroundImage='url("'+memory.image.replace(/"/g,"%22")+'")';
       document.getElementById("dialogExtra").appendChild(extra);
     }
@@ -573,6 +595,7 @@
       var item=memories[currentSlide];if(!item)return;
       document.getElementById("slideImage").style.backgroundImage='url("'+item.image.replace(/"/g,"%22")+'")';
       setText("slideCaption",item.title);setText("slideCounter",(currentSlide+1)+" / "+memories.length);
+      var slide=document.getElementById("slideshow");if(slide)slide.dataset.cinemaMemoryIndex=String(item.index);
     }
     function stopSlideshow(){clearInterval(slideTimer);slideTimer=0;document.getElementById("slideshow").hidden=true;document.body.style.overflow="";}
     function stepSlide(step){currentSlide=(currentSlide+step+memories.length)%memories.length;renderSlide();clearInterval(slideTimer);slideTimer=setInterval(function(){currentSlide=(currentSlide+1)%memories.length;renderSlide();},5200);}
@@ -599,15 +622,20 @@
     }
     function applyTranslations(){
       setText("memoriesTitle",texts.galleryHeading||"MY MEMORY");
-      setText("chaptersTitle",t("chapters"));setText("discoverTitle",t("discover"));
-      setText("playLabel",t("play"));setText("infoLabel",t("info"));setText("descriptionLabel",t("description"));setText("myListLabel",storySaved?t("saved"):t("list"));
-      var descriptionButton=document.querySelector('[data-command="description"]');if(descriptionButton){descriptionButton.setAttribute("aria-label",t("openDescription"));descriptionButton.title=t("description");}
-      setText("viewAllMemories",t("viewAll"));
-      setText("emptyList",t("empty"));
-      document.querySelectorAll(".category-nav a").forEach(function(node,i){node.textContent=[t("story"),t("memories"),t("list")][i];});
-      document.querySelectorAll(".bottom-nav button span").forEach(function(node,i){node.textContent=[t("home"),t("memories"),t("list"),t("searchNav"),t("about")][i];});
-      setText("memoriesTitle",texts.galleryHeading||"MY MEMORY");
-      document.querySelector(".site-footer").textContent=t("footer");
+      setText("myListTitle",texts.uiMyListHeading||t("list"));
+      setText("playLabel",texts.uiPlay||t("play"));
+      setText("descriptionLabel",texts.uiDescription||t("description"));
+      setText("myListLabel",texts.uiActionMyList||(storySaved?t("saved"):t("list")));
+      var descriptionButton=document.querySelector('[data-command="description"]');
+      if(descriptionButton){descriptionButton.setAttribute("aria-label",t("openDescription"));descriptionButton.title=texts.uiDescription||t("description");}
+      setText("viewAllMemories",texts.uiViewAll||t("viewAll"));
+      setText("emptyList",texts.uiEmptyList||t("empty"));
+      var topLabels=[["ceNavStory","uiNavStory","story"],["ceNavMemories","uiNavMemories","memories"],["ceNavList","uiNavList","list"]];
+      topLabels.forEach(function(item){setText(item[0],texts[item[1]]||t(item[2]));});
+      var bottomLabels=[["ceBottomHome","uiBottomHome","home"],["ceBottomMemories","uiBottomMemories","memories"],["ceBottomList","uiBottomList","list"],["ceBottomSearch","uiBottomSearch","searchNav"],["ceBottomAbout","uiBottomAbout","about"]];
+      bottomLabels.forEach(function(item){setText(item[0],texts[item[1]]||t(item[2]));});
+      setText("emptyList",texts.uiEmptyList||t("empty"));
+      var footer=document.querySelector(".site-footer");if(footer)footer.textContent=texts.uiFooter||t("footer");
     }
     function updateMyListButton(){
       var saved=storySaved,button=document.getElementById("myListToggle");
@@ -740,7 +768,7 @@
         results.replaceChildren();
         var found=memories.filter(function(item){return item.title.toLowerCase().includes(input.value.toLowerCase());});
         if(!found.length){var empty=document.createElement("p");empty.className="dialog-copy";empty.textContent=t("noResults");results.appendChild(empty);return;}
-        found.forEach(function(item){var button=document.createElement("button");button.type="button";button.textContent=item.title;button.style.cssText="padding:12px;text-align:left;border:1px solid #ffffff20;border-radius:7px;background:#1a1a1a;cursor:pointer";button.addEventListener("click",function(){closeDialog();openMemory(item);});results.appendChild(button);});
+        found.forEach(function(item){var button=document.createElement("button");button.type="button";button.dataset.memoryId=item.id;button.textContent=item.title;button.style.cssText="padding:12px;text-align:left;border:1px solid #ffffff20;border-radius:7px;background:#1a1a1a;cursor:pointer";button.addEventListener("click",function(){closeDialog();openMemory(item);});results.appendChild(button);});
       }
       input.addEventListener("input",renderResults);panel.appendChild(input);panel.appendChild(results);renderResults();
       openDialog(t("search"),t("search"),"",panel);setTimeout(function(){input.focus();},50);
@@ -751,7 +779,7 @@
       else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){showToast(t("share"));}).catch(function(){showToast(url);});}
       else showToast(url);
     }
-    function openProfile(){openDialog("LOVENA",texts.brand||"A story made for two",texts.heroIntro||t("defaultDescription"));}
+    function openProfile(){openDialog("LOVENA",texts.brand||"A story made for two",texts.heroIntro||t("defaultDescription"));document.getElementById("dialog").dataset.cinemaDialogKind="profile";}
     function openDescription(){
       var title=String(texts.letterTitle||t("letterTitleDefault"));
       var body=String(texts.letterBody||t("letterBodyDefault"));
@@ -768,6 +796,8 @@
       var sign=document.createElement("p");sign.className="description-signature";sign.textContent=signature;
       description.append(bodyNode,closing,sign);
       openDialog(t("descriptionKicker"),title,"",description);
+      var dialog=document.getElementById("dialog");dialog.dataset.cinemaDialogKind="description";
+      document.getElementById("dialogKicker").dataset.ceField="ceActionDescription";
       document.getElementById("dialog").classList.add("is-description");
     }
     function openMyList(){
@@ -776,22 +806,23 @@
       var entries=memories.filter(function(item){return savedIds.indexOf(item.id)!==-1;});
       if(storySaved){
         var cover=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
-        var story=document.createElement("button");story.type="button";
+        var story=document.createElement("button");story.type="button";story.dataset.cinemaStoryCard="1";
         story.style.cssText="min-height:142px;padding:10px;display:flex;align-items:flex-end;text-align:left;border:1px solid #ffffff22;border-radius:8px;background:"+(cover?'linear-gradient(180deg,transparent,#000d),url("'+cover.replace(/"/g,"%22")+'") center/cover':'linear-gradient(145deg,#342321,#111)')+";color:#fff;cursor:pointer";
         var storyLabel=document.createElement("strong");storyLabel.textContent=texts.heroTitle||t("defaultTitle");storyLabel.style.cssText="font:800 11px/1.3 Manrope,sans-serif;text-shadow:0 2px 8px #000";
         story.appendChild(storyLabel);story.addEventListener("click",function(){closeDialog();startSlideshow(0);});panel.appendChild(story);
       }
       entries.forEach(function(item){
-        var card=document.createElement("button");card.type="button";
+        var card=document.createElement("button");card.type="button";card.dataset.memoryId=item.id;
         card.style.cssText="min-height:142px;padding:0;display:flex;flex-direction:column;justify-content:flex-end;text-align:left;border:1px solid #ffffff22;border-radius:8px;overflow:hidden;background:#181818 center/cover;color:#fff;cursor:pointer";
         card.style.backgroundImage='linear-gradient(180deg,transparent,#000b),url("'+item.image.replace(/"/g,"%22")+'")';
         var label=document.createElement("strong");label.textContent=item.title;label.style.cssText="padding:9px;font:700 10px/1.3 Manrope,sans-serif;text-shadow:0 2px 8px #000";
         card.appendChild(label);card.addEventListener("click",function(){closeDialog();openMemory(item);});panel.appendChild(card);
       });
       if(!panel.children.length){
-        var empty=document.createElement("p");empty.className="dialog-copy";empty.textContent=t("empty");panel.appendChild(empty);
+        var empty=document.createElement("p");empty.className="dialog-copy ce-editable-target";empty.dataset.ceField="ceEmptyList";empty.textContent=texts.uiEmptyList||t("empty");panel.appendChild(empty);
       }
-      openDialog("LOVENA",t("list"),"",panel);
+      openDialog("LOVENA",texts.uiMyListHeading||t("list"),"",panel);
+      var dialog=document.getElementById("dialog");dialog.dataset.cinemaDialogKind="list";
     }
     function scrollTo(id){
       var node=document.getElementById(id);
@@ -880,8 +911,12 @@
       clearTimeout(cinemaEditorSaveTimer);
       cinemaEditorSaveTimer=setTimeout(function(){ceSaveLocal(false);ceStatus("Changes saved in this browser.");},650);
     }
+    function ceMarkEditableTargets(){
+      var selectors=["#heroPhoto","#coupleName","#heroEyebrow","#heroTitle","#heroDescription","#myListToggle","#playStory","[data-command='description']","#memoriesTitle","#viewAllMemories","#myListTitle","#emptyList",".site-footer",".category-nav [data-ce-field]",".bottom-nav [data-ce-field]","#slideImage","#slideCaption","#dialogTitle","#dialogCopy","#dialogExtra","#dialogKicker",".description-content","[data-memory-id]","[data-ce-field]"];
+      document.querySelectorAll(selectors.join(",")).forEach(function(node){node.classList.add("ce-editable-target");});
+    }
     function ceRefreshPage(){
-      updateHero();memories=buildMemories();applyTranslations();updateSections();
+      updateHero();memories=buildMemories();applyTranslations();updateSections();ceMarkEditableTargets();
     }
     function ceSetText(key,value){texts[key]=String(value==null?"":value);ceRefreshPage();ceQueueSave();}
     function ceReadImage(file){
@@ -934,7 +969,13 @@
         ceTitle:texts.heroTitle||t("defaultTitle"),ceIntro:texts.heroIntro||t("defaultDescription"),
         ceDescTitle:texts.letterTitle||t("letterTitleDefault"),ceDescBody:texts.letterBody||t("letterBodyDefault"),
         ceDescEnding:texts.letterEnding||t("letterEndingDefault"),ceDescSign:texts.letterTo||t("letterToDefault"),
-        ceGalleryHeading:texts.galleryHeading||"MY MEMORY"
+        ceGalleryHeading:texts.galleryHeading||"MY MEMORY",
+        ceNavStory:texts.uiNavStory||t("story"),ceNavMemories:texts.uiNavMemories||t("memories"),ceNavList:texts.uiNavList||t("list"),
+        ceActionMyList:texts.uiActionMyList||t("list"),ceActionPlay:texts.uiPlay||t("play"),ceActionDescription:texts.uiDescription||t("description"),
+        ceViewAll:texts.uiViewAll||t("viewAll"),ceMyListHeading:texts.uiMyListHeading||t("list"),ceEmptyList:texts.uiEmptyList||t("empty"),
+        ceNoPhotos:texts.uiNoPhotos||t("noPhotos"),ceFooter:texts.uiFooter||t("footer"),
+        ceBottomHome:texts.uiBottomHome||t("home"),ceBottomMemories:texts.uiBottomMemories||t("memories"),
+        ceBottomList:texts.uiBottomList||t("list"),ceBottomSearch:texts.uiBottomSearch||t("searchNav"),ceBottomAbout:texts.uiBottomAbout||t("about")
       };
       Object.keys(values).forEach(function(id){var node=document.getElementById(id);if(node)node.value=values[id];});
       var lang=document.getElementById("ceLanguage");if(lang)lang.value=locale==="pt-BR"?"pt-BR":(locale==="es"?"es":"en");
@@ -1034,10 +1075,40 @@
     }
     function ceFindPageTarget(target){
       if(!target||!target.closest)return null;
-      var photo=target.closest(".memory-card[data-memory-id]");
+      var marked=target.closest("[data-ce-field]");
+      if(marked&&marked.dataset.ceField)return {fieldId:marked.dataset.ceField};
+      var photo=target.closest("[data-memory-id]");
       if(photo){
         var match=String(photo.dataset.memoryId||"").match(/^memory-(\\d+)$/);
         if(match)return {photoIndex:Number(match[1])};
+      }
+      var slide=target.closest("#slideshow");
+      if(slide&&(target.closest("#slideImage,#slideCaption"))){
+        var slideIndex=Number(slide.dataset.cinemaMemoryIndex);
+        if(Number.isFinite(slideIndex))return {photoIndex:slideIndex};
+      }
+      var dialog=target.closest("#dialog");
+      if(dialog){
+        var kind=dialog.dataset.cinemaDialogKind||"";
+        if(kind==="memory"){
+          var memoryIndex=Number(dialog.dataset.cinemaMemoryIndex);
+          if(Number.isFinite(memoryIndex))return {photoIndex:memoryIndex};
+        }
+        if(kind==="description"){
+          if(target.closest("#dialogKicker"))return {fieldId:"ceActionDescription"};
+          if(target.closest(".description-closing"))return {fieldId:"ceDescEnding"};
+          if(target.closest(".description-signature"))return {fieldId:"ceDescSign"};
+          if(target.closest(".description-body,#dialogCopy"))return {fieldId:"ceDescBody"};
+          if(target.closest(".dialog-title"))return {fieldId:"ceDescTitle"};
+        }
+        if(kind==="profile"){
+          if(target.closest(".dialog-title"))return {fieldId:"ceNames"};
+          if(target.closest("#dialogCopy"))return {fieldId:"ceIntro"};
+        }
+        if(kind==="list"){
+          if(target.closest(".dialog-title"))return {fieldId:"ceMyListHeading"};
+          if(target.closest("#dialogExtra .memory-card,[data-memory-id]"))return null;
+        }
       }
       if(target.closest("#heroPhoto,#heroBackdrop"))return {fieldId:"ceHeroFile"};
       if(target.closest("#coupleName,.brand-mark"))return {fieldId:"ceNames"};
@@ -1045,10 +1116,16 @@
       if(target.closest("#heroTitle"))return {fieldId:"ceTitle"};
       if(target.closest("#heroDescription"))return {fieldId:"ceIntro"};
       if(target.closest("#memoriesTitle"))return {fieldId:"ceGalleryHeading"};
-      if(target.closest(".description-closing"))return {fieldId:"ceDescEnding"};
-      if(target.closest(".description-signature"))return {fieldId:"ceDescSign"};
-      if(target.closest(".description-body,#dialogCopy"))return {fieldId:"ceDescBody"};
-      if(target.closest(".dialog-title"))return {fieldId:"ceDescTitle"};
+      if(target.closest("#myListToggle"))return {fieldId:"ceActionMyList"};
+      if(target.closest("#playStory"))return {fieldId:"ceActionPlay"};
+      if(target.closest('[data-command="description"]'))return {fieldId:"ceActionDescription"};
+      if(target.closest("#viewAllMemories"))return {fieldId:"ceViewAll"};
+      if(target.closest("#myListTitle"))return {fieldId:"ceMyListHeading"};
+      if(target.closest("#emptyList"))return {fieldId:"ceEmptyList"};
+      if(target.closest(".site-footer"))return {fieldId:"ceFooter"};
+      if(target.closest("#slideImage,#slideCaption")){
+        var current=memories[currentSlide];if(current)return {photoIndex:current.index};
+      }
       return null;
     }
     function ceHandleDirectEditClick(event){
@@ -1070,7 +1147,11 @@
       document.getElementById("cinemaEditorBackdrop").addEventListener("click",ceClose);
       document.addEventListener("keydown",function(event){if(event.key==="Escape")ceClose();});
       [["ceNames","brand"],["ceEyebrow","heroEyebrow"],["ceTitle","heroTitle"],["ceIntro","heroIntro"],
-       ["ceDescTitle","letterTitle"],["ceDescBody","letterBody"],["ceDescEnding","letterEnding"],["ceDescSign","letterTo"],["ceGalleryHeading","galleryHeading"]].forEach(function(pair){
+       ["ceDescTitle","letterTitle"],["ceDescBody","letterBody"],["ceDescEnding","letterEnding"],["ceDescSign","letterTo"],["ceGalleryHeading","galleryHeading"],
+       ["ceNavStory","uiNavStory"],["ceNavMemories","uiNavMemories"],["ceNavList","uiNavList"],
+       ["ceActionMyList","uiActionMyList"],["ceActionPlay","uiPlay"],["ceActionDescription","uiDescription"],["ceViewAll","uiViewAll"],
+       ["ceMyListHeading","uiMyListHeading"],["ceEmptyList","uiEmptyList"],["ceNoPhotos","uiNoPhotos"],["ceFooter","uiFooter"],
+       ["ceBottomHome","uiBottomHome"],["ceBottomMemories","uiBottomMemories"],["ceBottomList","uiBottomList"],["ceBottomSearch","uiBottomSearch"],["ceBottomAbout","uiBottomAbout"]].forEach(function(pair){
         var node=document.getElementById(pair[0]);node.addEventListener("input",function(){ceSetText(pair[1],node.value);});
       });
       document.getElementById("ceLanguage").addEventListener("change",function(){
@@ -1100,7 +1181,7 @@
       document.getElementById("ceImportButton").addEventListener("click",function(){document.getElementById("ceImportFile").click();});
       document.getElementById("ceImportFile").addEventListener("change",function(){ceImport(this.files&&this.files[0]);this.value="";});
       document.getElementById("ceHtml").addEventListener("click",ceDownloadHtml);
-      ceFillFields();ceOpen();
+      ceFillFields();ceMarkEditableTargets();ceOpen();
     }
     async function loadExperience(){
       loadSaved();
@@ -1131,8 +1212,8 @@
       }
       applyExperience();
       document.getElementById("emptyList").hidden=storySaved||savedIds.length>0;
-      if(memories.length===0){var empty=document.createElement("div");empty.className="empty-state";empty.textContent=t("noPhotos");document.getElementById("memoryRail").appendChild(empty);}
-      if(editMode)ceBind();
+      if(memories.length===0){var empty=document.createElement("div");empty.className="empty-state ce-editable-target";empty.dataset.ceField="ceNoPhotos";empty.textContent=texts.uiNoPhotos||t("noPhotos");document.getElementById("memoryRail").appendChild(empty);}
+      if(editMode){ceMarkEditableTargets();ceBind();}
     }
     setupEvents();
     loadExperience().catch(function(error){
