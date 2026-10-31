@@ -334,7 +334,7 @@
     <section class="hero" id="home" aria-labelledby="heroTitle">
       <div class="hero-backdrop" id="heroBackdrop"><img class="hero-photo-fill" id="heroPhotoFill" src="./assets/lovena-experience-hero-hq.jpg" alt="" aria-hidden="true"><img id="heroPhoto" src="./assets/lovena-experience-hero-hq.jpg" alt="The Lovena couple" fetchpriority="high"></div>
       <header class="topbar">
-        <a href="#home" class="brand" aria-label="Lovena home"><span class="brand-mark" aria-hidden="true">L</span><span class="brand-name" id="coupleName">ALEX <span class="name-ampersand">&amp;</span> JAMIE</span></a>
+        <a href="#home" class="brand" aria-label="Lovena home"><span class="brand-mark" aria-hidden="true">L</span><span class="brand-name" id="coupleName">Alice <span class="name-ampersand">&amp;</span> James</span></a>
         <div class="top-actions" aria-label="Quick actions">
           <button class="icon-btn" type="button" data-command="search" aria-label="Search memories" title="Search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg></button>
           <button class="icon-btn" type="button" data-command="list" aria-label="Open My List" title="Discover"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="notification-dot"></span></button>
@@ -639,7 +639,7 @@
     function stepSlide(step){currentSlide=(currentSlide+step+memories.length)%memories.length;renderSlide();clearInterval(slideTimer);slideTimer=setInterval(function(){currentSlide=(currentSlide+1)%memories.length;renderSlide();},5200);}
     function updateHero(){
       var title=texts.heroTitle||t("defaultTitle"),description=texts.heroIntro||t("defaultDescription");
-      var coupleName=String(texts.brand||"ALEX & JAMIE").trim();
+      var coupleName=String(texts.brand||"Alice & James").trim();
       var nameNode=document.getElementById("coupleName");
       if(nameNode){
         nameNode.replaceChildren();
@@ -996,7 +996,7 @@
           put(".description-closing",texts.letterEnding||t("letterEndingDefault"));
           put(".description-signature",texts.letterTo||t("letterToDefault"));
         }else if(kind==="profile"){
-          put("#dialogTitle",texts.brand||"ALEX & JAMIE");
+          put("#dialogTitle",texts.brand||"Alice & James");
           put("#dialogCopy",texts.heroIntro||t("defaultDescription"));
           var profileCopy=dialog.querySelector("#dialogCopy");if(profileCopy)profileCopy.hidden=!(texts.heroIntro||t("defaultDescription"));
         }else if(kind==="memory"){
@@ -1136,7 +1136,7 @@
     }
     function ceFillFields(){
       var values={
-        ceNames:texts.brand||"ALEX & JAMIE",ceEyebrow:texts.heroEyebrow||t("eyebrow"),
+        ceNames:texts.brand||"Alice & James",ceEyebrow:texts.heroEyebrow||t("eyebrow"),
         ceTitle:texts.heroTitle||t("defaultTitle"),ceIntro:texts.heroIntro||t("defaultDescription"),
         ceDescTitle:texts.letterTitle||t("letterTitleDefault"),ceDescBody:texts.letterBody||t("letterBodyDefault"),
         ceDescEnding:texts.letterEnding||t("letterEndingDefault"),ceDescSign:texts.letterTo||t("letterToDefault"),
@@ -1396,7 +1396,7 @@
         snapshot=JSON.parse(JSON.stringify(window.LOVENA_CINEMA_EXPORT_SNAPSHOT));experience={locale:snapshot.locale||"en"};
       }else if(isDemo){
         experience={locale:"en"};
-        snapshot={texts:{heroTitle:"You are my favourite story.",heroIntro:"A private world made from the moments, smiles and little memories that belong only to us.",heroEyebrow:"A LOVENA ORIGINAL",brand:"ALEX & JAMIE",letterTitle:"My love, ♥",letterBody:"Somehow, the world feels softer with you in it.\n\nI love the little things that make us who we are: the conversations that last longer than planned, the quiet moments when no words are needed, and the way an ordinary day becomes a favourite memory simply because I shared it with you.",letterEnding:"With all my love,",letterTo:"Forever yours."},images:{hero:fallbackHero,gallery:fallbackPhotos.map(function(p){return p[1];})},data:{photos:fallbackPhotos.map(function(p){return [p[0],"A beautiful moment, kept just for us."];})}};
+        snapshot={texts:{heroTitle:"You are my favourite story.",heroIntro:"A private world made from the moments, smiles and little memories that belong only to us.",heroEyebrow:"A LOVENA ORIGINAL",brand:"Alice & James",letterTitle:"My love, ♥",letterBody:"Somehow, the world feels softer with you in it.\n\nI love the little things that make us who we are: the conversations that last longer than planned, the quiet moments when no words are needed, and the way an ordinary day becomes a favourite memory simply because I shared it with you.",letterEnding:"With all my love,",letterTo:"Forever yours."},images:{hero:fallbackHero,gallery:fallbackPhotos.map(function(p){return p[1];})},data:{photos:fallbackPhotos.map(function(p){return [p[0],"A beautiful moment, kept just for us."];})}};
       }else{
         var response=await fetch(SUPABASE_URL+"/functions/v1/lovena-public-experience?slug="+encodeURIComponent(slug),{method:"GET",headers:{apikey:SUPABASE_KEY},cache:"no-store"});
         var body=await response.json().catch(function(){return {};});
