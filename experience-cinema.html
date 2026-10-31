@@ -155,14 +155,14 @@
     #cinemaEditorTrigger{position:fixed;z-index:180;left:14px;bottom:calc(var(--nav-h) + 13px + env(safe-area-inset-bottom));display:none;align-items:center;gap:8px;min-height:42px;padding:10px 14px;border:1px solid #ffffff35;border-radius:999px;background:#171717ee;color:#fff;font:700 11px Manrope,sans-serif;box-shadow:0 8px 24px #0008;cursor:pointer}
     #cinemaEditorTrigger svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     body.cinema-edit-mode #cinemaEditorTrigger{display:flex}
-    #cinemaEditHint{position:fixed;z-index:170;top:max(116px,calc(env(safe-area-inset-top,0px) + 108px));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 28px);display:none;align-items:center;gap:10px;padding:11px 13px 11px 14px;border:1px solid rgba(229,9,20,.62);border-radius:999px;background:rgba(16,16,16,.91);color:#fff;box-shadow:0 8px 28px #0008;backdrop-filter:blur(12px);font:700 11px/1.35 Manrope,sans-serif;text-align:left;pointer-events:auto}
+    #cinemaEditHint{position:fixed;z-index:170;right:14px;bottom:calc(var(--nav-h) + 13px + env(safe-area-inset-bottom,0px));left:auto;top:auto;transform:none;width:max-content;max-width:min(190px,calc(100% - 145px));display:none;align-items:center;gap:7px;padding:7px 8px;border:1px solid rgba(255,255,255,.18);border-radius:9px;background:rgba(18,18,18,.78);color:rgba(255,255,255,.88);box-shadow:0 3px 12px #0005;backdrop-filter:blur(8px);font:600 9px/1.3 Manrope,sans-serif;text-align:left;pointer-events:auto}
     body.cinema-edit-mode #cinemaEditHint{display:flex}
-    #cinemaEditHint .ce-hint-icon{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;border-radius:50%;background:#e50914;color:#fff}
-    #cinemaEditHint .ce-hint-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    #cinemaEditHint .ce-hint-icon{display:grid;place-items:center;flex:0 0 19px;width:19px;height:19px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff}
+    #cinemaEditHint .ce-hint-icon svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
     #cinemaEditHint .ce-hint-copy{min-width:0}
-    #cinemaEditHint .ce-hint-close{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;margin-left:2px;border:0;border-radius:50%;background:#ffffff16;color:#fff;font:400 18px/1 Arial,sans-serif;cursor:pointer}
+    #cinemaEditHint .ce-hint-close{display:grid;place-items:center;flex:0 0 18px;width:18px;height:18px;margin-left:1px;border:0;border-radius:50%;background:transparent;color:rgba(255,255,255,.72);font:400 15px/1 Arial,sans-serif;cursor:pointer}
     #cinemaEditHint[hidden]{display:none!important}
-    @media(max-width:650px){#cinemaEditHint{top:max(108px,calc(env(safe-area-inset-top,0px) + 100px));gap:8px;padding:9px 10px;font-size:10px}}
+    @media(max-width:650px){#cinemaEditHint{right:10px;bottom:calc(var(--nav-h) + 10px + env(safe-area-inset-bottom,0px));max-width:min(175px,calc(100% - 132px));gap:6px;padding:6px 7px;font-size:8px}}
     #cinemaEditorBackdrop{position:fixed;z-index:190;inset:0;background:#0009;backdrop-filter:blur(4px)}
     #cinemaEditor{position:fixed;z-index:191;inset:0 0 0 auto;width:min(480px,100vw);height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:#f5f1ed;color:#25211f;box-shadow:-18px 0 55px #0007;transform:translateX(102%);transition:transform .25s ease;font-family:"DM Sans",Arial,sans-serif}
     #cinemaEditor.is-open{transform:translateX(0)}
