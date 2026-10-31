@@ -28,7 +28,8 @@
       position:relative;isolation:isolate;min-height:680px;height:76svh;max-height:980px;
       overflow:hidden;background:#16100e;display:flex;align-items:flex-end
     }
-    .hero-backdrop{position:absolute;z-index:-3;inset:0;background:#16100e center 43%/cover no-repeat;transform:scale(1.015)}
+    .hero-backdrop{position:absolute;z-index:0;inset:0;overflow:hidden;background:#16100e;transform:scale(1.015)}
+    .hero-backdrop img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 43%}
     .hero-backdrop:after{content:"";position:absolute;inset:0;background:
       linear-gradient(180deg,rgba(0,0,0,.64) 0%,rgba(0,0,0,.14) 22%,rgba(0,0,0,.05) 46%,rgba(0,0,0,.55) 71%,#050505 100%),
       linear-gradient(90deg,rgba(0,0,0,.34),transparent 72%)}
@@ -94,7 +95,7 @@
       background:#181818;box-shadow:0 5px 16px #0006;cursor:pointer;transform:translateZ(0);transition:transform .2s,box-shadow .2s
     }
     .memory-card:hover{transform:translateY(-3px);box-shadow:0 12px 25px #0009}
-    .memory-image{position:absolute;inset:0;background:#26201f center/cover no-repeat;transition:transform .45s}
+    .memory-image{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:#26201f;transition:transform .45s}
     .memory-card:hover .memory-image{transform:scale(1.035)}
     .memory-card:after{content:"";position:absolute;z-index:1;inset:45% 0 0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.82))}
     .memory-caption{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:27px 10px 11px;text-align:left;color:#fff;font:700 10px/1.35 Manrope,sans-serif;text-shadow:0 2px 9px #000}
@@ -191,7 +192,7 @@
 <body>
   <main id="app">
     <section class="hero" id="home" aria-labelledby="heroTitle">
-      <div class="hero-backdrop" id="heroBackdrop" role="img" aria-label="A favorite memory"></div>
+      <div class="hero-backdrop" id="heroBackdrop"><img id="heroPhoto" src="./assets/lovena-experience-hero-hq.jpg" alt="The Lovena couple" fetchpriority="high"></div>
       <header class="topbar">
         <a href="#home" class="brand" aria-label="Lovena home"><span class="brand-mark" aria-hidden="true">L</span><span class="brand-name">LOVENA</span></a>
         <div class="top-actions" aria-label="Quick actions">
@@ -281,17 +282,17 @@
     var isDemo=params.get("demo")==="1"||!slug;
     var payload=null,experience=null,snapshot={},texts={},data={},images={};
     var locale="en",savedIds=[],storySaved=false,memories=[],currentSlide=0,slideTimer=0,toastTimer=0,railFrame=0,railPaused=false,railOffset=0,railLast=0;
-    var fallbackHero="https://lovenastudio.com/assets/lovena-experience-hero-hq.jpg";
+    var fallbackHero="./assets/lovena-experience-hero-hq.jpg";
     var fallbackPhotos=[
-      ["A moment together","https://lovenastudio.com/assets/lovena-sample-photo-01.jpg"],
-      ["Our favourite memory","https://lovenastudio.com/assets/lovena-sample-photo-02.jpg"],
-      ["Just the two of us","https://lovenastudio.com/assets/lovena-sample-photo-03.jpg"],
-      ["A day to remember","https://lovenastudio.com/assets/lovena-sample-photo-04.jpg"],
-      ["Together, always","https://lovenastudio.com/assets/lovena-sample-photo-05.jpg"],
-      ["Our little world","https://lovenastudio.com/assets/lovena-sample-photo-06.jpg"],
-      ["The best moments","https://lovenastudio.com/assets/lovena-sample-photo-07.jpg"],
-      ["One more memory","https://lovenastudio.com/assets/lovena-sample-photo-08.jpg"],
-      ["Us, in every frame","https://lovenastudio.com/assets/lovena-sample-photo-09.jpg"]
+      ["A moment together","./assets/lovena-sample-photo-01.jpg"],
+      ["Our favourite memory","./assets/lovena-sample-photo-02.jpg"],
+      ["Just the two of us","./assets/lovena-sample-photo-03.jpg"],
+      ["A day to remember","./assets/lovena-sample-photo-04.jpg"],
+      ["Together, always","./assets/lovena-sample-photo-05.jpg"],
+      ["Our little world","./assets/lovena-sample-photo-06.jpg"],
+      ["The best moments","./assets/lovena-sample-photo-07.jpg"],
+      ["One more memory","./assets/lovena-sample-photo-08.jpg"],
+      ["Us, in every frame","./assets/lovena-sample-photo-09.jpg"]
     ];
     var ui={
       en:{story:"Our Story",memories:"Memories",list:"My List",play:"Play",info:"Info",viewAll:"View all",home:"Home",searchNav:"Search",about:"About",saved:"Saved",save:"My List",empty:"Save a memory with the plus button to keep it here.",footer:"A PRIVATE WORLD, MADE WITH LOVE · LOVENA",eyebrow:"A LOVENA ORIGINAL",defaultTitle:"You are my favourite story.",defaultDescription:"A world made of the moments, smiles and little memories that belong only to us.",search:"Search memories",searchPlaceholder:"Search a moment...",close:"Close",noResults:"No memories match your search.",noPhotos:"No photos have been added to this story yet.",share:"Share this story"},
@@ -303,6 +304,7 @@
       if(typeof value!=="string")return "";
       var s=value.trim();
       if(/^https:\/\/|^http:\/\/|^data:image\//i.test(s))return s;
+      if(/^\.\/assets\/[a-zA-Z0-9_.-]+$/.test(s))return s;
       return "";
     }
     function setText(id,value){var node=document.getElementById(id);if(node&&value!=null&&String(value).trim())node.textContent=String(value);}
@@ -331,7 +333,7 @@
     }
     function renderMemoryCard(memory){
       var card=document.createElement("div");card.className="memory-card";card.dataset.memoryId=memory.id;card.tabIndex=0;card.setAttribute("role","group");card.setAttribute("aria-label","Memory: "+memory.title);
-      var image=document.createElement("div");image.className="memory-image";image.style.backgroundImage='url("'+memory.image.replace(/"/g,"%22")+'")';
+      var image=document.createElement("img");image.className="memory-image";image.src=memory.image;image.alt=memory.title;image.loading="lazy";image.decoding="async";
       var caption=document.createElement("span");caption.className="memory-caption";caption.textContent=memory.title;
       var save=document.createElement("button");save.className="memory-save";save.type="button";save.setAttribute("aria-label",t("save"));
       save.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg>';
@@ -421,7 +423,7 @@
       setText("heroDescription",description);
       setText("heroEyebrow",texts.heroEyebrow||t("eyebrow"));
       var hero=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
-      document.getElementById("heroBackdrop").style.backgroundImage=hero?'url("'+hero.replace(/"/g,"%22")+'")':(isDemo?'url("'+fallbackHero+'")':'linear-gradient(145deg,#3b2824,#100d0c)');
+      var heroPhoto=document.getElementById("heroPhoto");if(heroPhoto)heroPhoto.src=hero|| (isDemo?fallbackHero:"./assets/lovena-experience-hero-hq.jpg");
       var brand=texts.brand||"LOVENA";
       setText("brandName",brand.toUpperCase());
       document.title=(title||"Our Story")+" — Lovena";
