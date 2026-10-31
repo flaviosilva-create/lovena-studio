@@ -430,6 +430,11 @@
         <div class="ce-field"><label for="ceBottomList">Bottom menu · My List</label><input id="ceBottomList" maxlength="60"></div>
         <div class="ce-field"><label for="ceBottomSearch">Bottom menu · Search</label><input id="ceBottomSearch" maxlength="60"></div>
         <div class="ce-field"><label for="ceBottomAbout">Bottom menu · About</label><input id="ceBottomAbout" maxlength="60"></div>
+        <div class="ce-field"><label for="ceSearchTitle">Search screen · Title</label><input id="ceSearchTitle" maxlength="80"></div>
+        <div class="ce-field"><label for="ceSearchPlaceholder">Search screen · Input hint</label><input id="ceSearchPlaceholder" maxlength="100"></div>
+        <div class="ce-field"><label for="ceSearchNoResults">Search screen · No results message</label><input id="ceSearchNoResults" maxlength="160"></div>
+        <div class="ce-field"><label for="ceBrowseKicker">Browse screen · Small heading</label><input id="ceBrowseKicker" maxlength="60"></div>
+        <div class="ce-field"><label for="ceBrowseTitle">Browse screen · Main heading</label><input id="ceBrowseTitle" maxlength="100"></div>
       </div></details>
       <details class="ce-section"><summary>Page language</summary><div class="ce-fields"><div class="ce-field"><label for="ceLanguage">Language</label><select id="ceLanguage"><option value="en">English</option><option value="pt-BR">Português</option><option value="es">Español</option></select><small class="ce-help">Only interface labels change. The text you write stays as entered.</small></div></div></details>
       <details class="ce-section" open><summary>Memory photos</summary><div class="ce-fields">
@@ -568,6 +573,7 @@
       var dialog=document.getElementById("dialog");
       dialog.dataset.cinemaDialogKind="";dialog.dataset.cinemaMemoryIndex="";
       document.getElementById("dialogKicker").removeAttribute("data-ce-field");
+      document.getElementById("dialogTitle").removeAttribute("data-ce-field");
       dialog.classList.remove("is-description");
       setText("dialogKicker",kicker||"LOVENA");setText("dialogTitle",title||"Our story");setText("dialogCopy",copy||"");
       document.getElementById("dialogCopy").hidden=!copy;
@@ -771,16 +777,19 @@
     }
     function handleSearch(){
       var panel=document.createElement("div");panel.style.cssText="display:grid;gap:8px";
-      var input=document.createElement("input");input.className="search-input";input.type="search";input.placeholder=t("searchPlaceholder");input.setAttribute("aria-label",t("search"));
+      var input=document.createElement("input");input.className="search-input";input.type="search";input.placeholder=texts.uiSearchPlaceholder||t("searchPlaceholder");input.setAttribute("aria-label",t("search"));input.dataset.ceField="ceSearchPlaceholder";
       var results=document.createElement("div");results.style.cssText="display:grid;gap:7px";
       function renderResults(){
         results.replaceChildren();
         var found=memories.filter(function(item){return item.title.toLowerCase().includes(input.value.toLowerCase());});
-        if(!found.length){var empty=document.createElement("p");empty.className="dialog-copy";empty.textContent=t("noResults");results.appendChild(empty);return;}
+        if(!found.length){var empty=document.createElement("p");empty.className="dialog-copy";empty.dataset.ceField="ceSearchNoResults";empty.textContent=texts.uiSearchNoResults||t("noResults");results.appendChild(empty);return;}
         found.forEach(function(item){var button=document.createElement("button");button.type="button";button.dataset.memoryId=item.id;button.textContent=item.title;button.style.cssText="padding:12px;text-align:left;border:1px solid #ffffff20;border-radius:7px;background:#1a1a1a;cursor:pointer";button.addEventListener("click",function(){closeDialog();openMemory(item);});results.appendChild(button);});
       }
       input.addEventListener("input",renderResults);panel.appendChild(input);panel.appendChild(results);renderResults();
-      openDialog(t("search"),t("search"),"",panel);setTimeout(function(){input.focus();},50);
+      openDialog(texts.uiSearchTitle||t("search"),texts.uiSearchTitle||t("search"),"",panel);
+      var dialog=document.getElementById("dialog");dialog.dataset.cinemaDialogKind="search";
+      document.getElementById("dialogKicker").dataset.ceField="ceSearchTitle";document.getElementById("dialogTitle").dataset.ceField="ceSearchTitle";
+      setTimeout(function(){input.focus();},50);
     }
     function shareStory(){
       var url=location.href;
@@ -841,13 +850,15 @@
     }
     function openBrowse(){
       var panel=document.createElement("div");panel.style.cssText="display:grid;gap:8px";
-      [["memories",t("memories"),function(){scrollTo("memories");}],["my-list",t("list"),function(){openMyList();}],["description",t("description"),function(){openDescription();}],["about",t("about"),function(){openProfile();}]].forEach(function(entry){
-        var button=document.createElement("button");button.type="button";button.textContent=entry[1];
+      [["memories",texts.uiNavMemories||t("memories"),"ceNavMemories",function(){scrollTo("memories");}],["my-list",texts.uiNavList||t("list"),"ceNavList",function(){openMyList();}],["description",texts.uiDescription||t("description"),"ceActionDescription",function(){openDescription();}],["about",texts.uiBottomAbout||t("about"),"ceBottomAbout",function(){openProfile();}]].forEach(function(entry){
+        var button=document.createElement("button");button.type="button";button.textContent=entry[1];button.dataset.ceField=entry[2];
         button.style.cssText="padding:13px 14px;text-align:left;border:1px solid #ffffff20;border-radius:7px;background:#1a1a1a;color:#fff;cursor:pointer";
-        button.addEventListener("click",function(){closeDialog();entry[2]();});
+        button.addEventListener("click",function(){closeDialog();entry[3]();});
         panel.appendChild(button);
       });
-      openDialog("BROWSE","Explore this story","",panel);
+      openDialog(texts.uiBrowseKicker||"BROWSE",texts.uiBrowseTitle||"Explore this story","",panel);
+      var dialog=document.getElementById("dialog");dialog.dataset.cinemaDialogKind="browse";
+      document.getElementById("dialogKicker").dataset.ceField="ceBrowseKicker";document.getElementById("dialogTitle").dataset.ceField="ceBrowseTitle";
     }
     function command(name){
       if(name==="search")handleSearch();
@@ -957,6 +968,14 @@
             var image=dialog.querySelector("#dialogExtra [data-cinema-memory-index]");
             if(image)image.style.backgroundImage='url("'+item.image.replace(/"/g,"%22")+'")';
           }
+        }else if(kind==="search"){
+          put("#dialogKicker",texts.uiSearchTitle||t("search"));put("#dialogTitle",texts.uiSearchTitle||t("search"));
+          var searchInput=dialog.querySelector(".search-input");if(searchInput)searchInput.placeholder=texts.uiSearchPlaceholder||t("searchPlaceholder");
+          var noResults=dialog.querySelector('[data-ce-field="ceSearchNoResults"]');if(noResults)noResults.textContent=texts.uiSearchNoResults||t("noResults");
+        }else if(kind==="browse"){
+          put("#dialogKicker",texts.uiBrowseKicker||"BROWSE");put("#dialogTitle",texts.uiBrowseTitle||"Explore this story");
+          var browseLabels={ceNavMemories:texts.uiNavMemories||t("memories"),ceNavList:texts.uiNavList||t("list"),ceActionDescription:texts.uiDescription||t("description"),ceBottomAbout:texts.uiBottomAbout||t("about")};
+          Object.keys(browseLabels).forEach(function(key){var button=dialog.querySelector('[data-ce-field="'+key+'"]');if(button)button.textContent=browseLabels[key];});
         }else if(kind==="list"){
           put("#dialogTitle",texts.uiMyListHeading||t("list"));
           dialog.querySelectorAll("[data-memory-id]").forEach(function(card){
@@ -1045,7 +1064,9 @@
         ceViewAll:texts.uiViewAll||t("viewAll"),ceMyListHeading:texts.uiMyListHeading||t("list"),ceEmptyList:texts.uiEmptyList||t("empty"),
         ceNoPhotos:texts.uiNoPhotos||t("noPhotos"),ceFooter:texts.uiFooter||t("footer"),
         ceBottomHome:texts.uiBottomHome||t("home"),ceBottomMemories:texts.uiBottomMemories||t("memories"),
-        ceBottomList:texts.uiBottomList||t("list"),ceBottomSearch:texts.uiBottomSearch||t("searchNav"),ceBottomAbout:texts.uiBottomAbout||t("about")
+        ceBottomList:texts.uiBottomList||t("list"),ceBottomSearch:texts.uiBottomSearch||t("searchNav"),ceBottomAbout:texts.uiBottomAbout||t("about"),
+        ceSearchTitle:texts.uiSearchTitle||t("search"),ceSearchPlaceholder:texts.uiSearchPlaceholder||t("searchPlaceholder"),
+        ceSearchNoResults:texts.uiSearchNoResults||t("noResults"),ceBrowseKicker:texts.uiBrowseKicker||"BROWSE",ceBrowseTitle:texts.uiBrowseTitle||"Explore this story"
       };
       Object.keys(values).forEach(function(id){var node=document.getElementById(id);if(node)node.value=values[id];});
       var lang=document.getElementById("ceLanguage");if(lang)lang.value=locale==="pt-BR"?"pt-BR":(locale==="es"?"es":"en");
@@ -1222,7 +1243,8 @@
        ["ceNavStory","uiNavStory"],["ceNavMemories","uiNavMemories"],["ceNavList","uiNavList"],
        ["ceActionMyList","uiActionMyList"],["ceActionPlay","uiPlay"],["ceActionDescription","uiDescription"],["ceViewAll","uiViewAll"],
        ["ceMyListHeading","uiMyListHeading"],["ceEmptyList","uiEmptyList"],["ceNoPhotos","uiNoPhotos"],["ceFooter","uiFooter"],
-       ["ceBottomHome","uiBottomHome"],["ceBottomMemories","uiBottomMemories"],["ceBottomList","uiBottomList"],["ceBottomSearch","uiBottomSearch"],["ceBottomAbout","uiBottomAbout"]].forEach(function(pair){
+       ["ceBottomHome","uiBottomHome"],["ceBottomMemories","uiBottomMemories"],["ceBottomList","uiBottomList"],["ceBottomSearch","uiBottomSearch"],["ceBottomAbout","uiBottomAbout"],
+       ["ceSearchTitle","uiSearchTitle"],["ceSearchPlaceholder","uiSearchPlaceholder"],["ceSearchNoResults","uiSearchNoResults"],["ceBrowseKicker","uiBrowseKicker"],["ceBrowseTitle","uiBrowseTitle"]].forEach(function(pair){
         var node=document.getElementById(pair[0]);node.addEventListener("input",function(){ceSetText(pair[1],node.value);});
       });
       document.getElementById("ceLanguage").addEventListener("change",function(){
