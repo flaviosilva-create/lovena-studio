@@ -183,13 +183,6 @@
     .ce-add{width:100%;border-style:dashed;margin-top:8px}
     .ce-actions{display:grid;gap:8px;padding:11px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #ddd8d3;background:#fff}
     .ce-status{min-height:15px;color:#69625c;text-align:center;font-size:9px}
-    .ce-pick-button{width:100%;margin:0 0 12px;border:1px solid #171717;border-radius:8px;padding:11px 12px;background:#171717;color:#fff;font:800 10px Manrope,sans-serif;cursor:pointer}
-    .ce-pick-button:active{background:#333}
-    .ce-selection-hint{position:fixed;z-index:220;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);padding:11px 14px;border:1px solid #ffffff33;border-radius:999px;background:#111;color:#fff;box-shadow:0 8px 28px #0009;font:700 10px/1.4 Manrope,sans-serif}
-    .ce-selection-hint[hidden]{display:none!important}
-    .ce-selection-hint button{border:0;border-radius:999px;padding:6px 9px;background:#e50914;color:#fff;font:800 9px Manrope,sans-serif;cursor:pointer}
-    body.cinema-picking #app,body.cinema-picking #app *{cursor:crosshair!important}
-    body.cinema-picking #app :is(.brand,.hero-backdrop,.hero-copy,.eyebrow,#heroTitle,#heroDescription,.shelf-heading,.memory-card,.site-footer):hover{outline:2px dashed #e50914;outline-offset:3px}
     .ce-photo-row.is-selected{margin-inline:-6px;padding-inline:6px;border-radius:7px;background:#fff0e9;outline:2px solid #e50914}
     .ce-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .ce-button.primary{background:#111;color:#fff;border-color:#111}
@@ -405,7 +398,6 @@
   <aside id="cinemaEditor" hidden aria-hidden="true" aria-label="Lovena Cinema editor">
     <header class="ce-head"><div><p class="ce-kicker">LOVENA CINEMA</p><h2>Personalize your story</h2><p>Change the couple's name, opening scene, description and photos. Your preview updates as you edit.</p></div><button class="ce-close" id="ceClose" type="button" aria-label="Close editor">×</button></header>
     <div class="ce-scroll">
-      <button id="ceSelectOnPage" class="ce-pick-button" type="button">Select an item on the page to edit it</button>
       <details class="ce-section" open><summary>Couple & opening scene</summary><div class="ce-fields">
         <div class="ce-field"><label for="ceNames">Couple's names</label><input id="ceNames" maxlength="70"><small class="ce-help">Shown beside the Lovena mark.</small></div>
         <div class="ce-field"><label for="ceEyebrow">Small label above the title</label><input id="ceEyebrow" maxlength="80"></div>
@@ -433,11 +425,6 @@
       <button id="cePreview" class="ce-button" type="button">Finish editing · Preview</button>
     </footer>
   </aside>
-  <div id="ceSelectionHint" class="ce-selection-hint" hidden>
-    <span>Tap any item on the page to edit it</span>
-    <button id="ceCancelSelection" type="button">Cancel</button>
-  </div>
-
   <script src="./assets/lovena-backend.js?v=20261031-cinema-editor-1"></script>
   <script>
   (function(){
@@ -1013,39 +1000,23 @@
       }catch(error){ceStatus(error.message||"Could not export HTML.",true);}
       finally{button.disabled=false;}
     }
-    var cePickingOnPage=false,ceIgnorePageClick=false;
-    function ceStopPicking(){
-      cePickingOnPage=false;
-      document.body.classList.remove("cinema-picking");
-      var hint=document.getElementById("ceSelectionHint");if(hint)hint.hidden=true;
-    }
-    function ceStartPicking(){
-      cePickingOnPage=true;
-      var panel=document.getElementById("cinemaEditor"),back=document.getElementById("cinemaEditorBackdrop"),trigger=document.getElementById("cinemaEditorTrigger");
-      if(panel){panel.classList.remove("is-open");panel.setAttribute("aria-hidden","true");panel.hidden=true;}
-      if(back)back.hidden=true;
-      if(trigger)trigger.setAttribute("aria-expanded","false");
-      document.body.classList.add("cinema-picking");
-      var hint=document.getElementById("ceSelectionHint");if(hint)hint.hidden=false;
-      ceStatus("Tap the name, text, cover or a specific memory photo.");
-    }
     function ceOpenForField(fieldId,photoIndex){
-      ceStopPicking();
       ceOpen();
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           var target=null,details=null;
           if(photoIndex!==undefined&&photoIndex!==null){
-            details=document.getElementById("cePhotoRows").closest("details");
+            var rows=document.getElementById("cePhotoRows");
+            details=rows&&rows.closest("details");
             if(details)details.open=true;
             target=document.getElementById("cePhotoRow-"+photoIndex);
             if(target){
               target.classList.add("is-selected");
               target.scrollIntoView({behavior:"smooth",block:"center"});
-              var input=target.querySelector("input[type=text],input:not([type=file])");
-              if(input)input.focus({preventScroll:true});
-              window.setTimeout(function(){target.classList.remove("is-selected");},1800);
-              ceStatus("Editing memory "+(photoIndex+1)+". Change its caption, story or image.");
+              var replaceInput=target.querySelector('input[type="file"]');
+              if(replaceInput)replaceInput.focus({preventScroll:true});
+              window.setTimeout(function(){target.classList.remove("is-selected");},2200);
+              ceStatus("Editing memory "+(photoIndex+1)+". Choose a new image or edit this photo's caption and story.");
               return;
             }
           }
@@ -1063,60 +1034,37 @@
     }
     function ceFindPageTarget(target){
       if(!target||!target.closest)return null;
-      var photo=target.closest("#memories .memory-card");
+      var photo=target.closest(".memory-card[data-memory-id]");
       if(photo){
-        var match=String(photo.dataset.memoryId||"").match(/^memory-(\d+)$/);
+        var match=String(photo.dataset.memoryId||"").match(/^memory-(\\d+)$/);
         if(match)return {photoIndex:Number(match[1])};
       }
       if(target.closest("#heroPhoto,#heroBackdrop"))return {fieldId:"ceHeroFile"};
-      if(target.closest("#coupleName,.brand-mark,.brand"))return {fieldId:"ceNames"};
-      if(target.closest("#heroEyebrow,.eyebrow"))return {fieldId:"ceEyebrow"};
+      if(target.closest("#coupleName,.brand-mark"))return {fieldId:"ceNames"};
+      if(target.closest("#heroEyebrow"))return {fieldId:"ceEyebrow"};
       if(target.closest("#heroTitle"))return {fieldId:"ceTitle"};
       if(target.closest("#heroDescription"))return {fieldId:"ceIntro"};
-      if(target.closest("#memoriesTitle,#viewAllMemories,[data-destination='memories'],.category-nav a[href='#memories']"))return {fieldId:"ceGalleryHeading"};
+      if(target.closest("#memoriesTitle"))return {fieldId:"ceGalleryHeading"};
       if(target.closest(".description-closing"))return {fieldId:"ceDescEnding"};
       if(target.closest(".description-signature"))return {fieldId:"ceDescSign"};
       if(target.closest(".description-body,#dialogCopy"))return {fieldId:"ceDescBody"};
-      if(target.closest(".description-content,.dialog-title,[data-command='description']"))return {fieldId:"ceDescTitle"};
-      if(target.closest("#playStory,#memoryRail"))return {photoIndex:0};
-      if(target.closest(".category-nav a,[data-destination='home'],#myListToggle,.hero-controls"))return {fieldId:"ceTitle"};
-      if(target.closest(".topbar,.top-actions,.avatar-btn"))return {fieldId:"ceNames"};
-      if(target.closest("#home,.hero-copy,.hero"))return {fieldId:"ceTitle"};
-      if(target.closest("#memories,.shelf-heading,.shelf"))return {fieldId:"ceGalleryHeading"};
-      if(target.closest("#dialog"))return {fieldId:"ceDescTitle"};
+      if(target.closest(".dialog-title"))return {fieldId:"ceDescTitle"};
       return null;
     }
-    function ceHandlePagePick(event){
-      if(event.type==="click"&&ceIgnorePageClick){
-        ceIgnorePageClick=false;
-        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
-        return;
-      }
-      if(!cePickingOnPage)return;
-      if(event.type==="pointerdown"&&event.button!==0)return;
+    function ceHandleDirectEditClick(event){
+      if(!editMode)return;
       var target=event.target&&event.target.nodeType===1?event.target:(event.target&&event.target.parentElement);
-      if(!target)return;
-      if(target.closest("#cinemaEditor,#cinemaEditorBackdrop,#ceSelectionHint,#cinemaEditorTrigger"))return;
+      if(!target||!target.closest)return;
+      if(target.closest("#cinemaEditor,#cinemaEditorBackdrop,#cinemaEditorTrigger"))return;
       var match=ceFindPageTarget(target);
-      if(!match){
-        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
-        showToast("This is a fixed control. Choose the couple's name, cover, title, description or a memory photo.");
-        return;
-      }
-      if(event.type==="pointerdown"){
-        ceIgnorePageClick=true;
-        window.setTimeout(function(){ceIgnorePageClick=false;},800);
-      }
+      if(!match)return;
       event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
       ceOpenForField(match.fieldId,match.photoIndex);
     }
     function ceBind(){
       document.body.classList.add("cinema-edit-mode");
-      document.getElementById("cinemaEditorTrigger").addEventListener("click",function(){ceStopPicking();ceOpen();});
-      document.getElementById("ceSelectOnPage").addEventListener("click",ceStartPicking);
-      document.getElementById("ceCancelSelection").addEventListener("click",ceStopPicking);
-      document.addEventListener("pointerdown",ceHandlePagePick,true);
-      document.addEventListener("click",ceHandlePagePick,true);
+      document.getElementById("cinemaEditorTrigger").addEventListener("click",ceOpen);
+      document.addEventListener("click",ceHandleDirectEditClick,true);
       document.getElementById("ceClose").addEventListener("click",ceClose);
       document.getElementById("cePreview").addEventListener("click",function(){ceSaveLocal(false);ceClose();});
       document.getElementById("cinemaEditorBackdrop").addEventListener("click",ceClose);
