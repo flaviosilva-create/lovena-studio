@@ -281,12 +281,17 @@
     var isDemo=params.get("demo")==="1"||!slug;
     var payload=null,experience=null,snapshot={},texts={},data={},images={};
     var locale="en",savedIds=[],storySaved=false,memories=[],currentSlide=0,slideTimer=0,toastTimer=0,railFrame=0,railPaused=false,railOffset=0,railLast=0;
-    var fallbackHero="https://images.unsplash.com/photo-1657305724733-51479a7309cc?auto=format&fit=crop&w=1900&q=88";
+    var fallbackHero="https://lovenastudio.com/assets/lovena-experience-hero-hq.jpg";
     var fallbackPhotos=[
-      ["The way you look at me","https://images.unsplash.com/photo-1616387094145-7a9e496e378f?auto=format&fit=crop&w=700&q=85"],
-      ["Together, at golden hour","https://images.unsplash.com/photo-1607946035451-30a7960a8c55?auto=format&fit=crop&w=700&q=85"],
-      ["Our little sunset moment","https://images.unsplash.com/photo-1657305724733-51479a7309cc?auto=format&fit=crop&w=700&q=85"],
-      ["A quiet embrace by the sea","https://images.unsplash.com/photo-1773845504133-0b9d75f78719?auto=format&fit=crop&w=700&q=85"]
+      ["A moment together","https://lovenastudio.com/assets/lovena-sample-photo-01.jpg"],
+      ["Our favourite memory","https://lovenastudio.com/assets/lovena-sample-photo-02.jpg"],
+      ["Just the two of us","https://lovenastudio.com/assets/lovena-sample-photo-03.jpg"],
+      ["A day to remember","https://lovenastudio.com/assets/lovena-sample-photo-04.jpg"],
+      ["Together, always","https://lovenastudio.com/assets/lovena-sample-photo-05.jpg"],
+      ["Our little world","https://lovenastudio.com/assets/lovena-sample-photo-06.jpg"],
+      ["The best moments","https://lovenastudio.com/assets/lovena-sample-photo-07.jpg"],
+      ["One more memory","https://lovenastudio.com/assets/lovena-sample-photo-08.jpg"],
+      ["Us, in every frame","https://lovenastudio.com/assets/lovena-sample-photo-09.jpg"]
     ];
     var ui={
       en:{story:"Our Story",memories:"Memories",list:"My List",play:"Play",info:"Info",viewAll:"View all",home:"Home",searchNav:"Search",about:"About",saved:"Saved",save:"My List",empty:"Save a memory with the plus button to keep it here.",footer:"A PRIVATE WORLD, MADE WITH LOVE · LOVENA",eyebrow:"A LOVENA ORIGINAL",defaultTitle:"You are my favourite story.",defaultDescription:"A world made of the moments, smiles and little memories that belong only to us.",search:"Search memories",searchPlaceholder:"Search a moment...",close:"Close",noResults:"No memories match your search.",noPhotos:"No photos have been added to this story yet.",share:"Share this story"},
