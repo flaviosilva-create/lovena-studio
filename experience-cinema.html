@@ -1048,6 +1048,8 @@
       var zoom=Math.max(65,Math.min(160,Number(heroScale)||100))/100;
       var source=safeUrl(images.hero)||fallbackHero;
       var absoluteSource;try{absoluteSource=new URL(source,document.baseURI).href;}catch(error){absoluteSource=source;}
+      var cropPreview=document.getElementById("ceHeroCropPreview"),heroHost=document.getElementById("heroBackdrop");
+      if(cropPreview&&heroHost&&heroHost.clientWidth&&heroHost.clientHeight){cropPreview.style.aspectRatio=heroHost.clientWidth+" / "+heroHost.clientHeight;}
       ["heroPhoto","heroPhotoFill","ceHeroCropFill","ceHeroCropImage"].forEach(function(id){
         var node=document.getElementById(id);if(!node)return;
         if(node.src!==absoluteSource)node.src=source;
