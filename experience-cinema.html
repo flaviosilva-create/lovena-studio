@@ -155,6 +155,14 @@
     #cinemaEditorTrigger{position:fixed;z-index:180;left:14px;bottom:calc(var(--nav-h) + 13px + env(safe-area-inset-bottom));display:none;align-items:center;gap:8px;min-height:42px;padding:10px 14px;border:1px solid #ffffff35;border-radius:999px;background:#171717ee;color:#fff;font:700 11px Manrope,sans-serif;box-shadow:0 8px 24px #0008;cursor:pointer}
     #cinemaEditorTrigger svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     body.cinema-edit-mode #cinemaEditorTrigger{display:flex}
+    #cinemaEditHint{position:fixed;z-index:170;top:max(116px,calc(env(safe-area-inset-top,0px) + 108px));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 28px);display:none;align-items:center;gap:10px;padding:11px 13px 11px 14px;border:1px solid rgba(229,9,20,.62);border-radius:999px;background:rgba(16,16,16,.91);color:#fff;box-shadow:0 8px 28px #0008;backdrop-filter:blur(12px);font:700 11px/1.35 Manrope,sans-serif;text-align:left;pointer-events:auto}
+    body.cinema-edit-mode #cinemaEditHint{display:flex}
+    #cinemaEditHint .ce-hint-icon{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;border-radius:50%;background:#e50914;color:#fff}
+    #cinemaEditHint .ce-hint-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    #cinemaEditHint .ce-hint-copy{min-width:0}
+    #cinemaEditHint .ce-hint-close{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;margin-left:2px;border:0;border-radius:50%;background:#ffffff16;color:#fff;font:400 18px/1 Arial,sans-serif;cursor:pointer}
+    #cinemaEditHint[hidden]{display:none!important}
+    @media(max-width:650px){#cinemaEditHint{top:max(108px,calc(env(safe-area-inset-top,0px) + 100px));gap:8px;padding:9px 10px;font-size:10px}}
     #cinemaEditorBackdrop{position:fixed;z-index:190;inset:0;background:#0009;backdrop-filter:blur(4px)}
     #cinemaEditor{position:fixed;z-index:191;inset:0 0 0 auto;width:min(480px,100vw);height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:#f5f1ed;color:#25211f;box-shadow:-18px 0 55px #0007;transform:translateX(102%);transition:transform .25s ease;font-family:"DM Sans",Arial,sans-serif}
     #cinemaEditor.is-open{transform:translateX(0)}
@@ -412,6 +420,11 @@
   </section>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <aside id="cinemaEditHint" role="note" aria-live="polite">
+    <span class="ce-hint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    <span class="ce-hint-copy" id="cinemaEditHintText">Click anything on the page to edit it.</span>
+    <button class="ce-hint-close" id="cinemaEditHintClose" type="button" aria-label="Dismiss editing tip">×</button>
+  </aside>
   <button id="cinemaEditorTrigger" type="button" aria-controls="cinemaEditor" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/></svg><span>Edit Experience</span></button>
   <div id="cinemaEditorBackdrop" hidden></div>
   <aside id="cinemaEditor" hidden aria-hidden="true" aria-label="Lovena Cinema editor">
@@ -1307,14 +1320,25 @@
       if(!editMode)return;
       var target=event.target&&event.target.nodeType===1?event.target:(event.target&&event.target.parentElement);
       if(!target||!target.closest)return;
-      if(target.closest("#cinemaEditor,#cinemaEditorBackdrop,#cinemaEditorTrigger"))return;
+      if(target.closest("#cinemaEditor,#cinemaEditorBackdrop,#cinemaEditorTrigger,#cinemaEditHint"))return;
       var match=ceFindPageTarget(target);
       if(!match)return;
       event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
       ceOpenForField(match.fieldId,match.photoIndex);
     }
+    function ceUpdateEditHint(){
+      var node=document.getElementById("cinemaEditHintText");if(!node)return;
+      var messages={
+        en:"Click anything on the page to edit it.",
+        "pt-BR":"Clique em qualquer coisa na página para editar.",
+        es:"Haz clic en cualquier elemento de la página para editarlo."
+      };
+      node.textContent=messages[locale]||messages.en;
+    }
     function ceBind(){
       document.body.classList.add("cinema-edit-mode");
+      ceUpdateEditHint();
+      document.getElementById("cinemaEditHintClose").addEventListener("click",function(){document.getElementById("cinemaEditHint").hidden=true;});
       document.getElementById("cinemaEditorTrigger").addEventListener("click",ceOpen);
       document.addEventListener("click",ceHandleDirectEditClick,true);
       document.getElementById("ceClose").addEventListener("click",ceClose);
@@ -1331,7 +1355,7 @@
         var node=document.getElementById(pair[0]);node.addEventListener("input",function(){ceSetText(pair[1],node.value);});
       });
       document.getElementById("ceLanguage").addEventListener("change",function(){
-        locale=this.value;experience={locale:locale};snapshot.locale=locale;document.documentElement.lang=locale;applyTranslations();ceQueueSave();
+        locale=this.value;experience={locale:locale};snapshot.locale=locale;document.documentElement.lang=locale;applyTranslations();ceUpdateEditHint();ceQueueSave();
       });
       document.getElementById("ceHeroFile").addEventListener("change",async function(){
         var file=this.files&&this.files[0];if(!file)return;
