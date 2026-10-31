@@ -326,9 +326,9 @@
         </div>
       </header>
       <nav class="category-nav" aria-label="Browse story">
-        <a id="ceNavStory" href="#" data-command="profile" data-ce-field="ceNavStory">Our Story</a>
-        <a id="ceNavMemories" href="#memories" data-ce-field="ceNavMemories">Memories</a>
-        <a id="ceNavList" href="#" data-command="list" data-ce-field="ceNavList">My List</a>
+        <a id="navStoryLabel" href="#" data-command="profile" data-ce-field="ceNavStory">Our Story</a>
+        <a id="navMemoriesLabel" href="#memories" data-ce-field="ceNavMemories">Memories</a>
+        <a id="navListLabel" href="#" data-command="list" data-ce-field="ceNavList">My List</a>
       </nav>
       <div class="hero-copy">
         <p class="eyebrow" id="heroEyebrow">A LOVENA ORIGINAL</p>
@@ -349,7 +349,7 @@
 
     <section class="shelf" id="memories" aria-labelledby="memoriesTitle">
       <div class="shelf-inner">
-        <div class="shelf-heading"><h2 id="memoriesTitle">MY MEMORY</h2><button class="shelf-more" type="button" id="viewAllMemories"><span id="ceViewAll" data-ce-field="ceViewAll">View all</span> <span aria-hidden="true">→</span></button></div>
+        <div class="shelf-heading"><h2 id="memoriesTitle">MY MEMORY</h2><button class="shelf-more" type="button" id="viewAllMemories"><span id="viewAllLabel" data-ce-field="ceViewAll">View all</span> <span aria-hidden="true">→</span></button></div>
         <div class="rail-wrap"><div class="rail" id="memoryRail" aria-label="Photo memories"></div></div>
       </div>
     </section>
@@ -366,11 +366,11 @@
   </main>
 
   <nav class="bottom-nav" aria-label="Main navigation">
-    <button type="button" data-destination="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span id="ceBottomHome" data-ce-field="ceBottomHome">Home</span></button>
-    <button type="button" data-destination="memories"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span id="ceBottomMemories" data-ce-field="ceBottomMemories">Memories</span></button>
-    <button type="button" data-destination="my-list"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg><span id="ceBottomList" data-ce-field="ceBottomList">My List</span></button>
-    <button type="button" data-command="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg><span id="ceBottomSearch" data-ce-field="ceBottomSearch">Search</span></button>
-    <button type="button" data-command="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6.8 19a5.8 5.8 0 0 1 10.4 0"/></svg><span id="ceBottomAbout" data-ce-field="ceBottomAbout">About</span></button>
+    <button type="button" data-destination="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span id="bottomHomeLabel" data-ce-field="ceBottomHome">Home</span></button>
+    <button type="button" data-destination="memories"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span id="bottomMemoriesLabel" data-ce-field="ceBottomMemories">Memories</span></button>
+    <button type="button" data-destination="my-list"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg><span id="bottomListLabel" data-ce-field="ceBottomList">My List</span></button>
+    <button type="button" data-command="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg><span id="bottomSearchLabel" data-ce-field="ceBottomSearch">Search</span></button>
+    <button type="button" data-command="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6.8 19a5.8 5.8 0 0 1 10.4 0"/></svg><span id="bottomAboutLabel" data-ce-field="ceBottomAbout">About</span></button>
   </nav>
 
   <section class="overlay" id="dialog" hidden aria-modal="true" role="dialog" aria-labelledby="dialogTitle">
@@ -631,11 +631,11 @@
       setText("myListLabel",texts.uiActionMyList||(storySaved?t("saved"):t("list")));
       var descriptionButton=document.querySelector('[data-command="description"]');
       if(descriptionButton){descriptionButton.setAttribute("aria-label",t("openDescription"));descriptionButton.title=texts.uiDescription||t("description");}
-      setText("ceViewAll",texts.uiViewAll||t("viewAll"));
+      setText("viewAllLabel",texts.uiViewAll||t("viewAll"));
       setText("emptyList",texts.uiEmptyList||t("empty"));
-      var topLabels=[["ceNavStory","uiNavStory","story"],["ceNavMemories","uiNavMemories","memories"],["ceNavList","uiNavList","list"]];
+      var topLabels=[["navStoryLabel","uiNavStory","story"],["navMemoriesLabel","uiNavMemories","memories"],["navListLabel","uiNavList","list"]];
       topLabels.forEach(function(item){setText(item[0],texts[item[1]]||t(item[2]));});
-      var bottomLabels=[["ceBottomHome","uiBottomHome","home"],["ceBottomMemories","uiBottomMemories","memories"],["ceBottomList","uiBottomList","list"],["ceBottomSearch","uiBottomSearch","searchNav"],["ceBottomAbout","uiBottomAbout","about"]];
+      var bottomLabels=[["bottomHomeLabel","uiBottomHome","home"],["bottomMemoriesLabel","uiBottomMemories","memories"],["bottomListLabel","uiBottomList","list"],["bottomSearchLabel","uiBottomSearch","searchNav"],["bottomAboutLabel","uiBottomAbout","about"]];
       bottomLabels.forEach(function(item){setText(item[0],texts[item[1]]||t(item[2]));});
       setText("emptyList",texts.uiEmptyList||t("empty"));
       var footer=document.querySelector(".site-footer");if(footer)footer.textContent=texts.uiFooter||t("footer");
