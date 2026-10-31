@@ -184,6 +184,18 @@
     .ce-actions{display:grid;gap:8px;padding:11px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #ddd8d3;background:#fff}
     .ce-status{min-height:15px;color:#69625c;text-align:center;font-size:9px}
     .ce-photo-row.is-selected{margin-inline:-6px;padding-inline:6px;border-radius:7px;background:#fff0e9;outline:2px solid #e50914}
+    .ce-hero-crop{display:grid;gap:10px;margin-top:12px;padding:11px;border:1px solid #e8e0da;border-radius:9px;background:#faf8f6}
+    .ce-hero-crop-title{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#39332e;font:800 10px Manrope,sans-serif}
+    .ce-hero-crop-title small{color:#8a8179;font:500 9px "DM Sans",sans-serif}
+    .ce-hero-crop-preview{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:7px;background:#1d1715;touch-action:none;cursor:grab;user-select:none}
+    .ce-hero-crop-preview:active{cursor:grabbing}
+    .ce-hero-crop-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 43%;transform:scale(1);transform-origin:center center;pointer-events:none}
+    .ce-hero-crop-guide{position:absolute;inset:0;pointer-events:none;opacity:.5;background:linear-gradient(90deg,transparent 33.1%,#fff8 33.3%,transparent 33.5%,transparent 66.4%,#fff8 66.6%,transparent 66.8%),linear-gradient(0deg,transparent 33.1%,#fff8 33.3%,transparent 33.5%,transparent 66.4%,#fff8 66.6%,transparent 66.8%)}
+    .ce-crop-control{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+    .ce-crop-control label{color:#514942;font:700 9px Manrope,sans-serif}
+    .ce-crop-control output{color:#82776e;font:600 9px Manrope,sans-serif;min-width:36px;text-align:right}
+    .ce-crop-control input[type=range]{grid-column:1/-1;width:100%;height:22px;margin:0;accent-color:#b32631;cursor:pointer}
+    .ce-crop-reset{justify-self:start;border:1px solid #d9d1ca;border-radius:6px;padding:7px 9px;background:#fff;color:#39332e;font:700 9px Manrope,sans-serif;cursor:pointer}
     .ce-editable-target{cursor:pointer}
     body.cinema-edit-mode .ce-editable-target:hover{outline:1px dashed rgba(229,9,20,.85);outline-offset:3px}
     .ce-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -405,7 +417,16 @@
         <div class="ce-field"><label for="ceEyebrow">Small label above the title</label><input id="ceEyebrow" maxlength="80"></div>
         <div class="ce-field"><label for="ceTitle">Main title</label><input id="ceTitle" maxlength="120"></div>
         <div class="ce-field"><label for="ceIntro">Opening description</label><textarea id="ceIntro" maxlength="500"></textarea></div>
-        <div class="ce-field"><label for="ceHeroFile">Cover photo</label><div style="display:flex;gap:9px;align-items:center"><img id="ceHeroPreview" alt="Cover preview" style="width:58px;height:50px;object-fit:cover;border-radius:6px;background:#222"><input id="ceHeroFile" type="file" accept="image/*"></div><button id="ceHeroReset" class="ce-mini" type="button">Restore original cover</button></div>
+        <div class="ce-field"><label for="ceHeroFile">Cover photo</label><div style="display:flex;gap:9px;align-items:center"><img id="ceHeroPreview" alt="Cover preview" style="width:58px;height:50px;object-fit:cover;border-radius:6px;background:#222"><input id="ceHeroFile" type="file" accept="image/*"></div><button id="ceHeroReset" class="ce-mini" type="button">Restore original cover</button>
+          <div class="ce-hero-crop" id="ceHeroCrop">
+            <div class="ce-hero-crop-title"><span>Adjust photo framing</span><small>Drag the photo or use the controls</small></div>
+            <div class="ce-hero-crop-preview" id="ceHeroCropPreview" role="application" aria-label="Drag photo to adjust its framing"><img id="ceHeroCropImage" alt="Live cover framing preview"><span class="ce-hero-crop-guide"></span></div>
+            <div class="ce-crop-control"><label for="ceHeroX">Horizontal position</label><output id="ceHeroXValue">50%</output><input id="ceHeroX" type="range" min="0" max="100" step="1" value="50"></div>
+            <div class="ce-crop-control"><label for="ceHeroY">Vertical position</label><output id="ceHeroYValue">43%</output><input id="ceHeroY" type="range" min="0" max="100" step="1" value="43"></div>
+            <div class="ce-crop-control"><label for="ceHeroZoom">Zoom</label><output id="ceHeroZoomValue">100%</output><input id="ceHeroZoom" type="range" min="100" max="180" step="1" value="100"></div>
+            <button class="ce-crop-reset" id="ceHeroFrameReset" type="button">Reset framing</button>
+          </div>
+        </div>
       </div></details>
       <details class="ce-section"><summary>Description screen</summary><div class="ce-fields">
         <div class="ce-field"><label for="ceDescTitle">Description title</label><input id="ceDescTitle" maxlength="100"></div>
@@ -462,6 +483,7 @@
     var editMode=params.get("edit")==="1"&&!slug;
     var CINEMA_EDIT_KEY="lovenaCinemaExperienceDraftV1";
     var payload=null,experience=null,snapshot={},texts={},data={},images={};
+    var heroPosition={x:50,y:43},heroScale=100;
     var locale="en",savedIds=[],storySaved=false,memories=[],currentSlide=0,slideTimer=0,toastTimer=0,railFrame=0,railPaused=false,railOffset=0,railLast=0;
     var fallbackHero="./assets/lovena-experience-hero-hq.jpg";
     var fallbackPhotos=[
@@ -628,6 +650,7 @@
       setText("heroEyebrow",texts.heroEyebrow||t("eyebrow"));
       var hero=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
       var heroPhoto=document.getElementById("heroPhoto");if(heroPhoto)heroPhoto.src=hero|| (isDemo?fallbackHero:"./assets/lovena-experience-hero-hq.jpg");
+      ceApplyHeroFraming();
       document.title=coupleName+" — Lovena";
     }
     function applyTranslations(){
@@ -901,6 +924,15 @@
       texts=snapshot.texts||{};
       images=snapshot.images||{};
       data=snapshot.data||{};
+      var savedPosition=snapshot.heroPosition||(experience&&experience.heroPosition)||{};
+      heroPosition={x:Number(savedPosition.x),y:Number(savedPosition.y)};
+      if(!Number.isFinite(heroPosition.x))heroPosition.x=50;
+      if(!Number.isFinite(heroPosition.y))heroPosition.y=43;
+      heroPosition.x=Math.max(0,Math.min(100,heroPosition.x));
+      heroPosition.y=Math.max(0,Math.min(100,heroPosition.y));
+      heroScale=Number(snapshot.heroScale!=null?snapshot.heroScale:(experience&&experience.heroScale));
+      if(!Number.isFinite(heroScale))heroScale=100;
+      heroScale=Math.max(100,Math.min(180,heroScale));
       locale=(experience&&experience.locale)||snapshot.locale||"en";
       if(String(locale).toLowerCase().startsWith("pt"))locale="pt-BR";
       else if(String(locale).toLowerCase().startsWith("es"))locale="es";
@@ -916,6 +948,8 @@
       copy.texts=JSON.parse(JSON.stringify(texts||{}));
       copy.images=JSON.parse(JSON.stringify(images||{}));
       copy.images.hero=copy.images.hero||fallbackHero;
+      copy.heroPosition={x:heroPosition.x,y:heroPosition.y};
+      copy.heroScale=heroScale;
       copy.images.gallery=Array.isArray(copy.images.gallery)?copy.images.gallery.slice(0,12):[];
       copy.data=Object.assign({},copy.data||{},{photos:Array.isArray(data.photos)?JSON.parse(JSON.stringify(data.photos.slice(0,12))):[]});
       return copy;
@@ -1004,8 +1038,25 @@
         if(memories.length)renderSlide();else stopSlideshow();
       }
     }
+    function ceApplyHeroFraming(){
+      var objectPosition=heroPosition.x+"% "+heroPosition.y+"%";
+      var zoom=Math.max(100,Math.min(180,Number(heroScale)||100))/100;
+      ["heroPhoto","ceHeroCropImage"].forEach(function(id){
+        var node=document.getElementById(id);if(!node)return;
+        node.style.objectPosition=objectPosition;
+        node.style.transform="scale("+zoom+")";
+        node.style.transformOrigin="center center";
+      });
+      var preview=document.getElementById("ceHeroCropImage");
+      if(preview)preview.src=safeUrl(images.hero)||fallbackHero;
+      [["ceHeroX",heroPosition.x],["ceHeroY",heroPosition.y],["ceHeroZoom",heroScale]].forEach(function(pair){
+        var input=document.getElementById(pair[0]),value=document.getElementById(pair[0]+"Value");
+        if(input)input.value=String(pair[1]);
+        if(value)value.textContent=pair[1]+"%";
+      });
+    }
     function ceRefreshPage(){
-      updateHero();memories=buildMemories();applyTranslations();updateSections();ceUpdateOpenContent();ceMarkEditableTargets();
+      updateHero();memories=buildMemories();applyTranslations();updateSections();ceUpdateOpenContent();ceMarkEditableTargets();ceApplyHeroFraming();
     }
     function ceSetText(key,value){texts[key]=String(value==null?"":value);ceRefreshPage();ceQueueSave();}
     function ceReadImage(file){
@@ -1071,6 +1122,7 @@
       Object.keys(values).forEach(function(id){var node=document.getElementById(id);if(node)node.value=values[id];});
       var lang=document.getElementById("ceLanguage");if(lang)lang.value=locale==="pt-BR"?"pt-BR":(locale==="es"?"es":"en");
       var preview=document.getElementById("ceHeroPreview");if(preview)preview.src=safeUrl(images.hero)||fallbackHero;
+      ceApplyHeroFraming();
       ceRenderPhotos();
     }
     function ceOpen(){
@@ -1206,7 +1258,7 @@
           if(target.closest("#dialogExtra .memory-card,[data-memory-id]"))return null;
         }
       }
-      if(target.closest("#heroPhoto,#heroBackdrop"))return {fieldId:"ceHeroFile"};
+      if(target.closest("#heroPhoto,#heroBackdrop"))return {fieldId:"ceHeroX"};
       if(target.closest("#coupleName,.brand-mark"))return {fieldId:"ceNames"};
       if(target.closest("#heroEyebrow"))return {fieldId:"ceEyebrow"};
       if(target.closest("#heroTitle"))return {fieldId:"ceTitle"};
@@ -1256,6 +1308,37 @@
         catch(error){ceStatus(error.message||"Could not update cover.",true);}this.value="";
       });
       document.getElementById("ceHeroReset").addEventListener("click",function(){images.hero=fallbackHero;ceRefreshPage();ceFillFields();ceSaveLocal(false);ceStatus("Original cover restored.");});
+      [["ceHeroX","x"],["ceHeroY","y"],["ceHeroZoom","zoom"]].forEach(function(pair){
+        var input=document.getElementById(pair[0]);
+        input.addEventListener("input",function(){
+          if(pair[1]==="zoom")heroScale=Number(input.value);
+          else heroPosition[pair[1]]=Number(input.value);
+          ceApplyHeroFraming();ceQueueSave();
+        });
+      });
+      document.getElementById("ceHeroFrameReset").addEventListener("click",function(){
+        heroPosition={x:50,y:43};heroScale=100;ceApplyHeroFraming();ceQueueSave();ceStatus("Photo framing reset.");
+      });
+      (function(){
+        var preview=document.getElementById("ceHeroCropPreview"),drag=null;
+        if(!preview)return;
+        preview.addEventListener("pointerdown",function(event){
+          if(event.button!==undefined&&event.button!==0)return;
+          drag={x:event.clientX,y:event.clientY,positionX:heroPosition.x,positionY:heroPosition.y,width:preview.clientWidth,height:preview.clientHeight};
+          if(preview.setPointerCapture)preview.setPointerCapture(event.pointerId);
+          event.preventDefault();
+        });
+        preview.addEventListener("pointermove",function(event){
+          if(!drag)return;
+          heroPosition.x=Math.max(0,Math.min(100,drag.positionX-(event.clientX-drag.x)/Math.max(1,drag.width)*100));
+          heroPosition.y=Math.max(0,Math.min(100,drag.positionY-(event.clientY-drag.y)/Math.max(1,drag.height)*100));
+          ceApplyHeroFraming();ceQueueSave();
+        });
+        function endDrag(){drag=null;}
+        preview.addEventListener("pointerup",endDrag);
+        preview.addEventListener("pointercancel",endDrag);
+        preview.addEventListener("lostpointercapture",endDrag);
+      })();
       document.getElementById("ceAddPhoto").addEventListener("click",function(){
         if(!Array.isArray(images.gallery))images.gallery=[];if(!Array.isArray(data.photos))data.photos=[];
         if(images.gallery.length>=12){ceStatus("The gallery limit is 12 photos.",true);return;}
