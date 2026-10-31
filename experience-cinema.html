@@ -61,8 +61,10 @@
       display:flex;flex-direction:column;align-items:center;text-align:center
     }
     .eyebrow{margin:0 0 10px;color:#f3d4d0;font:800 9px/1.4 Manrope,sans-serif;letter-spacing:3.6px;text-transform:uppercase;text-shadow:0 2px 10px #000}
-    h1{margin:0 0 13px;max-width:700px;font:800 clamp(36px,6vw,66px)/.98 Manrope,sans-serif;letter-spacing:-2px;text-wrap:balance;text-shadow:0 3px 18px #000a}
-    .hero-description{max-width:550px;margin:0;color:#f0ece8;font:500 12px/1.65 "DM Sans",sans-serif;text-shadow:0 2px 10px #000}
+    .couple-name{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.12em;max-width:940px;margin:0 0 10px;color:#fff;font:900 clamp(38px,7.5vw,82px)/.91 Manrope,sans-serif;letter-spacing:clamp(-4px,-.35vw,-1.4px);text-transform:uppercase;text-wrap:balance;text-shadow:0 4px 26px rgba(0,0,0,.68),0 1px 4px #000}
+    .couple-name .name-ampersand{display:inline-block;margin:0 .04em;color:#e50914;font:600 .78em/.9 Georgia,serif;letter-spacing:-.06em;text-shadow:0 3px 18px rgba(0,0,0,.55)}
+    .hero-tagline{max-width:700px;margin:0 0 9px;color:#fff;font:800 clamp(12px,1.55vw,16px)/1.35 Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 2px 12px #000}
+    .hero-description{max-width:550px;margin:0;color:#f0ece8;font:500 12px/1.6 "DM Sans",sans-serif;text-shadow:0 2px 10px #000}
     .hero-controls{width:min(580px,100%);display:flex;justify-content:space-between;align-items:flex-end;gap:13px;margin:21px auto 0}
     .action-stack{min-width:52px;display:flex;flex-direction:column;align-items:center;gap:5px;border:0;background:transparent;cursor:pointer}
     .action-symbol{display:grid;place-items:center;width:28px;height:28px;font:300 30px/1 Arial,sans-serif}
@@ -169,8 +171,9 @@
       .category-nav{top:76px;gap:clamp(20px,7vw,42px);font-size:12px}
       .hero-copy{width:calc(100% - 28px);margin-bottom:19px}
       .eyebrow{font-size:8px;letter-spacing:2.8px;margin-bottom:8px}
-      h1{font-size:clamp(32px,8.6vw,48px);letter-spacing:-1.25px;margin-bottom:10px}
-      .hero-description{max-width:390px;font-size:10px;line-height:1.55}
+      .couple-name{max-width:100%;font-size:clamp(31px,8.3vw,52px);letter-spacing:-1.5px;margin-bottom:8px}
+      .hero-tagline{font-size:11px;letter-spacing:.045em;margin-bottom:7px}
+      .hero-description{max-width:390px;font-size:10px;line-height:1.5}
       .hero-controls{width:100%;gap:7px;margin-top:14px}
       .play-button{min-width:125px;height:45px;padding:0 15px;font-size:13px}
       .play-button svg{width:18px;height:18px}
@@ -265,7 +268,8 @@
     #home .topbar{min-height:54px;padding-top:10px;padding-bottom:10px}
     #home .category-nav{top:62px;font-size:11px}
     #home .hero-copy{margin-bottom:8px!important}
-    #home h1{font-size:clamp(27px,5vh,42px);margin-bottom:6px}
+    #home .couple-name{font-size:clamp(29px,5.5vh,49px);margin-bottom:5px}
+    #home .hero-tagline{font-size:10px;margin-bottom:5px}
     #home .eyebrow{margin-bottom:5px}
     #home .hero-description{font-size:9px;line-height:1.35}
     #home .hero-controls{margin-top:8px}
@@ -275,7 +279,7 @@
 </head>
 <body>
   <main id="app">
-    <section class="hero" id="home" aria-labelledby="heroTitle">
+    <section class="hero" id="home" aria-labelledby="coupleName">
       <div class="hero-backdrop" id="heroBackdrop"><img id="heroPhoto" src="./assets/lovena-experience-hero-hq.jpg" alt="The Lovena couple" fetchpriority="high"></div>
       <header class="topbar">
         <a href="#home" class="brand" aria-label="Lovena home"><span class="brand-mark" aria-hidden="true">L</span><span class="brand-name">LOVENA</span></a>
@@ -293,7 +297,8 @@
       </nav>
       <div class="hero-copy">
         <p class="eyebrow" id="heroEyebrow">A LOVENA ORIGINAL</p>
-        <h1 id="heroTitle">You are my favourite story.</h1>
+        <h1 class="couple-name" id="coupleName">ALEX <span class="name-ampersand">&amp;</span> JAMIE</h1>
+        <p class="hero-tagline" id="heroTitle">YOU ARE MY FAVOURITE STORY.</p>
         <p class="hero-description" id="heroDescription">A world made of the moments, smiles and little memories that belong only to us.</p>
         <div class="hero-controls">
           <button class="action-stack" type="button" id="myListToggle" aria-pressed="false">
@@ -506,14 +511,25 @@
     function stepSlide(step){currentSlide=(currentSlide+step+memories.length)%memories.length;renderSlide();clearInterval(slideTimer);slideTimer=setInterval(function(){currentSlide=(currentSlide+1)%memories.length;renderSlide();},5200);}
     function updateHero(){
       var title=texts.heroTitle||t("defaultTitle"),description=texts.heroIntro||t("defaultDescription");
-      setText("heroTitle",title.replace(/\n/g," "));
+      var coupleName=String(texts.brand||"ALEX & JAMIE").trim();
+      var nameNode=document.getElementById("coupleName");
+      if(nameNode){
+        nameNode.replaceChildren();
+        var nameParts=coupleName.split(/\s*&\s*/);
+        if(nameParts.length===2){
+          nameNode.appendChild(document.createTextNode(nameParts[0].trim()));
+          var amp=document.createElement("span");amp.className="name-ampersand";amp.textContent="&";
+          nameNode.appendChild(amp);
+          nameNode.appendChild(document.createTextNode(nameParts[1].trim()));
+        }else{nameNode.textContent=coupleName;}
+      }
+      setText("heroTitle",title.replace(/\n/g," ").toUpperCase());
       setText("heroDescription",description);
       setText("heroEyebrow",texts.heroEyebrow||t("eyebrow"));
       var hero=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
       var heroPhoto=document.getElementById("heroPhoto");if(heroPhoto)heroPhoto.src=hero|| (isDemo?fallbackHero:"./assets/lovena-experience-hero-hq.jpg");
-      var brand=texts.brand||"LOVENA";
-      setText("brandName",brand.toUpperCase());
-      document.title=(title||"Our Story")+" — Lovena";
+      var brand=document.querySelector(".brand-name");if(brand)brand.textContent="LOVENA";
+      document.title=coupleName+" — Lovena";
     }
     function applyTranslations(){
       setText("memoriesTitle","MY MEMORY");
@@ -525,7 +541,6 @@
       document.querySelectorAll(".category-nav a").forEach(function(node,i){node.textContent=[t("story"),t("memories"),t("list")][i];});
       document.querySelectorAll(".bottom-nav button span").forEach(function(node,i){node.textContent=[t("home"),t("memories"),t("list"),t("searchNav"),t("about")][i];});
       setText("memoriesTitle","MY MEMORY");
-      var brand=document.querySelector(".brand-name");if(brand&&texts.brand)brand.textContent=texts.brand.toUpperCase();
       document.querySelector(".site-footer").textContent=t("footer");
     }
     function updateMyListButton(){
