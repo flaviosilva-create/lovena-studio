@@ -150,6 +150,44 @@
     .slide-counter{position:absolute;z-index:4;top:24px;left:20px;color:#ddd;font:600 10px/1.2 Manrope,sans-serif}
     .toast{position:fixed;z-index:150;left:50%;bottom:calc(var(--nav-h) + 15px);transform:translate(-50%,12px);max-width:calc(100% - 32px);padding:11px 16px;border:1px solid #ffffff22;border-radius:999px;background:#222;color:#fff;font-size:11px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
     .toast.is-visible{opacity:1;transform:translate(-50%,0)}
+    #cinemaEditorTrigger{position:fixed;z-index:180;left:14px;bottom:calc(var(--nav-h) + 13px + env(safe-area-inset-bottom));display:none;align-items:center;gap:8px;min-height:42px;padding:10px 14px;border:1px solid #ffffff35;border-radius:999px;background:#171717ee;color:#fff;font:700 11px Manrope,sans-serif;box-shadow:0 8px 24px #0008;cursor:pointer}
+    #cinemaEditorTrigger svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    body.cinema-edit-mode #cinemaEditorTrigger{display:flex}
+    #cinemaEditorBackdrop{position:fixed;z-index:190;inset:0;background:#0009;backdrop-filter:blur(4px)}
+    #cinemaEditor{position:fixed;z-index:191;inset:0 0 0 auto;width:min(480px,100vw);height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:#f5f1ed;color:#25211f;box-shadow:-18px 0 55px #0007;transform:translateX(102%);transition:transform .25s ease;font-family:"DM Sans",Arial,sans-serif}
+    #cinemaEditor.is-open{transform:translateX(0)}
+    #cinemaEditor[hidden],#cinemaEditorBackdrop[hidden]{display:none!important}
+    .ce-head{position:relative;display:flex;gap:12px;justify-content:space-between;padding:20px 66px 17px 20px;background:#101010;color:#fff}
+    .ce-kicker{margin:0 0 6px;color:#e50914;font:800 9px Manrope,sans-serif;letter-spacing:2px}
+    .ce-head h2{margin:0;font:800 22px/1.2 Manrope,sans-serif}
+    .ce-head p{margin:7px 0 0;color:#c6c2bf;font-size:10px;line-height:1.5}
+    .ce-close{position:absolute;right:13px;top:12px;width:42px;height:42px;border:1px solid #ffffff55;border-radius:50%;background:#222;color:#fff;font-size:26px;cursor:pointer}
+    .ce-scroll{flex:1;min-height:0;overflow:auto;padding:14px 15px 20px}
+    .ce-section{margin:0 0 11px;border:1px solid #ddd8d3;border-radius:10px;background:#fff;overflow:hidden}
+    .ce-section summary{padding:14px 15px;list-style:none;color:#24211f;font:800 11px Manrope,sans-serif;cursor:pointer}
+    .ce-section summary::-webkit-details-marker{display:none}
+    .ce-fields{display:grid;gap:10px;padding:0 14px 15px}
+    .ce-field{display:grid;gap:5px}
+    .ce-field label{color:#4d4844;font:700 10px Manrope,sans-serif}
+    .ce-field input:not([type=file]),.ce-field textarea,.ce-field select{width:100%;min-height:39px;padding:9px 10px;border:1px solid #d9d3cd;border-radius:7px;background:#fff;color:#262220;font:12px/1.5 "DM Sans",Arial,sans-serif}
+    .ce-field textarea{min-height:90px;resize:vertical}
+    .ce-help{color:#817a74;font-size:9px;line-height:1.5}
+    .ce-photo-row{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:start;padding:9px 0;border-bottom:1px solid #eee9e4}
+    .ce-photo-row:last-child{border-bottom:0}
+    .ce-photo-row img{width:52px;height:62px;object-fit:cover;border-radius:6px;background:#222}
+    .ce-photo-fields{display:grid;gap:6px;min-width:0}
+    .ce-photo-fields input,.ce-photo-fields textarea{width:100%;min-width:0;padding:7px;border:1px solid #ddd6d0;border-radius:6px;font:10px/1.4 "DM Sans",Arial,sans-serif}
+    .ce-photo-fields textarea{min-height:46px;resize:vertical}
+    .ce-mini,.ce-button{border:1px solid #d5d0ca;border-radius:7px;padding:8px 10px;background:#fff;color:#302c29;font:700 9px Manrope,sans-serif;cursor:pointer}
+    .ce-mini.danger{color:#a33a31;border-color:#e2c3bf}
+    .ce-add{width:100%;border-style:dashed;margin-top:8px}
+    .ce-actions{display:grid;gap:8px;padding:11px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #ddd8d3;background:#fff}
+    .ce-status{min-height:15px;color:#69625c;text-align:center;font-size:9px}
+    .ce-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .ce-button.primary{background:#111;color:#fff;border-color:#111}
+    .ce-button.accent{background:#e50914;color:#fff;border-color:#e50914}
+    .ce-button:disabled{opacity:.55;cursor:wait}
+    @media(max-width:650px){#cinemaEditor{width:100vw}.ce-head{padding:18px 65px 15px 16px}.ce-scroll{padding:12px}.ce-actions{padding:10px 12px calc(12px + env(safe-area-inset-bottom))}.ce-photo-row{grid-template-columns:46px minmax(0,1fr) auto;gap:6px}.ce-photo-row img{width:46px;height:58px}}
     @media(min-width:1000px){
       .hero{height:80svh;min-height:700px}
       .hero-copy{margin-bottom:35px}
@@ -354,6 +392,38 @@
   </section>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <button id="cinemaEditorTrigger" type="button" aria-controls="cinemaEditor" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/></svg><span>Edit Experience</span></button>
+  <div id="cinemaEditorBackdrop" hidden></div>
+  <aside id="cinemaEditor" hidden aria-hidden="true" aria-label="Lovena Cinema editor">
+    <header class="ce-head"><div><p class="ce-kicker">LOVENA CINEMA</p><h2>Personalize your story</h2><p>Change the couple's name, opening scene, description and photos. Your preview updates as you edit.</p></div><button class="ce-close" id="ceClose" type="button" aria-label="Close editor">×</button></header>
+    <div class="ce-scroll">
+      <details class="ce-section" open><summary>Couple & opening scene</summary><div class="ce-fields">
+        <div class="ce-field"><label for="ceNames">Couple's names</label><input id="ceNames" maxlength="70"><small class="ce-help">Shown beside the Lovena mark.</small></div>
+        <div class="ce-field"><label for="ceEyebrow">Small label above the title</label><input id="ceEyebrow" maxlength="80"></div>
+        <div class="ce-field"><label for="ceTitle">Main title</label><input id="ceTitle" maxlength="120"></div>
+        <div class="ce-field"><label for="ceIntro">Opening description</label><textarea id="ceIntro" maxlength="500"></textarea></div>
+        <div class="ce-field"><label for="ceHeroFile">Cover photo</label><div style="display:flex;gap:9px;align-items:center"><img id="ceHeroPreview" alt="Cover preview" style="width:58px;height:50px;object-fit:cover;border-radius:6px;background:#222"><input id="ceHeroFile" type="file" accept="image/*"></div><button id="ceHeroReset" class="ce-mini" type="button">Restore original cover</button></div>
+      </div></details>
+      <details class="ce-section"><summary>Description screen</summary><div class="ce-fields">
+        <div class="ce-field"><label for="ceDescTitle">Description title</label><input id="ceDescTitle" maxlength="100"></div>
+        <div class="ce-field"><label for="ceDescBody">Description text</label><textarea id="ceDescBody" maxlength="5000"></textarea></div>
+        <div class="ce-field"><label for="ceDescEnding">Closing line</label><input id="ceDescEnding" maxlength="180"></div>
+        <div class="ce-field"><label for="ceDescSign">Signature</label><input id="ceDescSign" maxlength="100"></div>
+      </div></details>
+      <details class="ce-section"><summary>Page language</summary><div class="ce-fields"><div class="ce-field"><label for="ceLanguage">Language</label><select id="ceLanguage"><option value="en">English</option><option value="pt-BR">Português</option><option value="es">Español</option></select><small class="ce-help">Only interface labels change. The text you write stays as entered.</small></div></div></details>
+      <details class="ce-section" open><summary>Memory photos</summary><div class="ce-fields"><div id="cePhotoRows"></div><button id="ceAddPhoto" class="ce-mini ce-add" type="button">＋ Add photo · up to 12</button><small class="ce-help">Replace, remove or add up to 12 photos. Images are optimized before saving.</small></div></details>
+    </div>
+    <footer class="ce-actions">
+      <div id="ceStatus" class="ce-status" role="status" aria-live="polite">Your changes are saved in this browser.</div>
+      <div class="ce-two"><button id="ceSave" class="ce-button primary" type="button">Save changes</button><button id="ceCloud" class="ce-button" type="button">Save cloud draft</button></div>
+      <div class="ce-two"><button id="ceBackup" class="ce-button" type="button">Download backup</button><button id="ceImportButton" class="ce-button" type="button">Import backup</button></div>
+      <input id="ceImportFile" type="file" accept="application/json,.json" hidden>
+      <button id="ceHtml" class="ce-button accent" type="button">Download HTML experience</button>
+      <button id="cePreview" class="ce-button" type="button">Finish editing · Preview</button>
+    </footer>
+  </aside>
+
+  <script src="./assets/lovena-backend.js?v=20261031-cinema-editor-1"></script>
   <script>
   (function(){
     "use strict";
@@ -362,6 +432,8 @@
     var params=new URLSearchParams(location.search);
     var slug=params.get("slug")||"";
     var isDemo=params.get("demo")==="1"||!slug;
+    var editMode=params.get("edit")==="1"&&!slug;
+    var CINEMA_EDIT_KEY="lovenaCinemaExperienceDraftV1";
     var payload=null,experience=null,snapshot={},texts={},data={},images={};
     var locale="en",savedIds=[],storySaved=false,memories=[],currentSlide=0,slideTimer=0,toastTimer=0,railFrame=0,railPaused=false,railOffset=0,railLast=0;
     var fallbackHero="./assets/lovena-experience-hero-hq.jpg";
@@ -651,7 +723,11 @@
       });
     }
     function updateSections(){
-      renderRail(document.getElementById("memoryRail"),memories,renderMemoryCard);
+      var rail=document.getElementById("memoryRail");
+      if(railFrame)cancelAnimationFrame(railFrame);
+      railFrame=0;
+      if(rail)rail.dataset.loopReady="";
+      renderRail(rail,memories,renderMemoryCard);
       renderMyList();updateMyListButton();initAutoRail();
     }
     function handleSearch(){
@@ -778,20 +854,220 @@
       document.documentElement.lang=locale;
       updateHero();memories=buildMemories();applyTranslations();updateSections();
     }
+    var cinemaEditorSaveTimer=0;
+    function cinemaSnapshot(){
+      var copy=JSON.parse(JSON.stringify(snapshot||{}));
+      copy.version=copy.version||1;
+      copy.locale=locale||"en";
+      copy.texts=JSON.parse(JSON.stringify(texts||{}));
+      copy.images=JSON.parse(JSON.stringify(images||{}));
+      copy.images.hero=copy.images.hero||fallbackHero;
+      copy.images.gallery=Array.isArray(copy.images.gallery)?copy.images.gallery.slice(0,12):[];
+      copy.data=Object.assign({},copy.data||{},{photos:Array.isArray(data.photos)?JSON.parse(JSON.stringify(data.photos.slice(0,12))):[]});
+      return copy;
+    }
+    function ceStatus(message,isError){
+      var node=document.getElementById("ceStatus");if(!node)return;
+      node.textContent=message;node.style.color=isError?"#b13c32":"#69625c";
+    }
+    function ceSaveLocal(show){
+      try{snapshot=cinemaSnapshot();localStorage.setItem(CINEMA_EDIT_KEY,JSON.stringify(snapshot));if(show!==false)ceStatus("Saved in this browser.");return true;}
+      catch(error){ceStatus("Could not save locally. Try smaller photos.",true);return false;}
+    }
+    function ceQueueSave(){
+      clearTimeout(cinemaEditorSaveTimer);
+      cinemaEditorSaveTimer=setTimeout(function(){ceSaveLocal(false);ceStatus("Changes saved in this browser.");},650);
+    }
+    function ceRefreshPage(){
+      updateHero();memories=buildMemories();applyTranslations();updateSections();
+    }
+    function ceSetText(key,value){texts[key]=String(value==null?"":value);ceRefreshPage();ceQueueSave();}
+    function ceReadImage(file){
+      return new Promise(function(resolve,reject){
+        if(!file||!String(file.type||"").startsWith("image/")){reject(new Error("Choose an image file."));return;}
+        var reader=new FileReader();
+        reader.onerror=function(){reject(new Error("Could not read the image."));};
+        reader.onload=function(){
+          var img=new Image();
+          img.onerror=function(){reject(new Error("This image format could not be opened."));};
+          img.onload=function(){
+            var max=1800,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+            var canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+            var ctx=canvas.getContext("2d");if(!ctx){reject(new Error("Image optimization is unavailable."));return;}
+            ctx.drawImage(img,0,0,canvas.width,canvas.height);
+            try{resolve(canvas.toDataURL("image/jpeg",0.84));}catch(error){reject(new Error("Could not optimize the image."));}
+          };
+          img.src=String(reader.result||"");
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    function ceRenderPhotos(){
+      var host=document.getElementById("cePhotoRows");if(!host)return;host.replaceChildren();
+      var gallery=Array.isArray(images.gallery)?images.gallery:[],photos=Array.isArray(data.photos)?data.photos:[];
+      gallery.forEach(function(src,index){
+        var row=document.createElement("div");row.className="ce-photo-row";
+        var img=document.createElement("img");img.alt="Memory "+(index+1);img.src=safeUrl(src)||"";
+        var fields=document.createElement("div");fields.className="ce-photo-fields";
+        var title=document.createElement("input");title.placeholder="Photo "+(index+1)+" caption";title.maxLength=80;title.value=Array.isArray(photos[index])?String(photos[index][0]||""):"";
+        var copy=document.createElement("textarea");copy.placeholder="Short story for this photo";copy.maxLength=500;copy.value=Array.isArray(photos[index])?String(photos[index][1]||""):"";
+        title.addEventListener("input",function(){data.photos[index]=[title.value,copy.value];ceRefreshPage();ceQueueSave();});
+        copy.addEventListener("input",function(){data.photos[index]=[title.value,copy.value];ceRefreshPage();ceQueueSave();});
+        var file=document.createElement("input");file.type="file";file.accept="image/*";file.setAttribute("aria-label","Replace photo "+(index+1));
+        file.addEventListener("change",async function(){
+          var picked=file.files&&file.files[0];if(!picked)return;
+          try{ceStatus("Optimizing photo…");images.gallery[index]=await ceReadImage(picked);ceRefreshPage();ceRenderPhotos();ceSaveLocal(false);ceStatus("Photo updated.");}
+          catch(error){ceStatus(error.message||"Could not update photo.",true);}
+          file.value="";
+        });
+        fields.append(title,copy,file);
+        var remove=document.createElement("button");remove.type="button";remove.className="ce-mini danger";remove.textContent="Remove";
+        remove.addEventListener("click",function(){images.gallery.splice(index,1);data.photos.splice(index,1);savedIds=[];persistSaved();ceRefreshPage();ceRenderPhotos();ceSaveLocal(false);ceStatus("Photo removed.");});
+        row.append(img,fields,remove);host.appendChild(row);
+      });
+    }
+    function ceFillFields(){
+      var values={
+        ceNames:texts.brand||"ALEX & JAMIE",ceEyebrow:texts.heroEyebrow||t("eyebrow"),
+        ceTitle:texts.heroTitle||t("defaultTitle"),ceIntro:texts.heroIntro||t("defaultDescription"),
+        ceDescTitle:texts.letterTitle||t("letterTitleDefault"),ceDescBody:texts.letterBody||t("letterBodyDefault"),
+        ceDescEnding:texts.letterEnding||t("letterEndingDefault"),ceDescSign:texts.letterTo||t("letterToDefault")
+      };
+      Object.keys(values).forEach(function(id){var node=document.getElementById(id);if(node)node.value=values[id];});
+      var lang=document.getElementById("ceLanguage");if(lang)lang.value=locale==="pt-BR"?"pt-BR":(locale==="es"?"es":"en");
+      var preview=document.getElementById("ceHeroPreview");if(preview)preview.src=safeUrl(images.hero)||fallbackHero;
+      ceRenderPhotos();
+    }
+    function ceOpen(){
+      var panel=document.getElementById("cinemaEditor"),back=document.getElementById("cinemaEditorBackdrop"),trigger=document.getElementById("cinemaEditorTrigger");
+      ceFillFields();panel.hidden=false;back.hidden=false;if(trigger)trigger.setAttribute("aria-expanded","true");
+      requestAnimationFrame(function(){panel.classList.add("is-open");panel.setAttribute("aria-hidden","false");});
+    }
+    function ceClose(){
+      var panel=document.getElementById("cinemaEditor"),back=document.getElementById("cinemaEditorBackdrop"),trigger=document.getElementById("cinemaEditorTrigger");
+      panel.classList.remove("is-open");panel.setAttribute("aria-hidden","true");if(trigger)trigger.setAttribute("aria-expanded","false");
+      setTimeout(function(){if(!panel.classList.contains("is-open")){panel.hidden=true;back.hidden=true;}},270);
+    }
+    function ceDownload(blob,name){
+      var url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+    }
+    function ceBackup(){
+      ceSaveLocal(false);ceDownload(new Blob([JSON.stringify(cinemaSnapshot(),null,2)],{type:"application/json"}),"lovena-cinema-backup.json");ceStatus("Backup downloaded.");
+    }
+    function ceImport(file){
+      if(!file)return;var reader=new FileReader();
+      reader.onerror=function(){ceStatus("Could not read the backup file.",true);};
+      reader.onload=function(){
+        try{
+          var parsed=JSON.parse(String(reader.result||"")),obj=parsed.snapshot||parsed;
+          if(!obj||!obj.texts||!obj.images||!obj.data)throw new Error("This is not a Lovena Cinema backup.");
+          snapshot=obj;locale=String(obj.locale||"en").toLowerCase().startsWith("pt")?"pt-BR":(String(obj.locale||"en").toLowerCase().startsWith("es")?"es":"en");
+          experience={locale:locale};applyExperience();ceFillFields();ceSaveLocal(false);ceStatus("Backup imported.");
+        }catch(error){ceStatus(error.message||"Invalid backup.",true);}
+      };
+      reader.readAsText(file);
+    }
+    async function ceEmbedImage(src){
+      if(!src||String(src).startsWith("data:image/"))return src||"";
+      var absolute;try{absolute=new URL(src,location.href).href;}catch(error){return src;}
+      try{
+        var response=await fetch(absolute,{mode:"cors",credentials:"omit"});if(!response.ok)throw new Error("Image unavailable");
+        var blob=await response.blob();
+        return await new Promise(function(resolve,reject){var reader=new FileReader();reader.onload=function(){resolve(String(reader.result||absolute));};reader.onerror=function(){reject(new Error("Could not embed image"));};reader.readAsDataURL(blob);});
+      }catch(error){return absolute;}
+    }
+    async function ceDownloadHtml(){
+      var button=document.getElementById("ceHtml");button.disabled=true;ceStatus("Preparing the HTML experience…");
+      try{
+        var state=cinemaSnapshot();state.images.hero=await ceEmbedImage(state.images.hero||fallbackHero);
+        state.images.gallery=await Promise.all((state.images.gallery||[]).map(function(src){return ceEmbedImage(src);}));
+        var page="<!doctype html>\n"+document.documentElement.outerHTML;
+        var safeState=JSON.stringify(state).replace(/</g,"\\u003c");
+        var dataScript="<script>window.LOVENA_CINEMA_EXPORT_SNAPSHOT="+safeState+";</scr"+"ipt>\n  ";
+        var marker="<script>\n  (function(){";
+        if(page.indexOf(marker)<0)throw new Error("Could not prepare HTML export.");
+        page=page.replace(marker,dataScript+marker);
+        var editorStart=page.indexOf('  <button id="cinemaEditorTrigger"');
+        var backendStart=page.indexOf('  <script src="./assets/lovena-backend.js');
+        if(editorStart>=0&&backendStart>editorStart)page=page.slice(0,editorStart)+page.slice(backendStart);
+        var backendTagStart=page.indexOf('<script src="./assets/lovena-backend.js');
+        if(backendTagStart>=0){var backendTagEnd=page.indexOf("</scr"+"ipt>",backendTagStart);if(backendTagEnd>=0)page=page.slice(0,backendTagStart)+page.slice(backendTagEnd+9);}
+        page=page.replace('class="cinema-edit-mode"','');
+        ceDownload(new Blob([page],{type:"text/html;charset=utf-8"}),"lovena-cinema-experience.html");ceStatus("HTML experience downloaded.");
+      }catch(error){ceStatus(error.message||"Could not export HTML.",true);}
+      finally{button.disabled=false;}
+    }
+    function ceBind(){
+      document.body.classList.add("cinema-edit-mode");
+      document.getElementById("cinemaEditorTrigger").addEventListener("click",ceOpen);
+      document.getElementById("ceClose").addEventListener("click",ceClose);
+      document.getElementById("cePreview").addEventListener("click",function(){ceSaveLocal(false);ceClose();});
+      document.getElementById("cinemaEditorBackdrop").addEventListener("click",ceClose);
+      document.addEventListener("keydown",function(event){if(event.key==="Escape")ceClose();});
+      [["ceNames","brand"],["ceEyebrow","heroEyebrow"],["ceTitle","heroTitle"],["ceIntro","heroIntro"],
+       ["ceDescTitle","letterTitle"],["ceDescBody","letterBody"],["ceDescEnding","letterEnding"],["ceDescSign","letterTo"]].forEach(function(pair){
+        var node=document.getElementById(pair[0]);node.addEventListener("input",function(){ceSetText(pair[1],node.value);});
+      });
+      document.getElementById("ceLanguage").addEventListener("change",function(){
+        locale=this.value;experience={locale:locale};snapshot.locale=locale;document.documentElement.lang=locale;applyTranslations();ceQueueSave();
+      });
+      document.getElementById("ceHeroFile").addEventListener("change",async function(){
+        var file=this.files&&this.files[0];if(!file)return;
+        try{ceStatus("Optimizing cover…");images.hero=await ceReadImage(file);ceRefreshPage();ceFillFields();ceSaveLocal(false);ceStatus("Cover updated.");}
+        catch(error){ceStatus(error.message||"Could not update cover.",true);}this.value="";
+      });
+      document.getElementById("ceHeroReset").addEventListener("click",function(){images.hero=fallbackHero;ceRefreshPage();ceFillFields();ceSaveLocal(false);ceStatus("Original cover restored.");});
+      document.getElementById("ceAddPhoto").addEventListener("click",function(){
+        if(!Array.isArray(images.gallery))images.gallery=[];if(!Array.isArray(data.photos))data.photos=[];
+        if(images.gallery.length>=12){ceStatus("The gallery limit is 12 photos.",true);return;}
+        images.gallery.push("");data.photos.push(["New memory",""]);ceRefreshPage();ceRenderPhotos();ceSaveLocal(false);ceStatus("Photo slot added. Choose an image.");
+      });
+      document.getElementById("ceSave").addEventListener("click",function(){ceSaveLocal(true);});
+      document.getElementById("ceCloud").addEventListener("click",async function(){
+        var button=this;button.disabled=true;ceStatus("Saving cloud draft…");
+        try{
+          ceSaveLocal(false);
+          if(!window.LovenaBackend||typeof window.LovenaBackend.saveDraft!=="function")throw new Error("Cloud save unavailable. Save locally or download a backup.");
+          await window.LovenaBackend.ready;await window.LovenaBackend.saveDraft(cinemaSnapshot(),CINEMA_EDIT_KEY);ceStatus("Cinema draft saved to your Lovena cloud account.");
+        }catch(error){ceStatus(error.message||"Could not save cloud draft.",true);}finally{button.disabled=false;}
+      });
+      document.getElementById("ceBackup").addEventListener("click",ceBackup);
+      document.getElementById("ceImportButton").addEventListener("click",function(){document.getElementById("ceImportFile").click();});
+      document.getElementById("ceImportFile").addEventListener("change",function(){ceImport(this.files&&this.files[0]);this.value="";});
+      document.getElementById("ceHtml").addEventListener("click",ceDownloadHtml);
+      ceFillFields();ceOpen();
+    }
     async function loadExperience(){
       loadSaved();
-      if(isDemo){
+      if(window.LOVENA_CINEMA_EXPORT_SNAPSHOT){
+        snapshot=JSON.parse(JSON.stringify(window.LOVENA_CINEMA_EXPORT_SNAPSHOT));experience={locale:snapshot.locale||"en"};
+      }else if(isDemo){
         experience={locale:"en"};
-        snapshot={texts:{heroTitle:"You are my favourite story.",heroIntro:"A private world made from the moments, smiles and little memories that belong only to us.",heroEyebrow:"A LOVENA ORIGINAL",brand:"ALEX & JAMIE"},images:{hero:fallbackHero,gallery:fallbackPhotos.map(function(p){return p[1];})},data:{photos:fallbackPhotos.map(function(p){return [p[0],"A beautiful moment, kept just for us."];})}};
+        snapshot={texts:{heroTitle:"You are my favourite story.",heroIntro:"A private world made from the moments, smiles and little memories that belong only to us.",heroEyebrow:"A LOVENA ORIGINAL",brand:"ALEX & JAMIE",letterTitle:"My love, ♥",letterBody:"Somehow, the world feels softer with you in it.\n\nI love the little things that make us who we are: the conversations that last longer than planned, the quiet moments when no words are needed, and the way an ordinary day becomes a favourite memory simply because I shared it with you.",letterEnding:"With all my love,",letterTo:"Forever yours."},images:{hero:fallbackHero,gallery:fallbackPhotos.map(function(p){return p[1];})},data:{photos:fallbackPhotos.map(function(p){return [p[0],"A beautiful moment, kept just for us."];})}};
       }else{
         var response=await fetch(SUPABASE_URL+"/functions/v1/lovena-public-experience?slug="+encodeURIComponent(slug),{method:"GET",headers:{apikey:SUPABASE_KEY},cache:"no-store"});
         var body=await response.json().catch(function(){return {};});
         if(!response.ok||!body.experience)throw new Error(body.error||"This Lovena experience could not be loaded.");
         experience=body.experience;snapshot=experience.data||{};
       }
+      if(editMode){
+        var localDraft=null;try{localDraft=JSON.parse(localStorage.getItem(CINEMA_EDIT_KEY)||"null");}catch(error){}
+        if(localDraft&&localDraft.texts&&localDraft.images&&localDraft.data){
+          snapshot=localDraft;experience={locale:localDraft.locale||"en"};
+        }else if(window.LovenaBackend&&typeof window.LovenaBackend.loadDraft==="function"){
+          try{
+            await window.LovenaBackend.ready;var remoteDraft=await window.LovenaBackend.loadDraft(CINEMA_EDIT_KEY);
+            if(remoteDraft&&remoteDraft.snapshot&&remoteDraft.snapshot.texts){
+              snapshot=remoteDraft.snapshot;experience={locale:snapshot.locale||"en"};
+              try{localStorage.setItem(CINEMA_EDIT_KEY,JSON.stringify(snapshot));}catch(error){}
+            }
+          }catch(error){console.warn("Cinema cloud draft could not be loaded:",error);}
+        }
+      }
       applyExperience();
       document.getElementById("emptyList").hidden=storySaved||savedIds.length>0;
       if(memories.length===0){var empty=document.createElement("div");empty.className="empty-state";empty.textContent=t("noPhotos");document.getElementById("memoryRail").appendChild(empty);}
+      if(editMode)ceBind();
     }
     setupEvents();
     loadExperience().catch(function(error){
