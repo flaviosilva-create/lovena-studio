@@ -188,6 +188,8 @@
     .ce-selection-hint{position:fixed;z-index:220;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);padding:11px 14px;border:1px solid #ffffff33;border-radius:999px;background:#111;color:#fff;box-shadow:0 8px 28px #0009;font:700 10px/1.4 Manrope,sans-serif}
     .ce-selection-hint[hidden]{display:none!important}
     .ce-selection-hint button{border:0;border-radius:999px;padding:6px 9px;background:#e50914;color:#fff;font:800 9px Manrope,sans-serif;cursor:pointer}
+    body.cinema-picking #app,body.cinema-picking #app *{cursor:crosshair!important}
+    body.cinema-picking #app :is(.brand,.hero-backdrop,.hero-copy,.eyebrow,#heroTitle,#heroDescription,.shelf-heading,.memory-card,.site-footer):hover{outline:2px dashed #e50914;outline-offset:3px}
     .ce-photo-row.is-selected{margin-inline:-6px;padding-inline:6px;border-radius:7px;background:#fff0e9;outline:2px solid #e50914}
     .ce-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .ce-button.primary{background:#111;color:#fff;border-color:#111}
@@ -1011,7 +1013,7 @@
       }catch(error){ceStatus(error.message||"Could not export HTML.",true);}
       finally{button.disabled=false;}
     }
-    var cePickingOnPage=false;
+    var cePickingOnPage=false,ceIgnorePageClick=false;
     function ceStopPicking(){
       cePickingOnPage=false;
       document.body.classList.remove("cinema-picking");
@@ -1019,7 +1021,10 @@
     }
     function ceStartPicking(){
       cePickingOnPage=true;
-      ceClose();
+      var panel=document.getElementById("cinemaEditor"),back=document.getElementById("cinemaEditorBackdrop"),trigger=document.getElementById("cinemaEditorTrigger");
+      if(panel){panel.classList.remove("is-open");panel.setAttribute("aria-hidden","true");panel.hidden=true;}
+      if(back)back.hidden=true;
+      if(trigger)trigger.setAttribute("aria-expanded","false");
       document.body.classList.add("cinema-picking");
       var hint=document.getElementById("ceSelectionHint");if(hint)hint.hidden=false;
       ceStatus("Tap the name, text, cover or a specific memory photo.");
@@ -1082,15 +1087,25 @@
       return null;
     }
     function ceHandlePagePick(event){
+      if(event.type==="click"&&ceIgnorePageClick){
+        ceIgnorePageClick=false;
+        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+        return;
+      }
       if(!cePickingOnPage)return;
+      if(event.type==="pointerdown"&&event.button!==0)return;
       var target=event.target&&event.target.nodeType===1?event.target:(event.target&&event.target.parentElement);
       if(!target)return;
       if(target.closest("#cinemaEditor,#cinemaEditorBackdrop,#ceSelectionHint,#cinemaEditorTrigger"))return;
       var match=ceFindPageTarget(target);
       if(!match){
         event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
-        showToast("Choose a name, text, cover or memory photo to edit.");
+        showToast("This is a fixed control. Choose the couple's name, cover, title, description or a memory photo.");
         return;
+      }
+      if(event.type==="pointerdown"){
+        ceIgnorePageClick=true;
+        window.setTimeout(function(){ceIgnorePageClick=false;},800);
       }
       event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
       ceOpenForField(match.fieldId,match.photoIndex);
@@ -1100,6 +1115,7 @@
       document.getElementById("cinemaEditorTrigger").addEventListener("click",function(){ceStopPicking();ceOpen();});
       document.getElementById("ceSelectOnPage").addEventListener("click",ceStartPicking);
       document.getElementById("ceCancelSelection").addEventListener("click",ceStopPicking);
+      document.addEventListener("pointerdown",ceHandlePagePick,true);
       document.addEventListener("click",ceHandlePagePick,true);
       document.getElementById("ceClose").addEventListener("click",ceClose);
       document.getElementById("cePreview").addEventListener("click",function(){ceSaveLocal(false);ceClose();});
