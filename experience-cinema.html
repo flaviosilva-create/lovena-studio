@@ -617,7 +617,7 @@
         lastFrame=now;
         if(document.visibilityState!=="hidden"&&cycle>0&&now>pausedUntil){
           var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          var speed=reduced?11:25;
+          var speed=reduced?15:32;
           offset=normalize(offset+speed*elapsed/1000);
           var destination=Math.floor(offset);
           if(rail.scrollLeft!==destination)rail.scrollLeft=destination;
