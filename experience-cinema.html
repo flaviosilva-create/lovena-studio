@@ -761,7 +761,12 @@
       if(railFrame)cancelAnimationFrame(railFrame);
       railFrame=0;
       if(rail)rail.dataset.loopReady="";
-      renderRail(rail,memories,renderMemoryCard);
+      if(rail&&memories.length){
+        renderRail(rail,memories,renderMemoryCard);
+      }else if(rail){
+        rail.replaceChildren();
+        var empty=document.createElement("div");empty.className="empty-state ce-editable-target";empty.dataset.ceField="ceNoPhotos";empty.textContent=texts.uiNoPhotos||t("noPhotos");rail.appendChild(empty);
+      }
       renderMyList();updateMyListButton();initAutoRail();
     }
     function handleSearch(){
@@ -920,8 +925,65 @@
       var selectors=["#heroPhoto","#coupleName","#heroEyebrow","#heroTitle","#heroDescription","#myListToggle","#playStory","[data-command='description']","#memoriesTitle","#viewAllMemories","#myListTitle","#emptyList",".site-footer",".category-nav [data-ce-field]",".bottom-nav [data-ce-field]","#slideImage","#slideCaption","#dialogTitle","#dialogCopy","#dialogExtra","#dialogKicker",".description-content","[data-memory-id]","[data-ce-field]"];
       document.querySelectorAll(selectors.join(",")).forEach(function(node){node.classList.add("ce-editable-target");});
     }
+    function ceUpdateOpenContent(){
+      var dialog=document.getElementById("dialog");
+      if(dialog&&!dialog.hidden){
+        var kind=dialog.dataset.cinemaDialogKind||"";
+        function put(selector,value){var node=dialog.querySelector(selector);if(node)node.textContent=String(value==null?"":value);}
+        if(kind==="description"){
+          put("#dialogTitle",texts.letterTitle||t("letterTitleDefault"));
+          var body=dialog.querySelector(".description-body");
+          if(body){
+            body.replaceChildren();
+            String(texts.letterBody||t("letterBodyDefault")).split(/\r?\n\s*\r?\n/).forEach(function(paragraph){
+              if(!paragraph.trim())return;
+              var p=document.createElement("p");p.textContent=paragraph.trim();body.appendChild(p);
+            });
+            if(!body.children.length){var p=document.createElement("p");p.textContent=texts.letterBody||"";body.appendChild(p);}
+          }
+          put(".description-closing",texts.letterEnding||t("letterEndingDefault"));
+          put(".description-signature",texts.letterTo||t("letterToDefault"));
+        }else if(kind==="profile"){
+          put("#dialogTitle",texts.brand||"ALEX & JAMIE");
+          put("#dialogCopy",texts.heroIntro||t("defaultDescription"));
+        }else if(kind==="memory"){
+          var memoryIndex=Number(dialog.dataset.cinemaMemoryIndex);
+          var item=memories.find(function(memory){return memory.index===memoryIndex;});
+          if(item){
+            put("#dialogTitle",item.title);put("#dialogCopy",item.description);
+            var image=dialog.querySelector("#dialogExtra [data-cinema-memory-index]");
+            if(image)image.style.backgroundImage='url("'+item.image.replace(/"/g,"%22")+'")';
+          }
+        }else if(kind==="list"){
+          put("#dialogTitle",texts.uiMyListHeading||t("list"));
+          dialog.querySelectorAll("[data-memory-id]").forEach(function(card){
+            var item=memories.find(function(memory){return memory.id===card.dataset.memoryId;});
+            if(item){
+              var label=card.querySelector("strong");if(label)label.textContent=item.title;
+              card.style.backgroundImage='linear-gradient(180deg,transparent,#000b),url("'+item.image.replace(/"/g,"%22")+'")';
+            }
+          });
+          var story=dialog.querySelector('[data-cinema-story-card="1"]');
+          if(story){
+            var storyLabel=story.querySelector("strong");if(storyLabel)storyLabel.textContent=texts.heroTitle||t("defaultTitle");
+            var cover=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
+            if(cover)story.style.backgroundImage='linear-gradient(180deg,transparent,#000d),url("'+cover.replace(/"/g,"%22")+'") center/cover';
+          }
+          var empty=dialog.querySelector('[data-ce-field="ceEmptyList"]');
+          if(empty)empty.textContent=texts.uiEmptyList||t("empty");
+        }
+      }
+      var slideshow=document.getElementById("slideshow");
+      if(slideshow&&!slideshow.hidden){
+        var activeIndex=Number(slideshow.dataset.cinemaMemoryIndex);
+        var nextIndex=memories.findIndex(function(memory){return memory.index===activeIndex;});
+        if(nextIndex>=0)currentSlide=nextIndex;
+        else if(memories.length)currentSlide=Math.min(currentSlide,memories.length-1);
+        if(memories.length)renderSlide();else stopSlideshow();
+      }
+    }
     function ceRefreshPage(){
-      updateHero();memories=buildMemories();applyTranslations();updateSections();ceMarkEditableTargets();
+      updateHero();memories=buildMemories();applyTranslations();updateSections();ceUpdateOpenContent();ceMarkEditableTargets();
     }
     function ceSetText(key,value){texts[key]=String(value==null?"":value);ceRefreshPage();ceQueueSave();}
     function ceReadImage(file){
@@ -1218,8 +1280,7 @@
       }
       applyExperience();
       document.getElementById("emptyList").hidden=storySaved||savedIds.length>0;
-      if(memories.length===0){var empty=document.createElement("div");empty.className="empty-state ce-editable-target";empty.dataset.ceField="ceNoPhotos";empty.textContent=texts.uiNoPhotos||t("noPhotos");document.getElementById("memoryRail").appendChild(empty);}
-      if(editMode){ceMarkEditableTargets();ceBind();}
+            if(editMode){ceMarkEditableTargets();ceBind();}
     }
     setupEvents();
     loadExperience().catch(function(error){
