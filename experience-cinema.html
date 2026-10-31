@@ -102,17 +102,6 @@
     .memory-card:hover .memory-save,.memory-save:focus-visible,.memory-save.is-saved{opacity:1}
     .memory-save svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8}
     .memory-save.is-saved{color:#ffc5c5;background:#481d24}
-    .chapter-card{
-      flex:0 0 clamp(210px,25vw,310px);min-height:148px;padding:16px;border:1px solid rgba(255,255,255,.09);
-      border-radius:10px;background:linear-gradient(145deg,#25201e,#101010);text-align:left;cursor:pointer
-    }
-    .chapter-kicker{display:block;margin:0 0 16px;color:#d49b91;font:800 8px/1.3 Manrope,sans-serif;letter-spacing:2px;text-transform:uppercase}
-    .chapter-card strong{display:block;margin:0 0 6px;color:#fff;font:800 15px/1.25 Manrope,sans-serif}
-    .chapter-card span:last-child{display:block;color:#c2bab4;font:500 10px/1.5 "DM Sans",sans-serif}
-    .discovery-card{flex:0 0 clamp(210px,25vw,310px);min-height:134px;padding:18px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#121212;text-align:left;cursor:pointer}
-    .discovery-card .chapter-kicker{margin-bottom:13px}
-    .discovery-card strong{display:block;margin-bottom:7px;font:800 14px/1.3 Manrope,sans-serif}
-    .discovery-card span:last-child{display:block;color:#c1bab5;font:500 10px/1.55 "DM Sans",sans-serif}
     .empty-state{padding:23px 18px;border:1px dashed #ffffff27;border-radius:10px;color:#aaa;font-size:11px;line-height:1.6}
     .my-list-shelf{display:none}
     .my-list-shelf.is-visible{display:block}
@@ -180,7 +169,6 @@
       .memory-card{flex-basis:clamp(116px,27vw,165px);width:clamp(116px,27vw,165px);border-radius:9px}
       .memory-caption{font-size:9px;padding:22px 8px 9px}
       .memory-save{opacity:1;width:26px;height:26px}
-      .chapter-card,.discovery-card{flex-basis:235px}
       .bottom-nav button{height:54px;font-size:7.5px}
       .bottom-nav button svg{width:21px;height:21px}
       .dialog-panel{padding:23px 18px}
@@ -208,13 +196,13 @@
         <a href="#home" class="brand" aria-label="Lovena home"><span class="brand-mark" aria-hidden="true">L</span><span class="brand-name">LOVENA</span></a>
         <div class="top-actions" aria-label="Quick actions">
           <button class="icon-btn" type="button" data-command="search" aria-label="Search memories" title="Search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg></button>
-          <button class="icon-btn" type="button" data-command="discover" aria-label="Discover a special moment" title="Discover"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="notification-dot"></span></button>
+          <button class="icon-btn" type="button" data-command="list" aria-label="Open My List" title="Discover"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="notification-dot"></span></button>
           <button class="avatar-btn" type="button" data-command="profile" aria-label="About this story" title="About"><span>♡</span></button>
           <button class="icon-btn" type="button" data-command="filters" aria-label="Browse sections" title="Browse"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="#050505"/><circle cx="15" cy="12" r="2" fill="#050505"/><circle cx="7" cy="18" r="2" fill="#050505"/></svg></button>
         </div>
       </header>
       <nav class="category-nav" aria-label="Browse story">
-        <a href="#chapters">Our Story</a>
+        <a href="#" data-command="profile">Our Story</a>
         <a href="#memories">Memories</a>
         <a href="#my-list">My List</a>
       </nav>
@@ -242,25 +230,11 @@
       </div>
     </section>
 
-    <section class="shelf" id="chapters" hidden aria-labelledby="chaptersTitle">
-      <div class="shelf-inner">
-        <div class="shelf-heading"><h2 id="chaptersTitle">OUR CHAPTERS</h2></div>
-        <div class="rail" id="chapterRail" aria-label="Chapters in our story"></div>
-      </div>
-    </section>
-
     <section class="shelf my-list-shelf" id="my-list" aria-labelledby="myListTitle">
       <div class="shelf-inner">
         <div class="shelf-heading"><h2 id="myListTitle">MY LIST</h2></div>
         <div class="rail" id="savedRail"></div>
         <div class="empty-state" id="emptyList">Save a memory with the plus button to keep it here.</div>
-      </div>
-    </section>
-
-    <section class="shelf" id="discover" hidden aria-labelledby="discoverTitle">
-      <div class="shelf-inner">
-        <div class="shelf-heading"><h2 id="discoverTitle">JUST FOR US</h2></div>
-        <div class="rail" id="discoveryRail" aria-label="Little surprises"></div>
       </div>
     </section>
 
@@ -270,9 +244,9 @@
   <nav class="bottom-nav" aria-label="Main navigation">
     <button type="button" data-destination="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Home</span></button>
     <button type="button" data-destination="memories"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span>Memories</span></button>
-    <button type="button" data-destination="chapters"><svg viewBox="0 0 24 24"><path d="M4 5.5h16v14H4zM8 9h8M8 13h8M8 17h5"/></svg><span>Our Story</span></button>
     <button type="button" data-destination="my-list"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg><span>My List</span></button>
-    <button type="button" data-destination="discover"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8Z"/></svg><span>Discover</span></button>
+    <button type="button" data-command="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg><span>Search</span></button>
+    <button type="button" data-command="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6.8 19a5.8 5.8 0 0 1 10.4 0"/></svg><span>About</span></button>
   </nav>
 
   <section class="overlay" id="dialog" hidden aria-modal="true" role="dialog" aria-labelledby="dialogTitle">
@@ -317,9 +291,9 @@
       ["A celebration together","https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=700&q=85"]
     ];
     var ui={
-      en:{story:"Our Story",memories:"Memories",list:"My List",play:"Play",info:"Info",viewAll:"View all",chapters:"OUR CHAPTERS",discover:"JUST FOR US",home:"Home",saved:"Saved",save:"My List",empty:"Save a memory with the plus button to keep it here.",footer:"A PRIVATE WORLD, MADE WITH LOVE · LOVENA",eyebrow:"A LOVENA ORIGINAL",defaultTitle:"You are my favourite story.",defaultDescription:"A world made of the moments, smiles and little memories that belong only to us.",search:"Search memories",searchPlaceholder:"Search a moment...",close:"Close",noResults:"No memories match your search.",noPhotos:"No photos have been added to this story yet.",share:"Share this story",chaptersEmpty:"The chapters of your story will appear here.",discoverEmpty:"Little surprises will appear here."},
-      "pt-BR":{story:"Nossa história",memories:"Memórias",list:"Minha lista",play:"Reproduzir",info:"Informações",viewAll:"Ver todas",chapters:"NOSSOS CAPÍTULOS",discover:"SÓ PARA NÓS",home:"Início",saved:"Salvo",save:"Minha lista",empty:"Salve uma lembrança no botão de adicionar para guardá-la aqui.",footer:"UM MUNDO PARTICULAR, FEITO COM AMOR · LOVENA",eyebrow:"UMA HISTÓRIA LOVENA",defaultTitle:"Você é minha história favorita.",defaultDescription:"Um mundo feito de momentos, sorrisos e pequenas lembranças que pertencem só a nós.",search:"Buscar lembranças",searchPlaceholder:"Busque um momento...",close:"Fechar",noResults:"Nenhuma lembrança corresponde à busca.",noPhotos:"Ainda não foram adicionadas fotos a esta história.",share:"Compartilhar esta história",chaptersEmpty:"Os capítulos da história aparecerão aqui.",discoverEmpty:"Pequenas surpresas aparecerão aqui."},
-      es:{story:"Nuestra historia",memories:"Recuerdos",list:"Mi lista",play:"Reproducir",info:"Información",viewAll:"Ver todos",chapters:"NUESTROS CAPÍTULOS",discover:"SOLO PARA NOSOTROS",home:"Inicio",saved:"Guardado",save:"Mi lista",empty:"Guarda un recuerdo con el botón de añadir para tenerlo aquí.",footer:"UN MUNDO PRIVADO, HECHO CON AMOR · LOVENA",eyebrow:"UNA HISTORIA LOVENA",defaultTitle:"Eres mi historia favorita.",defaultDescription:"Un mundo hecho de momentos, sonrisas y pequeños recuerdos que solo nos pertenecen.",search:"Buscar recuerdos",searchPlaceholder:"Busca un momento...",close:"Cerrar",noResults:"No hay recuerdos que coincidan con tu búsqueda.",noPhotos:"Aún no se han añadido fotos a esta historia.",share:"Compartir esta historia",chaptersEmpty:"Los capítulos de vuestra historia aparecerán aquí.",discoverEmpty:"Pequeñas sorpresas aparecerán aquí."}
+      en:{story:"Our Story",memories:"Memories",list:"My List",play:"Play",info:"Info",viewAll:"View all",home:"Home",searchNav:"Search",about:"About",saved:"Saved",save:"My List",empty:"Save a memory with the plus button to keep it here.",footer:"A PRIVATE WORLD, MADE WITH LOVE · LOVENA",eyebrow:"A LOVENA ORIGINAL",defaultTitle:"You are my favourite story.",defaultDescription:"A world made of the moments, smiles and little memories that belong only to us.",search:"Search memories",searchPlaceholder:"Search a moment...",close:"Close",noResults:"No memories match your search.",noPhotos:"No photos have been added to this story yet.",share:"Share this story"},
+      "pt-BR":{story:"Nossa história",memories:"Memórias",list:"Minha lista",play:"Reproduzir",info:"Informações",viewAll:"Ver todas",home:"Início",searchNav:"Buscar",about:"Sobre",saved:"Salvo",save:"Minha lista",empty:"Salve uma lembrança no botão de adicionar para guardá-la aqui.",footer:"UM MUNDO PARTICULAR, FEITO COM AMOR · LOVENA",eyebrow:"UMA HISTÓRIA LOVENA",defaultTitle:"Você é minha história favorita.",defaultDescription:"Um mundo feito de momentos, sorrisos e pequenas lembranças que pertencem só a nós.",search:"Buscar lembranças",searchPlaceholder:"Busque um momento...",close:"Fechar",noResults:"Nenhuma lembrança corresponde à busca.",noPhotos:"Ainda não foram adicionadas fotos a esta história.",share:"Compartilhar esta história"},
+      es:{story:"Nuestra historia",memories:"Recuerdos",list:"Mi lista",play:"Reproducir",info:"Información",viewAll:"Ver todos",home:"Inicio",searchNav:"Buscar",about:"Acerca de",saved:"Guardado",save:"Mi lista",empty:"Guarda un recuerdo con el botón de añadir para tenerlo aquí.",footer:"UN MUNDO PRIVADO, HECHO CON AMOR · LOVENA",eyebrow:"UNA HISTORIA LOVENA",defaultTitle:"Eres mi historia favorita.",defaultDescription:"Un mundo hecho de momentos, sonrisas y pequeños recuerdos que solo nos pertenecen.",search:"Buscar recuerdos",searchPlaceholder:"Busca un momento...",close:"Cerrar",noResults:"No hay recuerdos que coincidan con tu búsqueda.",noPhotos:"Aún no se han añadido fotos a esta historia.",share:"Compartir esta historia"}
     };
     function t(key){var lang=ui[locale]||ui.en;return lang[key]||ui.en[key]||key;}
     function safeUrl(value){
@@ -382,51 +356,6 @@
         out=fallbackPhotos.map(function(item,i){return makeMemory(item[1],item[0],"A beautiful moment, kept just for us.",i);});
       }
       return out;
-    }
-    function buildChapters(){
-      var milestones=Array.isArray(data.milestones)?data.milestones:[];
-      return milestones.map(function(item,i){
-        var title=Array.isArray(item)?item[0]:"";
-        var copy=Array.isArray(item)?item[1]:"";
-        var date=Array.isArray(item)?item[2]:"";
-        return {id:"chapter-"+i,title:title||"A chapter in our story",copy:copy||"",date:date||"A moment worth keeping"};
-      });
-    }
-    function buildDiscoveries(){
-      var surprises=data.surprises||{};
-      return Object.keys(surprises).filter(function(key){return surprises[key]&&typeof surprises[key]==="object"&&surprises[key].title;}).map(function(key){
-        return {id:"surprise-"+key,title:surprises[key].title,copy:surprises[key].copy||"",kicker:surprises[key].kicker||"A LITTLE SURPRISE"};
-      });
-    }
-    function renderChapters(){
-      var list=buildChapters(),section=document.getElementById("chapters"),rail=document.getElementById("chapterRail");
-      rail.replaceChildren();
-      if(!list.length){section.hidden=true;return;}
-      section.hidden=false;
-      list.forEach(function(item){
-        var card=document.createElement("button");card.type="button";card.className="chapter-card";
-        var kicker=document.createElement("span");kicker.className="chapter-kicker";kicker.textContent=item.date;
-        var title=document.createElement("strong");title.textContent=item.title;
-        var copy=document.createElement("span");copy.textContent=item.copy;
-        card.appendChild(kicker);card.appendChild(title);card.appendChild(copy);
-        card.addEventListener("click",function(){openDialog(item.date,item.title,item.copy);});
-        rail.appendChild(card);
-      });
-    }
-    function renderDiscoveries(){
-      var list=buildDiscoveries(),section=document.getElementById("discover"),rail=document.getElementById("discoveryRail");
-      rail.replaceChildren();
-      if(!list.length){section.hidden=true;return;}
-      section.hidden=false;
-      list.forEach(function(item){
-        var card=document.createElement("button");card.type="button";card.className="discovery-card";
-        var kicker=document.createElement("span");kicker.className="chapter-kicker";kicker.textContent=item.kicker;
-        var title=document.createElement("strong");title.textContent=item.title;
-        var copy=document.createElement("span");copy.textContent=item.copy;
-        card.appendChild(kicker);card.appendChild(title);card.appendChild(copy);
-        card.addEventListener("click",function(){openDialog(item.kicker,item.title,item.copy);});
-        rail.appendChild(card);
-      });
     }
     function renderMyList(){
       var section=document.getElementById("my-list"),rail=document.getElementById("savedRail"),empty=document.getElementById("emptyList");
@@ -499,7 +428,7 @@
       setText("viewAllMemories",t("viewAll"));
       setText("emptyList",t("empty"));
       document.querySelectorAll(".category-nav a").forEach(function(node,i){node.textContent=[t("story"),t("memories"),t("list")][i];});
-      document.querySelectorAll(".bottom-nav button span").forEach(function(node,i){node.textContent=[t("home"),t("memories"),t("story"),t("list"),locale==="pt-BR"?"Descobrir":"Discover"][i];});
+      document.querySelectorAll(".bottom-nav button span").forEach(function(node,i){node.textContent=[t("home"),t("memories"),t("list"),t("searchNav"),t("about")][i];});
       setText("memoriesTitle","MY MEMORY");
       var brand=document.querySelector(".brand-name");if(brand&&texts.brand)brand.textContent=texts.brand.toUpperCase();
       document.querySelector(".site-footer").textContent=t("footer");
@@ -556,7 +485,7 @@
     }
     function updateSections(){
       renderRail(document.getElementById("memoryRail"),memories,renderMemoryCard);
-      renderChapters();renderDiscoveries();renderMyList();updateMyListButton();initAutoRail();
+      renderMyList();updateMyListButton();initAutoRail();
     }
     function handleSearch(){
       var panel=document.createElement("div");panel.style.cssText="display:grid;gap:8px";
@@ -580,27 +509,27 @@
     function openProfile(){openDialog("LOVENA",texts.brand||"A story made for two",texts.heroIntro||t("defaultDescription"));}
     function scrollTo(id){
       var node=document.getElementById(id);
-      if(!node||node.hidden||(id==="my-list"&&!savedIds.length)|| (id==="discover"&&!buildDiscoveries().length) || (id==="chapters"&&!buildChapters().length)){
-        showToast(id==="my-list"?t("empty"):id==="chapters"?t("chaptersEmpty"):id==="discover"?t("discoverEmpty"):t("noPhotos"));return;
+      if(!node||node.hidden||(id==="my-list"&&!storySaved&&savedIds.length===0)){
+        showToast(id==="my-list"?t("empty"):t("noPhotos"));return;
       }
       node.scrollIntoView({behavior:"smooth",block:"start"});
     }
     function openBrowse(){
       var panel=document.createElement("div");panel.style.cssText="display:grid;gap:8px";
-      [["memories",t("memories")],["chapters",t("story")],["my-list",t("list")],["discover",t("discover")]].forEach(function(entry){
+      [["memories",t("memories"),function(){scrollTo("memories");}],["my-list",t("list"),function(){scrollTo("my-list");}],["about",t("about"),function(){openProfile();}]].forEach(function(entry){
         var button=document.createElement("button");button.type="button";button.textContent=entry[1];
         button.style.cssText="padding:13px 14px;text-align:left;border:1px solid #ffffff20;border-radius:7px;background:#1a1a1a;color:#fff;cursor:pointer";
-        button.addEventListener("click",function(){closeDialog();scrollTo(entry[0]);});
+        button.addEventListener("click",function(){closeDialog();entry[2]();});
         panel.appendChild(button);
       });
       openDialog("BROWSE","Explore this story","",panel);
     }
     function command(name){
       if(name==="search")handleSearch();
-      if(name==="discover"){scrollTo("discover");}
+      if(name==="list")scrollTo("my-list");
       if(name==="profile")openProfile();
       if(name==="filters")openBrowse();
-      if(name==="info")scrollTo("chapters");
+      if(name==="info")openProfile();
       if(name==="share")shareStory();
     }
     function setupEvents(){
@@ -615,8 +544,7 @@
         button.addEventListener("click",function(){
           var id=button.dataset.destination;
           document.querySelectorAll("[data-destination]").forEach(function(b){if(b===button)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
-          if(id==="my-list"&&!savedIds.length){scrollTo("my-list");}
-          else scrollTo(id);
+          scrollTo(id);
         });
       });
       document.querySelectorAll("[data-close-dialog]").forEach(function(button){button.addEventListener("click",closeDialog);});
@@ -647,7 +575,7 @@
       loadSaved();
       if(isDemo){
         experience={locale:"en"};
-        snapshot={texts:{heroTitle:"You are my favourite story.",heroIntro:"A private world made from the moments, smiles and little memories that belong only to us.",heroEyebrow:"A LOVENA ORIGINAL",brand:"ALEX & JAMIE"},images:{hero:fallbackHero,gallery:fallbackPhotos.map(function(p){return p[1];})},data:{photos:fallbackPhotos.map(function(p){return [p[0],"A beautiful moment, kept just for us."];}),milestones:[["The day we met","The beginning of a story neither of us could have planned.","A day that changed everything"],["Our first adventure","New places feel different when we discover them together.","A chapter to remember"],["Today and always","The best part is having a thousand little moments still to come.","The story continues"]],surprises:{card:{title:"A little thing I adore about you",copy:"It is the way you make ordinary days feel like the best days.",kicker:"A LITTLE REMINDER"},message:{title:"One thing to remember",copy:"No matter where life takes us, you will always be my favourite part of it.",kicker:"JUST FOR YOU"}}}};
+        snapshot={texts:{heroTitle:"You are my favourite story.",heroIntro:"A private world made from the moments, smiles and little memories that belong only to us.",heroEyebrow:"A LOVENA ORIGINAL",brand:"ALEX & JAMIE"},images:{hero:fallbackHero,gallery:fallbackPhotos.map(function(p){return p[1];})},data:{photos:fallbackPhotos.map(function(p){return [p[0],"A beautiful moment, kept just for us."];})}};
       }else{
         var response=await fetch(SUPABASE_URL+"/functions/v1/lovena-public-experience?slug="+encodeURIComponent(slug),{method:"GET",headers:{apikey:SUPABASE_KEY},cache:"no-store"});
         var body=await response.json().catch(function(){return {};});
