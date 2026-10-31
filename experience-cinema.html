@@ -613,7 +613,7 @@
     }
     function openBrowse(){
       var panel=document.createElement("div");panel.style.cssText="display:grid;gap:8px";
-      [["memories",t("memories"),function(){scrollTo("memories");}],["my-list",t("list"),function(){scrollTo("my-list");}],["about",t("about"),function(){openProfile();}]].forEach(function(entry){
+      [["memories",t("memories"),function(){scrollTo("memories");}],["my-list",t("list"),function(){openMyList();}],["about",t("about"),function(){openProfile();}]].forEach(function(entry){
         var button=document.createElement("button");button.type="button";button.textContent=entry[1];
         button.style.cssText="padding:13px 14px;text-align:left;border:1px solid #ffffff20;border-radius:7px;background:#1a1a1a;color:#fff;cursor:pointer";
         button.addEventListener("click",function(){closeDialog();entry[2]();});
