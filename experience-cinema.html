@@ -29,8 +29,10 @@
       overflow:hidden;background:#16100e;display:flex;align-items:flex-end
     }
     .hero-backdrop{position:absolute;z-index:0;inset:0;overflow:hidden;background:#16100e;transform:scale(1.015)}
-    .hero-backdrop img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 43%}
-    .hero-backdrop:after{content:"";position:absolute;inset:0;background:
+    .hero-backdrop img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
+    .hero-backdrop .hero-photo-fill{z-index:0;object-fit:cover;filter:blur(24px) brightness(.48);transform:scale(1.12);opacity:.78;pointer-events:none}
+    .hero-backdrop #heroPhoto{z-index:1;object-fit:contain;object-position:center;transform-origin:center center;will-change:transform}
+    .hero-backdrop:after{content:"";position:absolute;z-index:2;inset:0;pointer-events:none;background:
       linear-gradient(180deg,rgba(0,0,0,.64) 0%,rgba(0,0,0,.14) 22%,rgba(0,0,0,.05) 46%,rgba(0,0,0,.55) 71%,#050505 100%),
       linear-gradient(90deg,rgba(0,0,0,.34),transparent 72%)}
     .topbar{
@@ -189,7 +191,9 @@
     .ce-hero-crop-title small{color:#8a8179;font:500 9px "DM Sans",sans-serif}
     .ce-hero-crop-preview{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:7px;background:#1d1715;touch-action:none;cursor:grab;user-select:none}
     .ce-hero-crop-preview:active{cursor:grabbing}
-    .ce-hero-crop-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 43%;transform:scale(1);transform-origin:center center;pointer-events:none}
+    .ce-hero-crop-preview img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+    .ce-hero-crop-preview .ce-crop-fill{z-index:0;filter:blur(15px) brightness(.48);transform:scale(1.12)}
+    .ce-hero-crop-preview #ceHeroCropImage{z-index:1;object-fit:contain;object-position:center;transform-origin:center center;will-change:transform}
     .ce-hero-crop-guide{position:absolute;inset:0;pointer-events:none;opacity:.5;background:linear-gradient(90deg,transparent 33.1%,#fff8 33.3%,transparent 33.5%,transparent 66.4%,#fff8 66.6%,transparent 66.8%),linear-gradient(0deg,transparent 33.1%,#fff8 33.3%,transparent 33.5%,transparent 66.4%,#fff8 66.6%,transparent 66.8%)}
     .ce-crop-control{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
     .ce-crop-control label{color:#514942;font:700 9px Manrope,sans-serif}
@@ -420,10 +424,11 @@
         <div class="ce-field"><label for="ceHeroFile">Cover photo</label><div style="display:flex;gap:9px;align-items:center"><img id="ceHeroPreview" alt="Cover preview" style="width:58px;height:50px;object-fit:cover;border-radius:6px;background:#222"><input id="ceHeroFile" type="file" accept="image/*"></div><button id="ceHeroReset" class="ce-mini" type="button">Restore original cover</button>
           <div class="ce-hero-crop" id="ceHeroCrop">
             <div class="ce-hero-crop-title"><span>Adjust photo framing</span><small>Drag the photo or use the controls</small></div>
-            <div class="ce-hero-crop-preview" id="ceHeroCropPreview" role="application" aria-label="Drag photo to adjust its framing"><img id="ceHeroCropImage" alt="Live cover framing preview"><span class="ce-hero-crop-guide"></span></div>
+            <small class="ce-help">The full photo is visible by default. Zoom out for close-up portraits; reposition it when zoomed in.</small>
+            <div class="ce-hero-crop-preview" id="ceHeroCropPreview" role="application" aria-label="Drag photo to adjust its framing"><img id="ceHeroCropFill" class="ce-crop-fill" alt="" aria-hidden="true"><img id="ceHeroCropImage" alt="Live cover framing preview"><span class="ce-hero-crop-guide"></span></div>
             <div class="ce-crop-control"><label for="ceHeroX">Horizontal position</label><output id="ceHeroXValue">50%</output><input id="ceHeroX" type="range" min="0" max="100" step="1" value="50"></div>
             <div class="ce-crop-control"><label for="ceHeroY">Vertical position</label><output id="ceHeroYValue">43%</output><input id="ceHeroY" type="range" min="0" max="100" step="1" value="43"></div>
-            <div class="ce-crop-control"><label for="ceHeroZoom">Zoom</label><output id="ceHeroZoomValue">100%</output><input id="ceHeroZoom" type="range" min="100" max="180" step="1" value="100"></div>
+            <div class="ce-crop-control"><label for="ceHeroZoom">Zoom</label><output id="ceHeroZoomValue">100%</output><input id="ceHeroZoom" type="range" min="65" max="160" step="1" value="100"></div>
             <button class="ce-crop-reset" id="ceHeroFrameReset" type="button">Reset framing</button>
           </div>
         </div>
@@ -932,7 +937,7 @@
       heroPosition.y=Math.max(0,Math.min(100,heroPosition.y));
       heroScale=Number(snapshot.heroScale!=null?snapshot.heroScale:(experience&&experience.heroScale));
       if(!Number.isFinite(heroScale))heroScale=100;
-      heroScale=Math.max(100,Math.min(180,heroScale));
+      heroScale=Math.max(65,Math.min(160,heroScale));
       locale=(experience&&experience.locale)||snapshot.locale||"en";
       if(String(locale).toLowerCase().startsWith("pt"))locale="pt-BR";
       else if(String(locale).toLowerCase().startsWith("es"))locale="es";
@@ -1039,16 +1044,39 @@
       }
     }
     function ceApplyHeroFraming(){
-      var objectPosition=heroPosition.x+"% "+heroPosition.y+"%";
-      var zoom=Math.max(100,Math.min(180,Number(heroScale)||100))/100;
-      ["heroPhoto","ceHeroCropImage"].forEach(function(id){
+      var zoom=Math.max(65,Math.min(160,Number(heroScale)||100))/100;
+      var source=safeUrl(images.hero)||fallbackHero;
+      var absoluteSource;try{absoluteSource=new URL(source,document.baseURI).href;}catch(error){absoluteSource=source;}
+      ["heroPhoto","heroPhotoFill","ceHeroCropFill","ceHeroCropImage"].forEach(function(id){
         var node=document.getElementById(id);if(!node)return;
-        node.style.objectPosition=objectPosition;
-        node.style.transform="scale("+zoom+")";
+        if(node.src!==absoluteSource)node.src=source;
+      });
+      [
+        {id:"heroPhoto",container:"heroBackdrop"},
+        {id:"ceHeroCropImage",container:"ceHeroCropPreview"}
+      ].forEach(function(entry){
+        var node=document.getElementById(entry.id),host=document.getElementById(entry.container);
+        if(!node||!host)return;
+        if(!node.dataset.ceFrameLoadBound){
+          node.addEventListener("load",function(){ceApplyHeroFraming();});
+          node.dataset.ceFrameLoadBound="1";
+        }
+        var width=host.clientWidth||node.clientWidth||1;
+        var height=host.clientHeight||node.clientHeight||1;
+        var naturalWidth=node.naturalWidth||width;
+        var naturalHeight=node.naturalHeight||height;
+        var fit=Math.min(width/naturalWidth,height/naturalHeight);
+        var fittedWidth=naturalWidth*fit;
+        var fittedHeight=naturalHeight*fit;
+        var maxPanX=Math.max(0,(fittedWidth*zoom-width)/2);
+        var maxPanY=Math.max(0,(fittedHeight*zoom-height)/2);
+        var translateX=((50-heroPosition.x)/50)*maxPanX;
+        var translateY=((50-heroPosition.y)/50)*maxPanY;
+        node.style.objectFit="contain";
+        node.style.objectPosition="center";
+        node.style.transform="translate3d("+translateX.toFixed(2)+"px,"+translateY.toFixed(2)+"px,0) scale("+zoom+")";
         node.style.transformOrigin="center center";
       });
-      var preview=document.getElementById("ceHeroCropImage");
-      if(preview)preview.src=safeUrl(images.hero)||fallbackHero;
       [["ceHeroX",heroPosition.x],["ceHeroY",heroPosition.y],["ceHeroZoom",heroScale]].forEach(function(pair){
         var input=document.getElementById(pair[0]),value=document.getElementById(pair[0]+"Value");
         if(input)input.value=String(pair[1]);
