@@ -352,7 +352,7 @@
       return {id:"memory-"+index,image:safeUrl(image),title:title||"Memory "+(index+1),description:description||"",index:index};
     }
     function renderMemoryCard(memory){
-      var card=document.createElement("article");card.className="memory-card";card.dataset.memoryId=memory.id;card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","Open "+memory.title);
+      var card=document.createElement("div");card.className="memory-card";card.dataset.memoryId=memory.id;card.tabIndex=0;card.setAttribute("role","group");card.setAttribute("aria-label","Memory: "+memory.title);
       var image=document.createElement("div");image.className="memory-image";image.style.backgroundImage='url("'+memory.image.replace(/"/g,"%22")+'")';
       var caption=document.createElement("span");caption.className="memory-caption";caption.textContent=memory.title;
       var save=document.createElement("button");save.className="memory-save";save.type="button";save.setAttribute("aria-label",t("save"));
@@ -507,9 +507,8 @@
       var rail=document.getElementById("memoryRail");
       if(!rail||rail.dataset.loopReady==="1"||memories.length<3)return;
       rail.dataset.loopReady="1";
-      memories.forEach(function(item){rail.appendChild(renderMemoryCard(item).cloneNode(true));});
-      var clones=Array.from(rail.children).slice(memories.length);
-      var cycle=0,last=0,pausedUntil=0,drag=null;
+      memories.forEach(function(item){rail.appendChild(renderMemoryCard(item));});
+      var cycle=0,last=0,pausedUntil=0,drag=null,dragged=false;
       function measure(){var first=rail.children[0],clone=rail.children[memories.length];if(first&&clone)cycle=clone.offsetLeft-first.offsetLeft;}
       function tick(now){
         if(!last)last=now;
@@ -521,10 +520,30 @@
         railFrame=requestAnimationFrame(tick);
       }
       function pause(){pausedUntil=performance.now()+3600;railOffset=cycle?rail.scrollLeft%cycle:rail.scrollLeft;}
-      rail.addEventListener("pointerdown",function(event){pause();if(event.pointerType==="mouse"){drag={x:event.clientX,left:rail.scrollLeft};}});
-      rail.addEventListener("pointermove",function(event){if(!drag)return;var dx=event.clientX-drag.x;if(Math.abs(dx)>5){rail.scrollLeft=drag.left-dx;railOffset=cycle?rail.scrollLeft%cycle:rail.scrollLeft;}});
-      ["pointerup","pointercancel","pointerleave","wheel","touchstart","touchend","focusin"].forEach(function(type){rail.addEventListener(type,pause,{passive:true});});
-      rail.addEventListener("click",function(){pause();});
+      rail.addEventListener("pointerdown",function(event){
+        pause();
+        if(event.pointerType==="mouse"&&event.button===0){drag={x:event.clientX,left:rail.scrollLeft,id:event.pointerId,moved:false};dragged=false;}
+      });
+      rail.addEventListener("pointermove",function(event){
+        if(!drag||event.pointerId!==drag.id)return;
+        var dx=event.clientX-drag.x;
+        if(Math.abs(dx)>5)drag.moved=true;
+        if(drag.moved){event.preventDefault();rail.scrollLeft=drag.left-dx;railOffset=cycle?rail.scrollLeft%cycle:rail.scrollLeft;}
+      });
+      function finishDrag(event){
+        if(drag&&(!event.pointerId||event.pointerId===drag.id)){
+          dragged=drag.moved;drag=null;
+          if(dragged){rail.dataset.dragged="1";window.setTimeout(function(){rail.dataset.dragged="0";},180);}
+        }
+        pause();
+      }
+      ["pointerup","pointercancel","pointerleave","wheel","touchstart","touchend","focusin"].forEach(function(type){
+        rail.addEventListener(type,function(event){if(type==="pointerup"||type==="pointercancel"||type==="pointerleave")finishDrag(event);else pause();},{passive:type!=="pointermove"});
+      });
+      rail.addEventListener("click",function(event){
+        if(rail.dataset.dragged==="1"){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();}
+        else pause();
+      },true);
       rail.addEventListener("scroll",function(){if(!drag)railOffset=cycle?rail.scrollLeft%cycle:rail.scrollLeft;},{passive:true});
       window.addEventListener("resize",function(){measure();pause();});
       measure();railFrame=requestAnimationFrame(tick);
@@ -554,14 +573,27 @@
     }
     function openProfile(){openDialog("LOVENA",texts.brand||"A story made for two",texts.heroIntro||t("defaultDescription"));}
     function scrollTo(id){
-      var node=document.getElementById(id);if(!node){showToast(t(id==="chapters"?"chaptersEmpty":"discoverEmpty"));return;}
+      var node=document.getElementById(id);
+      if(!node||node.hidden||(id==="my-list"&&!savedIds.length)|| (id==="discover"&&!buildDiscoveries().length) || (id==="chapters"&&!buildChapters().length)){
+        showToast(id==="my-list"?t("empty"):id==="chapters"?t("chaptersEmpty"):id==="discover"?t("discoverEmpty"):t("noPhotos"));return;
+      }
       node.scrollIntoView({behavior:"smooth",block:"start"});
+    }
+    function openBrowse(){
+      var panel=document.createElement("div");panel.style.cssText="display:grid;gap:8px";
+      [["memories",t("memories")],["chapters",t("story")],["my-list",t("list")],["discover",t("discover")]].forEach(function(entry){
+        var button=document.createElement("button");button.type="button";button.textContent=entry[1];
+        button.style.cssText="padding:13px 14px;text-align:left;border:1px solid #ffffff20;border-radius:7px;background:#1a1a1a;color:#fff;cursor:pointer";
+        button.addEventListener("click",function(){closeDialog();scrollTo(entry[0]);});
+        panel.appendChild(button);
+      });
+      openDialog("BROWSE","Explore this story","",panel);
     }
     function command(name){
       if(name==="search")handleSearch();
       if(name==="discover"){scrollTo("discover");}
       if(name==="profile")openProfile();
-      if(name==="filters")openDialog("BROWSE","Explore this story","Choose a section from the navigation below to explore your memories, chapters and saved moments.");
+      if(name==="filters")openBrowse();
       if(name==="info")scrollTo("chapters");
       if(name==="share")shareStory();
     }
