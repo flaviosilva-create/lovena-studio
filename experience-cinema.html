@@ -931,6 +931,7 @@
         var kind=dialog.dataset.cinemaDialogKind||"";
         function put(selector,value){var node=dialog.querySelector(selector);if(node)node.textContent=String(value==null?"":value);}
         if(kind==="description"){
+          put("#dialogKicker",texts.uiDescription||t("descriptionKicker"));
           put("#dialogTitle",texts.letterTitle||t("letterTitleDefault"));
           var body=dialog.querySelector(".description-body");
           if(body){
@@ -946,11 +947,13 @@
         }else if(kind==="profile"){
           put("#dialogTitle",texts.brand||"ALEX & JAMIE");
           put("#dialogCopy",texts.heroIntro||t("defaultDescription"));
+          var profileCopy=dialog.querySelector("#dialogCopy");if(profileCopy)profileCopy.hidden=!(texts.heroIntro||t("defaultDescription"));
         }else if(kind==="memory"){
           var memoryIndex=Number(dialog.dataset.cinemaMemoryIndex);
           var item=memories.find(function(memory){return memory.index===memoryIndex;});
           if(item){
             put("#dialogTitle",item.title);put("#dialogCopy",item.description);
+            var memoryCopy=dialog.querySelector("#dialogCopy");if(memoryCopy)memoryCopy.hidden=!item.description;
             var image=dialog.querySelector("#dialogExtra [data-cinema-memory-index]");
             if(image)image.style.backgroundImage='url("'+item.image.replace(/"/g,"%22")+'")';
           }
