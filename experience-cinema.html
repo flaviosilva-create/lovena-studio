@@ -554,6 +554,7 @@
       list.forEach(function(item){rail.appendChild(renderMemoryCard(item));});
       var hasItems=storySaved||list.length>0;
       section.classList.toggle("is-visible",hasItems);empty.hidden=hasItems;empty.textContent=texts.uiEmptyList||t("empty");
+      if(document.body.classList.contains("cinema-edit-mode"))ceMarkEditableTargets();
     }
     function toggleSaved(id){
       var index=savedIds.indexOf(id);
@@ -1125,10 +1126,6 @@
       if(target.closest("#heroTitle"))return {fieldId:"ceTitle"};
       if(target.closest("#heroDescription"))return {fieldId:"ceIntro"};
       if(target.closest("#memoriesTitle"))return {fieldId:"ceGalleryHeading"};
-      if(target.closest("#myListToggle"))return {fieldId:"ceActionMyList"};
-      if(target.closest("#playStory"))return {fieldId:"ceActionPlay"};
-      if(target.closest('[data-command="description"]'))return {fieldId:"ceActionDescription"};
-      if(target.closest("#viewAllMemories"))return {fieldId:"ceViewAll"};
       if(target.closest("#myListTitle"))return {fieldId:"ceMyListHeading"};
       if(target.closest("#emptyList"))return {fieldId:"ceEmptyList"};
       if(target.closest(".site-footer"))return {fieldId:"ceFooter"};
