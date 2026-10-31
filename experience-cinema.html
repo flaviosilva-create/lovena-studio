@@ -521,7 +521,6 @@
       setText("heroEyebrow",texts.heroEyebrow||t("eyebrow"));
       var hero=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
       var heroPhoto=document.getElementById("heroPhoto");if(heroPhoto)heroPhoto.src=hero|| (isDemo?fallbackHero:"./assets/lovena-experience-hero-hq.jpg");
-      var brand=document.querySelector(".brand-name");if(brand)brand.textContent="LOVENA";
       document.title=coupleName+" — Lovena";
     }
     function applyTranslations(){
