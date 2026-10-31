@@ -326,9 +326,9 @@
         </div>
       </header>
       <nav class="category-nav" aria-label="Browse story">
-        <a href="#" data-command="profile" data-ce-field="ceNavStory">Our Story</a>
-        <a href="#memories" data-ce-field="ceNavMemories">Memories</a>
-        <a href="#" data-command="list" data-ce-field="ceNavList">My List</a>
+        <a id="ceNavStory" href="#" data-command="profile" data-ce-field="ceNavStory">Our Story</a>
+        <a id="ceNavMemories" href="#memories" data-ce-field="ceNavMemories">Memories</a>
+        <a id="ceNavList" href="#" data-command="list" data-ce-field="ceNavList">My List</a>
       </nav>
       <div class="hero-copy">
         <p class="eyebrow" id="heroEyebrow">A LOVENA ORIGINAL</p>
@@ -366,11 +366,11 @@
   </main>
 
   <nav class="bottom-nav" aria-label="Main navigation">
-    <button type="button" data-destination="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span data-ce-field="ceBottomHome">Home</span></button>
-    <button type="button" data-destination="memories"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span data-ce-field="ceBottomMemories">Memories</span></button>
-    <button type="button" data-destination="my-list"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg><span data-ce-field="ceBottomList">My List</span></button>
-    <button type="button" data-command="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg><span data-ce-field="ceBottomSearch">Search</span></button>
-    <button type="button" data-command="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6.8 19a5.8 5.8 0 0 1 10.4 0"/></svg><span data-ce-field="ceBottomAbout">About</span></button>
+    <button type="button" data-destination="home" data-ce-field="ceBottomHome" aria-current="page"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span id="ceBottomHome" data-ce-field="ceBottomHome">Home</span></button>
+    <button type="button" data-destination="memories" data-ce-field="ceBottomMemories"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span id="ceBottomMemories" data-ce-field="ceBottomMemories">Memories</span></button>
+    <button type="button" data-destination="my-list" data-ce-field="ceBottomList"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 1.6C21 15.6 12 21 12 21Z"/></svg><span id="ceBottomList" data-ce-field="ceBottomList">My List</span></button>
+    <button type="button" data-command="search" data-ce-field="ceBottomSearch"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg><span id="ceBottomSearch" data-ce-field="ceBottomSearch">Search</span></button>
+    <button type="button" data-command="profile" data-ce-field="ceBottomAbout"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6.8 19a5.8 5.8 0 0 1 10.4 0"/></svg><span id="ceBottomAbout" data-ce-field="ceBottomAbout">About</span></button>
   </nav>
 
   <section class="overlay" id="dialog" hidden aria-modal="true" role="dialog" aria-labelledby="dialogTitle">
@@ -543,12 +543,12 @@
       var list=memories.filter(function(item){return savedIds.indexOf(item.id)!==-1;});
       rail.replaceChildren();
       if(storySaved){
-        var story=document.createElement("button");story.type="button";story.className="memory-card";
+        var story=document.createElement("button");story.type="button";story.className="memory-card";story.dataset.ceField="ceHeroFile";
         var savedCover=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
         story.style.backgroundImage=savedCover?'linear-gradient(180deg,transparent,#000b),url("'+savedCover.replace(/"/g,"%22")+'")':'linear-gradient(145deg,#352321,#111)';
         story.style.backgroundColor="#16100f";
         story.style.backgroundSize="cover";story.style.backgroundPosition="center";story.style.display="flex";story.style.flexDirection="column";story.style.justifyContent="flex-end";story.style.padding="12px";story.style.textAlign="left";
-        var storyTitle=document.createElement("strong");storyTitle.textContent=texts.heroTitle||t("defaultTitle");storyTitle.style.cssText="position:relative;z-index:2;font:800 12px/1.3 Manrope,sans-serif;text-shadow:0 2px 8px #000";
+        var storyTitle=document.createElement("strong");storyTitle.dataset.ceField="ceTitle";storyTitle.textContent=texts.heroTitle||t("defaultTitle");storyTitle.style.cssText="position:relative;z-index:2;font:800 12px/1.3 Manrope,sans-serif;text-shadow:0 2px 8px #000";
         story.appendChild(storyTitle);story.addEventListener("click",function(){startSlideshow(0);});rail.appendChild(story);
       }
       list.forEach(function(item){rail.appendChild(renderMemoryCard(item));});
@@ -566,6 +566,7 @@
     function openDialog(kicker,title,copy,extra){
       var dialog=document.getElementById("dialog");
       dialog.dataset.cinemaDialogKind="";dialog.dataset.cinemaMemoryIndex="";
+      document.getElementById("dialogKicker").removeAttribute("data-ce-field");
       dialog.classList.remove("is-description");
       setText("dialogKicker",kicker||"LOVENA");setText("dialogTitle",title||"Our story");setText("dialogCopy",copy||"");
       document.getElementById("dialogCopy").hidden=!copy;
@@ -640,7 +641,7 @@
     function updateMyListButton(){
       var saved=storySaved,button=document.getElementById("myListToggle");
       button.classList.toggle("is-saved",saved);button.setAttribute("aria-pressed",saved?"true":"false");
-      setText("myListIcon",saved?"✓":"＋");setText("myListLabel",saved?t("saved"):t("list"));
+      setText("myListIcon",saved?"✓":"＋");setText("myListLabel",texts.uiActionMyList||(saved?t("saved"):t("list")));
     }
     function initAutoRail(){
       var rail=document.getElementById("memoryRail");
@@ -806,9 +807,9 @@
       var entries=memories.filter(function(item){return savedIds.indexOf(item.id)!==-1;});
       if(storySaved){
         var cover=safeUrl(images.hero)||(Array.isArray(images.gallery)&&safeUrl(images.gallery[0]))||"";
-        var story=document.createElement("button");story.type="button";story.dataset.cinemaStoryCard="1";
+        var story=document.createElement("button");story.type="button";story.dataset.cinemaStoryCard="1";story.dataset.ceField="ceHeroFile";
         story.style.cssText="min-height:142px;padding:10px;display:flex;align-items:flex-end;text-align:left;border:1px solid #ffffff22;border-radius:8px;background:"+(cover?'linear-gradient(180deg,transparent,#000d),url("'+cover.replace(/"/g,"%22")+'") center/cover':'linear-gradient(145deg,#342321,#111)')+";color:#fff;cursor:pointer";
-        var storyLabel=document.createElement("strong");storyLabel.textContent=texts.heroTitle||t("defaultTitle");storyLabel.style.cssText="font:800 11px/1.3 Manrope,sans-serif;text-shadow:0 2px 8px #000";
+        var storyLabel=document.createElement("strong");storyLabel.dataset.ceField="ceTitle";storyLabel.textContent=texts.heroTitle||t("defaultTitle");storyLabel.style.cssText="font:800 11px/1.3 Manrope,sans-serif;text-shadow:0 2px 8px #000";
         story.appendChild(storyLabel);story.addEventListener("click",function(){closeDialog();startSlideshow(0);});panel.appendChild(story);
       }
       entries.forEach(function(item){
@@ -1091,14 +1092,18 @@
       if(dialog){
         var kind=dialog.dataset.cinemaDialogKind||"";
         if(kind==="memory"){
-          var memoryIndex=Number(dialog.dataset.cinemaMemoryIndex);
-          if(Number.isFinite(memoryIndex))return {photoIndex:memoryIndex};
+          if(target.closest("[data-close-dialog]"))return null;
+          if(target.closest("#dialogKicker"))return {fieldId:"ceNavMemories"};
+          if(target.closest("#dialogTitle,#dialogCopy,#dialogExtra")) {
+            var memoryIndex=Number(dialog.dataset.cinemaMemoryIndex);
+            if(Number.isFinite(memoryIndex))return {photoIndex:memoryIndex};
+          }
         }
         if(kind==="description"){
           if(target.closest("#dialogKicker"))return {fieldId:"ceActionDescription"};
           if(target.closest(".description-closing"))return {fieldId:"ceDescEnding"};
           if(target.closest(".description-signature"))return {fieldId:"ceDescSign"};
-          if(target.closest(".description-body,#dialogCopy"))return {fieldId:"ceDescBody"};
+          if(target.closest(".description-body,#dialogCopy,.description-content"))return {fieldId:"ceDescBody"};
           if(target.closest(".dialog-title"))return {fieldId:"ceDescTitle"};
         }
         if(kind==="profile"){
