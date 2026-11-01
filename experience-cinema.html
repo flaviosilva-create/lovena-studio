@@ -836,6 +836,14 @@
       setTimeout(function(){input.focus();},50);
     }
     function shareStory(){
+      if(editMode&&previewMode){
+        var previewShareMessages={
+          en:"This is a local preview. Publish the experience to share its final link.",
+          "pt-BR":"Esta é uma prévia local. Publique a experiência para compartilhar o link definitivo.",
+          es:"Esta es una vista previa local. Publica la experiencia para compartir el enlace final."
+        };
+        showToast(previewShareMessages[locale]||previewShareMessages.en);return;
+      }
       var url=location.href;
       if(navigator.share){navigator.share({title:document.title,url:url}).catch(function(){});}
       else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){showToast(t("share"));}).catch(function(){showToast(url);});}
@@ -1183,6 +1191,9 @@
       label.textContent=labels[locale]||labels.en;
       trigger.setAttribute("aria-label",labels[locale]||labels.en);
       trigger.setAttribute("aria-expanded",previewMode?"false":(document.getElementById("cinemaEditor").classList.contains("is-open")?"true":"false"));
+      var previewButton=document.getElementById("cePreview");
+      var previewLabels={en:"Preview page · test all features","pt-BR":"Visualizar página · testar funções","es":"Vista previa · probar funciones"};
+      if(previewButton)previewButton.textContent=previewLabels[locale]||previewLabels.en;
     }
     function ceEnterPreview(){
       clearTimeout(cinemaEditorSaveTimer);
