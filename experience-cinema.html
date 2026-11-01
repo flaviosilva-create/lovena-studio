@@ -952,8 +952,13 @@
       }
       var frame=document.createElement("iframe");
       frame.src=parsed.src;frame.title="Lovena music player · "+parsed.title;
-      frame.loading="eager";frame.allow="autoplay; encrypted-media; fullscreen; picture-in-picture";
-      frame.referrerPolicy="strict-origin-when-cross-origin";frame.allowFullscreen=true;
+      frame.loading="eager";
+      frame.allow="autoplay; encrypted-media; picture-in-picture";
+      frame.referrerPolicy="strict-origin-when-cross-origin";
+      /* Keep provider links and app handoffs inside this embedded player.
+         No allow-top-navigation or allow-popups: tapping a provider logo must not leave Lovena. */
+      frame.setAttribute("sandbox","allow-scripts allow-same-origin allow-presentation");
+      frame.allowFullscreen=false;
       if(parsed.type==="youtube")frame.className="is-youtube";
       if(parsed.type==="apple")frame.className="is-apple";
       content.appendChild(frame);
