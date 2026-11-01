@@ -80,6 +80,20 @@
     .play-button svg{width:20px;height:20px;fill:currentColor}
     .soundless-action{display:grid;place-items:center;width:42px;height:42px;padding:0;border:1px solid rgba(255,255,255,.8);border-radius:50%;background:#0004;color:#fff;cursor:pointer}
     .soundless-action svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .music-player-panel{position:fixed;z-index:85;right:15px;bottom:calc(var(--nav-h) + 14px + env(safe-area-inset-bottom,0px));width:min(350px,calc(100vw - 30px));padding:12px;border:1px solid rgba(229,9,20,.48);border-radius:12px;background:rgba(12,12,12,.97);color:#fff;box-shadow:0 14px 42px #000b;backdrop-filter:blur(16px)}
+    .music-player-panel[hidden]{display:none!important}
+    .music-player-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .music-player-heading{display:grid;gap:3px;min-width:0}
+    .music-player-heading small{color:#f06b72;font:800 8px/1.2 Manrope,sans-serif;letter-spacing:1.8px}
+    .music-player-heading strong{overflow:hidden;color:#fff;font:800 12px/1.3 Manrope,sans-serif;text-overflow:ellipsis;white-space:nowrap}
+    .music-player-close{flex:0 0 30px;width:30px;height:30px;border:1px solid #ffffff30;border-radius:50%;background:#242424;color:#fff;font:400 20px/1 Arial,sans-serif;cursor:pointer}
+    .music-player-content{width:100%;min-height:44px;overflow:hidden;border-radius:8px;background:#171717}
+    .music-player-content iframe{display:block;width:100%;height:152px;border:0;border-radius:8px;background:#171717}
+    .music-player-content iframe.is-youtube{height:190px}
+    .music-player-content audio{display:block;width:100%;height:44px}
+    .music-player-note{margin:8px 2px 0;color:#aaa;font:500 9px/1.45 "DM Sans",sans-serif}
+    .icon-btn.is-music-open{color:#ff7b83}
+    @media(max-width:650px){.music-player-panel{right:10px;bottom:calc(var(--nav-h) + 10px + env(safe-area-inset-bottom,0px));width:min(340px,calc(100vw - 20px));padding:10px}.music-player-content iframe.is-youtube{height:170px}}
     .shelf{position:relative;z-index:2;padding:18px clamp(17px,5.3vw,76px) 27px;background:#050505}
     .shelf-inner{max-width:1500px;margin:0 auto}
     .shelf-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 13px}
@@ -345,6 +359,7 @@
       <header class="topbar">
         <a href="#home" class="brand" aria-label="Lovena home"><span class="brand-mark" aria-hidden="true">L</span><span class="brand-name" id="coupleName">Alice <span class="name-ampersand">&amp;</span> James</span></a>
         <div class="top-actions" aria-label="Quick actions">
+          <button class="icon-btn" type="button" id="musicToggle" data-ce-field="ceMusicUrl" aria-label="Play music" title="Music" hidden><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
           <button class="icon-btn" type="button" data-command="search" aria-label="Search memories" title="Search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg></button>
           <button class="icon-btn" type="button" data-command="list" aria-label="Open My List" title="Discover"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="notification-dot"></span></button>
           <button class="avatar-btn" type="button" data-command="profile" aria-label="About this story" title="About"><span>♡</span></button>
@@ -419,6 +434,14 @@
       <button class="slide-control slide-next" type="button" id="nextSlide" aria-label="Next memory">›</button>
     </div>
   </section>
+  <aside class="music-player-panel" id="musicPlayerPanel" hidden aria-label="Music player">
+    <div class="music-player-head">
+      <div class="music-player-heading"><small>LOVENA SOUNDTRACK</small><strong id="musicPlayerTitle">Our song</strong></div>
+      <button class="music-player-close" id="musicPlayerClose" type="button" aria-label="Close music player">×</button>
+    </div>
+    <div class="music-player-content" id="musicPlayerContent"></div>
+    <p class="music-player-note" id="musicPlayerNote"></p>
+  </aside>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <aside id="cinemaEditHint" role="note" aria-live="polite">
@@ -447,6 +470,10 @@
             <button class="ce-crop-reset" id="ceHeroFrameReset" type="button">Reset framing</button>
           </div>
         </div>
+      </div></details>
+      <details class="ce-section"><summary>Music</summary><div class="ce-fields">
+        <div class="ce-field"><label for="ceMusicUrl">Song link</label><input id="ceMusicUrl" type="url" maxlength="500" placeholder="Paste a Spotify, Apple Music or YouTube Music link"><small class="ce-help">Add one song. It will play inside this page when someone taps the music button. Spotify and Apple Music may require pressing Play in their embedded player.</small></div>
+        <button id="ceMusicTest" class="ce-mini" type="button">Test music</button>
       </div></details>
       <details class="ce-section"><summary>Description screen</summary><div class="ce-fields">
         <div class="ce-field"><label for="ceDescTitle">Description title</label><input id="ceDescTitle" maxlength="100"></div>
@@ -503,7 +530,7 @@
     var editMode=params.get("edit")==="1"&&!slug;
     var previewMode=false;
     var CINEMA_EDIT_KEY="lovenaCinemaExperienceDraftV1";
-    var payload=null,experience=null,snapshot={},texts={},data={},images={};
+    var payload=null,experience=null,snapshot={},texts={},data={},images={},musicConfig={url:""};
     var heroPosition={x:50,y:43},heroScale=100;
     var locale="en",savedIds=[],storySaved=false,memories=[],currentSlide=0,slideTimer=0,toastTimer=0,railFrame=0,railPaused=false,railOffset=0,railLast=0;
     var fallbackHero="./assets/lovena-experience-hero-hq.jpg";
@@ -849,6 +876,82 @@
       else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){showToast(t("share"));}).catch(function(){showToast(url);});}
       else showToast(url);
     }
+    function updateMusicButton(){
+      var button=document.getElementById("musicToggle");
+      if(!button)return;
+      var hasLink=!!String(musicConfig.url||"").trim();
+      button.hidden=!hasLink&&!(editMode&&!previewMode);
+      button.classList.toggle("is-music-open",!!(document.getElementById("musicPlayerPanel")&&!document.getElementById("musicPlayerPanel").hidden));
+      button.setAttribute("aria-expanded",String(!!(document.getElementById("musicPlayerPanel")&&!document.getElementById("musicPlayerPanel").hidden)));
+      var labels={en:"Play music","pt-BR":"Reproduzir música",es:"Reproducir música"};
+      button.setAttribute("aria-label",labels[locale]||labels.en);
+      button.title=labels[locale]||labels.en;
+    }
+    function parseMusicLink(raw){
+      var url;try{url=new URL(String(raw||"").trim());}catch(error){return null;}
+      if(url.protocol!=="https:")return null;
+      var host=url.hostname.toLowerCase().replace(/^www\\./,"");
+      if(host==="youtube.com"||host==="m.youtube.com"||host==="music.youtube.com"||host==="youtu.be"){
+        var videoId=host==="youtu.be"?url.pathname.split("/").filter(Boolean)[0]:(url.searchParams.get("v")||((url.pathname.match(/\\/(?:embed|shorts)\\/([A-Za-z0-9_-]{11})/)||[])[1]||""));
+        if(!/^[A-Za-z0-9_-]{11}$/.test(videoId||""))return null;
+        return {type:"youtube",src:"https://www.youtube-nocookie.com/embed/"+videoId+"?autoplay=1&playsinline=1&rel=0",title:"YouTube Music"};
+      }
+      if(host==="open.spotify.com"){
+        var spotifyMatch=url.pathname.match(/\\/(?:intl-[^/]+\\/)?track\\/([A-Za-z0-9]+)/);
+        if(!spotifyMatch)return null;
+        return {type:"spotify",src:"https://open.spotify.com/embed/track/"+spotifyMatch[1]+"?utm_source=generator&theme=0",title:"Spotify"};
+      }
+      if(host==="music.apple.com"){
+        if(!/\\/(?:song|album)\\//.test(url.pathname))return null;
+        url.hostname="embed.music.apple.com";
+        return {type:"apple",src:url.href,title:"Apple Music"};
+      }
+      if(/\\.(?:mp3|m4a|aac|ogg|wav|flac)$/i.test(url.pathname)){
+        return {type:"audio",src:url.href,title:"Audio"};
+      }
+      return null;
+    }
+    function closeMusicPlayer(){
+      var panel=document.getElementById("musicPlayerPanel"),content=document.getElementById("musicPlayerContent");
+      if(content)content.replaceChildren();
+      if(panel)panel.hidden=true;
+      updateMusicButton();
+    }
+    function openMusicPlayer(raw){
+      var link=String(raw==null?musicConfig.url:raw).trim();
+      var parsed=parseMusicLink(link);
+      if(!parsed){
+        var errors={en:"Add a valid Spotify, Apple Music or YouTube Music link in the editor.","pt-BR":"Adicione no editor um link válido do Spotify, Apple Music ou YouTube Music.","es":"Añade en el editor un enlace válido de Spotify, Apple Music o YouTube Music."};
+        showToast(errors[locale]||errors.en);return false;
+      }
+      var panel=document.getElementById("musicPlayerPanel"),content=document.getElementById("musicPlayerContent");
+      if(!panel||!content)return false;
+      content.replaceChildren();
+      var title=document.getElementById("musicPlayerTitle");
+      if(title)title.textContent=parsed.title==="Audio"?"Our song":parsed.title;
+      var note=document.getElementById("musicPlayerNote");
+      var notes={
+        en:"Music plays here. Spotify and Apple Music may require you to press Play in their player.",
+        "pt-BR":"A música toca aqui. Spotify e Apple Music podem exigir que você pressione Reproduzir no próprio player.",
+        es:"La música se reproduce aquí. Spotify y Apple Music pueden requerir que pulses Reproducir en su reproductor."
+      };
+      if(note)note.textContent=notes[locale]||notes.en;
+      if(parsed.type==="audio"){
+        var audio=document.createElement("audio");audio.controls=true;audio.autoplay=true;audio.preload="none";audio.src=parsed.src;
+        content.appendChild(audio);
+        panel.hidden=false;updateMusicButton();
+        var playAttempt=audio.play();if(playAttempt&&typeof playAttempt.catch==="function")playAttempt.catch(function(){});
+        return true;
+      }
+      var frame=document.createElement("iframe");
+      frame.src=parsed.src;frame.title="Lovena music player · "+parsed.title;
+      frame.loading="eager";frame.allow="autoplay; encrypted-media; fullscreen; picture-in-picture";
+      frame.referrerPolicy="strict-origin-when-cross-origin";frame.allowFullscreen=true;
+      if(parsed.type==="youtube")frame.className="is-youtube";
+      content.appendChild(frame);
+      panel.hidden=false;updateMusicButton();
+      return true;
+    }
     function openProfile(){openDialog("LOVENA",texts.brand||"A story made for two",texts.heroIntro||t("defaultDescription"));document.getElementById("dialog").dataset.cinemaDialogKind="profile";}
     function openDescription(){
       var title=String(texts.letterTitle||t("letterTitleDefault"));
@@ -929,6 +1032,11 @@
       });
       document.getElementById("playStory").addEventListener("click",function(){startSlideshow(0);});
       document.getElementById("viewAllMemories").addEventListener("click",function(){startSlideshow(0);});
+      document.getElementById("musicToggle").addEventListener("click",function(){
+        var panel=document.getElementById("musicPlayerPanel");
+        if(panel&&!panel.hidden)closeMusicPlayer();else openMusicPlayer();
+      });
+      document.getElementById("musicPlayerClose").addEventListener("click",closeMusicPlayer);
       document.querySelectorAll("[data-destination]").forEach(function(button){
         button.addEventListener("click",function(){
           var id=button.dataset.destination;
@@ -953,6 +1061,7 @@
       texts=snapshot.texts||{};
       images=snapshot.images||{};
       data=snapshot.data||{};
+      musicConfig={url:String(snapshot.music&&snapshot.music.url||"").trim()};
       var savedPosition=snapshot.heroPosition||(experience&&experience.heroPosition)||{};
       heroPosition={x:Number(savedPosition.x),y:Number(savedPosition.y)};
       if(!Number.isFinite(heroPosition.x))heroPosition.x=50;
@@ -967,7 +1076,7 @@
       else if(String(locale).toLowerCase().startsWith("es"))locale="es";
       else locale="en";
       document.documentElement.lang=locale;
-      updateHero();memories=buildMemories();applyTranslations();updateSections();
+      updateHero();memories=buildMemories();applyTranslations();updateSections();updateMusicButton();
     }
     var cinemaEditorSaveTimer=0;
     function cinemaSnapshot(){
@@ -979,6 +1088,7 @@
       copy.images.hero=copy.images.hero||fallbackHero;
       copy.heroPosition={x:heroPosition.x,y:heroPosition.y};
       copy.heroScale=heroScale;
+      copy.music={url:String(musicConfig.url||"").trim()};
       copy.images.gallery=Array.isArray(copy.images.gallery)?copy.images.gallery.slice(0,12):[];
       copy.data=Object.assign({},copy.data||{},{photos:Array.isArray(data.photos)?JSON.parse(JSON.stringify(data.photos.slice(0,12))):[]});
       return copy;
@@ -1110,7 +1220,7 @@
       });
     }
     function ceRefreshPage(){
-      updateHero();memories=buildMemories();applyTranslations();updateSections();ceUpdateOpenContent();ceMarkEditableTargets();ceApplyHeroFraming();
+      updateHero();memories=buildMemories();applyTranslations();updateSections();ceUpdateOpenContent();ceMarkEditableTargets();ceApplyHeroFraming();updateMusicButton();
     }
     function ceSetText(key,value){texts[key]=String(value==null?"":value);ceRefreshPage();ceQueueSave();}
     function ceReadImage(file){
@@ -1163,7 +1273,7 @@
         ceTitle:texts.heroTitle||t("defaultTitle"),ceIntro:texts.heroIntro||t("defaultDescription"),
         ceDescTitle:texts.letterTitle||t("letterTitleDefault"),ceDescBody:texts.letterBody||t("letterBodyDefault"),
         ceDescEnding:texts.letterEnding||t("letterEndingDefault"),ceDescSign:texts.letterTo||t("letterToDefault"),
-        ceGalleryHeading:texts.galleryHeading||"MY MEMORY",
+        ceGalleryHeading:texts.galleryHeading||"MY MEMORY",ceMusicUrl:musicConfig.url||"",
         ceNavStory:texts.uiNavStory||t("story"),ceNavMemories:texts.uiNavMemories||t("memories"),ceNavList:texts.uiNavList||t("list"),
         ceActionMyList:texts.uiActionMyList||(storySaved?t("saved"):t("list")),ceActionPlay:texts.uiPlay||t("play"),ceActionDescription:texts.uiDescription||t("description"),
         ceViewAll:texts.uiViewAll||t("viewAll"),ceMyListHeading:texts.uiMyListHeading||t("list"),ceEmptyList:texts.uiEmptyList||t("empty"),
@@ -1398,6 +1508,14 @@
       });
       document.getElementById("ceLanguage").addEventListener("change",function(){
         locale=this.value;experience={locale:locale};snapshot.locale=locale;document.documentElement.lang=locale;applyTranslations();ceUpdateEditHint();ceUpdateModeButton();ceQueueSave();
+      });
+      document.getElementById("ceMusicUrl").addEventListener("input",function(){
+        musicConfig.url=this.value.trim();updateMusicButton();ceQueueSave();
+        if(!musicConfig.url)closeMusicPlayer();
+      });
+      document.getElementById("ceMusicTest").addEventListener("click",function(){
+        musicConfig.url=document.getElementById("ceMusicUrl").value.trim();
+        ceQueueSave();updateMusicButton();openMusicPlayer(musicConfig.url);
       });
       document.getElementById("ceHeroFile").addEventListener("change",async function(){
         var file=this.files&&this.files[0];if(!file)return;
