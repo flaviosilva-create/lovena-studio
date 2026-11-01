@@ -890,23 +890,30 @@
     function parseMusicLink(raw){
       var url;try{url=new URL(String(raw||"").trim());}catch(error){return null;}
       if(url.protocol!=="https:")return null;
-      var host=url.hostname.toLowerCase().replace(/^www\\./,"");
+      var host=url.hostname.toLowerCase();
+      if(host.indexOf("www.")===0)host=host.slice(4);
       if(host==="youtube.com"||host==="m.youtube.com"||host==="music.youtube.com"||host==="youtu.be"){
-        var videoId=host==="youtu.be"?url.pathname.split("/").filter(Boolean)[0]:(url.searchParams.get("v")||((url.pathname.match(/\\/(?:embed|shorts)\\/([A-Za-z0-9_-]{11})/)||[])[1]||""));
+        var pathParts=url.pathname.split("/").filter(Boolean);
+        var videoId=host==="youtu.be"?pathParts[0]:(url.searchParams.get("v")||((pathParts[0]==="embed"||pathParts[0]==="shorts")?pathParts[1]:""));
         if(!/^[A-Za-z0-9_-]{11}$/.test(videoId||""))return null;
         return {type:"youtube",src:"https://www.youtube-nocookie.com/embed/"+videoId+"?autoplay=1&playsinline=1&rel=0",title:"YouTube Music"};
       }
       if(host==="open.spotify.com"){
-        var spotifyMatch=url.pathname.match(/\\/(?:intl-[^/]+\\/)?track\\/([A-Za-z0-9]+)/);
-        if(!spotifyMatch)return null;
-        return {type:"spotify",src:"https://open.spotify.com/embed/track/"+spotifyMatch[1]+"?utm_source=generator&theme=0",title:"Spotify"};
+        var spotifyParts=url.pathname.split("/").filter(Boolean);
+        if(spotifyParts[0]&&spotifyParts[0].indexOf("intl-")===0)spotifyParts.shift();
+        var spotifyId=spotifyParts[0]==="track"?spotifyParts[1]:"";
+        if(!/^[A-Za-z0-9]+$/.test(spotifyId||""))return null;
+        return {type:"spotify",src:"https://open.spotify.com/embed/track/"+spotifyId+"?utm_source=generator&theme=0",title:"Spotify"};
       }
       if(host==="music.apple.com"){
-        if(!/\\/(?:song|album)\\//.test(url.pathname))return null;
+        var appleParts=url.pathname.split("/").filter(Boolean);
+        if(appleParts.indexOf("song")===-1&&appleParts.indexOf("album")===-1)return null;
         url.hostname="embed.music.apple.com";
         return {type:"apple",src:url.href,title:"Apple Music"};
       }
-      if(/\\.(?:mp3|m4a|aac|ogg|wav|flac)$/i.test(url.pathname)){
+      var audioExtensions=[".mp3",".m4a",".aac",".ogg",".wav",".flac"];
+      var path=url.pathname.toLowerCase();
+      if(audioExtensions.some(function(extension){return path.endsWith(extension);})){
         return {type:"audio",src:url.href,title:"Audio"};
       }
       return null;
@@ -1311,14 +1318,14 @@
       previewMode=true;
       document.body.classList.remove("cinema-edit-mode");
       document.body.classList.add("cinema-preview-mode");
-      ceUpdateModeButton();
+      ceUpdateModeButton();updateMusicButton();
       ceClose();
     }
     function ceExitPreview(){
       previewMode=false;
       document.body.classList.remove("cinema-preview-mode");
       document.body.classList.add("cinema-edit-mode");
-      ceUpdateModeButton();
+      ceUpdateModeButton();updateMusicButton();
       ceOpen();
     }
     function ceOpen(){
