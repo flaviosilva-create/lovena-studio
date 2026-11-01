@@ -90,6 +90,7 @@
     .music-player-content{width:100%;min-height:44px;overflow:hidden;border-radius:8px;background:#171717}
     .music-player-content iframe{display:block;width:100%;height:152px;border:0;border-radius:8px;background:#171717}
     .music-player-content iframe.is-youtube{height:190px}
+    .music-player-content iframe.is-apple{height:175px}
     .music-player-content audio{display:block;width:100%;height:44px}
     .music-player-note{margin:8px 2px 0;color:#aaa;font:500 9px/1.45 "DM Sans",sans-serif}
     .icon-btn.is-music-open{color:#ff7b83}
@@ -935,7 +936,8 @@
       if(!panel||!content)return false;
       content.replaceChildren();
       var title=document.getElementById("musicPlayerTitle");
-      if(title)title.textContent=parsed.title==="Audio"?"Our song":parsed.title;
+      var playerTitles={en:"Now playing","pt-BR":"Tocando agora",es:"Reproduciendo ahora"};
+      if(title)title.textContent=playerTitles[locale]||playerTitles.en;
       var note=document.getElementById("musicPlayerNote");
       var notes={
         en:"Music plays here. Spotify and Apple Music may require you to press Play in their player.",
@@ -955,6 +957,7 @@
       frame.loading="eager";frame.allow="autoplay; encrypted-media; fullscreen; picture-in-picture";
       frame.referrerPolicy="strict-origin-when-cross-origin";frame.allowFullscreen=true;
       if(parsed.type==="youtube")frame.className="is-youtube";
+      if(parsed.type==="apple")frame.className="is-apple";
       content.appendChild(frame);
       panel.hidden=false;updateMusicButton();
       return true;
