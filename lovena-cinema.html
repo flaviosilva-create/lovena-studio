@@ -305,47 +305,21 @@
     }
 
   
-    /* Scroll reveal: one entrance per element on the initial page load */
+    /* Scroll reveal animations: mobile-first, light and one-time */
     .reveal-on-scroll{
       opacity:0;
-      transform:translate3d(0,26px,0) scale(.99);
-      filter:blur(3px);
-      transition:
-        opacity .78s cubic-bezier(.2,.7,.2,1),
-        transform .78s cubic-bezier(.2,.7,.2,1),
-        filter .78s cubic-bezier(.2,.7,.2,1);
+      transform:translate3d(0,22px,0);
+      transition:opacity .62s ease,transform .62s cubic-bezier(.2,.7,.2,1);
       transition-delay:var(--reveal-delay,0ms);
-      will-change:opacity,transform,filter;
     }
     .reveal-on-scroll.is-revealed{
       opacity:1;
-      transform:translate3d(0,0,0) scale(1);
-      filter:blur(0);
-      will-change:auto;
+      transform:translate3d(0,0,0);
     }
-    .hero-art.reveal-on-scroll{transform:translate3d(0,22px,0) scale(.975)}
+    .hero-art.reveal-on-scroll{transform:translate3d(0,20px,0) scale(.985)}
     .hero-art.reveal-on-scroll.is-revealed{transform:translate3d(0,0,0) scale(1)}
-    @media(prefers-reduced-motion:reduce){
-      .reveal-on-scroll,.hero-art.reveal-on-scroll{
-        opacity:1!important;transform:none!important;filter:none!important;
-        transition:none!important;will-change:auto!important
-      }
-    }
 
-  
-    @media(max-width:680px){
-      .reveal-on-scroll{
-        transform:translate3d(0,18px,0);
-        filter:none;
-        transition:opacity .58s ease,transform .58s cubic-bezier(.2,.7,.2,1);
-        transition-delay:var(--reveal-delay,0ms);
-      }
-      .reveal-on-scroll.is-revealed{transform:translate3d(0,0,0);filter:none}
-      .hero-art.reveal-on-scroll{transform:translate3d(0,18px,0)}
-      .hero-art.reveal-on-scroll.is-revealed{transform:translate3d(0,0,0)}
-    }
-
-  </style>
+    </style>
 </head>
 <body>
   <header class="site-header">
@@ -543,73 +517,70 @@
       ".bottom-cta",
       ".footer-inner"
     ];
+    var nodes=document.querySelectorAll(selectors.join(","));
+    if(!nodes.length) return;
 
-    function revealAll(nodes){
-      Array.prototype.forEach.call(nodes,function(node){
-        node.classList.add("is-revealed");
-      });
-    }
+    var pending=0;
+    var timer=null;
+    var lastRun=0;
+    var viewportHeight=0;
+    var allDone=false;
 
-    try{
-      var nodes=document.querySelectorAll(selectors.join(","));
-      if(!nodes.length) return;
+    function revealVisible(){
+      if(allDone) return;
+      var now=Date.now();
+      if(now-lastRun<45) return;
+      lastRun=now;
+      viewportHeight=window.innerHeight||document.documentElement.clientHeight||0;
+      if(!viewportHeight) return;
 
-      /* Keep the page fully visible for people who request reduced motion. */
-      if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
-        revealAll(nodes);
-        return;
-      }
-
-      Array.prototype.forEach.call(nodes,function(node,index){
-        node.classList.add("reveal-on-scroll");
-        node.style.setProperty("--reveal-delay",Math.min(index%3,2)*65+"ms");
-      });
-
-      var scheduled=false;
-      var finished=0;
-      function checkVisible(){
-        scheduled=false;
-        var viewportHeight=document.documentElement.clientHeight||window.innerHeight||0;
-        if(!viewportHeight) return;
-
-        Array.prototype.forEach.call(nodes,function(node){
-          if(node.classList.contains("is-revealed")) return;
-          var rect=node.getBoundingClientRect();
-          var triggerLine=viewportHeight*0.9;
-          if(rect.top<triggerLine && rect.bottom>0){
-            node.classList.add("is-revealed");
-            finished++;
-          }
-        });
-
-        if(finished>=nodes.length){
-          window.removeEventListener("scroll",scheduleCheck);
-          window.removeEventListener("resize",scheduleCheck);
-          window.removeEventListener("orientationchange",scheduleCheck);
-        }
-      }
-
-      function scheduleCheck(){
-        if(scheduled) return;
-        scheduled=true;
-        if(typeof window.requestAnimationFrame==="function"){
-          window.requestAnimationFrame(checkVisible);
+      var remaining=0;
+      for(var i=0;i<nodes.length;i++){
+        var node=nodes[i];
+        if(node.classList.contains("is-revealed")) continue;
+        var rect=node.getBoundingClientRect();
+        if(rect.top<viewportHeight*0.92 && rect.bottom>0){
+          node.classList.add("is-revealed");
         }else{
-          window.setTimeout(checkVisible,40);
+          remaining++;
         }
       }
 
-      /* Scroll/resize fallback works on mobile Safari and Android browsers too. */
-      window.addEventListener("scroll",scheduleCheck,{passive:true});
-      window.addEventListener("resize",scheduleCheck,{passive:true});
-      window.addEventListener("orientationchange",scheduleCheck,{passive:true});
-      window.addEventListener("pageshow",scheduleCheck,{passive:true});
-      scheduleCheck();
-    }catch(error){
-      document.querySelectorAll(".reveal-on-scroll").forEach(function(node){
-        node.classList.add("is-revealed");
-      });
+      if(remaining===0){
+        allDone=true;
+        if(timer){window.clearInterval(timer);timer=null;}
+        window.removeEventListener("scroll",revealVisible,true);
+        document.removeEventListener("scroll",revealVisible,true);
+        document.removeEventListener("touchmove",revealVisible,true);
+        window.removeEventListener("resize",revealVisible,true);
+        window.removeEventListener("orientationchange",revealVisible,true);
+      }
     }
+
+    function onScroll(){
+      if(pending) return;
+      pending=1;
+      window.setTimeout(function(){
+        pending=0;
+        revealVisible();
+      },35);
+    }
+
+    /* Mark only after all event handlers are ready, so content never stays hidden on script errors. */
+    for(var j=0;j<nodes.length;j++){
+      nodes[j].classList.add("reveal-on-scroll");
+      nodes[j].style.setProperty("--reveal-delay",((j%3)*70)+"ms");
+    }
+
+    window.addEventListener("scroll",onScroll,true);
+    document.addEventListener("scroll",onScroll,true);
+    document.addEventListener("touchmove",onScroll,true);
+    window.addEventListener("resize",onScroll,true);
+    window.addEventListener("orientationchange",onScroll,true);
+
+    /* Polling covers mobile in-app browsers where scroll events can be inconsistent. */
+    timer=window.setInterval(revealVisible,140);
+    window.setTimeout(revealVisible,180);
   })();
   </script>
 
