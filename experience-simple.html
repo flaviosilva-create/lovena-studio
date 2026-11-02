@@ -1559,30 +1559,7 @@ html:not(.lovena-visuals-ready) #colagem-memorias .memory-collage-strip img {
       <img id="lovenaShareQr" alt="QR code for the public Lovena page" width="220" height="220" hidden style="display:block;width:220px;max-width:100%;height:auto;background:#fff;padding:8px;border-radius:8px">
      </a>
      <p class="ed-help" style="text-align:center;margin-top:8px">The QR code opens the hosted page. To share your edits and personalized photos, send the downloaded HTML file.</p>
-     <div id="lovenaGiftCardTools" class="lovena-gift-card-tools" hidden>
-      <div class="lovena-gift-card-tools-head">
-       <div><strong id="lovenaGiftCardToolsTitle">Make it a gift</strong><p id="lovenaGiftCardToolsCopy">Print this keepsake card and give it to someone special.</p></div>
-       <button type="button" class="ed-primary" data-editor-action="print-gift-card" id="lovenaPrintGiftCard">Print Card</button>
-      </div>
-      <div class="lovena-gift-card" id="lovenaGiftCardPreview" aria-label="Lovena printable gift card preview">
-       <div class="lovena-gift-card-copy">
-        <div class="lovena-gift-card-brand">LOVENA<span> A PRIVATE GIFT</span></div>
-        <div class="lovena-gift-card-kicker" id="lovenaGiftCardKicker">A LITTLE SURPRISE</div>
-        <h3 id="lovenaGiftCardHeading">A little piece of your story.</h3>
-        <p id="lovenaGiftCardMessage">Your memories, words and music — kept in one private place.</p>
-        <div class="lovena-gift-card-names" id="lovenaGiftCardNames">Alice &amp; James</div>
-        <div class="lovena-gift-card-rule"></div>
-        <small id="lovenaGiftCardFooter">MADE FOR THE MOMENTS THAT MATTER</small>
-       </div>
-       <div class="lovena-gift-card-code">
-        <div class="lovena-gift-card-qr-wrap"><img class="lovena-gift-card-qr" id="lovenaGiftCardQr" alt="Scan to open this Lovena gift" src="" /></div>
-        <strong id="lovenaGiftCardScan">SCAN TO OPEN YOUR GIFT</strong>
-        <small id="lovenaGiftCardDomain">LOVENASTUDIO.COM</small>
-       </div>
-      </div>
-      <p class="lovena-gift-card-print-note" id="lovenaGiftCardPrintNote">Designed as a small keepsake card. Print on A4 paper or cardstock and trim around the border.</p>
-     </div>
-     <p class="ed-help" id="lovenaGiftCardUnavailable" hidden style="margin-top:12px;text-align:center">The printable gift card becomes available when online publishing is active.</p>
+     
     </div>
    </div>
   </details>
@@ -2230,52 +2207,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
 @media(max-width:420px){#lovenaEditor .ed-image-row{grid-template-columns:44px minmax(0,1fr)}#lovenaEditor .ed-image-thumb{width:40px;height:40px}}
 @media(prefers-reduced-motion:reduce){body.editor-mode .lovena-edit-target{transition:none}}
 
-/* Lovena printable gift card */
-.lovena-gift-card-tools{margin-top:18px;padding-top:14px;border-top:1px solid #eaded1}
-.lovena-gift-card-tools[hidden],#lovenaGiftCardUnavailable[hidden]{display:none!important}
-.lovena-gift-card-tools-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.lovena-gift-card-tools-head>div{min-width:0}
-.lovena-gift-card-tools-head strong{display:block;color:#4a2e2a;font:700 13px/1.3 Manrope,Arial,sans-serif}
-.lovena-gift-card-tools-head p{margin:3px 0 0;color:#806f67;font-size:11px;line-height:1.45}
-.lovena-gift-card-tools-head button{flex:0 0 auto;white-space:nowrap}
-.lovena-gift-card{position:relative;display:flex;align-items:stretch;gap:3.5%;width:100%;max-width:500px;aspect-ratio:1.48;margin:0 auto;overflow:hidden;padding:3.8%;border:1px solid #d7c8b8;border-radius:9px;background:#f7f1e8;color:#332522;box-shadow:0 8px 22px rgba(56,34,27,.10);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.lovena-gift-card:before{content:"";position:absolute;inset:7px;border:1px solid #e1d5c8;border-radius:5px;pointer-events:none}
-.lovena-gift-card-copy{position:relative;z-index:1;display:flex;flex:1 1 62%;flex-direction:column;align-items:flex-start;min-width:0;padding:2px 0 1px 1px}
-.lovena-gift-card-brand{color:#774149;font:800 12px/1 Manrope,Arial,sans-serif;letter-spacing:3px}
-.lovena-gift-card-brand span{display:block;margin-top:5px;color:#987d72;font:600 6px/1 Manrope,Arial,sans-serif;letter-spacing:1.5px}
-.lovena-gift-card-kicker{margin-top:auto;margin-bottom:7px;color:#a15f61;font:800 7px/1.3 Manrope,Arial,sans-serif;letter-spacing:1.7px}
-.lovena-gift-card-copy h3{max-width:100%;margin:0 0 7px;color:#3a2927;font:500 clamp(17px,4vw,25px)/1.08 Georgia,serif;letter-spacing:-.35px}
-.lovena-gift-card-copy p{max-width:96%;margin:0;color:#78645d;font:400 clamp(8px,1.8vw,10px)/1.45 Manrope,Arial,sans-serif}
-.lovena-gift-card-names{max-width:100%;margin-top:10px;overflow:hidden;color:#774149;font:700 clamp(9px,2vw,12px)/1.25 Manrope,Arial,sans-serif;text-overflow:ellipsis;white-space:nowrap}
-.lovena-gift-card-rule{width:28px;height:1px;margin:7px 0 5px;background:#b27d79}
-.lovena-gift-card-copy>small{color:#9a8278;font:600 5.5px/1.25 Manrope,Arial,sans-serif;letter-spacing:1px}
-.lovena-gift-card-code{position:relative;z-index:1;display:flex;flex:0 0 34%;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:7px 5px;border:1px solid #e2d7cb;border-radius:6px;background:#fffdfa;text-align:center}
-.lovena-gift-card-qr-wrap{display:grid;place-items:center;width:min(100%,126px);aspect-ratio:1;margin:0 auto 7px;padding:4px;background:#fff}
-.lovena-gift-card-qr{display:block;width:100%;height:100%;object-fit:contain;background:#fff}
-.lovena-gift-card-code>strong{color:#774149;font:800 6.5px/1.25 Manrope,Arial,sans-serif;letter-spacing:.7px}
-.lovena-gift-card-code>small{max-width:100%;margin-top:4px;overflow:hidden;color:#a18b80;font:600 5px/1.2 Manrope,Arial,sans-serif;letter-spacing:.6px;text-overflow:ellipsis;white-space:nowrap}
-.lovena-gift-card-print-note{margin:9px 0 0;color:#8d7a70;font-size:10px;line-height:1.45;text-align:center}
-#lovenaGiftCardPrintContainer{display:none!important}
-@media(max-width:480px){.lovena-gift-card-tools-head{align-items:flex-start;flex-direction:column}.lovena-gift-card-tools-head button{width:100%}.lovena-gift-card-copy h3{font-size:clamp(15px,4.5vw,21px)}.lovena-gift-card-copy p{font-size:8px}.lovena-gift-card-names{font-size:9px}}
-@media print{
- @page{size:A4 portrait;margin:0}
- html,body{width:210mm!important;height:297mm!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important}
- body.lovena-print-card-mode> *:not(#lovenaGiftCardPrintContainer){display:none!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer{position:fixed!important;inset:0!important;z-index:999999!important;display:flex!important;align-items:center!important;justify-content:center!important;width:210mm!important;height:297mm!important;margin:0!important;padding:0!important;background:#fff!important;visibility:visible!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card{display:flex!important;flex:none!important;width:148mm!important;height:100mm!important;max-width:none!important;aspect-ratio:auto!important;margin:0!important;padding:7mm!important;gap:3.5%!important;border:1px solid #d7c8b8!important;border-radius:2mm!important;box-shadow:none!important;background:#f7f1e8!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card:before{inset:2mm!important;border-radius:1mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-brand{font-size:3.2mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-brand span{font-size:1.55mm!important;margin-top:1.2mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-kicker{font-size:1.8mm!important;margin-bottom:1.8mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-copy h3{font-size:5.2mm!important;margin-bottom:1.8mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-copy p{font-size:2.3mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-names{font-size:2.7mm!important;margin-top:2.5mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-copy>small{font-size:1.35mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-code{padding:2mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-qr-wrap{width:39mm!important;margin-bottom:1.8mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-code>strong{font-size:1.7mm!important}
- body.lovena-print-card-mode #lovenaGiftCardPrintContainer .lovena-gift-card-code>small{font-size:1.35mm!important}
-}
 </style>
 <script id="lovenaEditorRuntime">
 (async function(){
@@ -4213,79 +4144,7 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
   else setStatus("This published link opens your personalized Lovena experience.");
   var qrUrl="https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=14&format=png&data="+encodeURIComponent(url);
   qr.src=qrUrl;qr.hidden=false;qrLink.href=qrUrl;
-  panel.dataset.publishedLink=isPublishedLink?"1":"0";
-  var cardTools=document.getElementById("lovenaGiftCardTools");
-  var cardUnavailable=document.getElementById("lovenaGiftCardUnavailable");
-  if(cardTools)cardTools.hidden=!isPublishedLink;
-  if(cardUnavailable)cardUnavailable.hidden=isPublishedLink;
-  if(isPublishedLink)updateLovenaGiftCardPreview(url);
-  qr.onload=function(){if(isPublishedLink)updateLovenaGiftCardPreview(url);};
   qr.onerror=function(){setStatus("Could not load the QR code. Check your connection and try again.");};
- }
- function updateLovenaGiftCardPreview(url){
-  var preview=document.getElementById("lovenaGiftCardPreview");
-  if(!preview)return;
-  var locale=String(state.locale||document.documentElement.getAttribute("data-lovena-language")||document.documentElement.lang||"en").toLowerCase();
-  var pt=locale.indexOf("pt")===0,es=locale.indexOf("es")===0;
-  var copy=pt?{
-   toolsTitle:"Transforme em um presente",toolsCopy:"Imprima este cartão e entregue a alguém especial.",print:"Imprimir / Salvar PDF",
-   kicker:"UMA PEQUENA SURPRESA",heading:"Um pedacinho da história de vocês.",message:"Fotos, palavras e músicas que guardam o que é especial para vocês.",
-   scan:"APONTE A CÂMERA PARA ABRIR",footer:"FEITO PARA GUARDAR O QUE IMPORTA",note:"Imprima em A4, em tamanho real (100%), e recorte pela borda — ou escolha Salvar como PDF."
-  }:es?{
-   toolsTitle:"Conviértelo en un regalo",toolsCopy:"Imprime esta tarjeta y entrégasela a alguien especial.",print:"Imprimir / Guardar PDF",
-   kicker:"UNA PEQUEÑA SORPRESA",heading:"Un pedacito de su historia.",message:"Fotos, palabras y canciones que guardan lo que es especial para ustedes.",
-   scan:"ESCANEA PARA ABRIR TU REGALO",footer:"HECHO PARA LOS MOMENTOS IMPORTANTES",note:"Imprime en A4 al 100 % y recorta el borde, o elige Guardar como PDF."
-  }:{
-   toolsTitle:"Make it a gift",toolsCopy:"Print this keepsake card and give it to someone special.",print:"Print / Save PDF",
-   kicker:"A LITTLE SURPRISE",heading:"A little piece of your story.",message:"Your memories, words and music — kept in one private place.",
-   scan:"SCAN TO OPEN YOUR GIFT",footer:"MADE FOR THE MOMENTS THAT MATTER",note:"Print on A4 at 100% size and trim around the border — or choose Save as PDF."
-  };
-  function setText(id,value){var el=document.getElementById(id);if(el)el.textContent=value;}
-  setText("lovenaGiftCardToolsTitle",copy.toolsTitle);
-  setText("lovenaGiftCardToolsCopy",copy.toolsCopy);
-  setText("lovenaPrintGiftCard",copy.print);
-  setText("lovenaGiftCardKicker",copy.kicker);
-  setText("lovenaGiftCardHeading",copy.heading);
-  setText("lovenaGiftCardMessage",copy.message);
-  setText("lovenaGiftCardScan",copy.scan);
-  setText("lovenaGiftCardFooter",copy.footer);
-  setText("lovenaGiftCardPrintNote",copy.note);
-  var names=(state.texts&&state.texts.brand)||"";
-  if(!String(names).trim()){
-   var visibleName=document.querySelector(".logo-word");
-   names=visibleName?visibleName.textContent:"Your Lovena story";
-  }
-  setText("lovenaGiftCardNames",String(names).trim().slice(0,90));
-  var qr=document.getElementById("lovenaShareQr"),cardQr=document.getElementById("lovenaGiftCardQr");
-  if(qr&&cardQr&&qr.src){cardQr.src=qr.src;cardQr.hidden=false;}
-  var link=url||document.getElementById("lovenaShareUrl")&&document.getElementById("lovenaShareUrl").value||"";
-  var domain="LOVENASTUDIO.COM";
-  try{domain=new URL(link).hostname.replace(/^www\./,"").toUpperCase();}catch(error){}
-  setText("lovenaGiftCardDomain",domain);
- }
- function printOnlineGiftCard(){
-  var panel=document.getElementById("lovenaSharePanel");
-  var preview=document.getElementById("lovenaGiftCardPreview");
-  var sourceQr=document.getElementById("lovenaShareQr");
-  var printContainer=document.getElementById("lovenaGiftCardPrintContainer");
-  if(!panel||panel.dataset.publishedLink!=="1"){setStatus("Activate online publishing before printing a gift card.");return;}
-  if(!preview||!sourceQr||!sourceQr.src||!sourceQr.complete||!sourceQr.naturalWidth){setStatus("Wait for the QR code to finish loading, then print the card.");return;}
-  if(!printContainer){setStatus("The print card could not be prepared.");return;}
-  updateLovenaGiftCardPreview(document.getElementById("lovenaShareUrl").value);
-  var printable=preview.cloneNode(true);
-  printable.id="lovenaGiftCardPrintCard";
-  printable.querySelectorAll("[id]").forEach(function(node){node.removeAttribute("id");});
-  var cardQr=printable.querySelector(".lovena-gift-card-qr");
-  if(cardQr){cardQr.src=sourceQr.src;cardQr.hidden=false;}
-  printContainer.replaceChildren(printable);
-  printContainer.hidden=false;
-  document.body.classList.add("lovena-print-card-mode");
-  var cleanup=function(){
-   document.body.classList.remove("lovena-print-card-mode");
-   printContainer.hidden=true;printContainer.replaceChildren();
-  };
-  window.addEventListener("afterprint",cleanup,{once:true});
-  requestAnimationFrame(function(){window.print();});
  }
  function copyOnlineExperienceUrl(){
   var input=document.getElementById("lovenaShareUrl");
@@ -4327,7 +4186,6 @@ body.editor-mode:not(.editor-panel-open) #lovenaEditHint{display:flex;animation:
    if(name==="share-online"){showOnlineShare();return;}
    if(name==="copy-online-link"){copyOnlineExperienceUrl();return;}
    if(name==="download-online-qr"){downloadOnlineQr();return;}
-   if(name==="print-gift-card"){printOnlineGiftCard();return;}
    if(name==="import"){document.getElementById("lovenaEditorImport").click();return;}
    if(name==="reset"){resetDraft();return;}
    if(name==="view"){enterPreviewMode();return;}
@@ -4744,6 +4602,5 @@ revealPersonalizedVisualsAfterHydration();
 <script src="./assets/lovena-experience-language.js?v=20261028-experience-language-3"></script><script src="./translation-bridge.js?v=20261029-pt-headline-1" defer></script>
 
 
-<div id="lovenaGiftCardPrintContainer" hidden aria-hidden="true"></div>
 </body>
 </html>
