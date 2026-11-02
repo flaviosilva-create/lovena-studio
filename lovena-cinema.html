@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta name="description" content="Transforme fotos, músicas, mensagens e momentos especiais em uma experiência digital personalizada para presentear quem você ama.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lovena Cinema — Um presente feito das lembranças de vocês">
+  <meta property="og:description" content="Transforme suas lembranças em um presente inesquecível.">
+  <meta property="og:image" content="https://lovenastudio.com/assets/lovena-cinema-casal.webp">
+  <title>Lovena Cinema — Um presente feito das lembranças de vocês</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--paper:#f7f6f3;--white:#fff;--ink:#111110;--muted:#686761;--line:#e4e1db;--max:1180px}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--paper)}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:"DM Sans",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    .wrap{width:min(var(--max),calc(100% - 64px));margin-inline:auto}
+    .site-header{height:86px;display:flex;align-items:center;border-bottom:1px solid rgba(17,17,16,.08)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:inline-flex;align-items:baseline;gap:9px;font-family:Manrope,Arial,sans-serif;font-size:25px;font-weight:800;letter-spacing:-1.5px}
+    .brand small{font:700 9px "DM Sans",Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#77736c}
+    .nav-right{display:flex;align-items:center;gap:28px}
+    .nav-note{font-size:13px;color:#55534d}
+    .nav-cta{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 19px;border-radius:3px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;letter-spacing:1.1px;transition:transform .2s,background .2s}
+    .nav-cta:hover,.primary-cta:hover{background:#30302e;transform:translateY(-2px)}
+    .hero{padding:76px 0 82px}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);align-items:center;gap:64px}
+    .eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 23px;font-size:10px;font-weight:700;letter-spacing:2.1px;text-transform:uppercase;color:#6b6861}
+    .eyebrow:before{content:"";width:27px;height:1px;background:#171716}
+    h1,h2,p{margin-top:0}
+    h1{max-width:570px;margin-bottom:23px;font-family:Manrope,Arial,sans-serif;font-size:clamp(42px,5.2vw,68px);font-weight:700;letter-spacing:-3.7px;line-height:1.05}
+    .hero-lead{max-width:465px;margin-bottom:28px;color:#55534e;font-size:18px;line-height:1.75}
+    .primary-cta{display:inline-flex;align-items:center;justify-content:center;gap:17px;min-height:58px;padding:0 24px;border-radius:3px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;letter-spacing:1.15px;transition:transform .2s,background .2s}
+    .primary-cta svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none}
+    .hero-visual{position:relative;padding:12px;border:1px solid #d6d1c8;background:#fff;box-shadow:0 25px 65px rgba(34,29,20,.10)}
+    .hero-visual img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center 48%}
+    .photo-caption{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:14px 5px 3px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#77736d}
+    .photo-caption span:last-child{color:#222}
+    .intro{padding:84px 0 92px;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .intro-inner{max-width:850px;margin:auto;text-align:center}
+    .intro-kicker{margin-bottom:17px;color:#77736c;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+    .intro h2{margin-bottom:29px;font-family:Manrope,Arial,sans-serif;font-size:clamp(34px,4.5vw,56px);line-height:1.12;letter-spacing:-2.5px}
+    .intro p{max-width:740px;margin:0 auto;color:#55534e;font-size:17px;line-height:1.9}
+    .story{padding:100px 0 104px}
+    .story-grid{display:grid;grid-template-columns:.7fr 1.3fr;gap:80px;align-items:start}
+    .story-side{position:sticky;top:40px}
+    .story-number{font-family:Manrope,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:#77736c}
+    .story-side h2{max-width:300px;margin:20px 0 0;font-family:Manrope,Arial,sans-serif;font-size:clamp(33px,4vw,47px);line-height:1.12;letter-spacing:-2px}
+    .story-copy{max-width:675px}
+    .story-copy p{margin-bottom:25px;color:#55534e;font-size:18px;line-height:1.9}
+    .story-copy p:last-child{margin-bottom:0}
+    .story-copy strong{color:#171716;font-weight:700}
+    .closing{position:relative;overflow:hidden;background:#111110;color:#fff;padding:93px 0 98px}
+    .closing:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 90% 10%,rgba(255,255,255,.08),transparent 36%)}
+    .closing-inner{position:relative;max-width:850px;margin:auto;text-align:center}
+    .closing .eyebrow{justify-content:center;color:#b9b7b0}
+    .closing .eyebrow:before{background:#aaa69e}
+    .closing h2{max-width:800px;margin:0 auto 32px;font-family:Manrope,Arial,sans-serif;font-size:clamp(38px,6vw,68px);line-height:1.08;letter-spacing:-3px}
+    .closing .primary-cta{background:#fff;color:#111}
+    .closing .primary-cta:hover{background:#e8e6e0}
+    footer{padding:25px 0;background:#111110;border-top:1px solid rgba(255,255,255,.13);color:#aaa79f}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:11px}
+    .footer-brand{font-family:Manrope,Arial,sans-serif;font-size:17px;font-weight:800;letter-spacing:-.8px;color:#fff}
+    @media(max-width:850px){
+      .wrap{width:min(100% - 42px,var(--max))}
+      .hero{padding:55px 0 65px}
+      .hero-grid{grid-template-columns:1fr;gap:35px}
+      .hero-copy{max-width:700px}
+      .hero-visual{max-width:690px;margin-inline:auto}
+      .story-grid{grid-template-columns:1fr;gap:30px}
+      .story-side{position:static}
+      .story-side h2{max-width:600px;margin-top:13px}
+      .story{padding:76px 0}
+    }
+    @media(max-width:560px){
+      .wrap{width:calc(100% - 36px)}
+      .site-header{height:72px}
+      .brand{font-size:23px}
+      .brand small{font-size:8px}
+      .nav-right{gap:0}
+      .nav-note{display:none}
+      .nav-cta{min-height:40px;padding:0 12px;font-size:9px;letter-spacing:.7px}
+      .hero{padding:45px 0 57px}
+      .hero-grid{gap:30px}
+      .eyebrow{margin-bottom:18px;font-size:9px;letter-spacing:1.7px}
+      h1{font-size:clamp(39px,11vw,52px);letter-spacing:-2.5px;line-height:1.06}
+      .hero-lead{font-size:16px;line-height:1.7}
+      .primary-cta{width:100%;min-height:56px;padding:0 15px;font-size:10px;letter-spacing:.85px}
+      .hero-visual{padding:8px}
+      .photo-caption{font-size:8px;letter-spacing:.8px}
+      .intro{padding:68px 0 72px}
+      .intro h2{font-size:39px;letter-spacing:-1.8px}
+      .intro p{font-size:15px;line-height:1.85}
+      .story{padding:67px 0}
+      .story-side h2{font-size:37px}
+      .story-copy p{font-size:16px;line-height:1.85;margin-bottom:21px}
+      .closing{padding:73px 0 76px}
+      .closing h2{font-size:42px;letter-spacing:-2px}
+      .footer-inner{align-items:flex-start;flex-direction:column;gap:9px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="./lovena-cinema.html" aria-label="Lovena Cinema">Lovena <small>Cinema</small></a>
+      <div class="nav-right">
+        <span class="nav-note">Uma experiência criada para vocês</span>
+        <a class="nav-cta" href="https://lovenastudio.com/experience-cinema.html?edit=1">COMEÇAR AGORA</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Um presente com a história de vocês</p>
+          <h1>Está procurando um presente para sua pessoa especial?</h1>
+          <p class="hero-lead">Que tal surpreender quem você ama com algo diferente de tudo o que já recebeu?</p>
+          <a class="primary-cta" href="https://lovenastudio.com/experience-cinema.html?edit=1">
+            CRIE SUA EXPERIÊNCIA NA LOVENA
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <figure class="hero-visual">
+          <img src="./assets/lovena-cinema-casal.webp" alt="Casal sorrindo junto enquanto olha uma lembrança no celular">
+          <figcaption class="photo-caption"><span>Feito de momentos reais</span><span>Lovena Cinema</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="intro">
+      <div class="wrap intro-inner">
+        <p class="intro-kicker">Presta atenção nessa ideia!</p>
+        <h2>Não é apenas mais um presente.</h2>
+        <p>Flores murcham. Presentes comuns acabam esquecidos. Mas as lembranças que vocês construíram merecem um lugar especial.</p>
+      </div>
+    </section>
+
+    <section class="story">
+      <div class="wrap story-grid">
+        <div class="story-side">
+          <span class="story-number">01 / UMA HISTÓRIA SÓ DE VOCÊS</span>
+          <h2>Os momentos de vocês merecem ser lembrados.</h2>
+        </div>
+        <div class="story-copy">
+          <p>Com a Lovena, você transforma suas fotos, músicas, mensagens e momentos especiais em uma experiência digital personalizada, feita especialmente para vocês.</p>
+          <p>Uma página com a história de vocês, cheia de detalhes que fazem sentido para quem viveu cada momento.</p>
+          <p>Porque, no final, os presentes mais especiais não são necessariamente os mais caros, mas aqueles que carregam um significado.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="wrap closing-inner">
+        <p class="eyebrow">Lovena Cinema</p>
+        <h2>Transforme suas lembranças em um presente inesquecível.</h2>
+        <a class="primary-cta" href="https://lovenastudio.com/experience-cinema.html?edit=1">
+          CRIE SUA EXPERIÊNCIA NA LOVENA
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span class="footer-brand">Lovena Cinema</span>
+      <span>© <span id="year">2026</span> Lovena. Todos os direitos reservados.</span>
+    </div>
+  </footer>
+</body>
+</html>
