@@ -69,7 +69,14 @@
     return editorKey === "lovenaSimpleExperienceDraftV1" ? "simple" : "premium";
   }
   function remoteIdKey(editorKey) { return "lovenaRemoteExperienceId:" + editorKey; }
-  function editorLabel(editorKey) { return planFor(editorKey) === "simple" ? "Lovena Simple" : "Lovena Premium"; }
+  function isCinemaEditor(editorKey) { return editorKey === "lovenaCinemaExperienceDraftV1"; }
+  function isCinemaSnapshot(row) {
+    return !!(row && row.experience_data && row.experience_data.template === "cinema");
+  }
+  function editorLabel(editorKey) {
+    if (isCinemaEditor(editorKey)) return "Lovena Cinema";
+    return planFor(editorKey) === "simple" ? "Lovena Simple" : "Lovena Premium";
+  }
 
   function extensionFor(type) {
     var mime = (type || "").toLowerCase();
@@ -231,16 +238,23 @@
         .select("id, owner_id, status, public_slug, plan, locale, experience_data, updated_at")
         .eq("id", preferredId).eq("owner_id", user.id).maybeSingle();
       if (found.error) throw found.error;
-      if (found.data && found.data.status === "draft" && !found.data.public_slug) return found.data;
-      if (found.data && found.data.status === "published" && found.data.public_slug && found.data.plan === plan) return found.data;
+      var preferredIsCinema = isCinemaSnapshot(found.data);
+      var preferredBelongsHere = isCinemaEditor(editorKey)
+        ? (preferredIsCinema || found.data && found.data.plan === plan)
+        : !preferredIsCinema;
+      if (found.data && preferredBelongsHere && found.data.status === "draft" && !found.data.public_slug) return found.data;
+      if (found.data && preferredBelongsHere && found.data.status === "published" && found.data.public_slug && found.data.plan === plan) return found.data;
       if (!found.data) localStorage.removeItem(idKey);
     }
     var latest = await supabase.from("lovena_experiences")
       .select("id, owner_id, status, public_slug, plan, locale, experience_data, updated_at")
       .eq("owner_id", user.id).eq("status", "draft").is("public_slug", null).eq("plan", plan)
-      .order("updated_at", { ascending: false }).limit(1);
+      .order("updated_at", { ascending: false }).limit(30);
     if (latest.error) throw latest.error;
-    return latest.data && latest.data.length ? latest.data[0] : null;
+    var candidates = latest.data || [];
+    return candidates.find(function (row) {
+      return isCinemaEditor(editorKey) ? isCinemaSnapshot(row) : !isCinemaSnapshot(row);
+    }) || null;
   }
 
   async function resolvePrivateMedia(value, supabase) {
@@ -511,7 +525,7 @@
     var basePriceCents = activeCurrency === "brl" ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
     var onlinePriceLabel = currencyPrefix + (basePriceCents / 100).toFixed(2).replace(".", priceDecimalSeparator);
     function priceLabel(cents) { return currencyPrefix + (cents / 100).toFixed(2).replace(".", priceDecimalSeparator); }
-    publicationTitle.textContent = "Publish Your Lovena Page";
+    publicationTitle.textContent = "Publish Your " + editorLabel(options.editorKey) + " Page";
     publicationTitle.style.cssText = "display:block;font-size:13px;line-height:1.3;margin:0;color:#472b23";
     var publicationCopy = document.createElement("p");
     publicationCopy.style.cssText = "font-size:10.5px;line-height:1.4;margin:0;color:#765d50";
@@ -762,7 +776,7 @@
       var total = basePriceCents + (includeHtmlCheckbox.checked ? addonCents : 0);
       onlinePriceLabel = priceLabel(total);
       publicationTotal.textContent = "Total: " + onlinePriceLabel;
-      publicationCopy.textContent = (planIsSimple ? "Lovena Simple" : "Lovena Premium") + " · online publication for 1 year. " +
+      publicationCopy.textContent = editorLabel(options.editorKey) + " · online publication for 1 year. " +
         (includeHtmlCheckbox.checked
           ? "Also includes the offline HTML download (+" + priceLabel(addonCents) + ")."
           : "Offline HTML is optional; select the checkbox beside the price to include it.");
