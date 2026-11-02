@@ -4298,17 +4298,17 @@ body.editor-mode .music-card .player-btn{cursor:pointer}
   var locale=String(state.locale||document.documentElement.getAttribute("data-lovena-language")||document.documentElement.lang||"en").toLowerCase();
   var pt=locale.indexOf("pt")===0,es=locale.indexOf("es")===0;
   var copy=pt?{
-   toolsTitle:"Transforme em um presente",toolsCopy:"Imprima este cartão e entregue a alguém especial.",print:"Imprimir cartão",
+   toolsTitle:"Transforme em um presente",toolsCopy:"Imprima este cartão e entregue a alguém especial.",print:"Imprimir / Salvar PDF",
    kicker:"UMA PEQUENA SURPRESA",heading:"Um pedacinho da história de vocês.",message:"Fotos, palavras e músicas que guardam o que é especial para vocês.",
-   scan:"APONTE A CÂMERA PARA ABRIR",footer:"FEITO PARA GUARDAR O QUE IMPORTA",note:"Cartão em formato de lembrança. Imprima em papel A4 ou cartão e recorte pela borda."
+   scan:"APONTE A CÂMERA PARA ABRIR",footer:"FEITO PARA GUARDAR O QUE IMPORTA",note:"Imprima em A4, em tamanho real (100%), e recorte pela borda — ou escolha Salvar como PDF."
   }:es?{
-   toolsTitle:"Conviértelo en un regalo",toolsCopy:"Imprime esta tarjeta y entrégasela a alguien especial.",print:"Imprimir tarjeta",
+   toolsTitle:"Conviértelo en un regalo",toolsCopy:"Imprime esta tarjeta y entrégasela a alguien especial.",print:"Imprimir / Guardar PDF",
    kicker:"UNA PEQUEÑA SORPRESA",heading:"Un pedacito de su historia.",message:"Fotos, palabras y canciones que guardan lo que es especial para ustedes.",
-   scan:"ESCANEA PARA ABRIR TU REGALO",footer:"HECHO PARA LOS MOMENTOS IMPORTANTES",note:"Tarjeta de recuerdo. Imprime en papel A4 o cartulina y recorta el borde."
+   scan:"ESCANEA PARA ABRIR TU REGALO",footer:"HECHO PARA LOS MOMENTOS IMPORTANTES",note:"Imprime en A4 al 100 % y recorta el borde, o elige Guardar como PDF."
   }:{
-   toolsTitle:"Make it a gift",toolsCopy:"Print this keepsake card and give it to someone special.",print:"Print Card",
+   toolsTitle:"Make it a gift",toolsCopy:"Print this keepsake card and give it to someone special.",print:"Print / Save PDF",
    kicker:"A LITTLE SURPRISE",heading:"A little piece of your story.",message:"Your memories, words and music — kept in one private place.",
-   scan:"SCAN TO OPEN YOUR GIFT",footer:"MADE FOR THE MOMENTS THAT MATTER",note:"Designed as a small keepsake card. Print on A4 paper or cardstock and trim around the border."
+   scan:"SCAN TO OPEN YOUR GIFT",footer:"MADE FOR THE MOMENTS THAT MATTER",note:"Print on A4 at 100% size and trim around the border — or choose Save as PDF."
   };
   function setText(id,value){var el=document.getElementById(id);if(el)el.textContent=value;}
   setText("lovenaGiftCardToolsTitle",copy.toolsTitle);
