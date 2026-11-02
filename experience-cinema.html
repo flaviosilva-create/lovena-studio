@@ -551,7 +551,15 @@
       <button id="cePreview" class="ce-button accent" type="button">Preview page · test all features</button>
     </footer>
   </aside>
-  <script src="./assets/lovena-backend.js?v=20261031-cinema-editor-1"></script>
+  <!-- Hidden host required by the shared secure publishing module. The visible Cinema editor remains unchanged. -->
+  <aside id="lovenaEditor" aria-hidden="true" hidden style="display:none!important">
+    <div class="ed-scroll"></div>
+    <footer class="ed-actions"><div class="ed-status" id="lovenaEditorStatus" role="status" aria-live="polite">Cinema editor</div></footer>
+  </aside>
+  <style>
+    #lovenaPublishExportTrigger { right: 12px !important; bottom: 68px !important; }
+  </style>
+  <script src="./assets/lovena-backend.js?v=20261102-cinema-qr-1"></script>
   <script>
   (function(){
     "use strict";
@@ -1185,6 +1193,7 @@
     function cinemaSnapshot(){
       var copy=JSON.parse(JSON.stringify(snapshot||{}));
       copy.version=copy.version||1;
+      copy.template="cinema";
       copy.locale=locale||"en";
       copy.texts=JSON.parse(JSON.stringify(texts||{}));
       copy.images=JSON.parse(JSON.stringify(images||{}));
@@ -1676,6 +1685,15 @@
       document.getElementById("ceImportFile").addEventListener("change",function(){ceImport(this.files&&this.files[0]);this.value="";});
       document.getElementById("ceHtml").addEventListener("click",ceDownloadHtml);
       ceFillFields();ceMarkEditableTargets();ceUpdateModeButton();ceOpen();
+      if(window.LovenaBackend&&typeof window.LovenaBackend.mountEditor==="function"){
+        try{
+          window.LovenaBackend.mountEditor({
+            editorKey:CINEMA_EDIT_KEY,
+            getSnapshot:cinemaSnapshot,
+            setStatus:function(message){ceStatus(message,false);}
+          });
+        }catch(error){ceStatus(error.message||"Could not load publishing tools.",true);}
+      }else{ceStatus("Publishing tools did not load. Refresh this page to enable payment and QR Code.",true);}
     }
     async function loadExperience(){
       loadSaved();
