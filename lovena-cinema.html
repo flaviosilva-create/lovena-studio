@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f8f7f4">
+  <meta name="theme-color" content="#050505">
   <meta name="description" content="Transforme suas fotos, músicas, mensagens e momentos especiais em uma experiência digital personalizada. Um presente feito da história de vocês.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Lovena Cinema — Crie lembranças digitais inesquecíveis">
@@ -228,6 +228,82 @@
       .footer-links{gap:18px}
     }
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+  
+    /* Lovena Cinema experience palette */
+    :root{
+      color-scheme:dark;
+      --paper:#050505;--white:#fff;--ink:#fff;--muted:#aaa;--line:rgba(255,255,255,.12);
+      --soft:#191919;--cream:#111;--pink:#e50914;--dark:#050505;--max:1160px;
+    }
+    html,body{background:#050505;color:#fff}
+    .site-header{background:rgba(5,5,5,.94);border-bottom-color:rgba(255,255,255,.1)}
+    .brand,.footer-brand{color:#fff}
+    .nav-links{color:#c5c5c5}
+    .nav-cta{background:#e50914;color:#fff}
+    .nav-cta:hover,.primary-cta:hover{background:#b80710}
+    .hero:before{background:radial-gradient(ellipse at 77% 39%,rgba(229,9,20,.09),transparent 42%),linear-gradient(110deg,#050505 0%,#101010 54%,#171717 100%)}
+    .eyebrow{color:#aaa}
+    .eyebrow:before{background:#e50914}
+    h1,.feature-intro h2,.story-side h2,.faq-heading h2{color:#fff}
+    .hero-copy .lead{color:#fff}
+    .hero-copy .question{color:#aaa}
+    .primary-cta{background:#e50914;color:#fff}
+    .secondary-cta{border-color:rgba(255,255,255,.34);background:rgba(255,255,255,.035);color:#fff}
+    .secondary-cta:hover{border-color:#e50914;background:rgba(229,9,20,.08)}
+    .photo-polaroid{background:#f3f0eb;border-color:rgba(255,255,255,.15)}
+    .photo-label{color:#4a4742}
+    .floating-note{background:#191919;color:#fff;box-shadow:0 8px 22px #0008;border:1px solid rgba(255,255,255,.12)}
+    .floating-note span{color:#aaa}
+    .dark-panel{background:#111;border:1px solid rgba(255,255,255,.1)}
+    .dark-panel:after,.bottom-cta:after{background:radial-gradient(circle at 13px 0,#050505 12px,transparent 12.7px) 0 0/26px 14px repeat-x}
+    .panel-title span{color:#e50914}
+    .feature-tile{background:#191919;border-color:rgba(255,255,255,.1)}
+    .tile-art{background:#f3f0eb}
+    .tile-art.music{background:#191919;color:#fff}
+    .tile-copy small{color:#aaa}
+    .tile-copy em{color:#ff777d}
+    .features{background:#050505}
+    .feature-intro p{color:#aaa}
+    .sticker{background:#e50914;color:#fff;box-shadow:0 5px 15px rgba(229,9,20,.2)}
+    .interaction-card{background:linear-gradient(145deg,#191919,#101010);border:1px solid rgba(255,255,255,.1)}
+    .interaction-card h3{color:#fff}
+    .icon-tile{background:#222;box-shadow:0 3px 9px #0008;border:1px solid rgba(255,255,255,.08)}
+    .icon-tile svg{stroke:#fff}
+    .interaction-card p{color:#aaa}
+    .occasion-card{background:linear-gradient(110deg,#191919,#111 60%,#202020);border:1px solid rgba(255,255,255,.1)}
+    .occasion-card .overline{color:#ff777d}
+    .occasion-card h3{color:#fff}
+    .occasion-card p{color:#aaa}
+    .occasion-photo{border:1px solid rgba(255,255,255,.12)}
+    .cinema-card{background:linear-gradient(108deg,#080808 0%,#171717 48%,#242424 100%);border:1px solid rgba(255,255,255,.1)}
+    .cinema-card h3{color:#fff}
+    .cinema-card p{color:#bdbdbd}
+    .cinema-photo{border-color:rgba(255,255,255,.12)}
+    .share-card{background:linear-gradient(110deg,#111,#191919);border-color:rgba(255,255,255,.1)}
+    .share-card h3{color:#fff}
+    .share-card p{color:#aaa}
+    .share-phone{background:#f1efea}
+    .share-link{background:#222;border-color:rgba(255,255,255,.13);color:#fff}
+    .share-link svg{stroke:#fff}
+    .intent-band{background:linear-gradient(110deg,#111,#1b1b1b);border:1px solid rgba(255,255,255,.09)}
+    .intent-band span{color:#aaa}
+    .faq-heading .eyebrow{color:#aaa}
+    .faq-item{background:#111;border-color:rgba(255,255,255,.12)}
+    .faq-item summary{color:#fff}
+    .faq-item summary:after{background:#e50914;color:#fff}
+    .faq-answer{color:#aaa}
+    .bottom-cta{background:linear-gradient(145deg,#111,#050505);border:1px solid rgba(255,255,255,.1)}
+    .bottom-cta .primary-cta{background:#e50914;color:#fff}
+    .bottom-cta .primary-cta:hover{background:#b80710}
+    footer{background:#050505;border-top:1px solid rgba(255,255,255,.08)}
+    .footer-links{color:#aaa}
+    .footer-copy{color:#777}
+    @media(max-width:680px){
+      .hero:before{background:radial-gradient(ellipse at 75% 25%,rgba(229,9,20,.1),transparent 42%),linear-gradient(145deg,#050505,#111)}
+      .dark-panel{background:#111}
+      .occasion-card,.cinema-card,.share-card{background:#151515}
+    }
+
   </style>
 </head>
 <body>
