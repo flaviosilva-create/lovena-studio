@@ -897,12 +897,23 @@
       giftCardKicker.textContent = copy.kicker;
       giftCardHeading.textContent = copy.heading;
       giftCardMessage.textContent = copy.message;
-      giftCardNames.textContent = String(texts.brand || "Your Lovena story").trim().slice(0, 90);
+      var cardName = String(texts.brand || "").trim();
+      if (!cardName || /^(?:lovena|lovena studio)$/i.test(cardName)) {
+        var visibleBrand = document.querySelector(".logo-word");
+        cardName = visibleBrand && visibleBrand.textContent.trim() ? visibleBrand.textContent.trim() : "Your Lovena story";
+      }
+      giftCardNames.textContent = cardName.slice(0, 90);
       giftCardScan.textContent = copy.scan;
+      paidQrTitle.textContent = pt ? "Um presente para entregar em mãos" : (es ? "Un regalo para entregar en persona" : "A gift they can hold on to");
+      paidQrCopy.textContent = pt ? "Seu QR Code personalizado em um cartão especial, pronto para imprimir e entregar." : (es ? "Tu código QR personalizado en una tarjeta especial, lista para imprimir y regalar." : "Your personal QR code on a keepsake card, ready to print and hand over.");
+      downloadPaidQrButton.textContent = pt ? "Baixar QR" : (es ? "Descargar QR" : "Download QR");
+      printPaidQrButton.textContent = pt ? "Imprimir / Salvar PDF" : (es ? "Imprimir / Guardar PDF" : "Print / Save Card");
+      sharePaidQrButton.textContent = pt ? "Compartilhar QR Code" : (es ? "Compartir código QR" : "Share QR Code");
       giftCardFooter.textContent = copy.footer;
       paidGiftCardPrintNote.textContent = copy.printNote;
       var qrUrl = paidQrImage.dataset.qrUrl || paidQrImage.src || "";
       giftCardQrImage.src = qrUrl;
+      giftCardQrImage.onerror = function () { paidQrStatus.textContent = pt ? "Não foi possível carregar o QR Code. Verifique sua conexão." : (es ? "No se pudo cargar el código QR. Comprueba tu conexión." : "QR code could not load. Check your connection."); };
       var domain = "LOVENASTUDIO.COM";
       try { domain = new URL(publicUrl || paidShareLink.href).hostname.replace(/^www\./, "").toUpperCase(); } catch (_) {}
       giftCardDomain.textContent = domain;
@@ -945,7 +956,7 @@
       printWindow.document.open();
       printWindow.document.write(printHtml);
       printWindow.document.close();
-      paidQrStatus.textContent = "Your gift card is ready to print or save as a PDF.";
+      paidQrStatus.textContent = card.locale.indexOf("pt") === 0 ? "Seu cartão está pronto para imprimir ou salvar como PDF." : (card.locale.indexOf("es") === 0 ? "Tu tarjeta está lista para imprimir o guardar como PDF." : "Your gift card is ready to print or save as a PDF.");
     }
 
     function applyPurchaseEntitlements(entitlements) {
