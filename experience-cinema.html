@@ -1476,7 +1476,14 @@
       try{
         var state=cinemaSnapshot();state.images.hero=await ceEmbedImage(state.images.hero||fallbackHero);
         state.images.gallery=await Promise.all((state.images.gallery||[]).map(function(src){return ceEmbedImage(src);}));
-        var page="<!doctype html>\n"+document.documentElement.outerHTML;
+        var exportRoot=document.documentElement.cloneNode(true);
+        ["lovenaPublishExportTrigger","lovenaPublicationBackdrop","lovenaPublicationPanel","lovenaEditor"].forEach(function(id){
+          var node=exportRoot.querySelector("#"+id);if(node)node.remove();
+        });
+        exportRoot.querySelectorAll("style[data-editor-only]").forEach(function(style){
+          if((style.textContent||"").indexOf("#lovenaPublicationPanel")!==-1)style.remove();
+        });
+        var page="<!doctype html>\n"+exportRoot.outerHTML;
         var safeState=JSON.stringify(state).replace(/</g,"\\u003c");
         var dataScript="<script>window.LOVENA_CINEMA_EXPORT_SNAPSHOT="+safeState+";</scr"+"ipt>\n  ";
         var marker="<script>\n  (function(){";
