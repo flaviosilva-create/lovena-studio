@@ -525,7 +525,7 @@
     var basePriceCents = activeCurrency === "brl" ? (planIsSimple ? 999 : 1999) : (planIsSimple ? 499 : 999);
     var onlinePriceLabel = currencyPrefix + (basePriceCents / 100).toFixed(2).replace(".", priceDecimalSeparator);
     function priceLabel(cents) { return currencyPrefix + (cents / 100).toFixed(2).replace(".", priceDecimalSeparator); }
-    publicationTitle.textContent = "Publish Your " + editorLabel(options.editorKey) + " Page";
+    publicationTitle.textContent = isCinemaEditor(options.editorKey) ? "Publish Your Lovena Cinema Page" : "Publish Your Lovena Page";
     publicationTitle.style.cssText = "display:block;font-size:13px;line-height:1.3;margin:0;color:#472b23";
     var publicationCopy = document.createElement("p");
     publicationCopy.style.cssText = "font-size:10.5px;line-height:1.4;margin:0;color:#765d50";
@@ -776,7 +776,7 @@
       var total = basePriceCents + (includeHtmlCheckbox.checked ? addonCents : 0);
       onlinePriceLabel = priceLabel(total);
       publicationTotal.textContent = "Total: " + onlinePriceLabel;
-      publicationCopy.textContent = editorLabel(options.editorKey) + " · online publication for 1 year. " +
+      publicationCopy.textContent = (isCinemaEditor(options.editorKey) ? "Lovena Cinema" : (planIsSimple ? "Lovena Simple" : "Lovena Premium")) + " · online publication for 1 year. " +
         (includeHtmlCheckbox.checked
           ? "Also includes the offline HTML download (+" + priceLabel(addonCents) + ")."
           : "Offline HTML is optional; select the checkbox beside the price to include it.");
