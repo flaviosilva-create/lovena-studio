@@ -80,21 +80,37 @@
     .play-button svg{width:20px;height:20px;fill:currentColor}
     .soundless-action{display:grid;place-items:center;width:42px;height:42px;padding:0;border:1px solid rgba(255,255,255,.8);border-radius:50%;background:#0004;color:#fff;cursor:pointer}
     .soundless-action svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-    .music-player-panel{position:fixed;z-index:175;right:8px;bottom:calc(var(--nav-h) + 7px + env(safe-area-inset-bottom,0px));width:min(250px,calc(100vw - 16px));padding:7px;border:1px solid rgba(229,9,20,.42);border-radius:9px;background:rgba(12,12,12,.96);color:#fff;box-shadow:0 5px 16px #0009;backdrop-filter:blur(10px)}
+    .music-player-panel{position:relative;z-index:4;flex:0 0 92px;width:92px;height:64px;align-self:flex-end;overflow:hidden;padding:3px;border:1px solid rgba(255,255,255,.34);border-radius:7px;background:rgba(12,12,12,.92);color:#fff;box-shadow:0 3px 12px #0008;backdrop-filter:blur(8px)}
     .music-player-panel[hidden]{display:none!important}
-    .music-player-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 5px}
-    .music-player-heading{display:block;min-width:0}
-    .music-player-heading small{display:none}
-    .music-player-heading strong{overflow:hidden;color:#fff;font:600 9px/1.2 Manrope,sans-serif;text-overflow:ellipsis;white-space:nowrap}
-    .music-player-close{flex:0 0 20px;width:20px;height:20px;border:1px solid #ffffff20;border-radius:50%;background:#242424;color:#fff;font:400 14px/1 Arial,sans-serif;cursor:pointer}
-    .music-player-content{position:relative;width:100%;min-height:32px;overflow:hidden;border-radius:5px;background:#171717;pointer-events:auto;touch-action:manipulation}
-    .music-player-content iframe{display:block;width:100%;height:152px;border:0;border-radius:5px;background:#171717;pointer-events:auto;touch-action:manipulation}
-    .music-player-content iframe.is-youtube{height:180px}
-    .music-player-content iframe.is-apple{height:152px}
-    .music-player-content audio{display:block;width:100%;height:32px}
+    .music-player-head{position:absolute;z-index:5;top:2px;right:2px;display:flex;align-items:center;justify-content:flex-end;width:100%;height:13px;margin:0;pointer-events:none}
+    .music-player-heading{display:none}
+    .music-player-close{pointer-events:auto;flex:0 0 13px;width:13px;height:13px;padding:0;border:1px solid #ffffff50;border-radius:50%;background:#121212d9;color:#fff;font:400 10px/1 Arial,sans-serif;cursor:pointer}
+    .music-player-content{position:absolute;inset:3px;overflow:hidden;border-radius:4px;background:#171717;pointer-events:auto;touch-action:manipulation}
+    .music-player-content iframe{display:block;width:100%;height:100%;border:0;border-radius:4px;background:#171717;pointer-events:auto;touch-action:manipulation}
+    .music-player-content iframe.is-youtube{height:100%}
+    .music-player-content iframe.is-apple{height:100%}
+    .music-player-content audio{display:block;width:100%;height:100%}
+    .music-player-tap-play{position:absolute;z-index:4;inset:0;display:grid;place-items:center;width:100%;height:100%;padding:0;border:0;border-radius:4px;background:linear-gradient(0deg,rgba(0,0,0,.24),rgba(0,0,0,.10));color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .music-player-tap-play svg{width:18px;height:18px;padding:6px;border-radius:50%;background:rgba(0,0,0,.58);fill:currentColor;pointer-events:none;filter:drop-shadow(0 1px 2px #000)}
+    .music-player-tap-play:active{background:rgba(0,0,0,.38)}
+    .music-player-tap-play[hidden]{display:none!important}
     .music-player-note{display:none}
     .icon-btn.is-music-open{color:#ff7b83}
-    @media(max-width:650px){.music-player-panel{right:7px;bottom:calc(var(--nav-h) + 6px + env(safe-area-inset-bottom,0px));width:min(238px,calc(100vw - 14px));padding:6px}.music-player-content iframe{height:145px}.music-player-content iframe.is-youtube{height:170px}.music-player-content iframe.is-apple{height:145px}}
+    @media(max-width:650px){
+      .hero-controls{gap:5px}
+      .action-stack{min-width:34px}
+      .play-button{min-width:106px;padding:0 10px}
+      .soundless-action{width:36px;height:36px}
+      .music-player-panel{flex-basis:74px;width:74px;height:56px;padding:2px}
+      .music-player-content{inset:2px}
+    }
+    @media(max-width:380px){
+      .hero-controls{gap:3px}
+      .action-stack{min-width:30px}
+      .play-button{min-width:92px;padding:0 8px}
+      .soundless-action{width:32px;height:32px}
+      .music-player-panel{flex-basis:66px;width:66px;height:51px}
+    }
     .shelf{position:relative;z-index:2;padding:18px clamp(17px,5.3vw,76px) 27px;background:#050505}
     .shelf-inner{max-width:1500px;margin:0 auto}
     .shelf-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 13px}
@@ -360,6 +376,7 @@
       <header class="topbar">
         <a href="#home" class="brand" aria-label="Lovena home"><span class="brand-mark" aria-hidden="true">L</span><span class="brand-name" id="coupleName">Alice <span class="name-ampersand">&amp;</span> James</span></a>
         <div class="top-actions" aria-label="Quick actions">
+          <button class="icon-btn" type="button" id="musicToggle" data-ce-field="ceMusicUrl" aria-label="Play music" title="Music" hidden><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
           <button class="icon-btn" type="button" data-command="search" aria-label="Search memories" title="Search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg></button>
           <button class="icon-btn" type="button" data-command="list" aria-label="Open My List" title="Discover"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="notification-dot"></span></button>
           <button class="avatar-btn" type="button" data-command="profile" aria-label="About this story" title="About"><span>♡</span></button>
@@ -380,9 +397,14 @@
             <span class="action-symbol" id="myListIcon" aria-hidden="true">＋</span><span class="action-label" id="myListLabel" data-ce-field="ceActionMyList">My List</span>
           </button>
           <button class="play-button" type="button" id="playStory"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg><span id="playLabel" data-ce-field="ceActionPlay">Play</span></button>
-          <button class="action-stack" type="button" id="musicToggle" data-ce-field="ceMusicUrl" aria-label="Play music" title="Music" hidden>
-            <span class="action-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span class="action-label" id="musicActionLabel">Music</span>
-          </button>
+          <aside class="music-player-panel" id="musicPlayerPanel" hidden aria-label="Music player">
+    <div class="music-player-head">
+      <div class="music-player-heading"><small>LOVENA SOUNDTRACK</small><strong id="musicPlayerTitle">Our song</strong></div>
+      <button class="music-player-close" id="musicPlayerClose" type="button" aria-label="Close music player">×</button>
+    </div>
+    <div class="music-player-content" id="musicPlayerContent"></div>
+    <p class="music-player-note" id="musicPlayerNote"></p>
+  </aside>
           <button class="action-stack" type="button" data-command="description" aria-label="Open description" title="Description">
             <span class="action-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><span class="action-label" id="descriptionLabel" data-ce-field="ceActionDescription">Description</span>
           </button>
@@ -437,14 +459,7 @@
       <button class="slide-control slide-next" type="button" id="nextSlide" aria-label="Next memory">›</button>
     </div>
   </section>
-  <aside class="music-player-panel" id="musicPlayerPanel" hidden aria-label="Music player">
-    <div class="music-player-head">
-      <div class="music-player-heading"><small>LOVENA SOUNDTRACK</small><strong id="musicPlayerTitle">Our song</strong></div>
-      <button class="music-player-close" id="musicPlayerClose" type="button" aria-label="Close music player">×</button>
-    </div>
-    <div class="music-player-content" id="musicPlayerContent"></div>
-    <p class="music-player-note" id="musicPlayerNote"></p>
-  </aside>
+  
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <aside id="cinemaEditHint" role="note" aria-live="polite">
@@ -887,11 +902,8 @@
       button.classList.toggle("is-music-open",!!(document.getElementById("musicPlayerPanel")&&!document.getElementById("musicPlayerPanel").hidden));
       button.setAttribute("aria-expanded",String(!!(document.getElementById("musicPlayerPanel")&&!document.getElementById("musicPlayerPanel").hidden)));
       var labels={en:"Play music","pt-BR":"Reproduzir música",es:"Reproducir música"};
-      var shortLabels={en:"Music","pt-BR":"Música",es:"Música"};
       button.setAttribute("aria-label",labels[locale]||labels.en);
       button.title=labels[locale]||labels.en;
-      var visibleLabel=document.getElementById("musicActionLabel");
-      if(visibleLabel)visibleLabel.textContent=shortLabels[locale]||shortLabels.en;
     }
     function parseMusicLink(raw){
       var url;try{url=new URL(String(raw||"").trim());}catch(error){return null;}
@@ -923,6 +935,15 @@
         return {type:"audio",src:url.href,title:"Audio"};
       }
       return null;
+    }
+    function addMusicTapPlay(content,onPlay){
+      var button=document.createElement("button");
+      button.type="button";button.className="music-player-tap-play";
+      button.setAttribute("aria-label","Play music");
+      button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8c0-.8.9-1.3 1.6-.9l11 7.1a1.2 1.2 0 0 1 0 2L8.6 20.1c-.7.5-1.6 0-1.6-.9V4.8Z"/></svg>';
+      button.addEventListener("click",function(event){event.preventDefault();event.stopPropagation();onPlay(button);});
+      content.appendChild(button);
+      return button;
     }
     function loadSpotifyIframeApi(callback){
       if(spotifyIframeAPI){callback(spotifyIframeAPI);return;}
@@ -977,15 +998,23 @@
       panel.hidden=false;updateMusicButton();
       if(parsed.type==="spotify"){
         var spotifyMount=document.createElement("div");
-        spotifyMount.style.width="100%";spotifyMount.style.height="145px";
+        spotifyMount.style.width="200px";spotifyMount.style.height="145px";
+        spotifyMount.style.transform="scale(.42)";spotifyMount.style.transformOrigin="top left";
         content.appendChild(spotifyMount);
+        var spotifyPlay=addMusicTapPlay(content,function(button){
+          if(!musicEmbedController){showToast("The music player is loading. Tap the music tile again shortly.");return;}
+          try{musicEmbedController.resume();}catch(error){showToast("Use the Spotify player to start playback.");}
+        });
         loadSpotifyIframeApi(function(api){
           if(!spotifyMount.isConnected||panel.hidden)return;
           try{
-            api.createController(spotifyMount,{uri:parsed.uri,width:Math.max(200,Math.round(content.clientWidth||238)),height:145},function(controller){
+            api.createController(spotifyMount,{uri:parsed.uri,width:200,height:145},function(controller){
               musicEmbedController=controller;
+              if(controller&&typeof controller.addListener==="function"){
+                controller.addListener("playback_started",function(){spotifyPlay.hidden=true;});
+              }
             });
-          }catch(error){console.warn("Lovena Spotify embed:",error);}
+          }catch(error){console.warn("Lovena Spotify embed:",error);spotifyPlay.hidden=true;}
         });
         return true;
       }
@@ -1001,6 +1030,14 @@
       if(parsed.type==="youtube")frame.className="is-youtube";
       if(parsed.type==="apple")frame.className="is-apple";
       content.appendChild(frame);
+      if(parsed.type==="youtube"){
+        addMusicTapPlay(content,function(button){
+          try{
+            frame.contentWindow.postMessage(JSON.stringify({event:"command",func:"playVideo",args:[]}),"https://www.youtube-nocookie.com");
+            button.hidden=true;
+          }catch(error){showToast("Use the video controls to start the song.");}
+        });
+      }
       return true;
     }
     function openProfile(){openDialog("LOVENA",texts.brand||"A story made for two",texts.heroIntro||t("defaultDescription"));document.getElementById("dialog").dataset.cinemaDialogKind="profile";}
