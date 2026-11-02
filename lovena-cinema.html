@@ -332,6 +332,19 @@
       }
     }
 
+  
+    @media(max-width:680px){
+      .reveal-on-scroll{
+        transform:translate3d(0,18px,0);
+        filter:none;
+        transition:opacity .58s ease,transform .58s cubic-bezier(.2,.7,.2,1);
+        transition-delay:var(--reveal-delay,0ms);
+      }
+      .reveal-on-scroll.is-revealed{transform:translate3d(0,0,0);filter:none}
+      .hero-art.reveal-on-scroll{transform:translate3d(0,18px,0)}
+      .hero-art.reveal-on-scroll.is-revealed{transform:translate3d(0,0,0)}
+    }
+
   </style>
 </head>
 <body>
@@ -515,45 +528,83 @@
   <script>
   (function(){
     "use strict";
-    try{
-      if(!("IntersectionObserver" in window)) return;
-      if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var selectors=[
+      ".hero-copy",
+      ".hero-art",
+      ".dark-panel",
+      ".feature-intro > div",
+      ".interaction-card",
+      ".occasion-card",
+      ".cinema-card",
+      ".share-card",
+      ".intent-band",
+      ".faq-heading",
+      ".faq-item",
+      ".bottom-cta",
+      ".footer-inner"
+    ];
 
-      var selectors=[
-        ".hero-copy",
-        ".hero-art",
-        ".dark-panel",
-        ".feature-intro > div",
-        ".interaction-card",
-        ".occasion-card",
-        ".cinema-card",
-        ".share-card",
-        ".intent-band",
-        ".faq-heading",
-        ".faq-item",
-        ".bottom-cta",
-        ".footer-inner"
-      ];
+    function revealAll(nodes){
+      Array.prototype.forEach.call(nodes,function(node){
+        node.classList.add("is-revealed");
+      });
+    }
+
+    try{
       var nodes=document.querySelectorAll(selectors.join(","));
       if(!nodes.length) return;
 
-      var observer=new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
-          if(!entry.isIntersecting) return;
-          entry.target.classList.add("is-revealed");
-          observer.unobserve(entry.target);
-        });
-      },{
-        root:null,
-        rootMargin:"0px 0px -7% 0px",
-        threshold:0.12
-      });
+      /* Keep the page fully visible for people who request reduced motion. */
+      if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+        revealAll(nodes);
+        return;
+      }
 
       Array.prototype.forEach.call(nodes,function(node,index){
         node.classList.add("reveal-on-scroll");
-        node.style.setProperty("--reveal-delay",Math.min(index%4,3)*85+"ms");
-        observer.observe(node);
+        node.style.setProperty("--reveal-delay",Math.min(index%3,2)*65+"ms");
       });
+
+      var scheduled=false;
+      var finished=0;
+      function checkVisible(){
+        scheduled=false;
+        var viewportHeight=document.documentElement.clientHeight||window.innerHeight||0;
+        if(!viewportHeight) return;
+
+        Array.prototype.forEach.call(nodes,function(node){
+          if(node.classList.contains("is-revealed")) return;
+          var rect=node.getBoundingClientRect();
+          var triggerLine=viewportHeight*0.9;
+          if(rect.top<triggerLine && rect.bottom>0){
+            node.classList.add("is-revealed");
+            finished++;
+          }
+        });
+
+        if(finished>=nodes.length){
+          window.removeEventListener("scroll",scheduleCheck);
+          window.removeEventListener("resize",scheduleCheck);
+          window.removeEventListener("orientationchange",scheduleCheck);
+        }
+      }
+
+      function scheduleCheck(){
+        if(scheduled) return;
+        scheduled=true;
+        if(typeof window.requestAnimationFrame==="function"){
+          window.requestAnimationFrame(checkVisible);
+        }else{
+          window.setTimeout(checkVisible,40);
+        }
+      }
+
+      /* Scroll/resize fallback works on mobile Safari and Android browsers too. */
+      window.addEventListener("scroll",scheduleCheck,{passive:true});
+      window.addEventListener("resize",scheduleCheck,{passive:true});
+      window.addEventListener("orientationchange",scheduleCheck,{passive:true});
+      window.addEventListener("pageshow",scheduleCheck,{passive:true});
+      scheduleCheck();
     }catch(error){
       document.querySelectorAll(".reveal-on-scroll").forEach(function(node){
         node.classList.add("is-revealed");
