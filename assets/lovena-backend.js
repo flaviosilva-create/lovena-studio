@@ -567,10 +567,10 @@
     var paidQrSection = document.createElement("section");
     paidQrSection.style.cssText = "display:grid;justify-items:center;gap:9px;margin-top:14px;padding:14px 10px;border:1px solid #e6d4c6;border-radius:12px;background:#fff";
     var paidQrTitle = document.createElement("strong");
-    paidQrTitle.textContent = "Your personal QR Code";
+    paidQrTitle.textContent = "A gift they can hold on to";
     paidQrTitle.style.cssText = "font:700 15px/1.35 'Playfair Display',Georgia,serif;color:#51392f;text-align:center";
     var paidQrCopy = document.createElement("p");
-    paidQrCopy.textContent = "This QR code opens this exact published page. Download it to print or share it with your gift.";
+    paidQrCopy.textContent = "Turn your personal QR code into a small keepsake card, ready to print and hand over.";
     paidQrCopy.style.cssText = "font-size:10px;line-height:1.5;color:#82695a;text-align:center;margin:0";
     var paidQrImage = document.createElement("img");
     paidQrImage.alt = "QR code for your published Lovena experience";
@@ -585,7 +585,7 @@
     downloadPaidQrButton.style.cssText = "border:1px solid #dec3b0;border-radius:9px;padding:10px 7px;background:#fff;color:#654739;font:700 11px Manrope,Arial,sans-serif;cursor:pointer";
     var printPaidQrButton = document.createElement("button");
     printPaidQrButton.type = "button";
-    printPaidQrButton.textContent = "Print QR";
+    printPaidQrButton.textContent = "Print / Save Card";
     printPaidQrButton.style.cssText = downloadPaidQrButton.style.cssText;
     paidQrActions.append(downloadPaidQrButton, printPaidQrButton);
     var sharePaidQrButton = document.createElement("button");
@@ -595,7 +595,62 @@
     var paidQrStatus = document.createElement("p");
     paidQrStatus.setAttribute("role", "status");
     paidQrStatus.style.cssText = "font-size:10px;line-height:1.45;color:#82695a;text-align:center;margin:0";
-    paidQrSection.append(paidQrTitle, paidQrCopy, paidQrImage, paidQrActions, sharePaidQrButton, paidQrStatus);
+    var paidGiftCardPreview = document.createElement("article");
+    paidGiftCardPreview.className = "lovena-backend-gift-card";
+    paidGiftCardPreview.setAttribute("aria-label", "Preview of your printable Lovena gift card");
+    var giftCardCopy = document.createElement("div");
+    giftCardCopy.className = "lovena-backend-gift-card-copy";
+    var giftCardBrand = document.createElement("div");
+    giftCardBrand.className = "lovena-backend-gift-card-brand";
+    giftCardBrand.textContent = "LOVENA";
+    var giftCardKicker = document.createElement("div");
+    giftCardKicker.className = "lovena-backend-gift-card-kicker";
+    var giftCardHeading = document.createElement("h3");
+    giftCardHeading.className = "lovena-backend-gift-card-heading";
+    var giftCardMessage = document.createElement("p");
+    giftCardMessage.className = "lovena-backend-gift-card-message";
+    var giftCardNames = document.createElement("strong");
+    giftCardNames.className = "lovena-backend-gift-card-names";
+    var giftCardFooter = document.createElement("small");
+    giftCardFooter.className = "lovena-backend-gift-card-footer";
+    giftCardCopy.append(giftCardBrand, giftCardKicker, giftCardHeading, giftCardMessage, giftCardNames, giftCardFooter);
+    var giftCardQrSide = document.createElement("div");
+    giftCardQrSide.className = "lovena-backend-gift-card-qr-side";
+    var giftCardQrFrame = document.createElement("div");
+    giftCardQrFrame.className = "lovena-backend-gift-card-qr-frame";
+    var giftCardQrImage = document.createElement("img");
+    giftCardQrImage.alt = "Scan this code to open the published Lovena experience";
+    giftCardQrFrame.appendChild(giftCardQrImage);
+    var giftCardScan = document.createElement("strong");
+    giftCardScan.className = "lovena-backend-gift-card-scan";
+    var giftCardDomain = document.createElement("small");
+    giftCardDomain.className = "lovena-backend-gift-card-domain";
+    giftCardQrSide.append(giftCardQrFrame, giftCardScan, giftCardDomain);
+    paidGiftCardPreview.append(giftCardCopy, giftCardQrSide);
+    var paidGiftCardPrintNote = document.createElement("p");
+    paidGiftCardPrintNote.className = "lovena-backend-gift-card-print-note";
+    paidGiftCardPrintNote.textContent = "Print on A4 at 100% size and trim around the border — or choose Save as PDF.";
+    var paidGiftCardStyles = document.createElement("style");
+    paidGiftCardStyles.id = "lovenaBackendGiftCardStyles";
+    paidGiftCardStyles.textContent = [
+      ".lovena-backend-gift-card{position:relative;display:flex;align-items:stretch;gap:3.5%;width:100%;max-width:460px;aspect-ratio:1.48;margin:4px auto 0;overflow:hidden;padding:3.6%;border:1px solid #d7c8b8;border-radius:9px;background:#f7f1e8;color:#332522;box-shadow:0 7px 18px rgba(56,34,27,.09);-webkit-print-color-adjust:exact;print-color-adjust:exact}",
+      ".lovena-backend-gift-card:before{content:'';position:absolute;inset:7px;border:1px solid #e1d5c8;border-radius:5px;pointer-events:none}",
+      ".lovena-backend-gift-card-copy{position:relative;z-index:1;display:flex;flex:1 1 62%;flex-direction:column;align-items:flex-start;min-width:0;padding:2px 0}",
+      ".lovena-backend-gift-card-brand{color:#774149;font:800 12px/1 Manrope,Arial,sans-serif;letter-spacing:3px}",
+      ".lovena-backend-gift-card-kicker{margin-top:auto;margin-bottom:7px;color:#a15f61;font:800 7px/1.3 Manrope,Arial,sans-serif;letter-spacing:1.5px}",
+      ".lovena-backend-gift-card-heading{max-width:100%;margin:0 0 7px;color:#3a2927;font:500 clamp(17px,3.8vw,24px)/1.08 Georgia,serif;letter-spacing:-.3px}",
+      ".lovena-backend-gift-card-message{max-width:97%;margin:0;color:#78645d;font:400 clamp(8px,1.8vw,10px)/1.45 Manrope,Arial,sans-serif}",
+      ".lovena-backend-gift-card-names{max-width:100%;margin-top:9px;overflow:hidden;color:#774149;font:700 clamp(9px,2vw,12px)/1.25 Manrope,Arial,sans-serif;text-overflow:ellipsis;white-space:nowrap}",
+      ".lovena-backend-gift-card-footer{margin-top:auto;padding-top:7px;color:#9a8278;font:600 5.5px/1.25 Manrope,Arial,sans-serif;letter-spacing:1px}",
+      ".lovena-backend-gift-card-qr-side{position:relative;z-index:1;display:flex;flex:0 0 34%;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:7px 5px;border:1px solid #e2d7cb;border-radius:6px;background:#fffdfa;text-align:center}",
+      ".lovena-backend-gift-card-qr-frame{display:grid;place-items:center;width:min(100%,130px);aspect-ratio:1;margin:0 auto 7px;padding:4px;background:#fff}",
+      ".lovena-backend-gift-card-qr-frame img{display:block;width:100%;height:100%;object-fit:contain;background:#fff}",
+      ".lovena-backend-gift-card-scan{color:#774149;font:800 6.5px/1.25 Manrope,Arial,sans-serif;letter-spacing:.65px}",
+      ".lovena-backend-gift-card-domain{max-width:100%;margin-top:4px;overflow:hidden;color:#a18b80;font:600 5px/1.2 Manrope,Arial,sans-serif;letter-spacing:.55px;text-overflow:ellipsis;white-space:nowrap}",
+      ".lovena-backend-gift-card-print-note{margin:8px 0 0;color:#8d7a70;font-size:10px;line-height:1.45;text-align:center}"
+    ].join("");
+    if (!document.getElementById("lovenaBackendGiftCardStyles")) document.head.appendChild(paidGiftCardStyles);
+    paidQrSection.append(paidQrTitle, paidQrCopy, paidGiftCardPreview, paidGiftCardPrintNote, paidQrActions, sharePaidQrButton, paidQrStatus);
     paidSharePanel.append(paidShareTitle, paidShareNote, paidShareLink, copyPaidLinkButton, paidQrSection);
     var publishButton = document.createElement("button");
     publishButton.type = "button";
@@ -811,6 +866,88 @@
     }
     setHtmlExportButtons(false);
 
+    function renderPaidGiftCard(publicUrl) {
+      var snapshot = {};
+      try { snapshot = typeof options.getSnapshot === "function" ? (options.getSnapshot() || {}) : {}; } catch (_) {}
+      var texts = snapshot.texts || {};
+      var locale = String(snapshot.locale || snapshot.language || document.documentElement.getAttribute("data-lovena-language") || document.documentElement.lang || "en").toLowerCase();
+      var pt = locale.indexOf("pt") === 0, es = locale.indexOf("es") === 0;
+      var copy = pt ? {
+        kicker: "UM PRESENTE SÓ DE VOCÊS",
+        heading: "Um pedacinho da história de vocês.",
+        message: "Fotos, palavras e músicas que guardam o que é especial para vocês.",
+        scan: "APONTE A CÂMERA PARA ABRIR",
+        footer: "FEITO PARA OS MOMENTOS QUE IMPORTAM",
+        printNote: "Imprima em A4, em tamanho real (100%), e recorte pela borda — ou escolha Salvar como PDF."
+      } : es ? {
+        kicker: "UN PEQUEÑO REGALO",
+        heading: "Un pedacito de su historia.",
+        message: "Fotos, palabras y canciones que guardan lo especial de ustedes.",
+        scan: "ESCANEA PARA ABRIR TU REGALO",
+        footer: "HECHO PARA LOS MOMENTOS IMPORTANTES",
+        printNote: "Imprime en A4 al 100 % y recorta el borde, o elige Guardar como PDF."
+      } : {
+        kicker: "A LITTLE SURPRISE",
+        heading: "A little piece of your story.",
+        message: "Your memories, words and music — kept in one private place.",
+        scan: "SCAN TO OPEN YOUR GIFT",
+        footer: "MADE FOR THE MOMENTS THAT MATTER",
+        printNote: "Print on A4 at 100% size and trim around the border — or choose Save as PDF."
+      };
+      giftCardKicker.textContent = copy.kicker;
+      giftCardHeading.textContent = copy.heading;
+      giftCardMessage.textContent = copy.message;
+      giftCardNames.textContent = String(texts.brand || "Your Lovena story").trim().slice(0, 90);
+      giftCardScan.textContent = copy.scan;
+      giftCardFooter.textContent = copy.footer;
+      paidGiftCardPrintNote.textContent = copy.printNote;
+      var qrUrl = paidQrImage.dataset.qrUrl || paidQrImage.src || "";
+      giftCardQrImage.src = qrUrl;
+      var domain = "LOVENASTUDIO.COM";
+      try { domain = new URL(publicUrl || paidShareLink.href).hostname.replace(/^www\./, "").toUpperCase(); } catch (_) {}
+      giftCardDomain.textContent = domain;
+      return { name: giftCardNames.textContent, copy: copy, qrUrl: qrUrl, domain: domain, locale: locale };
+    }
+
+    function escapeGiftCardHtml(value) {
+      return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
+        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[char];
+      });
+    }
+
+    function printPaidGiftCard() {
+      var imageUrl = paidQrImage.dataset.qrUrl;
+      if (!imageUrl) { paidQrStatus.textContent = "Wait for your QR code to load first."; return; }
+      var card = renderPaidGiftCard(paidShareLink.href);
+      if (!card.qrUrl) { paidQrStatus.textContent = "Wait for your QR code to load first."; return; }
+      var printWindow = window.open("", "_blank");
+      if (!printWindow) { paidQrStatus.textContent = "Allow pop-ups to print the gift card."; return; }
+      var safeName = escapeGiftCardHtml(card.name);
+      var safeKicker = escapeGiftCardHtml(card.copy.kicker);
+      var safeHeading = escapeGiftCardHtml(card.copy.heading);
+      var safeMessage = escapeGiftCardHtml(card.copy.message);
+      var safeScan = escapeGiftCardHtml(card.copy.scan);
+      var safeFooter = escapeGiftCardHtml(card.copy.footer);
+      var safeDomain = escapeGiftCardHtml(card.domain);
+      var safeQrUrl = escapeGiftCardHtml(card.qrUrl);
+      var printHtml = "<!doctype html><html lang='" + escapeGiftCardHtml(card.locale) + "'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Lovena Gift Card</title><style>" +
+        "@page{size:A4 portrait;margin:0}*{box-sizing:border-box}html,body{width:210mm;height:297mm;margin:0;background:#fff}body{display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}" +
+        ".card{position:relative;display:flex;align-items:stretch;gap:3.5%;width:148mm;height:100mm;padding:7mm;border:1px solid #d7c8b8;border-radius:2mm;background:#f7f1e8;color:#332522;overflow:hidden}" +
+        ".card:before{content:'';position:absolute;inset:2mm;border:1px solid #e1d5c8;border-radius:1mm;pointer-events:none}" +
+        ".copy{position:relative;z-index:1;display:flex;flex:1 1 62%;flex-direction:column;align-items:flex-start;min-width:0;padding:1mm 0}" +
+        ".brand{color:#774149;font:800 3.2mm/1 Arial,sans-serif;letter-spacing:1mm}.kicker{margin-top:auto;margin-bottom:2mm;color:#a15f61;font:800 1.8mm/1.3 Arial,sans-serif;letter-spacing:.45mm}" +
+        "h1{max-width:100%;margin:0 0 1.8mm;color:#3a2927;font:500 5.2mm/1.08 Georgia,serif;letter-spacing:-.1mm}p{max-width:97%;margin:0;color:#78645d;font:400 2.3mm/1.45 Arial,sans-serif}" +
+        ".names{max-width:100%;margin-top:2.5mm;overflow:hidden;color:#774149;font:700 2.7mm/1.25 Arial,sans-serif;text-overflow:ellipsis;white-space:nowrap}.footer{margin-top:auto;padding-top:2mm;color:#9a8278;font:600 1.35mm/1.25 Arial,sans-serif;letter-spacing:.25mm}" +
+        ".qrside{position:relative;z-index:1;display:flex;flex:0 0 34%;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:2mm 1.5mm;border:1px solid #e2d7cb;border-radius:1.5mm;background:#fffdfa;text-align:center}" +
+        ".qrframe{display:grid;place-items:center;width:39mm;aspect-ratio:1;margin:0 auto 1.8mm;padding:1.2mm;background:#fff}.qrframe img{display:block;width:100%;height:100%;object-fit:contain}" +
+        ".scan{color:#774149;font:800 1.7mm/1.25 Arial,sans-serif;letter-spacing:.2mm}.domain{max-width:100%;margin-top:1mm;overflow:hidden;color:#a18b80;font:600 1.35mm/1.2 Arial,sans-serif;letter-spacing:.15mm;text-overflow:ellipsis;white-space:nowrap}" +
+        "</style></head><body><main class='card'><div class='copy'><div class='brand'>LOVENA</div><div class='kicker'>" + safeKicker + "</div><h1>" + safeHeading + "</h1><p>" + safeMessage + "</p><div class='names'>" + safeName + "</div><small class='footer'>" + safeFooter + "</small></div><div class='qrside'><div class='qrframe'><img id='giftQr' alt='Scan to open your Lovena gift' src='" + safeQrUrl + "'></div><strong class='scan'>" + safeScan + "</strong><small class='domain'>" + safeDomain + "</small></div></main><script>var q=document.getElementById('giftQr');var didPrint=false;function printCard(){if(didPrint)return;didPrint=true;window.focus();setTimeout(function(){window.print();},350)}if(q.complete&&q.naturalWidth)printCard();else q.onload=printCard;<\/script></body></html>";
+      printWindow.document.open();
+      printWindow.document.write(printHtml);
+      printWindow.document.close();
+      paidQrStatus.textContent = "Your gift card is ready to print or save as a PDF.";
+    }
+
     function applyPurchaseEntitlements(entitlements) {
       var onlinePaid = !!(entitlements && entitlements.onlinePaid);
       var htmlUnlocked = !!(entitlements && entitlements.includesHtmlDownload);
@@ -851,6 +988,7 @@
         paidShareLink.textContent = publicUrl;
         paidQrImage.src = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=18&format=png&data=" + encodeURIComponent(publicUrl);
         paidQrImage.dataset.qrUrl = paidQrImage.src;
+        renderPaidGiftCard(publicUrl);
         paidQrImage.onerror = function () { paidQrStatus.textContent = "QR code could not load. Check your connection and reopen Publish & Export."; };
         try { localStorage.setItem("lovenaPublicUrl:" + options.editorKey, publicUrl); } catch (_) {}
       } else {
@@ -887,15 +1025,7 @@
         downloadPaidQrButton.disabled = false;
       }
     });
-    printPaidQrButton.addEventListener("click", function () {
-      var imageUrl = paidQrImage.dataset.qrUrl;
-      if (!imageUrl) { paidQrStatus.textContent = "Wait for your QR code to load first."; return; }
-      var printWindow = window.open("", "_blank");
-      if (!printWindow) { paidQrStatus.textContent = "Allow pop-ups to print the QR code."; return; }
-      printWindow.document.write("<!doctype html><html><head><title>Lovena QR Code</title><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>body{font-family:Arial,sans-serif;text-align:center;padding:24px;color:#51392f}img{width:min(80vw,420px);height:auto}p{font-size:14px}</style></head><body><h1>Lovena</h1><p>Scan to open this personal experience</p><img id=\"qr\" alt=\"Lovena QR Code\" src=\"" + imageUrl.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + "\"><script>document.getElementById('qr').onload=function(){setTimeout(function(){window.print()},250)};<\/script></body></html>");
-      printWindow.document.close();
-      paidQrStatus.textContent = "Print window opened.";
-    });
+    printPaidQrButton.addEventListener("click", printPaidGiftCard);
     sharePaidQrButton.addEventListener("click", async function () {
       sharePaidQrButton.disabled = true;
       try {
