@@ -1704,6 +1704,9 @@
           }catch(error){console.warn("Cinema cloud draft could not be loaded:",error);}
         }
       }
+      if(isDemo&&!(snapshot.music&&String(snapshot.music.url||"").trim())){
+        snapshot.music={url:"https://music.youtube.com/watch?v=QyN7J1eB1fU&si=5J9bCBuOPOG3C9VG"};
+      }
       applyExperience();
       document.getElementById("emptyList").hidden=storySaved||savedIds.length>0;
             if(editMode){ceMarkEditableTargets();ceBind();}
