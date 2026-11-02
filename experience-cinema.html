@@ -299,6 +299,21 @@
       html{scroll-behavior:auto}
       *,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}
     }
+    @media(max-width:650px){
+      #home .hero-controls{gap:5px}
+      #home .action-stack{min-width:34px}
+      #home .play-button{min-width:106px;padding:0 10px}
+      #home .music-player-panel{flex-basis:74px;width:74px;height:56px}
+      #home .soundless-action{width:36px;height:36px}
+    }
+    @media(max-width:365px){
+      #home .hero-controls{gap:3px}
+      #home .action-stack{min-width:30px}
+      #home .play-button{min-width:92px;padding:0 8px}
+      #home .music-player-panel{flex-basis:66px;width:66px;height:51px}
+      #home .soundless-action{width:32px;height:32px}
+      #home .action-label{font-size:7px}
+    }
   </style>
 <style id="lovena-one-screen-layout">
   html,body{width:100%;height:100%;min-height:0;overflow:hidden!important}
