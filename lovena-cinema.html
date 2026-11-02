@@ -304,6 +304,34 @@
       .occasion-card,.cinema-card,.share-card{background:#151515}
     }
 
+  
+    /* Scroll reveal: one entrance per element on the initial page load */
+    .reveal-on-scroll{
+      opacity:0;
+      transform:translate3d(0,26px,0) scale(.99);
+      filter:blur(3px);
+      transition:
+        opacity .78s cubic-bezier(.2,.7,.2,1),
+        transform .78s cubic-bezier(.2,.7,.2,1),
+        filter .78s cubic-bezier(.2,.7,.2,1);
+      transition-delay:var(--reveal-delay,0ms);
+      will-change:opacity,transform,filter;
+    }
+    .reveal-on-scroll.is-revealed{
+      opacity:1;
+      transform:translate3d(0,0,0) scale(1);
+      filter:blur(0);
+      will-change:auto;
+    }
+    .hero-art.reveal-on-scroll{transform:translate3d(0,22px,0) scale(.975)}
+    .hero-art.reveal-on-scroll.is-revealed{transform:translate3d(0,0,0) scale(1)}
+    @media(prefers-reduced-motion:reduce){
+      .reveal-on-scroll,.hero-art.reveal-on-scroll{
+        opacity:1!important;transform:none!important;filter:none!important;
+        transition:none!important;will-change:auto!important
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -483,5 +511,56 @@
       <span class="footer-copy">© 2026 Lovena. Todos os direitos reservados.</span>
     </div>
   </footer>
+
+  <script>
+  (function(){
+    "use strict";
+    try{
+      if(!("IntersectionObserver" in window)) return;
+      if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      var selectors=[
+        ".hero-copy",
+        ".hero-art",
+        ".dark-panel",
+        ".feature-intro > div",
+        ".interaction-card",
+        ".occasion-card",
+        ".cinema-card",
+        ".share-card",
+        ".intent-band",
+        ".faq-heading",
+        ".faq-item",
+        ".bottom-cta",
+        ".footer-inner"
+      ];
+      var nodes=document.querySelectorAll(selectors.join(","));
+      if(!nodes.length) return;
+
+      var observer=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting) return;
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        });
+      },{
+        root:null,
+        rootMargin:"0px 0px -7% 0px",
+        threshold:0.12
+      });
+
+      Array.prototype.forEach.call(nodes,function(node,index){
+        node.classList.add("reveal-on-scroll");
+        node.style.setProperty("--reveal-delay",Math.min(index%4,3)*85+"ms");
+        observer.observe(node);
+      });
+    }catch(error){
+      document.querySelectorAll(".reveal-on-scroll").forEach(function(node){
+        node.classList.add("is-revealed");
+      });
+    }
+  })();
+  </script>
+
 </body>
 </html>
