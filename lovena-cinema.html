@@ -259,6 +259,164 @@
       .intent-photo{right:13px;width:70px;height:94px}
       .intent-mark{margin-right:23%}
     }
+
+    /* Mobile refinement: more breathing room, larger tap targets and balanced cards. */
+    @media(max-width:680px){
+      .wrap{width:calc(100% - 32px)}
+      .site-header{height:64px}
+      .nav{gap:12px}
+      .brand{font-size:19px;gap:8px}
+      .brand-mark{width:22px;height:22px}
+      .nav-cta{min-height:38px;padding:0 14px;font-size:9px;letter-spacing:.55px;white-space:nowrap}
+
+      .hero{padding-bottom:30px}
+      .hero:before{
+        background:linear-gradient(180deg,transparent 0%,transparent 47%,rgba(5,5,5,.22) 64%,rgba(5,5,5,.76) 83%,#050505 100%)
+      }
+      .hero-photo{height:clamp(290px,84vw,330px)}
+      .hero-photo img{object-position:center 39%;filter:brightness(1.12) contrast(1.02) saturate(.96)}
+      .hero-content{margin-top:-12px}
+      .hero-copy{max-width:100%}
+      .hero-copy .eyebrow{font-size:9px;letter-spacing:1.25px}
+      h1{max-width:100%;font-size:clamp(40px,10.8vw,52px);letter-spacing:-2.55px;line-height:1.015}
+      .hero-lead{font-size:15px;line-height:1.6}
+      .hero-question{font-size:12.5px;line-height:1.65}
+      .hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .hero-actions .primary-cta,.hero-actions .secondary-cta{
+        width:100%;min-height:46px;padding:0 9px;font-size:8.5px;letter-spacing:.45px;white-space:nowrap
+      }
+      /* Keep the three hand-drawn rays beside the couple's heads, not at the top edge. */
+      .hero-spark{top:49px;left:53%;right:auto;width:48px;height:45px;transform:scale(.78);transform-origin:top left}
+      .hero-spark i{height:2.3px}
+
+      .memory-strip{padding-bottom:14px}
+      .memory-panel{gap:18px;padding:29px 14px 17px;border-radius:19px}
+      .memory-title{max-width:100%;font-size:clamp(29px,8.4vw,35px);letter-spacing:-1.9px;line-height:1.06}
+      .memory-title .red-underline{width:92px;margin-top:11px}
+      .memory-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+      .memory-option{
+        min-width:0;min-height:0;flex-direction:column;justify-content:flex-start;align-items:center;
+        gap:8px;padding:13px 8px 12px;border-radius:13px;text-align:center
+      }
+      .mini-phone{flex:0 0 auto;width:57px;height:78px;padding:3px;border-width:2px;border-radius:9px}
+      .option-copy{width:100%;min-width:0}
+      .option-copy strong{font-size:11px;line-height:1.25}
+      .option-copy small{font-size:9px;line-height:1.4}
+      .option-copy em{margin-top:6px;font-size:7px;letter-spacing:.45px}
+
+      .features{padding:54px 0 36px}
+      .feature-intro{gap:23px;margin-bottom:25px}
+      .feature-intro h2{max-width:100%;font-size:clamp(35px,9vw,42px);letter-spacing:-2.2px;line-height:1.04}
+      .feature-intro p{font-size:13px;line-height:1.7}
+      .text-link{min-height:34px;font-size:12px}
+      .interaction-card{padding:23px 14px 19px;border-radius:19px}
+      .interaction-card h3{font-size:16px}
+      .icon-grid{grid-template-columns:repeat(4,49px);gap:9px}
+      .icon-tile{height:49px;border-radius:12px}
+      .interaction-card p{font-size:10.5px;line-height:1.55}
+
+      .occasion-card{
+        grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px;
+        min-height:132px;padding:13px 12px 13px 17px;border-radius:18px
+      }
+      .occasion-copy .overline{font-size:10px;line-height:1.35}
+      .occasion-copy h3{font-size:clamp(20px,5.8vw,25px);line-height:1.12;letter-spacing:-.4px}
+      .occasion-copy p{font-size:9.5px;line-height:1.45}
+      .occasion-photo{height:104px;border-radius:11px}
+
+      .cinema-card{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px;min-height:160px;padding:15px 13px;border-radius:18px}
+      .cinema-card h3{max-width:100%;font-size:clamp(21px,6vw,26px);letter-spacing:-1.1px;line-height:1.1}
+      .cinema-card p{font-size:10px;line-height:1.5}
+      .cinema-photo{height:124px;border-width:4px;border-radius:10px}
+      .cinema-heart{right:12px;top:8px;font-size:19px}
+
+      .share-card{gap:17px;padding:22px 18px;border-radius:18px}
+      .share-card h3{font-size:21px;line-height:1.15}
+      .share-card p{font-size:11px;line-height:1.65}
+      .share-visual{justify-content:center;gap:17px}
+      .share-preview{width:62px;height:80px}
+      .share-link{min-height:42px;padding:10px 14px;font-size:10px}
+
+      .intent{padding-bottom:51px}
+      .intent-band{min-height:118px;padding:20px 17px;border-radius:18px}
+      .intent-copy{max-width:54%}
+      .intent-copy strong{font-size:16px;line-height:1.2}
+      .intent-copy span{font-size:10px;line-height:1.45}
+      .intent-mark{position:absolute;right:98px;top:50%;margin:0;transform:translateY(-50%);font-size:22px}
+      .intent-photo{right:14px;top:-10px;width:76px;height:104px;padding:6px 6px 17px;transform:rotate(6deg)}
+
+      .faq{padding-bottom:55px}
+      .faq-heading{margin-bottom:19px}
+      .faq-heading h2{font-size:clamp(29px,7.8vw,34px);letter-spacing:-1.6px}
+      .faq-item{border-radius:14px}
+      .faq-item summary{
+        min-height:49px;gap:10px;padding:10px 12px 10px 15px;
+        font-size:12px;line-height:1.35
+      }
+      .faq-item summary:after{flex-basis:23px;width:23px;height:23px;font-size:16px}
+      .faq-answer{padding:0 45px 15px 15px;font-size:11px;line-height:1.65}
+
+      .bottom-cta-wrap{padding-top:10px}
+      .bottom-cta{padding:55px 17px 53px;border-radius:19px}
+      .bottom-cta h2{font-size:clamp(34px,9vw,40px);letter-spacing:-2px;line-height:1.08}
+      .bottom-cta .primary-cta{width:auto;max-width:100%;min-height:47px;padding:0 14px;font-size:9px;letter-spacing:.45px;white-space:normal}
+      footer{padding:28px 0 32px}
+      .footer-inner{gap:17px}
+      .footer-brand{font-size:21px}
+      .footer-links{flex-wrap:wrap;justify-content:center;gap:12px 20px;font-size:11px}
+      .footer-copy{font-size:10px;line-height:1.5;text-align:center}
+    }
+
+    @media(max-width:420px){
+      .hero-photo{height:clamp(280px,83vw,318px)}
+      .hero-spark{top:43px;left:52%;transform:scale(.7);transform-origin:top left}
+      .hero-copy .eyebrow{font-size:8px;letter-spacing:1.05px}
+      h1{font-size:clamp(38px,10.5vw,44px);letter-spacing:-2.25px}
+      .hero-lead{font-size:14px}
+      .hero-question{font-size:12px}
+      .hero-actions .primary-cta,.hero-actions .secondary-cta{font-size:8px;padding:0 6px}
+      .memory-panel{padding-inline:12px}
+      .memory-option{padding-inline:6px}
+      .mini-phone{width:53px;height:73px}
+      .option-copy strong{font-size:10.5px}
+      .option-copy small{font-size:8.5px}
+      .occasion-card{min-height:122px}
+      .occasion-photo{height:96px}
+      .cinema-card{min-height:148px}
+      .cinema-photo{height:112px}
+      .intent-copy{max-width:53%}
+      .intent-mark{right:89px}
+      .intent-photo{right:11px;width:70px;height:96px}
+    }
+
+    @media(max-width:360px){
+      .wrap{width:calc(100% - 24px)}
+      .hero-photo{height:270px}
+      .hero-spark{top:37px;left:51%;transform:scale(.62);transform-origin:top left}
+      .brand{font-size:18px}
+      .nav-cta{padding:0 10px;font-size:8px}
+      h1{font-size:38px}
+      .hero-actions{grid-template-columns:1fr;max-width:220px}
+      .hero-actions .primary-cta,.hero-actions .secondary-cta{min-height:42px;font-size:9px}
+      .memory-title{font-size:29px}
+      .icon-grid{grid-template-columns:repeat(4,44px);gap:7px}
+      .icon-tile{height:44px}
+      .occasion-card{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:8px;padding-left:12px}
+      .occasion-copy h3{font-size:19px}
+      .occasion-copy p{font-size:8.5px}
+      .cinema-card{padding:12px 10px;gap:8px}
+      .cinema-card h3{font-size:19px}
+      .cinema-card p{font-size:9px}
+      .cinema-photo{height:103px}
+      .intent-copy{max-width:52%}
+      .intent-copy strong{font-size:14px}
+      .intent-copy span{font-size:9px}
+      .intent-mark{right:80px}
+      .intent-photo{right:8px;width:65px;height:90px}
+      .faq-item summary{font-size:11px}
+      .footer-links{gap:11px 16px}
+    }
+
     @media(prefers-reduced-motion:reduce){
       html{scroll-behavior:auto}
       html.js-reveal-ready .reveal-on-scroll,
