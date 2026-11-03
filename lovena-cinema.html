@@ -58,10 +58,12 @@
     .primary-cta svg,.secondary-cta svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.8;fill:none}
     .secondary-cta{border:1px solid rgba(255,255,255,.4);background:rgba(10,10,10,.45);color:#fff}
     .secondary-cta:hover{border-color:var(--red);background:rgba(229,9,20,.1)}
-    .hero-spark{position:absolute;top:12%;left:49%;width:41px;height:56px;opacity:.85;pointer-events:none}
-    .hero-spark:before,.hero-spark:after{content:"";position:absolute;width:2px;height:30px;border-radius:4px;background:#fff;transform:rotate(-27deg)}
-    .hero-spark:before{left:12px;top:3px}
-    .hero-spark:after{left:31px;top:18px;height:22px;transform:rotate(-55deg)}
+    /* Three hand-drawn white rays, fanned exactly like the visual reference. */
+    .hero-spark{position:absolute;z-index:2;top:42px;left:49.5%;width:58px;height:55px;opacity:.94;pointer-events:none}
+    .hero-spark i{position:absolute;display:block;height:2.5px;border-radius:3px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.18);transform-origin:left center}
+    .hero-spark i:nth-child(1){left:26px;top:1px;width:28px;transform:rotate(56deg)}
+    .hero-spark i:nth-child(2){left:10px;top:14px;width:29px;transform:rotate(42deg)}
+    .hero-spark i:nth-child(3){left:1px;top:34px;width:27px;transform:rotate(12deg)}
     .hero-spark i{position:absolute;left:-2px;top:26px;width:2px;height:20px;border-radius:4px;background:#fff;transform:rotate(-72deg);transform-origin:center;display:block}
     .memory-strip{position:relative;z-index:3;margin-top:-1px;padding:0 0 18px;background:#050505}
     .memory-panel{position:relative;overflow:hidden;display:grid;grid-template-columns:.86fr 1.14fr;align-items:center;gap:38px;min-height:205px;padding:31px 7%;border:1px solid rgba(255,255,255,.1);border-radius:25px;background:linear-gradient(110deg,#10110f,#191919 65%,#111);box-shadow:0 17px 38px rgba(0,0,0,.22)}
@@ -186,7 +188,7 @@
       .hero-question{margin-bottom:17px;font-size:12px}
       .hero-actions{gap:8px}
       .primary-cta,.secondary-cta{min-height:43px;padding:0 14px;font-size:9px}
-      .hero-spark{top:10%;left:auto;right:11%;transform:scale(.78)}
+      .hero-spark{top:-4px;left:49.5%;right:auto;transform:none}
       .memory-strip{padding-bottom:12px}
       .memory-panel{grid-template-columns:1fr;gap:18px;min-height:0;padding:30px 15px 18px;border-radius:18px}
       .memory-title{max-width:360px;font-size:35px;letter-spacing:-1.8px}
@@ -297,7 +299,7 @@
           </div>
         </div>
       </div>
-      <span class="hero-spark" aria-hidden="true"><i></i></span>
+      <span class="hero-spark" aria-hidden="true"><i></i><i></i><i></i></span>
     </section>
 
     <div class="memory-strip">
