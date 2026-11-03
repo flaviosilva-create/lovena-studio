@@ -38,11 +38,11 @@
     .nav-cta{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 19px;border-radius:24px;background:var(--red);color:#fff;font-size:10px;font-weight:700;letter-spacing:.8px;transition:background .2s,transform .2s}
     .nav-cta:hover,.primary-cta:hover{background:var(--red-dark);transform:translateY(-2px)}
     .hero{position:relative;isolation:isolate;min-height:605px;display:flex;align-items:center;overflow:hidden;background:#050505}
-    /* Image stays above the hero background; the gradient only protects text contrast. */
-    .hero:before{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:linear-gradient(90deg,#050505 0%,#050505 29%,rgba(5,5,5,.86) 39%,rgba(5,5,5,.34) 51%,transparent 66%),linear-gradient(0deg,rgba(5,5,5,.12),transparent 48%)}
-    .hero-photo{position:absolute;z-index:0;inset:0 0 0 auto;width:67%;height:100%;overflow:hidden}
-    .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center 43%;filter:brightness(1.12) contrast(1.025) saturate(.94)}
-    .hero-content{position:relative;z-index:2;width:100%;padding:75px 0 88px}
+    .hero:before{content:"";position:absolute;z-index:0;inset:0;background:#050505;pointer-events:none}
+    .hero-photo{position:absolute;z-index:1;inset:0 0 0 auto;width:67%;height:100%;overflow:hidden}
+    .hero-photo img{position:relative;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center 43%;filter:brightness(1.12) contrast(1.025) saturate(.94)}
+    .hero-photo:after{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(5,5,5,.9) 0%,rgba(5,5,5,.58) 19%,rgba(5,5,5,.16) 46%,transparent 70%),linear-gradient(0deg,rgba(5,5,5,.12),transparent 48%)}
+    .hero-content{position:relative;z-index:3;width:100%;padding:75px 0 88px}
     .hero-spark{z-index:2}
     .hero-copy{max-width:560px}
     .eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 20px;color:#aaa;font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase}
@@ -58,8 +58,8 @@
     .primary-cta svg,.secondary-cta svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.8;fill:none}
     .secondary-cta{border:1px solid rgba(255,255,255,.4);background:rgba(10,10,10,.45);color:#fff}
     .secondary-cta:hover{border-color:var(--red);background:rgba(229,9,20,.1)}
-    /* Three hand-drawn white rays, fanned exactly like the visual reference. */
-    .hero-spark{position:absolute;z-index:2;top:42px;left:49.5%;width:58px;height:55px;opacity:.94;pointer-events:none}
+    /* Three white hand-drawn rays anchored to the photograph itself. */
+    .hero-spark{position:absolute;z-index:2;top:42px;left:24.5%;width:58px;height:55px;opacity:.94;pointer-events:none}
     .hero-spark i{position:absolute;display:block;height:2.5px;border-radius:3px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.18);transform-origin:left center}
     .hero-spark i:nth-child(1){left:26px;top:1px;width:28px;transform:rotate(56deg)}
     .hero-spark i:nth-child(2){left:10px;top:14px;width:29px;transform:rotate(42deg)}
@@ -177,8 +177,9 @@
       .nav-links>a:not(.nav-cta){display:none}
       .nav-cta{min-height:37px;padding:0 13px;font-size:9px}
       .hero{min-height:0;display:block;padding:0 0 27px}
-      .hero:before{background:linear-gradient(180deg,transparent 0%,transparent 42%,rgba(5,5,5,.28) 62%,rgba(5,5,5,.8) 82%,#050505 100%)}
-      .hero-photo{position:relative;z-index:0;width:100%;height:350px;margin:0;overflow:hidden}
+      .hero:before{background:#050505}
+      .hero-photo{position:relative;z-index:1;inset:auto;width:100%;height:350px;margin:0;overflow:hidden}
+      .hero-photo:after{background:linear-gradient(180deg,transparent 0%,transparent 44%,rgba(5,5,5,.18) 62%,rgba(5,5,5,.76) 83%,#050505 100%)}
       .hero-photo img{object-position:center 38%;filter:brightness(1.1) contrast(1.02) saturate(.94)}
       .hero-content{padding:0;margin-top:-21px}
       .hero-copy{max-width:560px}
@@ -188,7 +189,6 @@
       .hero-question{margin-bottom:17px;font-size:12px}
       .hero-actions{gap:8px}
       .primary-cta,.secondary-cta{min-height:43px;padding:0 14px;font-size:9px}
-      .hero-spark{top:-4px;left:49.5%;right:auto;transform:none}
       .memory-strip{padding-bottom:12px}
       .memory-panel{grid-template-columns:1fr;gap:18px;min-height:0;padding:30px 15px 18px;border-radius:18px}
       .memory-title{max-width:360px;font-size:35px;letter-spacing:-1.8px}
@@ -286,8 +286,6 @@
         width:100%;min-height:46px;padding:0 9px;font-size:8.5px;letter-spacing:.45px;white-space:nowrap
       }
       /* Keep the three hand-drawn rays beside the couple's heads, not at the top edge. */
-      .hero-spark{top:49px;left:53%;right:auto;width:48px;height:45px;transform:scale(.78);transform-origin:top left}
-      .hero-spark i{height:2.3px}
 
       .memory-strip{padding-bottom:14px}
       .memory-panel{gap:18px;padding:29px 14px 17px;border-radius:19px}
@@ -369,7 +367,6 @@
 
     @media(max-width:420px){
       .hero-photo{height:clamp(280px,83vw,318px)}
-      .hero-spark{top:43px;left:52%;transform:scale(.7);transform-origin:top left}
       .hero-copy .eyebrow{font-size:8px;letter-spacing:1.05px}
       h1{font-size:clamp(38px,10.5vw,44px);letter-spacing:-2.25px}
       .hero-lead{font-size:14px}
@@ -392,7 +389,6 @@
     @media(max-width:360px){
       .wrap{width:calc(100% - 24px)}
       .hero-photo{height:270px}
-      .hero-spark{top:37px;left:51%;transform:scale(.62);transform-origin:top left}
       .brand{font-size:18px}
       .nav-cta{padding:0 10px;font-size:8px}
       h1{font-size:38px}
@@ -415,6 +411,17 @@
       .intent-photo{right:8px;width:65px;height:90px}
       .faq-item summary{font-size:11px}
       .footer-links{gap:11px 16px}
+    }
+
+    @media(max-width:680px){
+      /* Relative to .hero-photo so the rays stay over the same part of the couple photo. */
+      .hero-spark{top:13.5%;left:40%;right:auto;width:58px;height:55px;transform:scale(.76);transform-origin:top left}
+    }
+    @media(max-width:420px){
+      .hero-spark{top:13.5%;left:40%;transform:scale(.7);transform-origin:top left}
+    }
+    @media(max-width:360px){
+      .hero-spark{top:13.5%;left:40%;transform:scale(.64);transform-origin:top left}
     }
 
     @media(prefers-reduced-motion:reduce){
@@ -444,6 +451,7 @@
     <section class="hero">
       <div class="hero-photo reveal-target">
         <img src="./assets/lovena-cinema-casal.webp" alt="Casal sorrindo enquanto olha junto para uma lembrança no celular" fetchpriority="high" decoding="async">
+        <span class="hero-spark" aria-hidden="true"><i></i><i></i><i></i></span>
       </div>
       <div class="wrap hero-content">
         <div class="hero-copy reveal-target">
@@ -457,7 +465,6 @@
           </div>
         </div>
       </div>
-      <span class="hero-spark" aria-hidden="true"><i></i><i></i><i></i></span>
     </section>
 
     <div class="memory-strip">
